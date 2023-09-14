@@ -1,24 +1,26 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import logger from "./log/config.js";
 import { handleError } from "./middleware/errors.js";
 import { globalErrorHandler } from "./Utils/errorHandler.js";
-
+import sequelize from "./db.js";
 import bodyParser from "body-parser";
+import morgan from "morgan";
 //session
 // import session from "express-session";
-// import {default as connectMongoDBSession} from "connect-mongodb-session";
+// routes
 
-// const MongoDBStore = connectMongoDBSession(session);
 const app = express();
 dotenv.config();
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
-
+app.use(morgan('dev'))
 app.use(handleError);
 app.use(express.json());
+
+
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -34,20 +36,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// const CONX_URL = process.env.DATABASE_URL;
+
 const PORT = process.env.PORT;
-
-// mongoose
-//   .connect(CONX_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(
-//     () =>
-// console.log("db connexion successful !!"),
-try {
-  logger.debug("db connexion successful !!"),
 app.listen(PORT, () => console.log(`server running on post : ${PORT}`));
-//   )
-//   .catch((error) => console.log(error.message));
-
 app.all("*", (req, res, next) => {
   const err = new Error(`can't find ${req.originalUrl}`);
   err.status = "fail";
@@ -56,9 +47,4 @@ app.all("*", (req, res, next) => {
 });
 
 app.use(globalErrorHandler);
-} catch (error) {
-  console.log(error);
-}
 
-
-//mongoose.set('useFindAndModify', false);
