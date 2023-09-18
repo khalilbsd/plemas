@@ -6,7 +6,7 @@ import { checkUserRole, isUserAuthenticated } from '../middleware/auth.js'
 const router = express.Router()
 
 router
-.get('/',isUserAuthenticated,checkUserRole(['client']),getAll)
+.get('/',isUserAuthenticated,checkUserRole(['superuser']),getAll)
 .post('/add',isUserAuthenticated,checkUserRole([]),addUser)
 
 export default router
