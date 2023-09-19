@@ -1,22 +1,18 @@
+import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import { handleError } from "./middleware/errors.js";
-import { globalErrorHandler } from "./Utils/errorHandler.js";
-import sequelize from "./db.js";
-import bodyParser from "body-parser";
 import morgan from "morgan";
+import { globalErrorHandler } from "./Utils/errorHandler.js";
+import { handleError } from "./middleware/errors.js";
 //session
-import session from "express-session";
 // routes
-import userRoutes from './routes/user.route.js'
-import authRoutes from './routes/auth.route.js'
+import authRoutes from './routes/auth.route.js';
+import userRoutes from './routes/user.route.js';
 // import passport from "passport";
-import User from "./models/users/User.model.js";
-import csrf from 'csrf'
 // import { authUser } from "./controllers/auth/authentication.js";
 import passport from "./controllers/auth/passport-config.js";
-
+// import { User, UserProfile } from './db/relations.js';
 
 const app = express();
 dotenv.config();
@@ -43,6 +39,10 @@ app.use(passport.initialize())
 // api routes
 app.use('/api/users',userRoutes)
 app.use('/api/auth',authRoutes)
+
+
+
+import './db/relations.js';
 
 
 app.use((req, res, next) => {

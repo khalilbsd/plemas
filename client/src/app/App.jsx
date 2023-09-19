@@ -1,18 +1,25 @@
-import {
-  Route,
-  Routes
-} from "react-router-dom";
-import './App.css';
-import { urls } from './routes/url';
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import { protectedUrls, publicUrls } from "./routes/urls";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import useGetAuthenticatedUser from "../hooks/user";
+import Loading from "./Components/loading/Loading";
 function App() {
+  const user = useGetAuthenticatedUser();
+  if (user.loading) return <Loading />
   return (
     <div className="App">
-     <Routes>
-      {urls.map(({path,Component})=>
-        (
-          <Route path={path} element={Component} />
+      <Routes>
+        {publicUrls.map(({ path, Component }, key) => (
+          <Route key={key} path={path} element={Component} />
         ))}
-     </Routes>
+
+        <Route element={<ProtectedRoute user={user} />}>
+          {protectedUrls.map(({ path, Component }, key) => (
+            <Route key={key} path={path} element={Component} />
+          ))}
+        </Route>
+      </Routes>
     </div>
   );
 }

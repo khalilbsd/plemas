@@ -14,5 +14,6 @@ export const styles= createUseStyles({
     },
     input:{
         width:'100%'
-    }
+    },
+
 })

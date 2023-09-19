@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
-import database from "../../db.js";
+import database from "../../db/db.js";
 import logger from "../../log/config.js";
 
 const User = database.define(
-  "User",
+  "users",
   {
     email: {
       type: DataTypes.STRING,
@@ -28,8 +28,9 @@ const User = database.define(
   { timestamps: true }
 );
 
-User.sync({ force: false }).then(() => {
-  logger.debug("User model synced with the database");
-});
+
+// User.sync({ force: true }).then(() => {
+//   logger.debug("User model synced with the database");
+// });
 
 export default User;
