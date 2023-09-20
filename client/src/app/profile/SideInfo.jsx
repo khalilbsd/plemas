@@ -99,7 +99,7 @@ const SideInfo = () => {
   return (
     <Card className={classes.sizeInfoCard}>
 
-        <UploadImage userImage={profile.image} previewImage={profileImage}  handleImage={setProfileImage} />
+        <UploadImage email={user.email} userImage={profile.image} previewImage={profileImage}  handleImage={setProfileImage} />
 
 
       <CardContent>

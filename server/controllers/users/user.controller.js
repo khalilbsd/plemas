@@ -155,9 +155,9 @@ export const  updateProfileImage = catchAsync(async (req,res,next)=>{
       return next(new ElementNotFound(errorMsg));
     }
     let url;
-    if (!req.file) return next(AppError("file exceeds the limit of 5MB",500))
+    if (!req.file) return next(new AppError("no file has been provided",500))
 
-    if (req.file.size > 5 * 1024 * 1024) return next(new AppError("file is too large",500))
+    if (req.file.size > 5 * 1024 * 1024) return next(new AppError("file exceeds the limit of 5MB",500))
     if (req.file.mimetype !== 'image/jpeg' && req.file.mimetype !== 'image/png') {
       removeTmp(req.file.tempFilePath)
       return res.status(400).json({ msg: "File format is incorrect." })
