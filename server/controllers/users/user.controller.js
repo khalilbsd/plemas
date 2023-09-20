@@ -1,10 +1,14 @@
-import { AppError } from "../../Utils/appError.js";
+import {
+  AppError,
+  ElementNotFound
+} from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { UserProfile } from "../../db/relations.js";
+import { UnauthorizedError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import User from "../../models/users/User.model.js";
 import { encryptPassword, serializeProfile, serializeUser } from "./lib.js";
-
+import {createMediaUrl} from '../../Utils/FileManager.js'
 export const getAll = catchAsync(async (req, res, next) => {
   const users = await User.findAll();
   res.json({ data: users });
@@ -62,9 +66,6 @@ export const createUserProfile = async (info, userId) => {
   return newProfile.dataValues;
 };
 
-
-
-
 export const getUserInfo = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   if (!email) return next(new AppError("an email must be provided", 500));
@@ -76,16 +77,21 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
     return next(new ElementNotFound(msg));
   }
 
-  return res.status(200).json({ status: "success", user: serializeUser(user) ,profile:serializeProfile(user.UserProfile) });
+  return res
+    .status(200)
+    .json({
+      status: "success",
+      user: serializeUser(user),
+      profile: serializeProfile(user.UserProfile)
+    });
 });
 
-
-
-
 export const getUserByEmail = async (email) => {
-
   if (!email) return null;
-  const user = await User.findOne({ where: { email: email } ,include:UserProfile});
+  const user = await User.findOne({
+    where: { email: email },
+    include: UserProfile
+  });
   if (user) return user;
 
   return null;
@@ -98,3 +104,67 @@ export const getUserByID = async (id) => {
 
   return user;
 };
+
+export const updateProfile = catchAsync(async (req, res, next) => {
+  // const { userId } = req.params;
+
+  const newProfile = req.body;
+  if (!newProfile.email) return next(new AppError("The email was not provided",500))
+
+  if (!req.user.isSuperUser) {
+    if (newProfile.email != req.user.email) return next(new UnauthorizedError());
+  }
+  const user = await User.findOne({where:{email:newProfile.email}})
+  if (!user) {
+    const errorMsg = `the user : ${newProfile.email} is not found`;
+    logger.error(errorMsg);
+    return next(new ElementNotFound(errorMsg));
+  }
+
+
+  const userProfile = await UserProfile.findOne({ where: { userId: user.id } });
+  if (!userProfile) {
+    const errorMsg = `UserProfile for user ${newProfile.email} is not found`;
+    logger.error(errorMsg);
+    return next(new ElementNotFound(errorMsg));
+  }
+  await userProfile.update({ ...newProfile });
+  await userProfile.save();
+  res
+    .status(200)
+    .json({ status: "success", message: "user profile updated successfully" });
+});
+
+
+export const  updateProfileImage = catchAsync(async (req,res,next)=>{
+
+  if (!req.user.isSuperUser) {
+    if (req.body.email !== req.user.email) return next(new UnauthorizedError());
+  }
+
+  const user = await User.findOne({where:{email:req.body.email}})
+  if (!user) {
+    const errorMsg = `the user : ${req.body.email} is not found`;
+    logger.error(errorMsg);
+    return next(new ElementNotFound(errorMsg));
+  }
+    const userProfile = await UserProfile.findOne({ where: { userId: user.id } });
+    if (!userProfile) {
+      const errorMsg = `UserProfile for user ${newProfile.email} is not found`;
+      logger.error(errorMsg);
+      return next(new ElementNotFound(errorMsg));
+    }
+    let url;
+    if (!req.file) return next(AppError("file exceeds the limit of 5MB",500))
+
+    if (req.file.size > 5 * 1024 * 1024) return next(new AppError("file is too large",500))
+    if (req.file.mimetype !== 'image/jpeg' && req.file.mimetype !== 'image/png') {
+      removeTmp(req.file.tempFilePath)
+      return res.status(400).json({ msg: "File format is incorrect." })
+    }
+    // url = await createMedia(req.user._id, '/users/', req.file.buffer);
+    url = createMediaUrl(req.file)
+    userProfile.image=url
+    userProfile.save()
+    return res.status(200).json({status:'success',message:'profile image updated successfully'})
+})

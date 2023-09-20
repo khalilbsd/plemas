@@ -2,8 +2,9 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import { protectedUrls, publicUrls } from "./routes/urls";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import useGetAuthenticatedUser from "../hooks/user";
+
 import Loading from "./Components/loading/Loading";
+import useGetAuthenticatedUser from "../hooks/authenticated";
 function App() {
   const user = useGetAuthenticatedUser();
   if (user.loading) return <Loading />

@@ -1,24 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
-const initialState = {
-  isAuthenticated: false,
-  user: null,
-  loading: true,
-};
 
-function useGetAuthenticatedUser() {
-  const [user, setUser] = useState(initialState);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser({ isAuthenticated: true, user: JSON.parse(storedUser), loading: false });
-    } else {
-      setUser({ isAuthenticated: false, user: null, loading: false });
-    }
-  }, []);
 
-  return user; // Return the user object, not just user.isAuthenticated
+
+
+
+function useGetUserInfo(){
+    // const [userInfo, setUserInfo] = useState(initialState)
+    const user = useSelector(state=>state.userInfo)
+    return user
 }
 
-export default useGetAuthenticatedUser;
+export default useGetUserInfo

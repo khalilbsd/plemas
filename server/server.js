@@ -13,7 +13,8 @@ import userRoutes from './routes/user.route.js';
 // import { authUser } from "./controllers/auth/authentication.js";
 import passport from "./controllers/auth/passport-config.js";
 // import { User, UserProfile } from './db/relations.js';
-
+import path from "path";
+import { fileURLToPath } from 'url';
 const app = express();
 dotenv.config();
 
@@ -34,8 +35,13 @@ app.use(passport.initialize())
 // // app.use(passport.authenticate())
 // app.use(new LocalStrategy(authUser))
 
+//static routes
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-
+const uploadsDirectory = path.join(__dirname, 'uploads');
+// Serve uploaded files as static assets
+app.use('/uploads', express.static(uploadsDirectory));
 // api routes
 app.use('/api/users',userRoutes)
 app.use('/api/auth',authRoutes)
@@ -43,6 +49,7 @@ app.use('/api/auth',authRoutes)
 
 
 import './db/relations.js';
+
 
 
 app.use((req, res, next) => {
