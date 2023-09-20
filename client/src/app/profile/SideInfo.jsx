@@ -1,22 +1,17 @@
-import React, { useRef } from "react";
-import useGetUserInfo from "../../hooks/user";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardMedia,
   Grid,
-  TextField,
-  Typography
+  TextField
 } from "@mui/material";
-import Loading from "../Components/loading/Loading";
+import React, { useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { formatDate } from "../../hooks/formatDate";
-import UploadImage from "../Components/upload/UploadImage";
-import { useState } from "react";
-import { styles } from "./style";
+import useGetUserInfo from "../../hooks/user";
 import { useUpdateUserProfileMutation } from "../../store/api/users.api";
-import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
+import Loading from "../Components/loading/Loading";
+import UploadImage from "../Components/upload/UploadImage";
+import { styles } from "./style";
 
 
 
@@ -59,7 +54,6 @@ const SideInfo = () => {
         lastName:lastNameRef.current.value,
         poste:postRef.current.value,
         phone:phoneRef.current.value,
-        image:profileImage
       }
       await updateUserProfile(updatedProfile)
       toast.success('profile updated successfully', {

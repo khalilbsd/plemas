@@ -4,7 +4,7 @@ import { createUseStyles } from "react-jss";
 export const styles = createUseStyles({
 
     profileContainer:{
-        maxWidth:'80%',
+        maxWidth:'100%',
         margin:'auto'
     },
     sizeInfoCard:{

@@ -1,3 +1,4 @@
+import { textAlign } from '@mui/system'
 import {createUseStyles} from 'react-jss'
 
 
@@ -10,7 +11,8 @@ export const styles= createUseStyles({
     },
     loginBox:{
         width:300,
-        margin:'auto'
+        margin:'auto',
+        textAlign:'center'
     },
     input:{
         width:'100%'

@@ -15,7 +15,6 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
      try {
-      console.log(state);
       state.user = action.payload?.user;
       localStorage.setItem("user", JSON.stringify(action.payload?.user));
       //setting the token in the cookies
@@ -25,7 +24,7 @@ const authSlice = createSlice({
         maxAge:172800,
 
       });
-      console.log(cookies);
+
       console.log("cookie is set for domain",process.env.REACT_APP_DOMAIN);
      } catch (error) {
       console.log(error);
