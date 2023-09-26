@@ -11,7 +11,7 @@ function useGetAuthenticatedUser() {
 
   useEffect(()=>{
     async function getUSer() {
-    const storedUser =await  localStorage.getItem("user");
+    const storedUser =  localStorage.getItem("user");
     if (storedUser) {
       setUser({ isAuthenticated: true, user: JSON.parse(storedUser), loading: false });
     } else {
