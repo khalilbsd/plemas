@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "stage.client":"cd client && npm i ",
-    "stage.server":"cd server && npm i ",
-    "stage.chronos":"concurrently \"npm run stage.client\" \"npm run stage.server\"",
-    "start.client":"cd client && npm start",
-    "start.server":"cd server && npm start",
+    "stage.client": "cd client && npm i ",
+    "stage.server": "cd server && npm i ",
+    "stage.chronos": "concurrently \"npm run stage.client\" \"npm run stage.server\"",
+    "start.client": "cd client && npm start",
+    "start.server": "cd server && npm start",
     "chronos": "concurrently \"npm run start.client\" \"npm run start.server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/ITsolutionBadr/chronos#readme",
   "dependencies": {
-    "concurrently": "^8.2.1"
+    "concurrently": "^8.2.1",
+    "react-svg": "^16.1.26"
   }
 }
