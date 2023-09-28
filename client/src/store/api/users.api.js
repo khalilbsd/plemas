@@ -22,8 +22,27 @@ export const userApi = api.injectEndpoints({
         method: "PATCH",
         data: data
       })
+    }),
+    getUserList: builder.mutation({
+      query: () => ({
+        url: "/users/list",
+        method: "GET"
+      })
+    }),
+    addNewUser:builder.mutation({
+      query:(data)=>({
+        url: `/users/add`,
+        method: "POST",
+        data: data
+      })
     })
   })
 });
 
-export const { useGetAuthenticatedUserInfoMutation ,useUpdateUserProfileMutation ,useUpdateUserProfilePictureMutation } = userApi;
+export const {
+  useGetAuthenticatedUserInfoMutation,
+  useUpdateUserProfileMutation,
+  useUpdateUserProfilePictureMutation,
+  useGetUserListMutation,
+  useAddNewUserMutation
+} = userApi;

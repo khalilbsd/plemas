@@ -31,16 +31,28 @@ function App() {
           ))}
           {/* protected routes ALL_ROLES */}
           <Route element={<ProtectedRoute user={userObject} />}>
-            {getRolesBasedUrls(null,ALL_ROLES).map(({ path, Component }, key) => (
-              <Route key={key} path={path} element={Component} />
-            ))}
+            {getRolesBasedUrls(null, ALL_ROLES).map(
+              ({ path, Component, nested }, key) => (
+                <Route key={key} path={path} element={Component} />
+              )
+            )}
           </Route>
           {/* protected routes role specification */}
 
-          { userObject?.user?.role && (
+          {userObject?.user?.role && (
             <Route element={<ProtectedRoute user={userObject} />}>
               {getRolesBasedUrls(userObject?.user).map(
-                ({ path, Component }, key) => (
+                ({ path, Component, nested }, key) => (
+                  nested?
+                  <Route key={key} path={path} element={Component}>
+                    {nested.map((nestedRoute,idx)=>(
+                  <Route key={idx} path={nestedRoute.path} element={nestedRoute.Component}/>
+
+                    ))}
+
+
+                    </Route>
+                  :
                   <Route key={key} path={path} element={Component} />
                 )
               )}

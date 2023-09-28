@@ -10,9 +10,9 @@ const router = express.Router()
 const profileImageUploader = createMulterMiddleware('profileImage')
 
 router
-.get('/',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getAll)
+.get('/list',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getAll)
 .post('/user_info',isUserAuthenticated,getUserInfo)
-.post('/add',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),addUser)
+.post('/add',addUser)
 .patch('/profile/change',isUserAuthenticated,profileImageUploader,updateProfile)
 .patch('/profile/image/change',isUserAuthenticated,profileImageUploader,updateProfileImage)
 export default router

@@ -9,7 +9,7 @@ import { getUserByEmail } from "../users/user.controller.js";
 dotenv.config();
 
 export const login = catchAsync(async (req, res, next) => {
-  console.log(req.body);
+
   const user = await getUserByEmail(req.body.email);
   if (!user) {
     res

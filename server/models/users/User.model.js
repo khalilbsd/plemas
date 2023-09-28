@@ -12,7 +12,7 @@ const User = database.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     role: {
       type: DataTypes.STRING,
@@ -23,6 +23,19 @@ const User = database.define(
       type: DataTypes.BOOLEAN,
       defaultValue: 0,
       allowNull: true
+    },
+    token:{
+      type:DataTypes.STRING,
+      allowNull:true
+    },
+    expireAt:{
+      type:DataTypes.DATE,
+      allowNull:true
+    },
+    active:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
+      allowNull:false
     }
   },
   { timestamps: true }
