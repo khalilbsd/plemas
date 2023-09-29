@@ -1,5 +1,5 @@
 import express from 'express'
-import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage } from '../controllers/users/user.controller.js'
+import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage,authenticateUserWithToken } from '../controllers/users/user.controller.js'
 import { checkUserRole, isUserAuthenticated } from '../middleware/auth.js'
 // import uploader from '../middleware/imageUploader.js'
 import createMulterMiddleware from '../middleware/uploader.js'
@@ -15,4 +15,6 @@ router
 .post('/add',addUser)
 .patch('/profile/change',isUserAuthenticated,profileImageUploader,updateProfile)
 .patch('/profile/image/change',isUserAuthenticated,profileImageUploader,updateProfileImage)
+.get('/confirmation/auth/1.0/token=:token',authenticateUserWithToken)
+
 export default router

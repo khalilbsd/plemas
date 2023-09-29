@@ -9,23 +9,30 @@ const initialState = {
 function useGetAuthenticatedUser() {
   const [user, setUser] = useState(initialState);
 
-  useEffect(()=>{
-    async function getUSer() {
-    const storedUser =  localStorage.getItem("user");
-    if (storedUser) {
-      setUser({ isAuthenticated: true, user: JSON.parse(storedUser), loading: false });
-    } else {
-      setUser({ isAuthenticated: false, user: null, loading: false });
+  useEffect(() => {
+    async function getUser() {
+      const storedUser = await localStorage.getItem("user");
+      if (storedUser) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          isAuthenticated: true,
+          user: JSON.parse(storedUser),
+          loading: false,
+        }));
+      } else {
+        console.log("FUCKK");
+        setUser((prevUser) => ({
+          ...prevUser,
+          isAuthenticated: false,
+          user: null,
+          loading: false,
+        }));
+      }
     }
-  }
-     getUSer()
+    getUser();
   }, []);
 
-  return user; // Return the user object, not just user.isAuthenticated
+  return user;
 }
 
 export default useGetAuthenticatedUser;
-
-
-
-

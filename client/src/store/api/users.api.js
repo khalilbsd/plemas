@@ -35,7 +35,14 @@ export const userApi = api.injectEndpoints({
         method: "POST",
         data: data
       })
-    })
+    }),
+    verifyTokenConfirmation:builder.mutation({
+      query:(token)=>({
+        url:`/users/confirmation/auth/1.0/token=${token}`,
+        method: 'GET'
+      })
+    }),
+
   })
 });
 
@@ -44,5 +51,6 @@ export const {
   useUpdateUserProfileMutation,
   useUpdateUserProfilePictureMutation,
   useGetUserListMutation,
-  useAddNewUserMutation
+  useAddNewUserMutation,
+  useVerifyTokenConfirmationMutation,
 } = userApi;

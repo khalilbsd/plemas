@@ -1,34 +1,34 @@
 import { CardMedia } from "@mui/material";
 import { useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { useUpdateUserProfilePictureMutation } from "../../../store/api/users.api";
 import Loading from "../loading/Loading";
+import { notify } from "../notification/notification";
 import { styles } from "./style";
 
 const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
   const fileInputRef = useRef(null);
   const classes = styles();
   const formRef = useRef();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [updateUserProfilePicture, { isLoading }] =
     useUpdateUserProfilePictureMutation();
+
   const handleButtonClick = () => {
     // Use current property of the ref to access the input element
     fileInputRef.current.click();
   };
 
-
-
-  const onChange = async(e) => {
-    setLoading(true)
+  const onChange = async (e) => {
+    setLoading(true);
     const files = e.target.files;
     const file = files[0];
     await getBase64(file);
-    setLoading(false)
+    setLoading(false);
   };
 
-  const getBase64 = async(file) => {
-    if (file){
+  const getBase64 = async (file) => {
+    if (file) {
       let reader = await new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -41,45 +41,27 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
 
     // handleSubmit()
   };
+  console.log(isLoading);
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+
       const formData = new FormData();
       formData.append("profileImage", fileInputRef.current.files[0]);
       formData.append("email", email);
 
-      await updateUserProfilePicture(formData);
-      console.log("submitting image");
-      toast.success('profile picture updated successfully', {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        });
+      await updateUserProfilePicture(formData).unwrap();
+      notify(NOTIFY_SUCCESS, "profile picture updated successfully");
     } catch (error) {
-      toast.error(error.data?.message, {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored"
-      });
+      notify(NOTIFY_ERROR, error.data?.message);
     }
   };
 
   return (
-    <div >
-
+    <div>
       <form
-      className={classes.uploaderForm}
+        className={classes.uploaderForm}
         ref={formRef}
         onSubmit={handleSubmit}
         method="PATCH"
@@ -94,18 +76,22 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
           )}
         </div>
         <div className={classes.imageContainer}>
-
-
-        {(userImage || previewImage) && (
-          <CardMedia
-            sx={{ height: 400 }}
-            image={previewImage ? previewImage : userImage}
-            className={classes.profileImage+" "+(loading?classes.blur:"")}
-            title="profile Picture"
-          />
+          {(userImage || previewImage) && (
+            <CardMedia
+              sx={{ height: 400 }}
+              image={previewImage ? previewImage : userImage}
+              className={
+                classes.profileImage + " " + (isLoading ? classes.blur : "")
+              }
+              title="profile Picture"
+            />
           )}
-          {loading&&<div className={classes.loader}><Loading/></div>}
-          </div>
+          {isLoading && (
+            <div className={classes.loader}>
+              <Loading />
+            </div>
+          )}
+        </div>
         <input
           ref={fileInputRef}
           style={{ display: "none" }}
@@ -114,8 +100,22 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
           name="profileImage"
         />
         <div className={classes.ctaBtn}>
-        {previewImage && <button className="br" type="submit">Save image</button>}
-        {userImage && <button type="button" onClick={handleButtonClick}>Update image</button>}
+          {previewImage && (
+            <button className="br" type="submit">
+              Save image
+            </button>
+          )}
+          {!userImage && previewImage && (
+            <button type="button" onClick={handleButtonClick}>
+              Update image
+            </button>
+          )}
+
+          {userImage && (
+            <button type="button" onClick={handleButtonClick}>
+              Update image
+            </button>
+          )}
         </div>
       </form>
     </div>

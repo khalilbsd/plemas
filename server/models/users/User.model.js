@@ -25,18 +25,21 @@ const User = database.define(
       allowNull: true
     },
     token:{
-      type:DataTypes.STRING,
+      type:DataTypes.TEXT,
       allowNull:true
     },
-    expireAt:{
-      type:DataTypes.DATE,
-      allowNull:true
-    },
+
     active:{
       type:DataTypes.BOOLEAN,
       defaultValue:false,
       allowNull:false
-    }
+    },
+    isBanned:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
+      allowNull:false
+    },
+
   },
   { timestamps: true }
 );

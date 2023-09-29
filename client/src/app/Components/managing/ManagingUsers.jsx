@@ -27,59 +27,7 @@ import { EMPLOYEE_ROLE } from "../../../constants/roles";
 import AddUserForm from "./AddUserForm";
 import { notify } from "../notification/notification";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
-
-//column for the header of the list
-const columns = [
-  { field: "id", headerName: "ID", width: 90 },
-  {
-    field: "name",
-    headerName: "First name",
-    width: 200,
-    editable: true
-  },
-  {
-    field: "lastName",
-    headerName: "Last name",
-    width: 200,
-    editable: true
-  },
-  {
-    field: "email",
-    headerName: "Email",
-    width: 200,
-    editable: true
-  },
-  {
-    field: "actions", // Add a field for actions
-    headerName: "Actions",
-    width: 200,
-    renderCell: (params) => {
-      const id = params.row.id;
-      // Render custom buttons for each row
-      return (
-        <div>
-          <button
-            onClick={() => console.log("here")}
-            alt={`block the user ${id}`}
-          >
-            <FontAwesomeIcon icon={faUserLock} />
-          </button>
-          {/* <button
-            onClick={() => {
-              // Replace 'id' with your actual identifier field
-              const id = params.row.id;
-              window.location.href = `/id/${id}`;
-            }}
-          > */}
-          <Link to={`${id}`} title={`see the details of the user ${id}`}>
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </Link>
-          {/* </button> */}
-        </div>
-      );
-    }
-  }
-];
+import { listStyle } from "./style";
 
 // ];
 
@@ -102,6 +50,7 @@ const ManagingUsers = () => {
   const [newUser, setNewUser] = useState(newUserInitialState);
   const [addNewUser, { isLoading }] = useAddNewUserMutation();
   const dispatch = useDispatch();
+  const classes = listStyle();
 
   useEffect(() => {
     async function userList() {
@@ -149,20 +98,104 @@ const ManagingUsers = () => {
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
-      const res= await addNewUser(newUser).unwrap();
-      if (res?.createdUSer){
-        const {createdUSer,message} = res
+      const res = await addNewUser(newUser).unwrap();
+      if (res?.createdUSer) {
+        const { createdUSer, message } = res;
         if (createdUSer) dispatch(addNewUSerToList(createdUSer));
-        notify(NOTIFY_SUCCESS,message)
+        notify(NOTIFY_SUCCESS, message);
         setNewUser(newUserInitialState);
         handleModelClose();
       }
-
     } catch (error) {
-      notify(NOTIFY_ERROR,error.data?.message)
+      notify(NOTIFY_ERROR, error.data?.message);
     }
   };
 
+  //column for the header of the list
+  const columns = [
+    { field: "id", headerName: "ID", width: 90 },
+    {
+      field: "name",
+      headerName: "First name",
+      width: 200,
+      editable: true
+    },
+    {
+      field: "lastName",
+      headerName: "Last name",
+      width: 200,
+      editable: true
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 200,
+      editable: true
+    },
+    {
+      field: "role",
+      headerName: "Role",
+      width: 200,
+      editable: true
+    },
+    {
+      field: "active",
+      headerName: "Status",
+      width: 250,
+      // editable:true,
+      renderCell: (params) => {
+        const active = params.row?.active;
+        if (active) {
+          return <span className={classes.safeLabel}>active</span>;
+        } else {
+          return <span className={classes.redLabel}>inactive</span>;
+        }
+      }
+    },
+    {
+      field: "isBanned",
+      headerName: "Banned",
+      width: 200,
+      renderCell: (params) => {
+        const isBanned = params.row?.isBanned;
+        if (isBanned) {
+          return <span className={classes.redLabel}>yes</span>;
+        } else {
+          return <span className={classes.safeLabel}>no</span>;
+        }
+      }
+    },
+    {
+      field: "actions", // Add a field for actions
+      headerName: "Actions",
+      width: 200,
+      renderCell: (params) => {
+        const id = params.row.id;
+        // Render custom buttons for each row
+        return (
+          <div>
+            <button
+              onClick={() => console.log("here")}
+              alt={`block the user ${id}`}
+            >
+              <FontAwesomeIcon icon={faUserLock} />
+            </button>
+            {/* <button
+            onClick={() => {
+              // Replace 'id' with your actual identifier field
+              const id = params.row.id;
+              window.location.href = `/id/${id}`;
+            }}
+          > */}
+            <Link to={`${id}`} title={`see the details of the user ${id}`}>
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </Link>
+            {/* </button> */}
+          </div>
+        );
+      }
+    }
+  ];
   return (
     <Grid container>
       <AddUserForm

@@ -12,6 +12,7 @@ import { useUpdateUserProfileMutation } from "../../store/api/users.api";
 import Loading from "../Components/loading/Loading";
 import UploadImage from "../Components/upload/UploadImage";
 import { styles } from "./style";
+import {Link} from 'react-router-dom'
 
 
 
@@ -157,28 +158,18 @@ const SideInfo = () => {
           <Grid item xs={12} lg={12}>
             <span className={classes.labels}>Password</span>
             <br />
-            {!changePassword ? (
-              <h2 className={classes.profileInfo}>
+              <Grid container>
+                <Grid item xs={8} sm={8} lg={8}>
+                <h2 className={classes.profileInfo}>
                 ******************************
               </h2>
-            ) : (
-              <>
-                <TextField
-                  className={classes.input}
-                  inputRef={passwordRef}
-                  variant="outlined"
-                  size="small"
-                  name="password"
-                />
-                <TextField
-                  className={classes.input}
-                  inputRef={confirmPasswordRef}
-                  variant="outlined"
-                  size="small"
-                  name="confirmPassword"
-                />
-              </>
-            )}
+                </Grid>
+                <Grid  sx={{textAlign:'center'}} item xs={4} sm={4} lg={4}>
+                  <Link to="/reset-password">Change</Link>
+                </Grid>
+              </Grid>
+
+
           </Grid>
           <Grid item xs={12} lg={12}>
             <span className={classes.labels}>Poste</span>

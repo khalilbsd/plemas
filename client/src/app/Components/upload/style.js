@@ -23,7 +23,10 @@ export const styles = createUseStyles({
     background: "#EDC697",
     color: "white",
     border: "none",
-    borderRadius: 5
+    borderRadius: 5,
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center'
   },
   ctaBtn: {
     position: "absolute",

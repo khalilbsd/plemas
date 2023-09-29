@@ -10,7 +10,7 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserInfo: (state, action) => {
-      const { user, profile } = action.payload;
+      const { user, profile } = action?.payload;
       state.user = user;
       state.profile = profile;
     },

@@ -1,13 +1,21 @@
-import { AppError, ElementNotFound } from "../../Utils/appError.js";
+import { createMediaUrl } from "../../Utils/FileManager.js";
+import {
+  AppError,
+  ElementNotFound,
+  MalformedObjectId
+} from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { UserProfile } from "../../db/relations.js";
 import { UnauthorizedError } from "../../errors/http.js";
 import logger from "../../log/config.js";
-import User from "../../models/users/User.model.js";
-import { encryptPassword, generateToken, serializeProfile, serializeUser } from "./lib.js";
-import { createMediaUrl } from "../../Utils/FileManager.js";
-import crypto from 'crypto'
 import { send } from "../../mails/config.js";
+import User from "../../models/users/User.model.js";
+import {
+  createPasswordSetToken,
+  encryptPassword,
+  serializeProfile,
+  serializeUser
+} from "./lib.js";
 
 /*
 admin api to list all the users
@@ -19,6 +27,8 @@ export const getAll = catchAsync(async (req, res, next) => {
       "email",
       "role",
       "isSuperUser",
+      "isBanned",
+      "active",
       "createdAt",
       "updatedAt"
     ],
@@ -31,7 +41,7 @@ export const getAll = catchAsync(async (req, res, next) => {
   });
   // console.log(users);
   const simplifiedUsers = users.map((user) => {
-    const { id, email, role, isSuperUser, createdAt, updatedAt } =
+    const { id, email, role, isSuperUser, createdAt, updatedAt,isBanned,active } =
       user.toJSON();
     const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
     const { name, lastName } = userProfile || "";
@@ -43,16 +53,16 @@ export const getAll = catchAsync(async (req, res, next) => {
       createdAt,
       updatedAt,
       name,
-      lastName
+      lastName,
+      isBanned,
+active
     };
   });
 
-  // console.log(simplifiedUsers);
   res.json({ users: simplifiedUsers });
 });
 
 export const addUser = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const data = req.body;
 
   if (!data || !data.account) {
@@ -65,19 +75,23 @@ export const addUser = catchAsync(async (req, res, next) => {
   const isUserExist = await getUserByEmail(newUser.email);
   if (isUserExist) {
     logger.error(`a user with the email " ${newUser.email} " already exists`);
-    return res.status(403).json({message:"user already exists"})
+    return res.status(403).json({ message: "user already exists" });
     // next(new AppError("user already exists", 403));
   }
   // password encryption
+  let emailToken
   if (newUser.password) {
     const encrypted = await encryptPassword(newUser.password);
     newUser.password = encrypted;
   } else {
     //generate authentication token
-    const token=  crypto.randomBytes(16).toString('hex')
+    const token  = await createPasswordSetToken()
 
+
+
+    // TODO:: we need to add a check if a token already exist or not JUST TO BE SAFE to future 0.00000001 chance of that
     newUser.token = token;
-    newUser.expireAt= Date.now() + (process.env.VERIF_TOKEN_EXPIRES_IN)*1
+
   }
 
   const isUserCreated = await User.create({ ...newUser });
@@ -90,11 +104,9 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   //creating a profile for the user created
 
-
-
-  let userProfile
+  let userProfile;
   if (Object.keys(data?.profile).length) {
-     userProfile = await createUserProfile(data.profile, user.id);
+    userProfile = await createUserProfile(data.profile, user.id);
     if (!userProfile)
       return next(
         new AppError("Something wrong with the profile creation", 500)
@@ -102,30 +114,31 @@ export const addUser = catchAsync(async (req, res, next) => {
     logger.info(`userProfile ${userProfile.id} created successfully`);
   }
 
-  if (user.token){
-
+  if (user.token) {
     logger.info(`sending email confirmation for user ${user.id}`);
-    const url = `http://${process.env.LMS_HOST}/confirmation/${user.token}`
+    const url = `http://${process.env.LMS_HOST}/auth/account/confirmation/${user.token}`;
     try {
       await send({
-        template: 'account_verification_token',
+        template: "account_verification_token",
         to: user.email,
-        subject: `Account Verification Link (valid for ${process.env.VERIF_TOKEN_EXPIRES_IN/60000} min)`,
+        subject: `Account Verification Link (valid for ${
+          process.env.VERIF_TOKEN_EXPIRES_IN / 60000
+        } min)`,
         args: { url }
-    }) ;
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-    }
-
-  const createdUSer=serializeUser(user)
-  if (userProfile){
-    createdUSer.id=user.id
-    createdUSer.name=userProfile.name
-    createdUSer.lastName=userProfile.lastName
   }
 
-  res.status(200).json({ message: "user created successfully",createdUSer });
+  const createdUSer = serializeUser(user);
+  if (userProfile) {
+    createdUSer.id = user.id;
+    createdUSer.name = userProfile.name;
+    createdUSer.lastName = userProfile.lastName;
+  }
+
+  res.status(200).json({ message: "user created successfully", createdUSer });
 });
 
 export const createUserProfile = async (info, userId) => {
@@ -161,7 +174,7 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
 export const getUserByEmail = async (email) => {
   if (!email) return null;
   const user = await User.findOne({
-    where: { email: email },
+    where: { email: email,isBanned:false },
     include: UserProfile
   });
   if (user) return user;
@@ -228,6 +241,9 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   let url;
   if (!req.file) return next(new AppError("no file has been provided", 500));
 
+
+  // console.log("request file size",req.file.size,"is above 5mo",req.file.size > 5 * 1024 * 1024);
+
   if (req.file.size > 5 * 1024 * 1024)
     return next(new AppError("file exceeds the limit of 5MB", 500));
   if (req.file.mimetype !== "image/jpeg" && req.file.mimetype !== "image/png") {
@@ -242,3 +258,36 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: "success", message: "profile image updated successfully" });
 });
+
+export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
+
+  const { token } = req.params;
+
+  if (!token) return next(new ElementNotFound("Token was not supplied"));
+  //check if  token is valid : 16 bytes and HEX format
+  const isValidToken = /^[a-zA-Z0-9+/]+={0,2}$/.test(token);
+
+  if (!isValidToken)
+    return next(new MalformedObjectId("token maybe malformed "));
+
+//we need to decrypt the public token to match the private token
+
+
+  const user = await User.findOne({
+    where: {
+      token: token,
+      active: false,
+      isBanned: false,
+      password: null
+    }
+  });
+
+  if (!user) return next(new ElementNotFound("no such user"));
+  //validate the token and erase it
+  res.status(200).json({ message: "token validated: Welcome", email:user.email});
+});
+
+
+
+
+

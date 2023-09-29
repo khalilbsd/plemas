@@ -1,6 +1,6 @@
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,35 +13,41 @@ import { styles } from "./style.js";
 import { faAt, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "../Components/loading/Loading.jsx";
+import { notify } from "../Components/notification/notification.js";
+import { NOTIFY_ERROR } from "../../constants/constants.js";
+import useGetAuthenticatedUser from "../../hooks/authenticated.js";
+import { useState } from "react";
 const Login = () => {
   const classes = styles();
   const emailRef = useRef();
   const passwordRef = useRef();
   const navigate =useNavigate()
+  // const user =useGetAuthenticatedUser()
   // const [error, setError] = useState(null)
-
+  // console.log(user);
   const [loginUser, { isLoading }] = useLoginUserMutation();
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
+
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true)
       const res = await loginUser({
         email: emailRef.current.value,
         password: passwordRef.current.value
       }).unwrap();
       dispatch(setCredentials({ ...res }));
-      navigate('/profile/me')
+      setTimeout(() => {
+          navigate('/profile/me')
+          setLoading(isLoading)
+      }, 4000);
     } catch (err) {
-      toast.error(err.data?.message, {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored"
-      });
+
+      notify(NOTIFY_ERROR,err.data?.message)
     }
   };
 
@@ -59,7 +65,7 @@ const Login = () => {
               <h1>Login</h1>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
-              {isLoading && (
+              {loading && (
                 <Loading/>
               )}
             </Grid>

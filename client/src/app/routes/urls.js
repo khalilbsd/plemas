@@ -20,15 +20,20 @@ import faAdmin from "../public/svgs/light/bars-progress.svg";
 import faWorker from "../public/svgs/light/briefcase.svg";
 import faLogout from "../public/svgs/light/right-from-bracket.svg";
 import faManage from "../public/svgs/light/list-check.svg";
+import AuthConfirmation from "../confirmation/AuthConfirmation";
+import ResetPassword from "../reset_password/ResetPassword";
 
 export const publicUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },
   { title: "Not found", path: "*", Component: <PageNotFound /> },
   { title: "Login", path: "/login", Component: <Login /> },
-  { title: "Logout", path: "/logout", Component: <Logout />, icon: faLogout }
+  { title: "Logout", path: "/logout", Component: <Logout />, icon: faLogout },
+  { title: "Reset Password", path: "/reset-password", Component: <ResetPassword /> },
+  { title: "Confirmation", path: "/auth/account/confirmation/:token", Component: <AuthConfirmation />, icon: faLogout }
+
 ];
 
-export const exceptPathSidebar = ["/login", "/logout"];
+export const exceptPathSidebar = ["/login", "/logout","/confirmation/:token"];
 
 const adminManagingRoutes = [
   {
@@ -38,13 +43,13 @@ const adminManagingRoutes = [
     Component: <ManagingUsers />,
     icon: faUser
   },
-  {
-    role: SUPERUSER_ROLE,
-    title: "Manage clients",
-    path: "/admin/manage/projects",
-    Component: <ManageProjects />,
-    icon: faUser
-  }
+  // {
+  //   role: SUPERUSER_ROLE,
+  //   title: "Manage clients",
+  //   path: "/admin/manage/projects",
+  //   Component: <ManageProjects />,
+  //   icon: faUser
+  // }
 ];
 
 export const protectedUrls = [
