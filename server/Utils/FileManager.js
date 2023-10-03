@@ -25,6 +25,6 @@ export const createMedia = (fileName, mediaDirectory, content) =>
 
 export const createMediaUrl = (fileObject) => {
   // Construct the URL by joining the domain name, uploads directory, and filename
-  const imageUrl = `${process.env.SERVER_URL}/${fileObject.destination}/${fileObject.filename}`;
+  const imageUrl = `/${fileObject.destination}/${fileObject.filename}`;
   return imageUrl;
 };

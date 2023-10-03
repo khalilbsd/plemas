@@ -37,7 +37,7 @@ export const serializeProfile = (userInfo, userId) => {
     poste: userInfo.poste,
     phone: userInfo.phone,
     image: userInfo.image,
-    userId: userId
+    userID: userId
   };
 };
 
@@ -69,5 +69,5 @@ export const createPasswordSetToken = async () => {
   const tokenToSave = encryptedToken.toString("hex");
 
   // const passwords = { tokenToSend, tokenToSave };
-  return tokenToSave;
+  return tokenToSave.substring(0,128);
 };

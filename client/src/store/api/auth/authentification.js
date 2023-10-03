@@ -29,7 +29,31 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         data: data
       })
-    })
+    }),
+    requestResetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/password/reset/email/send/token/v/1.0",
+        method: "POST",
+        data: data
+      })
+    }),
+    verifyResetPasswordToken: builder.mutation({
+      query: (token) => (
+        console.log("token",token),
+        {
+        url: `/auth/password/reset/email/verify/token/v/1.0/token=${token}`,
+        method: "GET",
+
+      })
+    }),
+    resetPasswordWithToken: builder.mutation({
+      query: (data) => (
+        {
+        url: `/auth/password/reset/token/1.0/token=${data.token}`,
+        method: "POST",
+        data:data
+      })
+    }),
   })
 });
 
@@ -37,5 +61,8 @@ export const {
   useLoginUserMutation,
   useChangePasswordMutation,
   useCheckCurrentPasswordMutation,
-  useResetUserPasswordMutation
+  useResetUserPasswordMutation,
+  useRequestResetPasswordMutation,
+  useVerifyResetPasswordTokenMutation,
+  useResetPasswordWithTokenMutation
 } = authApi;

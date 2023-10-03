@@ -23,7 +23,7 @@ const UserProfile = database.define("UserProfile", {
         type:DataTypes.STRING,
         allowNull:true
     },
-    userId:{
+    userID:{
         type:DataTypes.INTEGER,
         allowNull:false
     }

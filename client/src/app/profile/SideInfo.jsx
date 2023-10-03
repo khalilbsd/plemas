@@ -165,7 +165,7 @@ const SideInfo = () => {
               </h2>
                 </Grid>
                 <Grid  sx={{textAlign:'center'}} item xs={4} sm={4} lg={4}>
-                  <Link to="/reset-password">Change</Link>
+                  <Link to="/auth/change-password">Change</Link>
                 </Grid>
               </Grid>
 

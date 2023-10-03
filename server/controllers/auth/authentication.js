@@ -4,14 +4,22 @@ import jwt from "jsonwebtoken";
 import {
   AppError,
   ElementNotFound,
+  MalformedObjectId,
   UnAuthorized,
   UnknownError
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import { encryptPassword, serializeUser } from "../users/lib.js";
+import {
+  createPasswordSetToken,
+  encryptPassword,
+  serializeUser
+} from "../users/lib.js";
 import { getUserByEmail } from "../users/user.controller.js";
 import User from "../../models/users/User.model.js";
 import logger from "../../log/config.js";
+import ResetPasswordToken from "../../models/users/ResetPasswordToken.model.js";
+import { send } from "../../mails/config.js";
+import { Op } from "sequelize";
 
 dotenv.config();
 
@@ -72,25 +80,23 @@ export const setUserPassword = catchAsync(async (req, res, next) => {
   });
 });
 
-const resetUserPassword = async (req, res,userEmail=null) => {
+const resetUserPassword = async (req, res, userEmail = null) => {
   try {
-    let response ={
+    let response = {
       isReseted: null,
-      user:null
-    }
-    const {  password, confirmPassword } = req.body;
-    const email = req.body.email || userEmail
+      user: null
+    };
+    const { password, confirmPassword } = req.body;
+    const email = req.body.email || userEmail;
 
     const user = await User.findOne({
       where: { email: email, isBanned: false }
     });
 
-
     if (!user) {
       logger.error("user was not found ", email);
-      return  response;
+      return response;
     }
-
 
     if (!email || !password || !confirmPassword) {
       logger.error("one of the parameters is not found");
@@ -105,8 +111,8 @@ const resetUserPassword = async (req, res,userEmail=null) => {
     user.password = encrypted;
     // console.log("user password", encrypted);
     // const
-     response.isReseted=true
-     response.user=user
+    response.isReseted = true;
+    response.user = user;
 
     return response;
   } catch (error) {
@@ -115,6 +121,11 @@ const resetUserPassword = async (req, res,userEmail=null) => {
   // if (password )
 };
 
+
+
+/* @DESC
+  function to reset password : this will only work if the user is authenticated otherwise refer to passwordResetWithToken function
+*/
 export const passwordReset = catchAsync(async (req, res, next) => {
   const { password, confirmPassword } = req.body;
   if (!password || !confirmPassword)
@@ -123,23 +134,76 @@ export const passwordReset = catchAsync(async (req, res, next) => {
   if (password !== confirmPassword)
     return next(new AppError("passwords don't match", 500));
 
-  const {user,isReseted} = await resetUserPassword(req,res,req.user.email)
+  const { user, isReseted } = await resetUserPassword(req, res, req.user.email);
+
+  if (!user || !isReseted)
+    return next(new UnknownError("something went wrong"));
+
+  user.save();
+  logger.info(`user ${req.user.email} changes his password successfully`);
+
+  return res
+    .status(200)
+    .json({ isChanged: true, message: "password changed  successfully" });
+});
+export const passwordResetWithToken = catchAsync(async (req, res, next) => {
+  const { password, confirmPassword,token} = req.body;
+
+  // verify the token
+  const resetReq = await ResetPasswordToken.findOne({ where: { token },include: [
+    {
+      model: User,
+      attributes: ["email", "id"]
+    }
+  ] });
+  // console.log(resetReq.user.email);
+  if (!resetReq) return next(new ElementNotFound("It seems that we didn't note this request. you can generate another request with the reset password page"));
+
+  if (resetReq.expired) return next(new UnAuthorized("This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"))
+
+  const currentTimeInSameTimezone = new Date().getTime();
+  console.log(resetReq.expiresAt.getTime(),"Date now",currentTimeInSameTimezone," res =>",resetReq.expiresAt.getTime() > currentTimeInSameTimezone);
+  if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone) return next(new UnAuthorized("This link has already expired. If you find something wrong with this you can try again or contact the admin"))
+
+  resetReq.expired=true
 
 
-  if (!user || !isReseted) return next(new UnknownError("something went wrong"))
+  if (!password || !confirmPassword)
+    return next(new MissingParameter("passwords don't match "));
 
-  user.save()
-  logger.info(`user ${req.user.email} changes his password successfully`)
+  if (password !== confirmPassword)
+    return next(new AppError("passwords don't match", 500));
 
-  return res.status(200).json({isChanged:true,message:"password changed  successfully"})
+  const { user, isReseted } = await resetUserPassword(req, res,resetReq.user.email);
+
+  if (!user || !isReseted)
+    return next(new UnknownError("something went wrong"));
+
+  resetReq.save()
 
 
+  user.save();
+  //deleting old request
+  await ResetPasswordToken.destroy({where:{id:user.id}})
+  logger.info(`user ${user.email} changes his password successfully`);
+
+  return res
+    .status(200)
+    .json({ isChanged: true, message: "password changed  successfully" });
 });
 
+
+
+
+
+
+
+
 export const checkUserPassword = catchAsync(async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   const currentPassword = req.body.currentPassword;
-  if (!currentPassword) return next(new AppError("no password has been specified", 400));
+  if (!currentPassword)
+    return next(new AppError("no password has been specified", 400));
 
   const user = await User.findOne({
     where: { email: req.user.email },
@@ -159,3 +223,114 @@ export const checkUserPassword = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ matched: true, message: "current password is true" });
 });
+
+export const sendResetPasswordEmailToken = catchAsync(
+  async (req, res, next) => {
+    const { email } = req.body;
+    const user = await getUserByEmail(email, false);
+
+    if (!user) return next(new ElementNotFound("This email doesn't exist"));
+
+    //checking if the user has generated the maximum number of emails :
+    const { rows, count } = await ResetPasswordToken.findAndCountAll({
+      where: {
+        userID: user.id
+      }
+    });
+
+
+    if (count >= process.env.RESET_PASSWORD_REQUEST_LIMIT) {
+      logger.error(
+        `user ${user.id} has exceeded the limit of password reset request: number of requests ${count}`
+      );
+      return res
+        .status(400)
+        .json({ status: "failed", message: "you've exceeded the limit " });
+    }
+    //generating token
+    const token = await createPasswordSetToken();
+    if (!token)
+      return next(new AppError("something went wrong when generating email"));
+    //saving user token
+    const passwordResetToken = await ResetPasswordToken.create({
+      token: token,
+      expiresAt: Date.now() + 1 * process.env.RESET_PASSWORD_TOKEN_EXPIRES_IN,
+      userID: user.id
+    });
+    if (!passwordResetToken)
+      return next(new AppError("something went wrong when generating email"));
+    //expiring old tokens
+    // console.log(rows);
+    rows?.forEach((oldToken) => {
+      oldToken.expired = true;
+      oldToken.save();
+    });
+    // sending email
+
+    try {
+      const url = `http://${process.env.LMS_HOST}/reset-password/request/token/${passwordResetToken.token}`;
+      await send({
+        template: "reset_password_email",
+        to: user.email,
+        subject: `Reset Password`,
+        args: { url }
+      });
+    } catch (error) {
+      logger.error(error);
+      return next(
+        new AppError("we couldn't send the email! please try again later", 500)
+      );
+    }
+    return res
+      .status(200)
+      .json({
+        status: "success",
+        message: "a reset password email has been sent"
+      });
+  }
+);
+
+export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
+  const { token } = req.params;
+
+  if (!token) return next(new UnAuthorized("there is no token supplied"));
+
+  const isValidToken = /^[a-zA-Z0-9+/]+={0,2}$/.test(token);
+
+  if (!isValidToken)
+    return next(new MalformedObjectId("token maybe malformed"));
+
+  const resetReq = await ResetPasswordToken.findOne({ where: { token } });
+
+  if (!resetReq) return next(new ElementNotFound("It seems that we didn't note this request. you can generate another request with the reset password page"));
+
+  if (resetReq.expired) return next(new UnAuthorized("This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"))
+
+  const currentTimeInSameTimezone = new Date().getTime();
+
+  if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone) return next(new UnAuthorized("This link has already expired. If you find something wrong with this you can try again or contact the admin"))
+
+  // resetReq.expired =true
+
+  // expiring old tokens  before saving
+  const oldTokens = await ResetPasswordToken.findAll({where:{
+    id:{
+      [Op.not]: resetReq.id,
+    }
+  }})
+
+  oldTokens?.forEach((old) => {
+    old.expired = true;
+    old.save();
+  });
+
+  // resetReq.save()
+
+  return res.status(200).json({status:true,message:"this token is verified"})
+});
+
+
+
+
+
+

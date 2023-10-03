@@ -12,7 +12,7 @@ const profileImageUploader = createMulterMiddleware('profileImage')
 router
 .get('/list',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getAll)
 .post('/user_info',isUserAuthenticated,getUserInfo)
-.post('/add',addUser)
+.post('/add',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),addUser)
 .patch('/profile/change',isUserAuthenticated,profileImageUploader,updateProfile)
 .patch('/profile/image/change',isUserAuthenticated,profileImageUploader,updateProfileImage)
 .get('/confirmation/auth/1.0/token=:token',authenticateUserWithToken)

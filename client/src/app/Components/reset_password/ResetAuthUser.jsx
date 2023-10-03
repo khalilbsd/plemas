@@ -9,7 +9,7 @@ import { notify } from "../notification/notification";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { ToastContainer } from "react-toastify";
 
-const ResetAuthUser = () => {
+const ResetAuthUser = ({handleSuccess,handleFailure}) => {
   const classes = styles();
   const currentPasswordRef = useRef();
   const newPasswordRef = useRef();
@@ -41,9 +41,11 @@ const ResetAuthUser = () => {
           confirmPassword: confirmPasswordRef.current.value
         }).unwrap();
         passwordChanged.isChanged&&notify(NOTIFY_SUCCESS,passwordChanged.message)
+        handleSuccess()
       }
     } catch (error) {
     //   setCurrentIsValid(false);
+    handleFailure()
       setCurrentPasswordError({
         error: true,
         message: "your current password is wrong"

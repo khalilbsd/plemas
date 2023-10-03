@@ -1,6 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import { getRolesBasedUrls, protectedUrls, publicUrls } from "./routes/urls";
+import {
+  anonymousUrls,
+  getRolesBasedUrls,
+  protectedUrls,
+  publicUrls
+} from "./routes/urls";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Loading from "./Components/loading/Loading";
@@ -8,6 +13,7 @@ import useGetAuthenticatedUser from "../hooks/authenticated";
 import Sidebar from "./Components/sidebar/Sidebar";
 import useRenderLocation from "../hooks/location";
 import { ALL_ROLES, SUPERUSER_ROLE } from "../constants/roles";
+import Anonymous from "./routes/Anonymous";
 
 function App() {
   const userObject = useGetAuthenticatedUser();
@@ -25,6 +31,16 @@ function App() {
       )}
       <div className="main-content">
         <Routes>
+          {/* anonymous routes */}
+          {
+            <Route element={<Anonymous user={userObject} />}>
+
+              {anonymousUrls.map(({ path, Component }, key) => (
+                <Route key={key} path={path} element={Component} />
+              ))}
+            </Route>
+          }
+
           {/* public routes */}
           {publicUrls.map(({ path, Component }, key) => (
             <Route key={key} path={path} element={Component} />
@@ -42,19 +58,20 @@ function App() {
           {userObject?.user?.role && (
             <Route element={<ProtectedRoute user={userObject} />}>
               {getRolesBasedUrls(userObject?.user).map(
-                ({ path, Component, nested }, key) => (
-                  nested?
-                  <Route key={key} path={path} element={Component}>
-                    {nested.map((nestedRoute,idx)=>(
-                  <Route key={idx} path={nestedRoute.path} element={nestedRoute.Component}/>
-
-                    ))}
-
-
+                ({ path, Component, nested }, key) =>
+                  nested ? (
+                    <Route key={key} path={path} element={Component}>
+                      {nested.map((nestedRoute, idx) => (
+                        <Route
+                          key={idx}
+                          path={nestedRoute.path}
+                          element={nestedRoute.Component}
+                        />
+                      ))}
                     </Route>
-                  :
-                  <Route key={key} path={path} element={Component} />
-                )
+                  ) : (
+                    <Route key={key} path={path} element={Component} />
+                  )
               )}
             </Route>
           )}

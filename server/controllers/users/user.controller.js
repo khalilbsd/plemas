@@ -171,12 +171,30 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getUserByEmail = async (email) => {
+// export const getUserByEmail = async (email) => {
+//   if (!email) return null;
+//   const user = await User.findOne({
+//     where: { email: email,isBanned:false },
+//     include: UserProfile
+//   });
+//   if (user) return user;
+
+//   return null;
+// };
+export const getUserByEmail = async (email,includeProfile = true) => {
   if (!email) return null;
-  const user = await User.findOne({
-    where: { email: email,isBanned:false },
-    include: UserProfile
-  });
+
+  const queryOptions = {
+    where: { email: email, isBanned: false },
+  };
+
+  // Conditionally include the UserProfile relation based on includeProfile parameter
+  if (includeProfile) {
+    queryOptions.include = UserProfile;
+  }
+
+  const user = await User.findOne(queryOptions);
+
   if (user) return user;
 
   return null;

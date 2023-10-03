@@ -8,6 +8,7 @@ import AdminDashboard from "../dashboards/AdminDashboard";
 import { EmployeeDashboard } from "../dashboards/EmployeeDashboard";
 import {
   ALL_ROLES,
+  CLIENT_ROLE,
   EMPLOYEE_ROLE,
   SUPERUSER_ROLE
 } from "../../constants/roles";
@@ -22,18 +23,46 @@ import faLogout from "../public/svgs/light/right-from-bracket.svg";
 import faManage from "../public/svgs/light/list-check.svg";
 import AuthConfirmation from "../confirmation/AuthConfirmation";
 import ResetPassword from "../reset_password/ResetPassword";
+import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";
+
+
+
+export const anonymousUrls=[
+  { title: "", path: "/", Component: <Navigate to="/login" /> },
+  { title: "Login", path: "/login", Component: <Login /> },
+  {
+    title: "Reset Password",
+    path: "/reset-password",
+    Component: <ResetPassword />
+  },
+  {
+    title: "Reset Password",
+    path: "/reset-password/request/token/:token",
+    Component: <ResetPasswordNotAuthForm />
+  },
+  {
+    title: "Confirmation",
+    path: "/auth/account/confirmation/:token",
+    Component: <AuthConfirmation />,
+    icon: faLogout
+  }
+
+]
+
+
 
 export const publicUrls = [
-  { title: "", path: "/", Component: <Navigate to="/login" /> },
   { title: "Not found", path: "*", Component: <PageNotFound /> },
-  { title: "Login", path: "/login", Component: <Login /> },
   { title: "Logout", path: "/logout", Component: <Logout />, icon: faLogout },
-  { title: "Reset Password", path: "/reset-password", Component: <ResetPassword /> },
-  { title: "Confirmation", path: "/auth/account/confirmation/:token", Component: <AuthConfirmation />, icon: faLogout }
-
 ];
 
-export const exceptPathSidebar = ["/login", "/logout","/confirmation/:token"];
+export const exceptPathSidebar = [
+  "/login",
+  "/logout",
+  "/confirmation/:token",
+  "/reset-password",
+
+];
 
 const adminManagingRoutes = [
   {
@@ -42,7 +71,7 @@ const adminManagingRoutes = [
     path: "/admin/manage/users",
     Component: <ManagingUsers />,
     icon: faUser
-  },
+  }
   // {
   //   role: SUPERUSER_ROLE,
   //   title: "Manage clients",
@@ -53,6 +82,13 @@ const adminManagingRoutes = [
 ];
 
 export const protectedUrls = [
+  {
+    role: ALL_ROLES,
+    title: "Reset Password",
+    path: "/auth/change-password",
+    Component: <ResetPassword />
+  },
+
   {
     role: ALL_ROLES,
     title: "Profile",
@@ -90,4 +126,20 @@ export function getRolesBasedUrls(user, role = null) {
   const accessRole = !role ? user.role : role;
 
   return protectedUrls.filter((url) => url.role === accessRole);
+}
+
+
+export function getRoleHomeUrl(role){
+  console.log(role);
+  switch (role) {
+    case SUPERUSER_ROLE:
+        return '/dashboard/admin'
+
+    case CLIENT_ROLE :
+      return '/dashboard/client'
+    case EMPLOYEE_ROLE:
+      return '/dashboard/employee'
+    default:
+      return '/dashboard/employee'
+  }
 }

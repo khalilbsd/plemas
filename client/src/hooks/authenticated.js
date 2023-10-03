@@ -20,7 +20,7 @@ function useGetAuthenticatedUser() {
           loading: false,
         }));
       } else {
-        console.log("FUCKK");
+
         setUser((prevUser) => ({
           ...prevUser,
           isAuthenticated: false,

@@ -79,7 +79,7 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
           {(userImage || previewImage) && (
             <CardMedia
               sx={{ height: 400 }}
-              image={previewImage ? previewImage : userImage}
+              image={previewImage ? previewImage : `${process.env.REACT_APP_SERVER_URL}${userImage}`}
               className={
                 classes.profileImage + " " + (isLoading ? classes.blur : "")
               }

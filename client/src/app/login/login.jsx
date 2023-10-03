@@ -22,9 +22,7 @@ const Login = () => {
   const emailRef = useRef();
   const passwordRef = useRef();
   const navigate =useNavigate()
-  // const user =useGetAuthenticatedUser()
-  // const [error, setError] = useState(null)
-  // console.log(user);
+
   const [loginUser, { isLoading }] = useLoginUserMutation();
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
@@ -46,7 +44,7 @@ const Login = () => {
           setLoading(isLoading)
       }, 4000);
     } catch (err) {
-
+      setLoading(isLoading)
       notify(NOTIFY_ERROR,err.data?.message)
     }
   };
@@ -112,7 +110,7 @@ const Login = () => {
               />
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
-              <Link to={"reset-password"}>Forget Password ?</Link>
+              <Link to={"/reset-password"}>Forget Password ?</Link>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
               <Button type="submit" variant="outlined">
