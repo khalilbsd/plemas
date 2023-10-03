@@ -39,7 +39,7 @@ export const authApi = api.injectEndpoints({
     }),
     verifyResetPasswordToken: builder.mutation({
       query: (token) => (
-        console.log("token",token),
+
         {
         url: `/auth/password/reset/email/verify/token/v/1.0/token=${token}`,
         method: "GET",

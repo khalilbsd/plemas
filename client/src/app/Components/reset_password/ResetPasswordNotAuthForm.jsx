@@ -17,6 +17,9 @@ import { ReactSVG } from "react-svg";
 
 import faSadFace from '../../public/svgs/light/face-sad-tear.svg'
 
+import faResetPassword from "../../public/svgs/solid/badge-check.svg";
+
+
 const ResetPasswordNotAuthForm = () => {
   const newPasswordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -24,6 +27,8 @@ const ResetPasswordNotAuthForm = () => {
   const layoutClasses = layoutStyles();
   const params = useParams();
   const navigate = useNavigate();
+  const [isReset, setIsReset] = useState(false)
+  const [counter, setCounter] = useState(5)
   const [verifyResetPasswordToken, { isLoading }] =
     useVerifyResetPasswordTokenMutation();
   const [resetPasswordWithToken, { isLoading: loadingReset }] =
@@ -46,19 +51,43 @@ const ResetPasswordNotAuthForm = () => {
     verifyToken();
   }, []);
 
+//counter logic
+useEffect(() => {
+  let interval;
+
+  if (isReset) {
+    interval = setInterval(() => {
+      if (counter > 0) {
+        setCounter((prevCount) => prevCount - 1);
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+  }
+
+  return () => {
+    clearInterval(interval); // Clear the interval when the component unmounts
+  };
+}, [isReset, counter]);
+
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    console.log(params.token);
     try {
-
-
       const res = await resetPasswordWithToken({        password: newPasswordRef.current.value,
         confirmPassword: confirmPasswordRef.current.value,
         token:params.token
       }).unwrap();
       notify(NOTIFY_SUCCESS, res.message);
+      setIsReset(true)
+      setTimeout(() => {
+          navigate('/login')
+
+      }, 7000);
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
+      setIsReset(false)
     }
   };
 
@@ -69,11 +98,27 @@ const ResetPasswordNotAuthForm = () => {
     <div className={layoutClasses.resetPasswordPage}>
       {!password.error ? (
         <Box className={layoutClasses.box}>
-          <h2 className={layoutClasses.pageTitle}>Reset your password</h2>
+            {isReset&&
+              <div className={layoutClasses.imageContainer}>
+              <ReactSVG
+                src={faResetPassword}
+                className={`${layoutClasses.notificationIcon} success`}
+              />
+            </div>
+            }
+
+          <h2 className={layoutClasses.pageTitle}>{!isReset?"Reset your password":"Your password has been reset"}</h2>
           <h3 className={layoutClasses.text}>
-            Please type in you new password and re-confirm it
+            {!isReset?"Please type in you new password and re-confirm it":
+              <span>
+                Congratulation you've reset you password successfully. please be careful with  your credentials.
+                You'll be redirected to the login page in {counter} seconds. if something went wrong you can use this <Link to="/login">link</Link>
+              </span>
+            }
           </h3>
-          <div className={classes.authUserForm}>
+
+          {!isReset&&<div className={classes.authUserForm}>
+
             <form method="POST" onSubmit={handleResetPassword}>
               <Grid container spacing={2}>
                 {password.error && (
@@ -115,7 +160,7 @@ const ResetPasswordNotAuthForm = () => {
                 </Grid>
               </Grid>
             </form>
-          </div>
+          </div>}
         </Box>
       ) : (
         <Box className={layoutClasses.box}>
@@ -130,7 +175,18 @@ const ResetPasswordNotAuthForm = () => {
           <Link to='/login'>Go to login</Link>
         </Box>
       )}
-      <ToastContainer />
+       <ToastContainer
+          position="bottom-left"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
     </div>
   );
 };
