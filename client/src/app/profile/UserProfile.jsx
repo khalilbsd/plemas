@@ -3,62 +3,72 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import Loading from "../Components/loading/Loading";
-import MainInfo from "./MainInfo";
-import SideInfo from "./SideInfo";
+
 import { useGetAuthenticatedUserInfoMutation } from "../../store/api/users.api";
 import { setUserInfo } from "../../store/reducers/user.reducer";
 import useGetAuthenticatedUser from "../../hooks/authenticated";
 import { styles } from "./style";
 import { ToastContainer, toast } from "react-toastify";
+import BottomLayout from "../Components/profile/BottomLayout";
+import TopLayout from "../Components/profile/TopLayout";
+import SideLayoutInfo from "../Components/profile/SideLayoutInfo";
+import SideLayoutMain from "../Components/profile/SideLayoutMain";
 
 const UserProfile = () => {
-  const classes=styles()
-  const { user, loading, isAuthenticated } = useGetAuthenticatedUser()
-  const [getAuthenticatedUserInfo, { isLoading }] = useGetAuthenticatedUserInfoMutation()
+  const classes = styles();
+  const { user, loading, isAuthenticated } = useGetAuthenticatedUser();
+  const [getAuthenticatedUserInfo, { isLoading }] =
+    useGetAuthenticatedUserInfoMutation();
 
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function loadUserInfo() {
       try {
         if (user?.email) {
-          const { data } = await getAuthenticatedUserInfo({ email: user.email })
-          dispatch(setUserInfo(data))
+          const { data } = await getAuthenticatedUserInfo({
+            email: user.email
+          });
+          dispatch(setUserInfo(data));
         }
       } catch (error) {
         console.log(error);
       }
     }
-    loadUserInfo()
-  }, [user])
+    loadUserInfo();
+  }, [user]);
 
-
-  if (loading) return <Loading />
+  if (loading) return <Loading />;
   return (
     <div className={classes.profileContainer}>
-      <Grid container spacing={2} justifyContent="space-around">
+      {/* left right layout */}
+      <Grid container spacing={10}>
         <Grid item xs={12} sm={12} md={6} lg={4}>
-          <SideInfo />
+          <div className={classes.hoverCard}>
+
+          <SideLayoutInfo />
+          </div>
         </Grid>
         <Grid item xs={12} sm={12} md={6} lg={8}>
+          <div className={classes.hoverCard}>
 
-          <MainInfo />
-
+          <SideLayoutMain />
+          </div>
         </Grid>
       </Grid>
+
       <ToastContainer
-          position="bottom-left"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </div>
   );
 };

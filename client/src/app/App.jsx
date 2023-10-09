@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import {
   anonymousUrls,
@@ -14,16 +14,74 @@ import Sidebar from "./Components/sidebar/Sidebar";
 import useRenderLocation from "../hooks/location";
 import { ALL_ROLES, SUPERUSER_ROLE } from "../constants/roles";
 import Anonymous from "./routes/Anonymous";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useGetAuthenticatedUserInfoMutation } from "../store/api/users.api";
+import useGetUserInfo from "../hooks/user";
+import { setUserInfo } from "../store/reducers/user.reducer";
 
 function App() {
   const userObject = useGetAuthenticatedUser();
-  // console.log(user);
   const shouldRenderSidebar = useRenderLocation();
-  // console.log(getRolesBasedUrls(SUPERUSER_ROLE));
+  const location = useLocation();
+  const [displayLocation, setDisplayLocation] = useState(location);
+  const [transitionStage, setTransistionStage] = useState("fadeIn");
+  const dispatch = useDispatch()
+  const { user: userAccount, profile } = useGetUserInfo();
+  const [getAuthenticatedUserInfo, { isLoading }] =
+    useGetAuthenticatedUserInfoMutation();
+
+  useEffect(() => {
+
+    async function loadUserInfo() {
+      try {
+        if (userObject.user?.email) {
+          const { data } = await getAuthenticatedUserInfo({
+            email: userObject.user.email
+          });
+          console.log(data);
+          dispatch(setUserInfo(data));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    userObject.refetch();
+    if (userObject?.isAuthenticated &&( !userAccount || !profile)  ) {
+      loadUserInfo();
+    }
+    if (location !== displayLocation) setTransistionStage("fadeOut");
+
+  }, [location, displayLocation,userObject.loading]);
+
+  const renderRoutes = (urls) => {
+    return urls.map(({ path, Component, nested }, key) => (
+      <Route key={key} path={path} element={Component}>
+        {nested &&
+          nested.map((nestedRoute, idx) => (
+            <Route
+              key={idx}
+              path={nestedRoute.path}
+              element={nestedRoute.Component}
+            />
+          ))}
+      </Route>
+    ));
+  };
 
   if (userObject.loading) return <Loading />;
+
   return (
-    <div className="App">
+    <div
+      className={`App ${transitionStage}`}
+      onAnimationEnd={() => {
+        if (transitionStage === "fadeOut") {
+          setTransistionStage("fadeIn");
+          setDisplayLocation(location);
+        }
+      }}
+    >
       {shouldRenderSidebar && (
         <div className="sidebar-container">
           <Sidebar />
@@ -31,48 +89,23 @@ function App() {
       )}
       <div className="main-content">
         <Routes>
-          {/* anonymous routes */}
-          {
-            <Route element={<Anonymous user={userObject} />}>
-
-              {anonymousUrls.map(({ path, Component }, key) => (
-                <Route key={key} path={path} element={Component} />
-              ))}
-            </Route>
-          }
-
-          {/* public routes */}
-          {publicUrls.map(({ path, Component }, key) => (
-            <Route key={key} path={path} element={Component} />
-          ))}
-          {/* protected routes ALL_ROLES */}
-          <Route element={<ProtectedRoute user={userObject} />}>
-            {getRolesBasedUrls(null, ALL_ROLES).map(
-              ({ path, Component, nested }, key) => (
-                <Route key={key} path={path} element={Component} />
-              )
-            )}
+          {/* Anonymous routes */}
+          <Route element={<Anonymous user={userObject} />}>
+            {renderRoutes(anonymousUrls)}
           </Route>
-          {/* protected routes role specification */}
 
+          {/* Public routes */}
+          {renderRoutes(publicUrls)}
+
+          {/* Protected routes for ALL_ROLES */}
+          <Route element={<ProtectedRoute user={userObject} />}>
+            {renderRoutes(getRolesBasedUrls(null, ALL_ROLES))}
+          </Route>
+
+          {/* Protected routes based on user role */}
           {userObject?.user?.role && (
             <Route element={<ProtectedRoute user={userObject} />}>
-              {getRolesBasedUrls(userObject?.user).map(
-                ({ path, Component, nested }, key) =>
-                  nested ? (
-                    <Route key={key} path={path} element={Component}>
-                      {nested.map((nestedRoute, idx) => (
-                        <Route
-                          key={idx}
-                          path={nestedRoute.path}
-                          element={nestedRoute.Component}
-                        />
-                      ))}
-                    </Route>
-                  ) : (
-                    <Route key={key} path={path} element={Component} />
-                  )
-              )}
+              {renderRoutes(getRolesBasedUrls(userObject?.user))}
             </Route>
           )}
         </Routes>

@@ -86,7 +86,8 @@ export const protectedUrls = [
     role: ALL_ROLES,
     title: "Reset Password",
     path: "/auth/change-password",
-    Component: <ResetPassword />
+    Component: <ResetPassword />,
+    sideBar:false
   },
 
   {
@@ -94,29 +95,32 @@ export const protectedUrls = [
     title: "Profile",
     path: "/profile/me",
     Component: <UserProfile />,
-    icon: faUser
+    icon: faUser,
+    sideBar:false
+
   },
+  // {
+  //   role: SUPERUSER_ROLE,
+  //   title: "Admin Dashboard",
+  //   path: "/dashboard/admin",
+  //   Component: <AdminDashboard />,
+  //   icon: faAdmin
+  // },
+  // {
+  //   role: EMPLOYEE_ROLE,
+  //   title: "Employee Dashboard",
+  //   path: "/dashboard/employee",
+  //   Component: <EmployeeDashboard />,
+  //   icon: faWorker
+  // },
   {
     role: SUPERUSER_ROLE,
-    title: "Admin Dashboard",
-    path: "/dashboard/admin",
-    Component: <AdminDashboard />,
-    icon: faAdmin
-  },
-  {
-    role: EMPLOYEE_ROLE,
-    title: "Employee Dashboard",
-    path: "/dashboard/employee",
-    Component: <EmployeeDashboard />,
-    icon: faWorker
-  },
-  {
-    role: SUPERUSER_ROLE,
-    title: "Manage",
-    path: "/admin/manage/",
-    Component: <ManagingLayout />,
-    nested: adminManagingRoutes,
-    icon: faManage
+    title: "Manage employee",
+    path: "/admin/manage/users",
+    Component: <ManagingUsers />,
+    icon: faUser,
+    sideBar:true
+
   }
 ];
 
@@ -133,7 +137,7 @@ export function getRoleHomeUrl(role){
   console.log(role);
   switch (role) {
     case SUPERUSER_ROLE:
-        return '/dashboard/admin'
+        return '/admin/manage'
 
     case CLIENT_ROLE :
       return '/dashboard/client'

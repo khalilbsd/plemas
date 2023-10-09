@@ -1,13 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { btnStyle } from './style'
-
+import { ReactSVG } from 'react-svg'
+import faAddUser from '../../public/svgs/light/user-plus.svg'
 const AddBtn = ({handleAdd,title,icon}) => {
   const classes=btnStyle()
   return (
     <div>
         <button className={classes.btn} onClick={handleAdd}>
-          <FontAwesomeIcon icon={icon}/>   {title}
+          <ReactSVG src={faAddUser} className={classes.icon}/>   {title}
         </button>
     </div>
   )

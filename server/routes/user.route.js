@@ -3,7 +3,8 @@ import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage,authenti
 import { checkUserRole, isUserAuthenticated } from '../middleware/auth.js'
 // import uploader from '../middleware/imageUploader.js'
 import createMulterMiddleware from '../middleware/uploader.js'
-import { SUPERUSER_ROLE } from '../constants/role.js'
+import { SUPERUSER_ROLE } from '../constants/constants.js'
+
 
 const router = express.Router()
 

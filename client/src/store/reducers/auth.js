@@ -25,7 +25,7 @@ const authSlice = createSlice({
 
       });
 
-      console.log("cookie is set for domain",process.env.REACT_APP_DOMAIN);
+      // console.log("cookie is set for domain",process.env.REACT_APP_DOMAIN);
      } catch (error) {
       console.log(error);
      }

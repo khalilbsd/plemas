@@ -14,7 +14,7 @@ const manageSlice = createSlice({
       state.userList=action.payload
     },
     addNewUSerToList:(state,action)=>{
-      console.log(action.payload);
+
       state.userList.push(action.payload)
     }
   }

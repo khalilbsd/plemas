@@ -1,16 +1,20 @@
-import { CardMedia } from "@mui/material";
 import { useRef, useState } from "react";
+import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { useUpdateUserProfilePictureMutation } from "../../../store/api/users.api";
+import faSave from "../../public/svgs/light/floppy-disk.svg";
 import Loading from "../loading/Loading";
 import { notify } from "../notification/notification";
 import { styles } from "./style";
-
+import { useDispatch } from "react-redux";
+import { updateUserInfoProfile } from "../../../store/reducers/user.reducer";
 const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
   const fileInputRef = useRef(null);
   const classes = styles();
   const formRef = useRef();
-  const [loading, setLoading] = useState(false);
+  const [hideBtn, setHideBtn] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const dispatch=useDispatch()
   const [updateUserProfilePicture, { isLoading }] =
     useUpdateUserProfilePictureMutation();
 
@@ -20,11 +24,23 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
   };
 
   const onChange = async (e) => {
-    setLoading(true);
+
     const files = e.target.files;
     const file = files[0];
+
+
+    if (!file?.type.includes('image')) {
+      notify(NOTIFY_ERROR, "The file must be an image");
+      return
+    }
+
+    if (file?.size > 5 * 1024 * 1024) {
+      notify(NOTIFY_ERROR, "File is too big");
+      return
+    }
     await getBase64(file);
-    setLoading(false);
+    setHideBtn(false)
+
   };
 
   const getBase64 = async (file) => {
@@ -41,25 +57,30 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
 
     // handleSubmit()
   };
-  console.log(isLoading);
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-
+      setLoading(true)
       const formData = new FormData();
       formData.append("profileImage", fileInputRef.current.files[0]);
       formData.append("email", email);
 
-      await updateUserProfilePicture(formData).unwrap();
+      const newImg =await updateUserProfilePicture(formData).unwrap();
+
       notify(NOTIFY_SUCCESS, "profile picture updated successfully");
+      setLoading(false)
+      setHideBtn(true)
+      dispatch(updateUserInfoProfile({image:newImg.url}))
     } catch (error) {
+      setHideBtn(false)
+
       notify(NOTIFY_ERROR, error.data?.message);
     }
   };
 
   return (
-    <div>
+
       <form
         className={classes.uploaderForm}
         ref={formRef}
@@ -67,31 +88,54 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
         method="PATCH"
         encType="multipart/form-data"
       >
-        <div
-          onClick={handleButtonClick}
-          className={!userImage && !previewImage ? classes.uploadContainer : ""}
-        >
+        <div  className={classes.uploadContainer} onClick={(!userImage && !previewImage)?handleButtonClick:undefined}>
           {!userImage && !previewImage && (
             <p className={classes.btnFileInput}>Select File</p>
           )}
-        </div>
-        <div className={classes.imageContainer}>
           {(userImage || previewImage) && (
-            <CardMedia
-              sx={{ height: 400 }}
-              image={previewImage ? previewImage : `${process.env.REACT_APP_SERVER_URL}${userImage}`}
-              className={
-                classes.profileImage + " " + (isLoading ? classes.blur : "")
+            <div className={classes.imageContainer} onClick={handleButtonClick}>
+              <img
+                src={
+                  previewImage
+                    ? previewImage
+                    : `${process.env.REACT_APP_SERVER_URL}${userImage}`
+                }
+                className={
+                  classes.profileImage + " " + (isLoading || loading ? classes.blur : "")
+                }
+                title="profile Picture"
+              />
+              <span className={`${classes.helpText} helpText`}>
+                Click to change the image
+              </span>
+              <div className={classes.ctaBtn}>
+                {previewImage &&!hideBtn && (
+                  <button
+                    className="br"
+                    type="submit"
+                    disabled={isLoading || loading}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent click event from propagating to the parent div
+
+                      return false; // Prevent the click event from further propagation
+                    }}
+                  >
+                    <ReactSVG src={faSave} />
+                  </button>
+                )}
+
+              </div>
+              {
+              (loading || isLoading)&&
+              <div className={classes.savingLoader}>
+              <Loading color="white"/>
+              </div>
               }
-              title="profile Picture"
-            />
-          )}
-          {isLoading && (
-            <div className={classes.loader}>
-              <Loading />
+
             </div>
           )}
         </div>
+
         <input
           ref={fileInputRef}
           style={{ display: "none" }}
@@ -99,26 +143,8 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
           onChange={onChange}
           name="profileImage"
         />
-        <div className={classes.ctaBtn}>
-          {previewImage && (
-            <button className="br" type="submit">
-              Save image
-            </button>
-          )}
-          {!userImage && previewImage && (
-            <button type="button" onClick={handleButtonClick}>
-              Update image
-            </button>
-          )}
-
-          {userImage && (
-            <button type="button" onClick={handleButtonClick}>
-              Update image
-            </button>
-          )}
-        </div>
       </form>
-    </div>
+
   );
 };
 

@@ -1,7 +1,8 @@
 // multerConfig.js
 
 import multer from "multer";
-import { FILE_TYPE_PATH, IMAGE_TYPE_PATH } from "../constants/uploadTypes.js";
+import { FILE_TYPE_PATH, IMAGE_TYPE_PATH } from "../constants/constants.js";
+
 // Define a function that returns multer middleware with the specified storage
 const createMulterMiddleware = (fieldName) => {
   const storage = multer.diskStorage({

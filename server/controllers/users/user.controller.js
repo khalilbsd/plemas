@@ -274,7 +274,7 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   userProfile.save();
   return res
     .status(200)
-    .json({ status: "success", message: "profile image updated successfully" });
+    .json({ status: "success", message: "profile image updated successfully",url});
 });
 
 export const authenticateUserWithToken = catchAsync(async (req, res, next) => {

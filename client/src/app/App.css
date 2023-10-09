@@ -1,15 +1,45 @@
+:root{
+  --light-green:#17917f;
+  /* --pastel-green:#80bbae; */
+  --dark-green:#0a523b;
+  --orange:#e76009;
+  --bright-orange:#ffa700;
+  --white: white;
+  --white-snow: #FCF7F8;
+  --black:#1C1F33;
+  --white-hover:#fcf7f8ad;
+  --app-bg-color:#e8e8e8;
+  /* --pastel-orange:#ffc2a3; */
+  --pastel-orange:#f8af128e;
+
+  --pastel-blue:#50aeeca4;
+  --pastel-green:#aaf3e3ad;
+  --light-blue:rgb(16, 57, 150)
+}
+
+
 .App {
   /* text-align: center; */
   min-height: 100vh;
-  background:#eFE7DE;
+  background:var(--app-bg-color);
   display: flex;
   gap: 30px;
   padding-right: 30px;
 
 }
+
+.sidebar-container{
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+}
+
 .main-content{
-  padding:15px 0;
+  padding:20px 0;
   width: 100%;
+  /* display: flex;
+    align-items: center; */
 
 }
 .App-logo {

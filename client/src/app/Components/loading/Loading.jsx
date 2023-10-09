@@ -2,11 +2,11 @@ import React from 'react'
 import {style} from './style.js'
 import ClipLoader from "react-spinners/ClipLoader";
 
-const Loading = () => {
+const Loading = ({color="#754619"}) => {
     const classes = style()
   return (
     <div className={classes.loaderContainer}>
-    <ClipLoader color="#754619" />
+    <ClipLoader color={color} />
   </div>
   )
 }

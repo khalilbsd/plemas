@@ -17,10 +17,15 @@ const userSlice = createSlice({
     removeUserInfoFromState: (state, action) => {
       state.userinfo = null;
     },
-
+    updateUserInfoProfile:(state,action)=>{
+      const attToUpdate= action.payload
+      Object.keys(attToUpdate).forEach((key)=>{
+        state.profile[key]=attToUpdate[key]
+      })
+    }
   }
 });
 
-export const { setUserInfo, removeUserInfoFromState } = userSlice.actions;
+export const { setUserInfo, removeUserInfoFromState,updateUserInfoProfile } = userSlice.actions;
 
 export default userSlice.reducer;

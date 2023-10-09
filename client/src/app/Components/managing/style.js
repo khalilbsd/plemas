@@ -2,21 +2,32 @@ import { createUseStyles } from "react-jss";
 
 export const btnStyle=createUseStyles({
     btn:{
+        width:200,
+        height:50,
+        borderRadius:5,
+        color:'var(--white)',
+        marginBottom:10,
+        border:'none',
+        fontFamily:"'MyriadPro', sans-serif !important",
+        display:'flex',
+        gap:10,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'var(--dark-green)',
+        transition:'0.3s all ease-in-out',
 
+        '&:hover':{
+            backgroundColor:'var(--light-green)',
+
+        }
+    },
+    icon:{
+        width:28,
+        fill:'var(--white)'
     }
 })
 export const listStyle=createUseStyles({
-    modal:{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    },
+
     safeLabel:{
         fontWeight:500,
         fontSize:14,
@@ -49,5 +60,40 @@ export const listStyle=createUseStyles({
 export const addUserFormStyles=createUseStyles({
     inputs:{
         width:'100%'
+    },
+    saveBtn:{
+        width:'100%',
+        padding:'15px 0',
+        color:'var(--white)',
+        border:'none',
+        borderRadius:5,
+        backgroundColor:'var(--dark-green)',
+        fontWeight:500,
+        textTransform:'capitalize',
+        fontFamily:"'MyriadPro', sans-serif !important",
+        fontSize:16,
+        transition:'0.3s all ease-in-out',
+        '&:hover':{
+        backgroundColor:'var(--light-green)',
+
+        }
+    },
+    cancelBtn:{
+        width:'100%',
+        padding:'15px 0',
+        color:'var(--white)',
+        border:'none',
+        borderRadius:5,
+        backgroundColor:'var(--orange)',
+        fontWeight:500,
+        textTransform:'capitalize',
+        fontFamily:"'MyriadPro', sans-serif !important",
+        fontSize:16,
+        transition:'0.3s all ease-in-out',
+        '&:hover':{
+            opacity:0.8
+
+            }
+
     }
 })

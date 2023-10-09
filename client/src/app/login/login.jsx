@@ -7,7 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLoginUserMutation } from "../../store/api/auth/authentification.js";
 import { setCredentials } from "../../store/reducers/auth.js";
-import logo from "../public/images/logo.webp";
+// import logo from "../public/images/chronos.png";
+import logo from '../public/svgs/Kairos logo_3.svg'
 import { styles } from "./style.js";
 // import AccountCircle from '@mui/icons-material/AccountCircle';
 import { faAt, faLock } from "@fortawesome/free-solid-svg-icons";
@@ -17,6 +18,7 @@ import { notify } from "../Components/notification/notification.js";
 import { NOTIFY_ERROR } from "../../constants/constants.js";
 import useGetAuthenticatedUser from "../../hooks/authenticated.js";
 import { useState } from "react";
+import { ReactSVG } from "react-svg";
 const Login = () => {
   const classes = styles();
   const emailRef = useRef();
@@ -42,7 +44,7 @@ const Login = () => {
       setTimeout(() => {
           navigate('/profile/me')
           setLoading(isLoading)
-      }, 4000);
+      }, 2000);
     } catch (err) {
       setLoading(isLoading)
       notify(NOTIFY_ERROR,err.data?.message)
@@ -50,17 +52,22 @@ const Login = () => {
   };
 
   return (
+    <div className={classes.loginPage}>
+      <div className={classes.topLogo}>
+        <ReactSVG src={logo} alt="logo" />
+
+      </div>
+
     <div className={classes.bg}>
+      <div className={classes.bgLogo}>
+      <ReactSVG src={logo} alt="logo" />
+      </div>
       <Box className={classes.loginBox}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+
             <Grid item xs={12} lg={12} md={12}>
-              <div>
-                <img src={logo} alt="logo midgrad" />
-              </div>
-            </Grid>
-            <Grid item xs={12} lg={12} md={12}>
-              <h1>Login</h1>
+              <h1 className={classes.boxTitle}>Login</h1>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
               {loading && (
@@ -69,6 +76,9 @@ const Login = () => {
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
               {/* <TextField required size="small" inputRef={emailRef} className={classes.input} id="email" name="email" label="Email" variant="outlined" /> */}
+                <label className={classes.labels} htmlFor="email">
+                  Email Address
+                </label>
               <TextField
                 required
                 size="small"
@@ -77,19 +87,22 @@ const Login = () => {
                 className={classes.input}
                 id="email"
                 name="email"
-                label="Email"
+
                 variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {/* <AccountCircle /> */}
-                      <FontAwesomeIcon icon={faAt} />
-                    </InputAdornment>
-                  )
-                }}
+                // InputProps={{
+                //   startAdornment: (
+                //     <InputAdornment position="start">
+                //       {/* <AccountCircle /> */}
+                //       <FontAwesomeIcon icon={faAt} />
+                //     </InputAdornment>
+                //   )
+                // }}
               />
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
+            <label className={classes.labels} htmlFor="password">
+                  Password
+                </label>
               <TextField
                 type="password"
                 required
@@ -97,23 +110,16 @@ const Login = () => {
                 inputRef={passwordRef}
                 className={classes.input}
                 id="password"
-                label="password"
+
                 variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {/* <AccountCircle /> */}
-                      <FontAwesomeIcon icon={faLock} />
-                    </InputAdornment>
-                  )
-                }}
+
               />
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
-              <Link to={"/reset-password"}>Forget Password ?</Link>
+              <Link className={classes.resetLink} to={"/reset-password"}>Forget Password ?</Link>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
-              <Button type="submit" variant="outlined">
+              <Button className={classes.loginBtn} type="submit" variant="outlined">
                 login
               </Button>
             </Grid>
@@ -132,6 +138,7 @@ const Login = () => {
           theme="colored"
         />
       </Box>
+    </div>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Modal from "@mui/material/Modal";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
+import Loading from '../loading/Loading'
 import { CLIENT_ROLE, EMPLOYEE_ROLE, SUPERUSER_ROLE } from "../../../constants/roles";
 import { addUserFormStyles } from "./style";
   const style = {
@@ -21,18 +22,21 @@ import { addUserFormStyles } from "./style";
     transform: "translate(-50%, -50%)",
     width: 400,
     bgcolor: "background.paper",
-    border: "2px solid #000",
+    borderRadius:5,
     boxShadow: 24,
     p: 4
   };
 
-const AddUserForm = ({ open, handleClose, handleSubmit,changeStateAccount,changeStateProfile }) => {
+const AddUserForm = ({ open, handleClose, handleSubmit,changeStateAccount,changeStateProfile,
+  loadingSubmit,
+ }) => {
     const classes = addUserFormStyles();
 
 
 
     return (
       <Modal
+
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
@@ -120,10 +124,16 @@ const AddUserForm = ({ open, handleClose, handleSubmit,changeStateAccount,change
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6}>
-                  <button type="submit">add user</button>
+                  <button className={classes.saveBtn} type="submit" disabled={loadingSubmit}>
+                    {loadingSubmit?
+                  <Loading color="white"/>  :
+                  "add user"
+                  }
+
+                  </button>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6}>
-                  <button type="button" onClick={handleClose}>
+                  <button className={classes.cancelBtn} type="button" onClick={handleClose}>
                     close
                   </button>
                 </Grid>

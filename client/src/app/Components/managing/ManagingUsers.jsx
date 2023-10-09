@@ -47,6 +47,7 @@ const ManagingUsers = () => {
   const usersList = useGetUsersList();
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [newUser, setNewUser] = useState(newUserInitialState);
   const [addNewUser, { isLoading }] = useAddNewUserMutation();
   const dispatch = useDispatch();
@@ -97,14 +98,19 @@ const ManagingUsers = () => {
 
   const handleAddUser = async (e) => {
     e.preventDefault();
+
     try {
+      setLoadingSubmit(true)
       const res = await addNewUser(newUser).unwrap();
       if (res?.createdUSer) {
         const { createdUSer, message } = res;
         if (createdUSer) dispatch(addNewUSerToList(createdUSer));
         notify(NOTIFY_SUCCESS, message);
         setNewUser(newUserInitialState);
+      setLoadingSubmit(false)
+
         handleModelClose();
+
       }
     } catch (error) {
       notify(NOTIFY_ERROR, error.data?.message);
@@ -118,25 +124,25 @@ const ManagingUsers = () => {
       field: "name",
       headerName: "First name",
       width: 200,
-      editable: true
+      editable: false
     },
     {
       field: "lastName",
       headerName: "Last name",
       width: 200,
-      editable: true
+      editable: false
     },
     {
       field: "email",
       headerName: "Email",
       width: 200,
-      editable: true
+      editable: false
     },
     {
       field: "role",
       headerName: "Role",
-      width: 200,
-      editable: true
+      width: 150,
+      editable: false
     },
     {
       field: "active",
@@ -199,6 +205,7 @@ const ManagingUsers = () => {
   return (
     <Grid container>
       <AddUserForm
+        loadingSubmit={loadingSubmit}
         open={openModal}
         handleClose={handleModelClose}
         handleSubmit={handleAddUser}
