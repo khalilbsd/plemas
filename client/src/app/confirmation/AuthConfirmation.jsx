@@ -41,7 +41,6 @@ const AuthConfirmation = () => {
     verify();
   }, [user.loading]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (passwordRef.current.value !== confirmPasswordRef.current.value)
@@ -65,47 +64,49 @@ const AuthConfirmation = () => {
 
   // if (error.state) return <ErrorConfirmation messages={error.message} />
   return (
-    <Box className={classes.box}>
-      <h1 className={classes.boxTitle}>You need to set you're password</h1>
-      <p>
-        you'll be setting you're password for the first time. after this you'll
-        be redirected to the login page there you'll need to enter your email
-        and you password in order for your account to be unlocked{" "}
-      </p>
-      <form method="POST" onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} lg={12}>
-            <TextField
-              className={classes.inputs}
-              error={error.state}
-              variant="outlined"
-              type="password"
-              name="password"
-              label="password"
-              inputRef={passwordRef}
-              helperText={error.message}
-            />
+    <div className={classes.confirmationPage}>
+      <Box className={classes.box}>
+        <h1 className={classes.boxTitle}>You need to set you're password</h1>
+        <p>
+          you'll be setting you're password for the first time. after this
+          you'll be redirected to the login page there you'll need to enter your
+          email and you password in order for your account to be unlocked{" "}
+        </p>
+        <form method="POST" onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} lg={12}>
+              <TextField
+                className={classes.inputs}
+                error={error.state}
+                variant="outlined"
+                type="password"
+                name="password"
+                label="password"
+                inputRef={passwordRef}
+                helperText={error.message}
+              />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <TextField
+                className={classes.inputs}
+                error={error.state}
+                variant="outlined"
+                type="password"
+                name="confirmPassword"
+                label="Confirm password"
+                inputRef={confirmPasswordRef}
+                helperText={error.message}
+              />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <button type="submit" className={classes.saveBtn}>
+                Save password
+              </button>
+            </Grid>
           </Grid>
-          <Grid item xs={12} lg={12}>
-            <TextField
-              className={classes.inputs}
-              error={error.state}
-              variant="outlined"
-              type="password"
-              name="confirmPassword"
-              label="Confirm password"
-              inputRef={confirmPasswordRef}
-              helperText={error.message}
-            />
-          </Grid>
-          <Grid item xs={12} lg={12}>
-            <button type="submit" className={classes.saveBtn}>
-              Save password
-            </button>
-          </Grid>
-        </Grid>
-      </form>
-    </Box>
+        </form>
+      </Box>
+    </div>
   );
 };
 

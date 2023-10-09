@@ -40,6 +40,7 @@ export const styles = createUseStyles({
     padding:40,
   },
   boxTitle:{
+    fontSize:32,
     textAlign:'left',
     margin:0,
     marginBottom:5,
@@ -89,6 +90,7 @@ export const styles = createUseStyles({
     outline:'none',
     border:'none',
     transition:'all 0.3s ease-in-out',
+    borderRadius:4,
     '&:hover':{
     backgroundColor:'var(--dark-green)',
     transform:'scale(1.1)',

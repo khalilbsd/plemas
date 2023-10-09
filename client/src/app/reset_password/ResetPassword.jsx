@@ -10,7 +10,8 @@ import { ReactSVG } from "react-svg";
 import faResetSuccess from "../public/svgs/light/shield-check.svg";
 import faVerified from "../public/svgs/solid/badge-check.svg";
 import { Link } from "react-router-dom";
-
+import faChevronLeft from "../public/svgs/solid/chevron-left.svg";
+import { ToastContainer } from "react-toastify";
 const ResetPassword = () => {
   const classes = styles();
   const user = useGetAuthenticatedUser();
@@ -36,6 +37,12 @@ const ResetPassword = () => {
   return (
     <div className={classes.resetPasswordPage}>
       <Box className={classes.box}>
+        {!user?.isAuthenticated && (
+          <Link to="/login" className={classes.goBack}>
+            <ReactSVG src={faChevronLeft} className={classes.goBackIcon} />{" "}
+            Login
+          </Link>
+        )}
         {!isReseted && !isVerified ? (
           <>
             <h2 className={classes.pageTitle}>Reset your password</h2>
@@ -96,6 +103,18 @@ const ResetPassword = () => {
           </div>
         )}
       </Box>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </div>
   );
 };

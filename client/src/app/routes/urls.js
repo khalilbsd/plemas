@@ -59,6 +59,7 @@ export const publicUrls = [
 export const exceptPathSidebar = [
   "/login",
   "/logout",
+  "/auth",
   "/confirmation/:token",
   "/reset-password",
 
@@ -85,7 +86,7 @@ export const protectedUrls = [
   {
     role: ALL_ROLES,
     title: "Reset Password",
-    path: "/auth/change-password",
+    path: "/settings/account/change-password",
     Component: <ResetPassword />,
     sideBar:false
   },
@@ -137,7 +138,7 @@ export function getRoleHomeUrl(role){
   console.log(role);
   switch (role) {
     case SUPERUSER_ROLE:
-        return '/admin/manage'
+        return '/admin/manage/users'
 
     case CLIENT_ROLE :
       return '/dashboard/client'

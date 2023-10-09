@@ -119,7 +119,7 @@ const SideLayoutInfo = () => {
                 <Grid sx={{ textAlign: "right" }} item xs={4} sm={4} lg={4}>
                   <Link
                     className={classes.changePasswordBtn}
-                    to="/auth/change-password"
+                    to="/settings/account/change-password"
                   >
                     Change
                   </Link>

@@ -6,32 +6,42 @@ export const styles = createUseStyles({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    '& button':{
-        backgroundColor:'------',
-        borderRadius:5,
-        height:50,
-        width:'100%',
-        border:'none',
-        fontSize:14,
-        fontWeight:600
+    "& $box button": {
+      width: "100%",
+      height: 50,
+      backgroundColor: "var(--light-green)",
+      color: "var(--white)",
+      fontSize: 16,
+      fontWeight: 500,
+      textTransform: "capitalize",
+      outline: "none",
+      border: "none",
+      transition: "all 0.3s ease-in-out",
+      borderRadius:4,
+      "&:hover": {
+        backgroundColor: "var(--dark-green)",
+        transform: "scale(1.1)",
+        outline: "none",
+        border: "none"
+      }
     }
-},
+  },
 
   box: {
-    width: 500,
+    width: 400,
     backgroundColor: "white",
-    border: "1px solid lightgrey",
-    borderRadius: 10,
+    border: "none rgb(230, 235, 241)",
+    borderRadius: 4,
     padding: 40,
     textAlign: "center"
   },
   pageTitle: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 600,
     textAlign: "center"
   },
   text: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 500,
     marginBottom: 30
   },
@@ -60,6 +70,28 @@ export const styles = createUseStyles({
     },
     "&.failed": {
       fill: "red"
+    }
+  },
+  goBack:{
+    display:'flex',
+    color:'var(--black)',
+    fontWeight:500,
+    textDecoration:'none',
+    alignItems:'center',
+    transition:'all 0.3s ease-in-out',
+    gap:5,
+    '&:hover':{
+      color:'var(--orange)'
+    }
+  },
+  goBackIcon:{
+    width:16,
+    height:16,
+    fill:'var(--orange)',
+    '& svg':{
+
+      width:16,
+      height:16,
     }
   }
 });

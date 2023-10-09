@@ -11,7 +11,7 @@ const location  = useLocation()
 var shouldRenderSidebar = !exceptPathSidebar.includes(location.pathname);
 if (!shouldRenderSidebar) return shouldRenderSidebar
 const similarPath=location.pathname.split('/')[1]
-
+console.log(similarPath);
 var shouldRenderSidebar = !(exceptPathSidebar.map((path)=>path.includes(similarPath))).includes(true)
 
 

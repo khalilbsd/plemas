@@ -112,18 +112,7 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
           </Grid>
         </Grid>
       </form>
-       <ToastContainer
-          position="bottom-left"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+
     </div>
   );
 };
