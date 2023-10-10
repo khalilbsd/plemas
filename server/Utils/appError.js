@@ -45,6 +45,13 @@ class AppError extends Error {
       this.code = 500;
     }
   }
+ class NothingChanged extends Error {
+    constructor(message) {
+      super(message);
+      this.name = 'No changes has been made';
+      this.code = 304;
+    }
+  }
 
 
 export {
@@ -53,6 +60,7 @@ export {
     MalformedObjectId,
     ElementNotFound,
     MissingParameter,
-    AppError
+    AppError,
+    NothingChanged
 
 };

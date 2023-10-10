@@ -13,6 +13,12 @@ const ProjectPhase = database.define(
             allowNull:false,
             defaultValue:PROJECT_PHASE_STATUS_IN_PROGRESS
         },
+        activePhase:{
+            type:DataTypes.STRING,
+            allowNull:false,
+            defaultValue:true
+        },
+
         //references keys
 
     },{timestamps:true}

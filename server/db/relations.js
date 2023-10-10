@@ -57,6 +57,7 @@ Project.belongsToMany(Lot, {
 });
 Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID" });
 
+
 Project.belongsToMany(Phase, {
   through: ProjectPhase,
   foreignKey: "projectID"
@@ -64,6 +65,17 @@ Project.belongsToMany(Phase, {
 
 Phase.belongsToMany(Project, { through: ProjectPhase, foreignKey: "phaseID" });
 // First, synchronize the Lot model
+Project.hasMany(ProjectPhase,{foreignKey:"projectID"})
+Project.hasMany(ProjectLots,{foreignKey:"projectID"})
+ProjectPhase.belongsTo(Project,{foreignKey:"projectID"})
+ProjectLots.belongsTo(Project,{foreignKey:"projectID"})
+
+Phase.hasMany(ProjectPhase,{foreignKey:"phaseID"})
+ProjectPhase.belongsTo(Phase,{foreignKey:"phaseID"})
+Lot.hasMany(ProjectLots,{foreignKey:"lotID"})
+ProjectLots.belongsTo(Lot,{foreignKey:"lotID"})
+
+
 Lot.sync({ force: force }).then(() => {
     logger.debug("Lot model synced with the database");
   });

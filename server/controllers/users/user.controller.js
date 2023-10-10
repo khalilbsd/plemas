@@ -89,7 +89,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
 
 
-    // TODO:: we need to add a check if a token already exist or not JUST TO BE SAFE to future 0.00000001 chance of that
+
     newUser.token = token;
 
   }
