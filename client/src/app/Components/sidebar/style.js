@@ -2,38 +2,39 @@ import { createUseStyles } from "react-jss";
 
 export const styles = createUseStyles({
   sidebar: {
-    width:300,
+    width: 300,
     height: "calc(100% - 40px)",
 
-    '&:not(.ps-collapsed)':{
-      '& $sidebarHeader':{
-        backgroundColor:'var(--white)'
+    "&:not(.ps-collapsed)": {
+      "& $sidebarHeader": {
+        backgroundColor: "var(--white)",
+        justifyContent:'space-between'
       },
       "& .ps-sidebar-container": {
-        padding:20
+        padding: 20
       },
-      '& .bars-icon':{
-        fill:'var(--orange) !important'
+      "& .bars-icon": {
+        fill: "var(--orange) !important"
       },
-      '& $profile':{
-        '& .ps-menu-icon':{
-          width:72,
-          height:72
+      "& $profile": {
+        "& .ps-menu-icon": {
+          width: 72,
+          height: 72
         },
-        '& .ps-menu-label':{
-display:'block'
+        "& .ps-menu-label": {
+          display: "block"
         }
       },
-      '& $profileImageContainer':{
-        width:72,
-        height:72,
+      "& $profileImageContainer": {
+        width: 72,
+        height: 72
       }
     },
 
     "& .ps-sidebar-container": {
-      transition:'0.3s all ease-in-out',
+      transition: "0.3s all ease-in-out",
       display: "flex",
-      padding:'20px 0',
+      padding: "20px 0",
       flexDirection: "column",
       justifyContent: "space-between",
       borderRadius: 30,
@@ -59,9 +60,9 @@ display:'block'
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
-    padding: '0 10px',
+    padding: "0 10px",
 
-    borderRadius:10,
+    borderRadius: 10,
     position: "relative",
     "& img": {
       width: "50px"
@@ -79,22 +80,20 @@ display:'block'
     }
   },
   bars: {
-
     padding: 0,
 
-    //temporarly
     backgroundColor: "transparent",
     border: "none",
     borderRadius: 10,
 
-    '& .bars-icon':{
-      height: 40,
-      width: 50,
+    "& .bars-icon": {
+      height: 24,
+      width: 30,
       fill: "var(--white)",
-      '& *':{
-        width:'100%',
+      "& *": {
+        width: "100%",
 
-        height:'100%'
+        height: "100%"
       }
     }
   },
@@ -108,15 +107,15 @@ display:'block'
     textTransform: "capitalize",
     fontSize: 14,
     transition: "0.3s all ease-in-out",
-    marginTop:5,
+    marginTop: 5,
     "& a": {
       padding: "15px 0",
       borderRadius: "0.75rem",
-      transition: "0.3s all ease-in-out",
+      transition: "0.3s all ease-in-out"
     },
     "& a:hover": {
-      backgroundColor:'var(--light-green) !important',
-      borderLeft:"15px solid var(--white)"
+      backgroundColor: "var(--light-green) !important",
+      borderLeft: "15px solid var(--white)"
       // color: "var(--orange)"
     }
   },
@@ -156,55 +155,50 @@ display:'block'
   //     height: 1
   //   }
   // },
-   profile:{
-    marginTop:20,
+  profile: {
+    marginTop: 20,
 
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    color:'var(--white)',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "var(--white)",
     // padding:10,
 
-    gap:10,
-    '& .name':{
-      fontSize:18,
-      fontWeight:600,
-      margin:0
-    }
-    ,
-    '& .role':{
-      margin:0
+    gap: 10,
+    "& .name": {
+      fontSize: 18,
+      fontWeight: 600,
+      margin: 0
     },
-    '& a':{
-      height:'fit-content !important',
-      '&:hover':{
-        backgroundColor:'transparent !important'
+    "& .role": {
+      margin: 0
+    },
+    "& a": {
+      height: "fit-content !important",
+      "&:hover": {
+        backgroundColor: "transparent !important"
       }
     },
 
-    '& .ps-menu-label':{
-      display:'none'
+    "& .ps-menu-label": {
+      display: "none"
     },
-    '& .ps-menu-icon':{
-      border:'3px solid var(--orange)',
-      padding:3,
-      borderRadius:'100%'
+    "& .ps-menu-icon": {
+      border: "3px solid var(--orange)",
+      padding: 3,
+      borderRadius: "100%"
     }
   },
-  profileImageContainer:{
+  profileImageContainer: {
     // width:72,
-    height:'100%',
+    height: "100%",
     borderRadius: "100%",
-    overflow:'hidden',
-
-
-
-
+    overflow: "hidden"
   },
   profileImage: {
-    height: '100%',
-    objectFit:'contain',
-    width: '100%',
+    height: "100%",
+    objectFit: "contain",
+    width: "100%"
     // borderRadius: "100%"
-  },
+  }
 });

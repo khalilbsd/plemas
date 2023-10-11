@@ -7,12 +7,11 @@ const Project = database.define(
     code: {
       type: DataTypes.INTEGER,
       unique: true,
-      allowNull:false
+      allowNull: false
     },
     customId: {
       type: DataTypes.STRING,
-      unique: true,
-
+      unique: true
     },
     name: {
       type: DataTypes.STRING,
@@ -31,23 +30,23 @@ const Project = database.define(
     priority: {
       type: DataTypes.INTEGER
     },
-    overAllStatus:{
-        type:DataTypes.BOOLEAN,
-        allowNull:true,
+    overAllStatus: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     },
     //references keys
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    manager:{
-        type:DataTypes.INTEGER,
-        allowNull:false,
+    manager: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
-    isCodeCustomized:{
-        type:DataTypes.BOOLEAN,
-        allowNull:false,
-        defaultValue:false
+    isCodeCustomized: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   },
   { timestamps: true }

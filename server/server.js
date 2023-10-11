@@ -45,7 +45,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/phases", phasesRoutes);
-app.use("/api/lot", lotRoutes);
+app.use("/api/lots", lotRoutes);
 
 import "./db/relations.js";
 

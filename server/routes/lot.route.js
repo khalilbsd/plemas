@@ -11,8 +11,8 @@ const router= express.Router()
 
 router
 .get('/all',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getAllLot)
-.get('/filter',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),addLot)
-.post('/add',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),filterLot)
+.get('/filter',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),filterLot)
+.post('/add',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),addLot)
 
 
 export default router

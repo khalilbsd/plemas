@@ -6,7 +6,10 @@ const Lot = database.define("lots",{
     name:{
         type:DataTypes.STRING,
         allowNull:false,
-        unique:true
+        unique:true,
+        set(value) {
+            this.setDataValue("name", value.toUpperCase());
+          }
     }
 }, { timestamps: true })
 

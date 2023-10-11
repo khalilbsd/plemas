@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Menu, MenuItem, Sidebar, SubMenu } from "react-pro-sidebar";
 import { Link } from "react-router-dom";
-import Logo from "../../public/images/logo.png";
+import Logo from "../../public/svgs/Kairos logo_3.svg";
 import { getRolesBasedUrls, protectedUrls } from "../../routes/urls";
 import { styles } from "./style";
 
@@ -33,7 +33,7 @@ const SidebarComponent = () => {
           {!collapse && (
             <>
               <img src={Logo} alt="logo" />
-              <p className={classes.companyName}>Chronos</p>
+              {/* <p className={classes.companyName}>Chronos</p> */}
             </>
           )}
           <button onClick={handleCollapse} className={classes.bars}>

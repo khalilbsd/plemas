@@ -39,7 +39,7 @@ function App() {
           const { data } = await getAuthenticatedUserInfo({
             email: userObject.user.email
           });
-          console.log(data);
+
           dispatch(setUserInfo(data));
         }
       } catch (error) {

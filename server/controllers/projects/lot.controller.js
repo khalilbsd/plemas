@@ -1,37 +1,79 @@
-import {
-    AppError,
-    MissingParameter
-} from "../../Utils/appError.js";
+import { Op } from "sequelize";
+import { AppError, MissingParameter } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import Lot from "../../models/project/Lot.model.js.js";
+import { Lot } from "../../db/relations.js";
 
-  export const getAllLot = catchAsync(async (req, res, next) => {
-    const lots = await Lot.findAll();
-    if (!lots) return next(new AppError("Something went wrong", 500));
-    return res.status(200).json({ status: "success", lots });
-  });
+/*
+ * an api to get all the lots
+ */
+export const getAllLot = catchAsync(async (req, res, next) => {
+  const lots = await Lot.findAll();
+  if (!lots) return next(new AppError("Something went wrong", 500));
+  return res.status(200).json({ status: "success", lots });
+});
 
-  export const addLot = catchAsync(async (req, res, next) => {
-    const lot = req.body;
+/*
+ * an api to add a lot :
+ * accepts an object :
+ * {
+ *  name: string (UNIQUE)
+ * }
+ */
 
-    if (!lot.name)
-      return next(new MissingParameter("the lot name is mandatory"));
+export const addLot = catchAsync(async (req, res, next) => {
+  const lot = req.body;
+
+  if (!lot.name) return next(new MissingParameter("the lot name is mandatory"));
+
+  const isLotExist = await Lot.findOne({ where: { name: lot.name } });
+
+  if (isLotExist) return next(new AppError("lot already exist", 400));
+
+  const newLot = await Lot.create({ ...lot });
+
+  if (!newLot) return next(new AppError("Something went wrong", 500));
+  return res.status(200).json({ status: "success", lot: newLot });
+});
 
 
-    const isLotExist = await Lot.findOne({where:{name:lot.name}})
+/*
+* an api to a a filters on the lot
+* probably won't need it
+* it accepts a param query
+*/
+export const filterLot = catchAsync(async (req, res, next) => {
+  const filters = req.query;
+  const lots = await Lot.findAll({ where: filters });
+  if (!lots) return next(new AppError("Something went wrong", 500));
+  return res.status(200).json({ status: "success", lots });
+});
 
-    if (isLotExist) return next(new AppError("lot already exist",400))
+/*
+ * accepts an  array  of lots to verify if all of them are real
+ */
+export const isLotsValid = async (lotsArray) => {
 
+  if (!Array.isArray(lotsArray)) lotsArray = new Array(lotsArray);
+  var lotsIDs = [];
+  const queryParams = []
+    lotsArray.forEach((element) => {
+      queryParams.push({
+        name: element
+      })
+    })
 
-    const newLot = await Lot.create({ ...lot });
-    if (!newLot) return next(new AppError("Something went wrong", 500));
-    return res.status(200).json({ status: "success", lot: newLot });
-  });
+    const query = await Lot.findAll({
+      where: {
+        [Op.or]: queryParams
+      }
+    });
+   if (!query) return null
+   if (query.length !== lotsArray.length) return null
 
-  export const filterLot = catchAsync(async (req, res, next) => {
-  const filters= req.query
-    const lots = await Lot.findAll({where:filters});
-    if (!lots) return next(new AppError("Something went wrong", 500));
-    return res.status(200).json({ status: "success", lots });
+   query.forEach((element) => {
+    lotsIDs.push(element.id)
+  })
 
-  });
+  return lotsIDs
+
+};

@@ -17,6 +17,7 @@ import ManagingUsers from "../Components/managing/ManagingUsers";
 import ManageProjects from "../Components/managing/ManageProjects";
 //icons
 import faUser from "../public/svgs/light/user.svg";
+import faProject from '../public/svgs/light/diagram-project.svg'
 import faAdmin from "../public/svgs/light/bars-progress.svg";
 import faWorker from "../public/svgs/light/briefcase.svg";
 import faLogout from "../public/svgs/light/right-from-bracket.svg";
@@ -25,9 +26,7 @@ import AuthConfirmation from "../confirmation/AuthConfirmation";
 import ResetPassword from "../reset_password/ResetPassword";
 import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";
 
-
-
-export const anonymousUrls=[
+export const anonymousUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },
   { title: "Login", path: "/login", Component: <Login /> },
   {
@@ -46,14 +45,11 @@ export const anonymousUrls=[
     Component: <AuthConfirmation />,
     icon: faLogout
   }
-
-]
-
-
+];
 
 export const publicUrls = [
   { title: "Not found", path: "*", Component: <PageNotFound /> },
-  { title: "Logout", path: "/logout", Component: <Logout />, icon: faLogout },
+  { title: "Logout", path: "/logout", Component: <Logout />, icon: faLogout }
 ];
 
 export const exceptPathSidebar = [
@@ -61,8 +57,7 @@ export const exceptPathSidebar = [
   "/logout",
   "/auth",
   "/confirmation/:token",
-  "/reset-password",
-
+  "/reset-password"
 ];
 
 const adminManagingRoutes = [
@@ -88,7 +83,7 @@ export const protectedUrls = [
     title: "Reset Password",
     path: "/settings/account/change-password",
     Component: <ResetPassword />,
-    sideBar:false
+    sideBar: false
   },
 
   {
@@ -97,16 +92,9 @@ export const protectedUrls = [
     path: "/profile/me",
     Component: <UserProfile />,
     icon: faUser,
-    sideBar:false
-
+    sideBar: false
   },
-  // {
-  //   role: SUPERUSER_ROLE,
-  //   title: "Admin Dashboard",
-  //   path: "/dashboard/admin",
-  //   Component: <AdminDashboard />,
-  //   icon: faAdmin
-  // },
+
   // {
   //   role: EMPLOYEE_ROLE,
   //   title: "Employee Dashboard",
@@ -114,14 +102,22 @@ export const protectedUrls = [
   //   Component: <EmployeeDashboard />,
   //   icon: faWorker
   // },
+
   {
     role: SUPERUSER_ROLE,
     title: "Manage employee",
     path: "/admin/manage/users",
     Component: <ManagingUsers />,
     icon: faUser,
-    sideBar:true
-
+    sideBar: true
+  },
+  {
+    role: SUPERUSER_ROLE,
+    title: "Manage Projects",
+    path: "/admin/manage/projects",
+    Component: <ManageProjects />,
+    icon: faProject,
+    sideBar: true
   }
 ];
 
@@ -133,18 +129,17 @@ export function getRolesBasedUrls(user, role = null) {
   return protectedUrls.filter((url) => url.role === accessRole);
 }
 
-
-export function getRoleHomeUrl(role){
+export function getRoleHomeUrl(role) {
   console.log(role);
   switch (role) {
     case SUPERUSER_ROLE:
-        return '/admin/manage/users'
+      return "/admin/manage/users";
 
-    case CLIENT_ROLE :
-      return '/dashboard/client'
+    case CLIENT_ROLE:
+      return "/dashboard/client";
     case EMPLOYEE_ROLE:
-      return '/dashboard/employee'
+      return "/dashboard/employee";
     default:
-      return '/dashboard/employee'
+      return "/dashboard/employee";
   }
 }

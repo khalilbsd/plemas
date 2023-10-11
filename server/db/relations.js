@@ -2,6 +2,7 @@ import logger from "../log/config.js";
 import User from "../models/users/User.model.js";
 import dotenv from "dotenv";
 import ResetPasswordToken from "../models/users/ResetPasswordToken.model.js";
+import Project from "../models/project/Project.model.js";
 
 dotenv.config();
 const force = process.env.FORCE_DB_SYNC === "true";
@@ -21,6 +22,8 @@ User.hasMany(ResetPasswordToken, {
   onUpdate: "CASCADE"
 });
 
+
+User.hasMany(Project,{foreignKey:'manager'})
 User.sync({ force: force }).then(() => {
   logger.debug("User model synced with the database");
 });
@@ -45,16 +48,20 @@ ResetPasswordToken.sync({ force: force }).then(() => {
 });
 
 //references  project
-import Project from "../models/project/Project.model.js";
 import ProjectLots from "../models/project/ProjectLot.model.js";
 import Lot from "../models/project/Lot.model.js.js";
 import ProjectPhase from "../models/project/ProjectPhase.model.js";
 import Phase from "../models/project/Phase.model.js";
 
+
+
 Project.belongsToMany(Lot, {
   through: ProjectLots,
   foreignKey: "projectID"
 });
+
+Project.belongsTo(User,{foreignKey:'manager',as:'managerID'})
+
 Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID" });
 
 
@@ -65,6 +72,7 @@ Project.belongsToMany(Phase, {
 
 Phase.belongsToMany(Project, { through: ProjectPhase, foreignKey: "phaseID" });
 // First, synchronize the Lot model
+
 Project.hasMany(ProjectPhase,{foreignKey:"projectID"})
 Project.hasMany(ProjectLots,{foreignKey:"projectID"})
 ProjectPhase.belongsTo(Project,{foreignKey:"projectID"})

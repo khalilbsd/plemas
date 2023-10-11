@@ -8,7 +8,7 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { PROJECT_PHASE_STATUS_IN_PROGRESS } from "../../constants/constants.js";
-import { Phase, ProjectPhase } from "../../db/relations.js";
+import { Lot, Phase, ProjectLots, ProjectPhase, User, UserProfile } from "../../db/relations.js";
 import { ForbiddenError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import Project from "../../models/project/Project.model.js";
@@ -16,14 +16,38 @@ import {
   generateProjectCustomID,
   getProjectByCustomID,
   getProjectPhaseFromOldPhases,
-  isCodeValid
+  isCodeValid,
+  serializeProject
 } from "./lib.js";
 import { createProjectPhase } from "./projectPhase.controller.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
+ *
  */
-export const getAllProjects = catchAsync(async (req, res, next) => {});
+export const getAllProjects = catchAsync(async (req, res, next) => {
+  const projects = await Project.findAll({ include:[
+    {
+      model:ProjectLots,
+      include:[Lot]
+    },
+    {
+      model:User,
+      as:'managerID',
+      include:[UserProfile]
+    },
+    {
+      model: ProjectPhase,
+      where: {  activePhase: true },
+      include:[Phase]
+    }
+  ] });
+  // console.log(projects[1].projectLots.length);
+  const projectsList=  serializeProject(projects)
+
+  res.status(200).json({status:"success",projects:projectsList})
+
+});
 
 /**
  * add a project
@@ -37,7 +61,7 @@ export const addProject = catchAsync(async (req, res, next) => {
   // checking  the code :
   if (data.code.toString().length !== 5)
     return next(new MalformedObjectId("code is not valid"));
-  const isValidCode = isCodeValid(data.code);
+  const isValidCode = await isCodeValid(data.code);
   if (!isValidCode)
     return next(
       new MalformedObjectId("Project all ready exists with that code")
@@ -61,11 +85,14 @@ export const addProject = catchAsync(async (req, res, next) => {
   delete project.phase;
   delete project.lot;
 
-  const pp = await createProjectPhase(project, data.phase);
-  if (!pp.created)
+  const pp = await createProjectPhase(project, data.phase, data.lot);
+  if (!pp.created) {
+
+    logger.error(pp.message);
     return next(
       new AppError("we couldn't create your project! try again later", 400)
     );
+  }
   return res.status(200).json({
     status: "success",
     message: pp.message,
@@ -74,29 +101,27 @@ export const addProject = catchAsync(async (req, res, next) => {
   // const {created,message,projectPhase} = createProjectPhase()
 });
 
-
-
 export const updateProjectDetails = catchAsync(async (req, res, next) => {
-  const details = req.body
+  const details = req.body;
 
-  if (!details || !Object.keys(details).length) return next(new MissingParameter("missing parameters"))
-  if (details.code || details.customId) return next(new AppError("you can not change the value of the custom id or the project code",403))
+  if (!details || !Object.keys(details).length)
+    return next(new MissingParameter("missing parameters"));
+  if (details.code || details.customId)
+    return next(
+      new AppError(
+        "you can not change the value of the custom id or the project code",
+        403
+      )
+    );
 
-  const project = await getProjectByCustomID(req.params.customID)
-  if (!project) return next(new ElementNotFound("Project not found"))
-  logger.info("attempting to update the project info")
-  await project.update({...details})
-  return res.status(200).json({status:"success",message:"Project details updated"})
-
-
-
-
+  const project = await getProjectByCustomID(req.params.customID);
+  if (!project) return next(new ElementNotFound("Project not found"));
+  logger.info("attempting to update the project info");
+  await project.update({ ...details });
+  return res
+    .status(200)
+    .json({ status: "success", message: "Project details updated" });
 });
-
-
-
-
-
 
 export const generateProjectCode = catchAsync(async (req, res, next) => {
   const date = new Date();
@@ -156,8 +181,6 @@ export const changeProjectPhase = catchAsync(async (req, res, next) => {
   if (!phaseAbb)
     return next(new ElementNotFound("there is no phase with this name"));
 
-
-
   const projectPhase = await getProjectPhaseFromOldPhases(
     project.projectPhases,
     phaseAbb
@@ -189,12 +212,11 @@ export const changeProjectPhase = catchAsync(async (req, res, next) => {
       updated: false
     });
   }
-  logger.info("checking if the provided phase is the same as the current one")
-  if (project.projectPhases[projectPhase].activePhase == true){
-    logger.info("nothing to do the provided phase is already active")
-    return next(new NothingChanged("Phase is already active"))
+  logger.info("checking if the provided phase is the same as the current one");
+  if (project.projectPhases[projectPhase].activePhase == true) {
+    logger.info("nothing to do the provided phase is already active");
+    return next(new NothingChanged("Phase is already active"));
   }
-
 
   logger.info(
     "setting the new phase that already exist  to  active and disabling the other ones"
@@ -241,21 +263,15 @@ export const getProjectsInPhase = catchAsync(async (req, res, next) => {
     ]
   });
   if (!projects.length)
-    return res
-      .status(200)
-      .json({
-        status: "info",
-        message: `there is no active projects in the phase ${phase}`,
-        projects: []
-      });
-
-  return res
-    .status(200)
-    .json({
+    return res.status(200).json({
       status: "info",
-      message: `the list of projects in the ${phase} has been updated`,
-      projects
+      message: `there is no active projects in the phase ${phase}`,
+      projects: []
     });
+
+  return res.status(200).json({
+    status: "info",
+    message: `the list of projects in the ${phase} has been updated`,
+    projects
+  });
 });
-
-
