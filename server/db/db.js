@@ -1,32 +1,41 @@
 // db.js
-import { Sequelize } from 'sequelize';
-import logger from '../log/config.js';
-
+import { Sequelize } from "sequelize";
+import logger from "../log/config.js";
+import dotenv from "dotenv";
 // Initialize Sequelize with your database connection details
-const sequelize = new Sequelize('chronos', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql',
-  logging: (sql, timing) => {
-    // You can use your custom logger here
+//for test purposes use
+/**
+ const sequelize = new Sequelize('chronos', 'root', '', {
+ */
+dotenv.config();
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORd,
+  {
+    host: "localhost",
+    dialect: "mysql",
+    logging: (sql, timing) => {
+      // You can use your custom logger here
 
-    logger.info(`SQL Query: ${sql}`);
-     logger.info(`Execution Time: ${Number(timing)}ms`);
-  },
-});
+      logger.info(`SQL Query: ${sql}`);
+      logger.info(`Execution Time: ${Number(timing)}ms`);
+    }
+  }
+);
 
 // Test the connection
 async function connect() {
   try {
     await sequelize.authenticate();
     // console.log('Database connection has been established successfully.');
-    logger.debug("db connexion successful !!")
+    logger.debug("db connexion successful !!");
     // return sequelize
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error("Unable to connect to the database:", error);
   }
 }
 
-
-connect()
+connect();
 
 export default sequelize;

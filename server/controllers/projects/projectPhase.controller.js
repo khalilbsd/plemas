@@ -14,7 +14,7 @@ export const createProjectPhase = async (
   lot,
   status = PROJECT_PHASE_STATUS_IN_PROGRESS
 ) => {
-  if (!project || !phase)
+  if (!project || !phase )
     return { created: false, message: "project and phase are mandatory" };
   const t = await sequelize.transaction(); // Start a transaction
 

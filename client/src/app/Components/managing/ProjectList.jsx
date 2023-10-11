@@ -1,11 +1,11 @@
 import React from "react";
 import { projectsStyles } from "./style";
-import { projectTestList } from "./test/projectList.test";
-
-const ProjectList = () => {
+// import { projectTestList } from "./test/projectList.test";
+import faUserHolder from '../../public/svgs/solid/circle-user.svg'
+import { ReactSVG } from "react-svg";
+const ProjectList = ({ projects }) => {
   const classes = projectsStyles();
-
-
+  // console.log(projects);
 
   const columns = [
     {
@@ -53,11 +53,33 @@ const ProjectList = () => {
         ))}
       </div>
       <div className={classes.content}>
-        {projectTestList.map((project) => (
+        {projects.map((project) => (
           <div className={classes.rowData}>
-            {columns.map(({ attribute, width }, key) => (
-              <div key={key} className={classes.data} style={{width:`calc((100% / ${columns.length}) - 120px )`}}>
-                <p>{project[attribute]}</p>
+            {columns.map(({ attribute }, key) => (
+              <div
+                key={key}
+                className={classes.data}
+                style={{ minWidth: `calc((100% / ${columns.length}) - 120px )` }}
+              >
+
+                  {project[attribute].constructor == Object ? (
+                    Object.keys(project[attribute]).map((item, idx) =>
+                      item === "image" ? (
+                        console.log(project[attribute][item]),
+                        project[attribute][item]?
+                        <img className={classes.avatar} src={`${process.env.REACT_APP_SERVER_URL}${project[attribute][item]}`} alt={`manager avatar ${idx}`} />
+                        :
+                        <ReactSVG src={faUserHolder} className={`${classes.avatar} holder`} />
+                      ) : (
+                        <p key={idx}>{project[attribute][item]}</p>
+                      )
+                    )
+                  ) : (
+
+                    <p>{project[attribute]}</p>
+
+                  )}
+
               </div>
             ))}
           </div>

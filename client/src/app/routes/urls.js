@@ -14,7 +14,7 @@ import {
 } from "../../constants/roles";
 import ManagingLayout from "../managing/ManagingLayout";
 import ManagingUsers from "../Components/managing/ManagingUsers";
-import ManageProjects from "../Components/managing/ManageProjects";
+
 //icons
 import faUser from "../public/svgs/light/user.svg";
 import faProject from '../public/svgs/light/diagram-project.svg'
@@ -25,6 +25,7 @@ import faManage from "../public/svgs/light/list-check.svg";
 import AuthConfirmation from "../confirmation/AuthConfirmation";
 import ResetPassword from "../reset_password/ResetPassword";
 import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";
+import ManageProjects from "../projects/ManageProjects";
 
 export const anonymousUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },

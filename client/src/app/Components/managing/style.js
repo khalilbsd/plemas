@@ -129,6 +129,7 @@ export const projectsStyles = createUseStyles({
   rowData:{
     display:'flex',
     padding:5,
+    margin:'5px 0',
     width:'100%',
     borderRadius:10,
     justifyContent:'space-between',
@@ -137,5 +138,22 @@ export const projectsStyles = createUseStyles({
         backgroundColor:'var(--app-bg-color)'
     }
   },
+  data:{
+    display:'flex',
+    alignItems:'center',
+    gap:10
+  },
+  avatar:{
+    width:42,
+    height:42,
+    borderRadius:'100%',
+    '&.holder':{
+      fill:'var(--orange)',
+      '& svg':{
+        width:42,
+        height:42,
+      }
+    }
+  }
 
 });

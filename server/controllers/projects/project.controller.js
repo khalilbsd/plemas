@@ -144,11 +144,17 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
         ? (parseInt(currentYear) % 1000) * 1000
         : latestProjectCode + 1;
   }
-  while (!isCodeValid(code)) {
-    code++;
-  }
+  const findValidCode = async (currentCode) => {
+    while (true) {
+      if (await isCodeValid(currentCode)) {
+        return currentCode;
+      }
+      currentCode++;
+    }
+  };
 
-  return res.status(200).json({ status: "success", code });
+  const validCode = await findValidCode(code);
+  return res.status(200).json({ status: "success", validCode });
 });
 
 export const checkProjectCode = catchAsync(async (req, res, next) => {

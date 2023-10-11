@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { logout } from '../../store/reducers/auth';
+import { clearManageList } from '../../store/reducers/manage.reducer';
 
 const Logout = () => {
   const dispatch = useDispatch()
@@ -10,6 +11,7 @@ const Logout = () => {
   useEffect(() => {
     try {
       dispatch(logout())
+      dispatch(clearManageList())
 
     } catch (error) {
       console.log(error);
