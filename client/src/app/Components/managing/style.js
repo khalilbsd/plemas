@@ -105,16 +105,21 @@ export const projectsStyles = createUseStyles({
     flexDirection: "column",
     paddingBottom: 20
   },
-  headers: {
+  header:{
     backgroundColor: "var(--light-green)",
+    padding: "20px 40px",
+    width:'calc(100% - 80px)'
+  },
+  headersItem: {
+
     color: "var(--white)",
     display: "flex",
     alignItems: "flex-start",
-    padding: "20px 40px",
-    width: "100%",
+    width: "calc(100% - 40px)",
     height: 90,
-    justifyContent: "space-around",
-    fontWeight: 600
+    justifyContent: "space-between",
+    fontWeight: 600,
+    // padding:'0 20px'
   },
   content: {
     padding: 20,
@@ -124,12 +129,12 @@ export const projectsStyles = createUseStyles({
     boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
     background: "white",
     borderRadius: 10,
-    width: "calc(100% - 120px)",
+    width: "calc(100% - 80px)",
     margin: "auto"
   },
   rowData: {
     display: "flex",
-    padding: 5,
+    padding: '5px 0',
     margin: "5px 0",
     width: "100%",
     borderRadius: 10,

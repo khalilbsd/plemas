@@ -53,16 +53,20 @@ const ProjectList = ({ projects }) => {
 
   return (
     <div className={classes.listContainer}>
-      <div className={classes.headers}>
+      <div className={classes.header}>
+        <div className={classes.headersItem} >
         {columns.map((column, counter) => (
           <div
             key={counter}
             className={classes.column}
-            style={{ width: column.width }}
+            style={{ width: 200 }}
+
           >
             <p className={classes.columnTitle}>{column.label}</p>
           </div>
         ))}
+        </div>
+
       </div>
       <div className={classes.content}>
         {projects.map((project,id) => (
@@ -71,7 +75,7 @@ const ProjectList = ({ projects }) => {
               <div
                 key={key}
                 className={classes.dataList}
-                style={{ minWidth: `calc((100% / ${columns.length}) - 180px )` }}
+                style={{ width: 200 }}
               >
 
                   {project[attribute].constructor == Object ? (
