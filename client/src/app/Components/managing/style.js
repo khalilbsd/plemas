@@ -94,8 +94,8 @@ export const projectsStyles = createUseStyles({
   },
   listContainer: {
     minHeight: "",
-    height:'calc(80vh - 20px)',
-    maxHeight:'80vh',
+    height: "calc(80vh - 20px)",
+    maxHeight: "80vh",
     // overflowY:'scroll',
     backgroundColor: "var(--white)",
     boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
@@ -103,17 +103,18 @@ export const projectsStyles = createUseStyles({
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    paddingBottom:20,
+    paddingBottom: 20
   },
   headers: {
     backgroundColor: "var(--light-green)",
     color: "var(--white)",
     display: "flex",
     alignItems: "flex-start",
-    padding: '20px 40px'  ,
+    padding: "20px 40px",
     width: "100%",
     height: 90,
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    fontWeight: 600
   },
   content: {
     padding: 20,
@@ -126,34 +127,148 @@ export const projectsStyles = createUseStyles({
     width: "calc(100% - 120px)",
     margin: "auto"
   },
-  rowData:{
-    display:'flex',
-    padding:5,
-    margin:'5px 0',
-    width:'100%',
-    borderRadius:10,
-    justifyContent:'space-between',
-    transition:'all 0.3s ease-in-out',
-    '&:hover':{
-        backgroundColor:'var(--app-bg-color)'
+  rowData: {
+    display: "flex",
+    padding: 5,
+    margin: "5px 0",
+    width: "100%",
+    borderRadius: 10,
+    justifyContent: "space-between",
+    transition: "all 0.3s ease-in-out",
+    "&:hover": {
+      backgroundColor: "var(--app-bg-color)"
     }
   },
-  data:{
-    display:'flex',
+  dataList: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flex:1
+  },
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: "100%",
+    "&.holder": {
+      fill: "var(--orange)",
+      "& svg": {
+        width: 42,
+        height: 42
+      }
+    }
+  },
+  addBtnContainer: {
+    display: "flex",
+    justifyContent: "flex-end"
+  },
+  closeModalBtn: {
+    position: "absolute",
+    right: 20,
+    top: 20,
+    "& button": {
+      backgroundColor: "unset",
+      outline: "none",
+      border: "none",
+      width: 32,
+      height: 32,
+      borderRadius: "100%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transition: "all 0.3s ease-in-out",
+      "&:hover": {
+        backgroundColor: "lightgrey"
+      }
+    },
+    "& svg": {
+      width: 22,
+      height: 22,
+      fill: "grey"
+    }
+  },
+  modalTitle: {
+    fontWeight: 600
+  },
+  info: {
+    fontSize: 14
+  },
+  textWarning: {
+    fontSize: 14,
+    "& .warning": {
+      fontWeight: 600,
+      color: "var(--orange)"
+    }
+  },
+  labels: {
+    marginBottom:10,
+    fontWeight:600,
+    fontSize:14,
+    fontStyle:'italic',
+    display:'block'
+
+  },
+  manager:{
+    display:'flex',gap:10,
     alignItems:'center',
-    gap:10
+    '& .info':{
+      display:'flex',
+      flexDirection:'column',
+      '& .name':{
+        fontWeight:600,
+        fontSize:14
+      },
+      '& .email, .poste':{
+          color:'grey',
+          fontSize:13,
+          fontWeight:500
+      }
+    }
   },
   avatar:{
     width:42,
     height:42,
+    color:'white',
+    fontWeight:600,
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
     borderRadius:'100%',
-    '&.holder':{
-      fill:'var(--orange)',
-      '& svg':{
-        width:42,
-        height:42,
-      }
+    '&.light-green':{
+      backgroundColor: 'var(--light-green)',
+    },
+    '&.dark-green':{
+      backgroundColor: 'var(--dark-green)',
+    },
+    '&.orange':{
+      backgroundColor: 'var(--orange)',
+    },
+    '&.bright-orange':{
+      backgroundColor:' var(--orange)',
+    },
+
+    '&.black':{
+      backgroundColor: 'var(--black)',
+    },
+  },
+  verificationMessage:{
+    color:'grey',
+    width:'70%',
+    marginTop:30,
+    display:'block',
+    margin:'auto',
+    textAlign:'center'
+  },
+  data:{
+    margin:0,
+    fontWeight:500,
+    fontSize:16,
+    '& .chip':{
+      marginRight:10,
+      fontWeight:600,
+    },
+    '&.disabled':{
+      color:'grey',
+      fontSize:13
     }
   }
-
 });

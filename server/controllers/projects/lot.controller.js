@@ -7,7 +7,10 @@ import { Lot } from "../../db/relations.js";
  * an api to get all the lots
  */
 export const getAllLot = catchAsync(async (req, res, next) => {
-  const lots = await Lot.findAll();
+  const lots = await Lot.findAll({
+
+    attributes: ["name"]
+  });
   if (!lots) return next(new AppError("Something went wrong", 500));
   return res.status(200).json({ status: "success", lots });
 });

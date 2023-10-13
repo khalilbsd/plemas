@@ -9,7 +9,9 @@ import Phase from "../../models/project/Phase.model.js";
  * an api to get all the phases
  */
 export const getAllPhases = catchAsync(async (req, res, next) => {
-  const phases = await Phase.findAll();
+  const phases = await Phase.findAll(
+   { attributes: ["name","abbreviation"]}
+  );
   if (!phases) return next(new AppError("Something went wrong", 500));
   return res.status(200).json({ status: "success", phases });
 });

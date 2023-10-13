@@ -39,23 +39,23 @@ export const Theme = createTheme({
         },
 
     },
-    // palette: {
-    //     //yellowish
-    //     primary: {
-    //         main: '#FFB400'
-    //     },
-    //     //blueish
-    //     secondary: {
-    //         main: '#192A51'
-    //     },
-    //     //greenish
-    //     info: {
-    //         main: '#073F42'
-    //     },
-    //     //orange xs
-    //     warning: {
-    //         main: '#DE541E'
-    //     }
+    palette: {
+        //yellowish
+        primary: {
+            main: '#17917f'
+        },
+        //blueish
+        secondary: {
+            main: '#e76009'
+        },
+        //greenish
+        info: {
+            main: '#aaf3e3ad'
+        },
+        //orange xs
+        warning: {
+            main: '#ffa700'
+        }
 
-    // }
+    }
 })

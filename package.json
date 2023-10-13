@@ -24,5 +24,15 @@
   "dependencies": {
     "concurrently": "^8.2.1",
     "react-svg": "^16.1.26"
+  },
+  "cspell": {
+    "language":"en,fr",
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [],
+    "ignoreWords": [],
+    "import": []
   }
 }

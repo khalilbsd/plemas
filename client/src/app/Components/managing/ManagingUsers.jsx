@@ -28,6 +28,7 @@ import AddUserForm from "./AddUserForm";
 import { notify } from "../notification/notification";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { listStyle } from "./style";
+import faAddUser from '../../public/svgs/light/user-plus.svg'
 
 // ];
 
@@ -215,7 +216,7 @@ const ManagingUsers = () => {
       <Grid item xs={12} md={12} lg={12}>
         <AddBtn
           title="Add a user"
-          icon={faUserPlus}
+          icon={faAddUser}
           handleAdd={handleModelOpen}
         />
       </Grid>

@@ -1,5 +1,5 @@
 import express from 'express'
-import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage,authenticateUserWithToken } from '../controllers/users/user.controller.js'
+import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage,authenticateUserWithToken, getPotentielProjectManager } from '../controllers/users/user.controller.js'
 import { checkUserRole, isUserAuthenticated } from '../middleware/auth.js'
 // import uploader from '../middleware/imageUploader.js'
 import createMulterMiddleware from '../middleware/uploader.js'
@@ -12,6 +12,7 @@ const profileImageUploader = createMulterMiddleware('profileImage')
 
 router
 .get('/list',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getAll)
+.get('/potentiel/manger/list',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getPotentielProjectManager)
 .post('/user_info',isUserAuthenticated,getUserInfo)
 .post('/add',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),addUser)
 .patch('/profile/change',isUserAuthenticated,profileImageUploader,updateProfile)

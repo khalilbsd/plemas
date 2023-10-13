@@ -8,7 +8,14 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { PROJECT_PHASE_STATUS_IN_PROGRESS } from "../../constants/constants.js";
-import { Lot, Phase, ProjectLots, ProjectPhase, User, UserProfile } from "../../db/relations.js";
+import {
+  Lot,
+  Phase,
+  ProjectLots,
+  ProjectPhase,
+  User,
+  UserProfile
+} from "../../db/relations.js";
 import { ForbiddenError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import Project from "../../models/project/Project.model.js";
@@ -26,27 +33,28 @@ import { createProjectPhase } from "./projectPhase.controller.js";
  *
  */
 export const getAllProjects = catchAsync(async (req, res, next) => {
-  const projects = await Project.findAll({ include:[
-    {
-      model:ProjectLots,
-      include:[Lot]
-    },
-    {
-      model:User,
-      as:'managerID',
-      include:[UserProfile]
-    },
-    {
-      model: ProjectPhase,
-      where: {  activePhase: true },
-      include:[Phase]
-    }
-  ] });
+  const projects = await Project.findAll({
+    include: [
+      {
+        model: ProjectLots,
+        include: [Lot]
+      },
+      {
+        model: User,
+        as: "managerID",
+        include: [UserProfile]
+      },
+      {
+        model: ProjectPhase,
+        where: { activePhase: true },
+        include: [Phase]
+      }
+    ]
+  });
   // console.log(projects[1].projectLots.length);
-  const projectsList=  serializeProject(projects)
+  const projectsList = serializeProject(projects);
 
-  res.status(200).json({status:"success",projects:projectsList})
-
+  res.status(200).json({ status: "success", projects: projectsList });
 });
 
 /**
@@ -59,6 +67,7 @@ export const addProject = catchAsync(async (req, res, next) => {
       new MissingParameter("name or start date or manager or code is missing")
     );
   // checking  the code :
+  console.log(data);
   if (data.code.toString().length !== 5)
     return next(new MalformedObjectId("code is not valid"));
   const isValidCode = await isCodeValid(data.code);
@@ -87,7 +96,6 @@ export const addProject = catchAsync(async (req, res, next) => {
 
   const pp = await createProjectPhase(project, data.phase, data.lot);
   if (!pp.created) {
-
     logger.error(pp.message);
     return next(
       new AppError("we couldn't create your project! try again later", 400)
@@ -159,12 +167,33 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
 
 export const checkProjectCode = catchAsync(async (req, res, next) => {
   const code = req.body.code;
+
+  console.log("CODE", code);
   if (!code) return next(new MissingParameter("code is mandatory parameter"));
-  if (!isCodeValid(code))
+
+  const findValidCode = async (currentCode) => {
+    if (currentCode.length !== 5) return false;
+    if (await isCodeValid(currentCode)) {
+      return true;
+    }
+    return false;
+  };
+
+  const validCode = await findValidCode(code);
+  console.log("CODE :", code, " VALIDATION :", validCode);
+
+  if (!validCode)
     return res
       .status(400)
-      .json({ status: "failed", message: "code is not valid" });
-  return res.status(200).json({ status: "succuss", message: "code is valid" });
+      .json({
+        status: "failed",
+        message: "code is not valid",
+        isValid: false,
+        code
+      });
+  return res
+    .status(200)
+    .json({ status: "succuss", message: "code is valid", isValid: true, code });
 });
 
 export const changeProjectPhase = catchAsync(async (req, res, next) => {

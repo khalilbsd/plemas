@@ -1,48 +1,52 @@
-:root{
-  --light-green:#17917f;
+:root {
+  --light-green: #17917f;
   /* --pastel-green:#80bbae; */
-  --dark-green:#0a523b;
-  --orange:#e76009;
-  --bright-orange:#ffa700;
+  --dark-green: #0a523b;
+  --orange: #e76009;
+  --bright-orange: #ffa700;
   --white: white;
   --white-snow: #FCF7F8;
-  --black:#1a1d31;
-  --white-hover:#fcf7f8ad;
-  --app-bg-color:#e8e8e8;
+  --black: #1a1d31;
+  --white-hover: #fcf7f8ad;
+  --app-bg-color: #e8e8e8;
   /* --pastel-orange:#ffc2a3; */
-  --pastel-orange:#f8af128e;
+  --pastel-orange: #f8af128e;
 
-  --pastel-blue:#50aeeca4;
-  --pastel-green:#aaf3e3ad;
-  --light-blue:rgb(16, 57, 150)
+  --pastel-blue: #50aeeca4;
+  --pastel-green: #aaf3e3ad;
+  --light-blue: rgb(16, 57, 150)
 }
 
 
 .App {
   /* text-align: center; */
   min-height: 100vh;
-  background:var(--app-bg-color);
+  background: var(--app-bg-color);
   display: flex;
-  gap: 30px;
-  padding-right: 30px;
-  color:var(--black)
-
+  gap: 10px;
+  padding-right: 20px;
+  color: var(--black)
 }
 
-.sidebar-container{
+.sidebar-container {
   padding-left: 20px;
   padding-top: 20px;
   padding-bottom: 20px;
 
 }
 
-.main-content{
-  padding:20px 0;
+.main-content {
+  padding: 20px 30px;
   width: 100%;
+  max-width: 100%;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+
   /* display: flex;
     align-items: center; */
 
 }
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -73,6 +77,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

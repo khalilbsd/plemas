@@ -41,8 +41,16 @@ export const getAll = catchAsync(async (req, res, next) => {
   });
   // console.log(users);
   const simplifiedUsers = users.map((user) => {
-    const { id, email, role, isSuperUser, createdAt, updatedAt,isBanned,active } =
-      user.toJSON();
+    const {
+      id,
+      email,
+      role,
+      isSuperUser,
+      createdAt,
+      updatedAt,
+      isBanned,
+      active
+    } = user.toJSON();
     const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
     const { name, lastName } = userProfile || "";
     return {
@@ -55,7 +63,38 @@ export const getAll = catchAsync(async (req, res, next) => {
       name,
       lastName,
       isBanned,
-active
+      active
+    };
+  });
+
+  res.json({ users: simplifiedUsers });
+});
+
+export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
+  const users = await User.findAll({
+    where: {
+      isBanned: false
+    },
+    attributes: ["id", "email"],
+    include: [
+      {
+        model: UserProfile,
+        attributes: ["name", "lastName", "image", "poste"]
+      }
+    ]
+  });
+  // console.log(users);
+  const simplifiedUsers = users.map((user) => {
+    const { id, email } = user.toJSON();
+    const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
+    const { name, lastName, image, poste } = userProfile || "";
+    return {
+      id,
+      email,
+      lastName,
+      name,
+      image,
+      poste
     };
   });
 
@@ -79,19 +118,15 @@ export const addUser = catchAsync(async (req, res, next) => {
     // next(new AppError("user already exists", 403));
   }
   // password encryption
-  let emailToken
+  let emailToken;
   if (newUser.password) {
     const encrypted = await encryptPassword(newUser.password);
     newUser.password = encrypted;
   } else {
     //generate authentication token
-    const token  = await createPasswordSetToken()
-
-
-
+    const token = await createPasswordSetToken();
 
     newUser.token = token;
-
   }
 
   const isUserCreated = await User.create({ ...newUser });
@@ -181,11 +216,11 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
 
 //   return null;
 // };
-export const getUserByEmail = async (email,includeProfile = true) => {
+export const getUserByEmail = async (email, includeProfile = true) => {
   if (!email) return null;
 
   const queryOptions = {
-    where: { email: email, isBanned: false },
+    where: { email: email, isBanned: false }
   };
 
   // Conditionally include the UserProfile relation based on includeProfile parameter
@@ -259,7 +294,6 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   let url;
   if (!req.file) return next(new AppError("no file has been provided", 500));
 
-
   // console.log("request file size",req.file.size,"is above 5mo",req.file.size > 5 * 1024 * 1024);
 
   if (req.file.size > 5 * 1024 * 1024)
@@ -274,11 +308,14 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   userProfile.save();
   return res
     .status(200)
-    .json({ status: "success", message: "profile image updated successfully",url});
+    .json({
+      status: "success",
+      message: "profile image updated successfully",
+      url
+    });
 });
 
 export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
-
   const { token } = req.params;
 
   if (!token) return next(new ElementNotFound("Token was not supplied"));
@@ -288,8 +325,7 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
   if (!isValidToken)
     return next(new MalformedObjectId("token maybe malformed "));
 
-//we need to decrypt the public token to match the private token
-
+  //we need to decrypt the public token to match the private token
 
   const user = await User.findOne({
     where: {
@@ -302,10 +338,7 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
 
   if (!user) return next(new ElementNotFound("no such user"));
   //validate the token and erase it
-  res.status(200).json({ message: "token validated: Welcome", email:user.email});
+  res
+    .status(200)
+    .json({ message: "token validated: Welcome", email: user.email });
 });
-
-
-
-
-
