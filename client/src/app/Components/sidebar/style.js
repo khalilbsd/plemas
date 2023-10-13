@@ -52,7 +52,7 @@ export const styles = createUseStyles({
   },
 
   sidebarHeader: {
-    height: 70,
+    height: 50,
     // minWidth:70,
     // borderBottom: "1px solid lightgrey",
     color: "var(--black)",
@@ -60,7 +60,7 @@ export const styles = createUseStyles({
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
-    padding: "0 10px",
+    padding: "0 40px",
 
     borderRadius: 10,
     position: "relative",

@@ -6,12 +6,13 @@ export const styles = createUseStyles({
     height:'100%'
   },
   topLogo:{
-    height:100,
+    height:60,
     padding:'20px 50px',
     display:'flex',
+    justifyContent:'center',
     gap: 30,
     '& img':{
-      height:80,
+      height:60,
     }
   },
   bgLogo:{
@@ -22,7 +23,7 @@ export const styles = createUseStyles({
       transform:'rotate(90deg)'
   },
   bg: {
-    height: "calc(80% - 40px - 100px)",
+    height: "calc(100% - 40px )",
     display: "flex",
     position:'relative',
     justifyContent:'center',

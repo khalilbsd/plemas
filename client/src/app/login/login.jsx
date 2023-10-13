@@ -53,21 +53,25 @@ const Login = () => {
 
   return (
     <div className={classes.loginPage}>
-      <div className={classes.topLogo}>
+      {/* <div className={classes.topLogo}>
         <ReactSVG src={logo} alt="logo" />
 
-      </div>
+      </div> */}
 
     <div className={classes.bg}>
-      <div className={classes.bgLogo}>
+      {/* <div className={classes.bgLogo}>
       <ReactSVG src={logo} alt="logo" />
-      </div>
+      </div> */}
       <Box className={classes.loginBox}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
 
             <Grid item xs={12} lg={12} md={12}>
-              <h1 className={classes.boxTitle}>Login</h1>
+              {/* <h1 className={classes.boxTitle}>Login</h1> */}
+              <div className={classes.topLogo}>
+        <ReactSVG src={logo} alt="logo" />
+
+      </div>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
               {loading && (
