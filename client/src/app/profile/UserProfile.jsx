@@ -42,7 +42,7 @@ const UserProfile = () => {
   return (
     <div className={classes.profileContainer}>
       {/* left right layout */}
-      <Grid container spacing={10}>
+      <Grid container spacing={5}>
         <Grid item xs={12} sm={12} md={12} lg={6} xl={4} >
           <div className={classes.hoverCard}>
 

@@ -1,0 +1,325 @@
+import {
+  FormControl,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField
+} from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { ReactSVG } from "react-svg";
+import {
+  NOTIFY_ERROR,
+  NOTIFY_SUCCESS
+} from "../../../../../constants/constants";
+import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
+import {
+  useCreateProjectMutation,
+  useGenerateProjectCodeMutation,
+  useGetLotsMutation,
+  useGetPhasesMutation,
+  useGetPotentielManagersMutation
+} from "../../../../../store/api/projects.api";
+import {
+  setAddProjectCode,
+  setLot,
+  setPhases,
+  setPotentielManagers
+} from "../../../../../store/reducers/manage.reducer";
+import faClose from "../../../../public/svgs/light/xmark.svg";
+import Loading from "../../../loading/Loading";
+import { notify } from "../../../notification/notification";
+import { addUserFormStyles, projectsStyles } from "../../style";
+import SelectLot from "../SelectLot";
+import SearchProjectCode from "./SearchProjectCode";
+import LinkProject from "./LinkProject";
+
+
+//just for colorizing
+function getRandomColor() {
+  const colors = [
+    "light-green",
+    "dark-green",
+    "orange",
+    "bright-orange",
+    "black"
+  ];
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
+}
+
+const ProjectCreationForm = ({
+  handleClose,
+  formOpen,
+
+  codeRef,
+  errorMessage,
+  setNewProject,
+  newProject
+  //   addForm
+}) => {
+  const projectState = useGetStateFromStore("manage", "addProject");
+
+  // const codeRef = useRef();
+  const classes = projectsStyles();
+  const externalClasses = addUserFormStyles();
+  const [getPotentielManagers, {}] = useGetPotentielManagersMutation();
+  const [generateProjectCode, { isLoading: loadingCode }] =
+    useGenerateProjectCodeMutation();
+  const [getLots, { isLoading: loadingLots }] = useGetLotsMutation();
+  const [getPhases, {}] = useGetPhasesMutation();
+
+
+
+  //load the the necessary  data from the apis
+  useEffect(() => {
+    async function loadProjectCodeSuggestion() {
+      try {
+        const data = await generateProjectCode().unwrap();
+        // setNewProject({...newProject,code:{...newProject.code,value:data.validCode}})
+        dispatch(setAddProjectCode(data));
+      } catch (e) {
+        notify(NOTIFY_ERROR, e?.data?.message);
+      }
+    }
+    async function loadPhasesAndLots() {
+      try {
+        const phasesData = await getPhases().unwrap();
+        const lotsData = await getLots().unwrap();
+        dispatch(setPhases(phasesData?.phases));
+        dispatch(setLot(lotsData?.lots));
+      } catch (e) {
+        handleClose();
+        notify(NOTIFY_ERROR, e?.data?.message);
+      }
+    }
+
+    async function loadPotentielManagers() {
+      try {
+        const data = await getPotentielManagers().unwrap();
+        dispatch(setPotentielManagers(data.users));
+      } catch (e) {
+        notify(NOTIFY_ERROR, e?.data?.message);
+      }
+    }
+    if (formOpen) {
+      loadProjectCodeSuggestion();
+      loadPhasesAndLots();
+      loadPotentielManagers();
+    }
+  }, [formOpen]);
+
+  const dispatch = useDispatch();
+  const handleDataChange = (e) => {
+    setNewProject({
+      ...newProject,
+      [e.target.name]: { ...newProject[e.target.name], value: e.target.value }
+    });
+  };
+
+  const handleLotChange = (event) => {
+    const {
+      target: { value }
+    } = event;
+
+    setNewProject({
+      ...newProject,
+      lot: {
+        ...newProject.lot,
+        value: typeof value === "string" ? value.split(",") : value
+      }
+    });
+  };
+
+  const getErrorMessage = (name) => {
+    if (errorMessage.filedName === name) {
+      return errorMessage;
+    }
+  };
+
+  // console.log(newProject);
+
+  return (
+    <Grid container spacing={2}>
+      <div className={classes.closeModalBtn}>
+        <button onClick={handleClose}>
+          <ReactSVG src={faClose} />
+        </button>
+      </div>
+      {/* <Grid item xs={12} sm={12} md={12} lg={12}>
+        <p className={classes.info}>
+          Dans cette étape, vous définirez les informations générales du projet.
+          Certains champs ne seront pas affichés ici mais dans la dernière étape
+          de la création car ils sont remplis automatiquement et ne peuvent pas
+          être modifiés.
+        </p>
+      </Grid> */}
+      <Grid item xs={12} sm={12} md={4} lg={2}>
+        <SearchProjectCode
+          getErrorMessage={getErrorMessage}
+          codeRef={codeRef}
+          errorMessage={errorMessage}
+          loading={loadingCode}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={4} lg={4}>
+        <TextField
+          error={getErrorMessage("name")?.error}
+          type="text"
+          variant="outlined"
+          name="name"
+          defaultValue={newProject.name.value}
+          id="name"
+          label="Nom du projet"
+          onChange={handleDataChange}
+          required
+          helperText={
+            getErrorMessage("name")?.error && getErrorMessage("name").message
+          }
+          className={externalClasses.inputs}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={4} lg={2}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} error>
+          <DatePicker
+            onError={() => getErrorMessage("startDate")?.error}
+            className={externalClasses.inputs}
+            label="Date début de projet"
+            // value={newProject.startDate}
+            slotProps={{
+              textField: {
+                helperText:
+                  getErrorMessage("startDate")?.error &&
+                  getErrorMessage("startDate")?.message
+              }
+            }}
+            defaultValue={newProject.startDate.value}
+            onChange={(newValue) =>
+              setNewProject({
+                ...newProject,
+                startDate: {
+                  ...newProject.startDate,
+                  value: dayjs(newValue).format("DD/MM/YYYY")
+                }
+              })
+            }
+          />
+        </LocalizationProvider>
+      </Grid>
+      <Grid item xs={12} sm={12} md={4} lg={4}>
+        <FormControl
+          fullWidth
+          required
+          error={getErrorMessage("manager")?.error}
+        >
+          <InputLabel id="manager-select-label">Chef de projet</InputLabel>
+          <Select
+            name="manager"
+            labelId="manager-select-label"
+            id="manager"
+            value={newProject.manager.value}
+            label="chef de projet"
+            required
+            onChange={handleDataChange}
+            className={classes.managerSelect}
+          >
+            {projectState.managers.map((manager, managerIdx) => (
+              <MenuItem
+                className={classes.MenuItem}
+                key={managerIdx}
+                value={manager.id}
+              >
+                <div className={classes.manager}>
+                  {manager.image ? (
+                    <img
+                      src={`${process.env.REACT_APP_SERVER_URL}${manager.image}`}
+                      className={classes.avatar}
+                    />
+                  ) : (
+                    <span className={`${classes.avatar} ${getRandomColor()}`}>
+                      {manager.name[0]}
+                      {manager.lastName[0]}
+                    </span>
+                  )}
+                  <div className="info">
+                    <span className="name">{`${manager.name} ${manager.lastName}`}</span>
+                    <span className="email">{manager.email}</span>
+                    <span className="poste">{manager.poste}</span>
+                  </div>
+                </div>
+              </MenuItem>
+            ))}
+          </Select>
+          {getErrorMessage("manager")?.error && (
+            <FormHelperText>
+              {getErrorMessage("manager")?.message}
+            </FormHelperText>
+          )}
+        </FormControl>
+      </Grid>
+
+      <Grid item xs={12} sm={12} md={4} lg={2}>
+        {/* phase selector */}
+        <FormControl fullWidth required error={getErrorMessage("phase")?.error}>
+          <InputLabel id="phase-select-label">Phase</InputLabel>
+          <Select
+            name="phase"
+            labelId="phase-select-label"
+            id="phase"
+            value={newProject.phase.value}
+            label="Phase"
+            required
+            onChange={handleDataChange}
+          >
+            {projectState.phases.map((phase, phaseIdx) => (
+              <MenuItem key={phaseIdx} value={phase.name}>
+                {phase.name}
+              </MenuItem>
+            ))}
+          </Select>
+          {getErrorMessage("phase")?.error && (
+            <FormHelperText>{getErrorMessage("phase")?.message}</FormHelperText>
+          )}
+        </FormControl>
+      </Grid>
+      <Grid item xs={12} sm={12} md={4} lg={4}>
+        <TextField
+          type="number"
+          variant="outlined"
+          name="priority"
+          id="priority"
+          label="Priorité"
+          onChange={handleDataChange}
+          className={externalClasses.inputs}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} md={4} lg={2}>
+        {!loadingLots ? (
+          <>
+            <SelectLot
+              classes={externalClasses.inputs}
+              lots={projectState.lots}
+              initialValue={newProject.lot.value}
+              handleChange={handleLotChange}
+              error={getErrorMessage("lot")?.error}
+              errorText={getErrorMessage("lot")?.message}
+            />
+          </>
+        ) : (
+          <Loading color="var(--orange)" />
+        )}
+      </Grid>
+
+      <Grid item xs={12} sm={12} md={4} lg={4}>
+            <LinkProject />
+      </Grid>
+    </Grid>
+  );
+};
+
+export default ProjectCreationForm;

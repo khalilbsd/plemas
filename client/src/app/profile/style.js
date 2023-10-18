@@ -45,22 +45,28 @@ export const styles = createUseStyles({
     fontSize: 14
   },
   updateProfile: {
-    marginTop: 5,
-    width: "70%",
-    border: "none",
-    fontWeight: 600,
-    fontSize: 16,
-    height: 40,
-    borderRadius: 5,
-    backgroundColor: "var(--light-green)",
+    width: "100%",
+    padding: "15px 0",
     color: "var(--white)",
-    borderRadius: 80,
-    margin: "auto",
-    boxShadow: "0px 15px 24px -15px rgb(0 0 0)",
+    border: "none",
+    borderRadius: 5,
+    backgroundColor: "var(--dark-green)",
+    fontWeight: 500,
+    textTransform: "capitalize",
+    fontFamily: "'MyriadPro', sans-serif !important",
+    fontSize: 15,
     transition: "0.3s all ease-in-out",
     "&:hover": {
+      backgroundColor: "var(--light-green)"
+    },
+    '&.orange':{
       backgroundColor: "var(--orange)"
+    },
+    '&.orange:hover':{
+      // backgroundColor: "var(--orange)",
+      opacity:0.7
     }
+
   },
   input: {
     width: "100%"
@@ -169,7 +175,8 @@ export const styles = createUseStyles({
     }
   },
   keyFigureIconContainer: {
-    boxShadow: "0px 15px 24px -8px rgb(0 0 0)",
+    // boxShadow: "0px 15px 24px -8px rgb(0 0 0)",
+    border:'3px solid white',
     width: 34,
     height: 34,
     display: "flex",
@@ -177,7 +184,7 @@ export const styles = createUseStyles({
     alignItems: "center",
     borderRadius: "100%",
     position: "absolute",
-    top: -17,
+    top: -20,
     backgroundColor: "var(--orange)",
     "& svg": {
       width: 18,

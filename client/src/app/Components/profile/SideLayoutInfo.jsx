@@ -103,7 +103,7 @@ const SideLayoutInfo = () => {
                 </>
               )}
               <span className={classes.labels}>
-                {!edit ? "Full name" : "First Name and LastName"}
+                {!edit ? "Nom complet" : "Nom et prénom"}
               </span>
             </Grid>
             <Grid className={classes.formItem} item xs={12} lg={12}>
@@ -114,14 +114,14 @@ const SideLayoutInfo = () => {
               <Grid container alignItems="center">
                 <Grid item xs={8} sm={8} lg={8}>
                   <h2 className={classes.profileInfo}>*******************</h2>
-                  <span className={classes.labels}>Password</span>
+                  <span className={classes.labels}>Mot de passe</span>
                 </Grid>
                 <Grid sx={{ textAlign: "right" }} item xs={4} sm={4} lg={4}>
                   <Link
                     className={classes.changePasswordBtn}
                     to="/settings/account/change-password"
                   >
-                    Change
+                    Modifier
                   </Link>
                 </Grid>
               </Grid>
@@ -129,7 +129,7 @@ const SideLayoutInfo = () => {
             <Grid className={classes.formItem} item xs={12} lg={12}>
               {!edit ? (
                 <h2 className={classes.profileInfo}>
-                  {profile.poste ? profile.poste : "Please enter your poste"}
+                  {profile.poste ? profile.poste : "Veuillez saisir votre poste"}
                 </h2>
               ) : (
                 <TextField
@@ -149,7 +149,7 @@ const SideLayoutInfo = () => {
                 <h2 className={classes.profileInfo}>
                   {profile.phone
                     ? profile.phone
-                    : "Please enter your phone number"}
+                    : "Veuillez saisir votre numéro de téléphone"}
                 </h2>
               ) : (
                 <TextField
@@ -161,7 +161,7 @@ const SideLayoutInfo = () => {
                   defaultValue={profile.phone}
                 />
               )}
-              <span className={classes.labels}>Phone</span>
+              <span className={classes.labels}>Numéro du téléphone</span>
             </Grid>
             <Grid
               className={classes.formItem}
@@ -175,7 +175,7 @@ const SideLayoutInfo = () => {
                 onClick={!edit ? handleEdit : saveProfile}
                 className={classes.updateProfile}
               >
-                {!edit ? "Update My profile" : "Save My profile"}{" "}
+                {!edit ? "Mettre à jour mon profil" : "Sauvegarder mon profil"}{" "}
               </button>
             </Grid>
             {edit && (
@@ -190,9 +190,9 @@ const SideLayoutInfo = () => {
                 <button
                   type="button"
                   onClick={handleEdit}
-                  className={classes.updateProfile}
+                  className={`${classes.updateProfile} orange`}
                 >
-                  Cancel
+                  Annuler
                 </button>
               </Grid>
             )}

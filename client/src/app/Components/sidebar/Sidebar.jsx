@@ -60,10 +60,13 @@ const SidebarComponent = () => {
           <MenuItem
             icon={
               <div className={classes.profileImageContainer}>
-                <img
+                {user?.profile?.image?<img
                   src={`${process.env.REACT_APP_SERVER_URL}${user?.profile?.image}`}
                   className={classes.profileImage}
                 />
+                :
+
+                  <span className="initials">{user?.profile?.name[0]}{user?.profile?.lastName[0]}</span>}
               </div>
             }
             className={classes.profile}

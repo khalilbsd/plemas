@@ -6,7 +6,7 @@ const Project = database.define(
   {
     code: {
       type: DataTypes.INTEGER,
-      unique: true,
+      unique: false,
       allowNull: false
     },
     customId: {
@@ -15,7 +15,7 @@ const Project = database.define(
     },
     name: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: false,
       allowNull: false
     },
 
@@ -30,10 +30,6 @@ const Project = database.define(
     priority: {
       type: DataTypes.INTEGER
     },
-    overAllStatus: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
-    },
     //references keys
     createdBy: {
       type: DataTypes.INTEGER,
@@ -47,7 +43,14 @@ const Project = database.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
-    }
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
+
+
   },
   { timestamps: true }
 );

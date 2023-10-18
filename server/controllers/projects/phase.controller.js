@@ -59,3 +59,12 @@ const filters= req.query
   return res.status(200).json({ status: "success", phases });
 
 });
+
+
+export const getPhaseByName=async (name)=>{
+  const phase = await Phase.findOne({where:{name}})
+  return phase
+
+
+}
+

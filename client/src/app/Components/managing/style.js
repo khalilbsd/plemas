@@ -6,7 +6,7 @@ export const btnStyle = createUseStyles({
     height: 50,
     borderRadius: 5,
     color: "var(--white)",
-    marginBottom: 10,
+    // marginBottom: 10,
     border: "none",
     fontFamily: "'MyriadPro', sans-serif !important",
     display: "flex",
@@ -58,6 +58,7 @@ export const addUserFormStyles = createUseStyles({
     width: "100%",
     padding: "15px 0",
     color: "var(--white)",
+    height:'100%',
     border: "none",
     borderRadius: 5,
     backgroundColor: "var(--dark-green)",
@@ -94,7 +95,7 @@ export const projectsStyles = createUseStyles({
   },
   listContainer: {
     minHeight: "",
-    height: "calc(80vh - 20px)",
+    // height: "calc(80vh - 20px)",
     maxHeight: "80vh",
     // overflowY:'scroll',
     backgroundColor: "var(--white)",
@@ -130,19 +131,23 @@ export const projectsStyles = createUseStyles({
     background: "white",
     borderRadius: 10,
     width: "calc(100% - 80px)",
-    margin: "auto"
-  },
-  rowData: {
-    display: "flex",
-    padding: '5px 0',
-    margin: "5px 0",
-    width: "100%",
-    borderRadius: 10,
-    justifyContent: "space-between",
-    transition: "all 0.3s ease-in-out",
-    "&:hover": {
-      backgroundColor: "var(--app-bg-color)"
-    }
+    margin: "auto",
+    "& .row-data": {
+      display: "flex",
+      padding: '5px 0',
+      margin: "5px 0",
+      width: "100%",
+      borderRadius: 10,
+      justifyContent: "space-between",
+      transition: "all 0.3s ease-in-out",
+      "&:hover": {
+        backgroundColor: "var(--app-bg-color)"
+      },
+      '&.active':{
+        backgroundColor:'var(--pastel-green)',
+        // color:'var(--white)'
+      }
+    },
   },
   dataList: {
     display: "flex",
@@ -150,18 +155,18 @@ export const projectsStyles = createUseStyles({
     gap: 10,
     flex:1
   },
-  avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: "100%",
-    "&.holder": {
-      fill: "var(--orange)",
-      "& svg": {
-        width: 42,
-        height: 42
-      }
-    }
-  },
+  // avatar: {
+  //   width: 32,
+  //   height: 32,
+  //   borderRadius: "100%",
+  //   "&.holder": {
+  //     fill: "var(--orange)",
+  //     "& svg": {
+  //       width: 32,
+  //       height: 32
+  //     }
+  //   }
+  // },
   addBtnContainer: {
     display: "flex",
     justifyContent: "flex-end"
@@ -169,7 +174,7 @@ export const projectsStyles = createUseStyles({
   closeModalBtn: {
     position: "absolute",
     right: 20,
-    top: 20,
+    top: -16,
     "& button": {
       backgroundColor: "unset",
       outline: "none",
@@ -181,6 +186,7 @@ export const projectsStyles = createUseStyles({
       alignItems: "center",
       justifyContent: "center",
       transition: "all 0.3s ease-in-out",
+      backgroundColor: "var(--toastify-color-error)",
       "&:hover": {
         backgroundColor: "lightgrey"
       }
@@ -188,7 +194,7 @@ export const projectsStyles = createUseStyles({
     "& svg": {
       width: 22,
       height: 22,
-      fill: "grey"
+      fill:'white',
     }
   },
   modalTitle: {
@@ -213,6 +219,7 @@ export const projectsStyles = createUseStyles({
 
   },
   manager:{
+    lineHeight:'12px',
     display:'flex',gap:10,
     alignItems:'center',
     '& .info':{
@@ -230,14 +237,15 @@ export const projectsStyles = createUseStyles({
     }
   },
   avatar:{
-    width:42,
-    height:42,
+    width:32,
+    height:32,
     color:'white',
     fontWeight:600,
     display:'flex',
     justifyContent:'center',
     alignItems:'center',
     borderRadius:'100%',
+    fontSize:13,
     '&.light-green':{
       backgroundColor: 'var(--light-green)',
     },
@@ -275,5 +283,49 @@ export const projectsStyles = createUseStyles({
       color:'grey',
       fontSize:13
     }
-  }
+  },
+  projectChoice:{
+    width:'100%',
+    borderRadius:10,
+    backgroundColor:'unset',
+    textAlign:'left',
+    margin:'5px 0 ',
+    height:70,
+    border:'1px solid lightgrey',
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    padding:'10px 20px',
+    transition:'all  0.3s ease-in-out',
+    '& .bold':{
+     fontWeight:600,
+     fontSize:14,
+     color:'var(--black)'
+    },
+    fontSize:13,
+    color:'darkgrey',
+    '&:hover':{
+     backgroundColor:'var(--pastel-green)'
+    },
+    '&[disabled]':{
+      '& .bold':{
+        color:'grey',
+      },
+      '&:hover':{
+        backgroundColor:'var(--app-bg)'
+       },
+    },
+  },
+  addProjectForm:{
+    backgroundColor:'var(--white)',
+    padding:'20px 40px ',
+    borderRadius:30,
+    position:'relative'
+  },
+  // managerSelect:{
+  //   '& .MuiSelect-select':{
+  //     padding:11
+
+  //   }
+  // }
 });

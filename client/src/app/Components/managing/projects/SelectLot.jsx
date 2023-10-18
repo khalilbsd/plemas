@@ -54,19 +54,19 @@ export default function SelectLot({
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (
-                <Chip key={value} label={value} />
+                <Chip size="small" key={value} label={value} />
               ))}
             </Box>
           )}
           MenuProps={MenuProps}
         >
-          {lots.map((name) => (
+          {lots.map((lot) => (
             <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, initialValue, theme)}
+              key={lot.name}
+              value={lot.name}
+              style={getStyles(lot.name, initialValue, theme)}
             >
-              {name}
+              {lot.name}
             </MenuItem>
           ))}
         </Select>

@@ -26,6 +26,7 @@ import AuthConfirmation from "../confirmation/AuthConfirmation";
 import ResetPassword from "../reset_password/ResetPassword";
 import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";
 import ManageProjects from "../projects/ManageProjects";
+import ProjectDetails from "../projects/ProjectDetails";
 
 export const anonymousUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },
@@ -112,6 +113,7 @@ export const protectedUrls = [
     icon: faUser,
     sideBar: true
   },
+
   {
     role: SUPERUSER_ROLE,
     title: "Manage Projects",
@@ -119,7 +121,16 @@ export const protectedUrls = [
     Component: <ManageProjects />,
     icon: faProject,
     sideBar: true
-  }
+  },
+  {
+    role: ALL_ROLES,
+    title: "Detail de projet",
+    path: "/projects/:projectID",
+    Component: <ProjectDetails />,
+
+    sideBar: false
+  },
+
 ];
 
 export function getRolesBasedUrls(user, role = null) {

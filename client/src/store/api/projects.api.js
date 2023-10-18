@@ -10,7 +10,7 @@ export const projectApi = api.injectEndpoints({
     }),
     generateProjectCode: builder.mutation({
       query: () => ({
-        url: "projects/generate/code",
+        url: `projects/generate/code`,
         method: "GET"
       })
     }),
@@ -46,6 +46,12 @@ export const projectApi = api.injectEndpoints({
         data:data
       })
     }),
+    getChoiceForProjectCreation :builder.mutation({
+      query:() =>({
+        url:'projects/creation/choice',
+        method:'GET'
+      })
+    })
   })
 });
 
@@ -56,5 +62,6 @@ export const {
   useGetPhasesMutation,
   useGetLotsMutation,
   useGetPotentielManagersMutation,
-  useCreateProjectMutation
+  useCreateProjectMutation,
+  useGetChoiceForProjectCreationMutation
 } = projectApi;

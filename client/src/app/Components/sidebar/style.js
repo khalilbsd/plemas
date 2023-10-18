@@ -27,7 +27,8 @@ export const styles = createUseStyles({
       },
       "& $profileImageContainer": {
         width: 72,
-        height: 72
+        height: 72,
+
       }
     },
 
@@ -191,6 +192,12 @@ export const styles = createUseStyles({
   },
   profileImageContainer: {
     // width:72,
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
+    fontWeight:600,
+    fontSize:32,
+    backgroundColor:'var(--light-green)',
     height: "100%",
     borderRadius: "100%",
     overflow: "hidden"

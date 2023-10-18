@@ -2,7 +2,7 @@ import { Lot, ProjectLots } from "../../db/relations.js";
 import logger from "../../log/config.js";
 import { isLotsValid } from "./lot.controller.js";
 
-export const createProjectLot = async (projectID, lots, transaction) => {
+export const createProjectLot = async (projectID, lots) => {
   if (!projectID || !lots)
     return {
       created: false,
@@ -11,7 +11,7 @@ export const createProjectLot = async (projectID, lots, transaction) => {
     };
 
   try {
-    var projectLots;
+    var projectLots = [];
 
     const isAllLotsValid = await isLotsValid(lots);
 
@@ -37,10 +37,11 @@ export const createProjectLot = async (projectID, lots, transaction) => {
           message: "this project already have this lot assigned to "
         };
 
-      await ProjectLots.create(
-        { projectID, lotID },
-        { transaction: transaction }
+      const lot = await ProjectLots.create(
+        { projectID, lotID }
+        // { transaction: transaction }
       );
+      projectLots.push(lot);
     });
 
     return {
@@ -50,7 +51,10 @@ export const createProjectLot = async (projectID, lots, transaction) => {
     };
   } catch (error) {
     logger.error(error);
-    await transaction.rollback();
     return { created: false, message: error, projectPhase: undefined };
   }
+};
+
+const isLotsExist = async (lots) => {
+  return isLotsValid(lots);
 };

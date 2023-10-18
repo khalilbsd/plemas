@@ -22,8 +22,7 @@ User.hasMany(ResetPasswordToken, {
   onUpdate: "CASCADE"
 });
 
-
-User.hasMany(Project,{foreignKey:'manager'})
+User.hasMany(Project, { foreignKey: "manager" });
 User.sync({ force: force }).then(() => {
   logger.debug("User model synced with the database");
 });
@@ -50,61 +49,50 @@ ResetPasswordToken.sync({ force: force }).then(() => {
 //references  project
 import ProjectLots from "../models/project/ProjectLot.model.js";
 import Lot from "../models/project/Lot.model.js.js";
-import ProjectPhase from "../models/project/ProjectPhase.model.js";
 import Phase from "../models/project/Phase.model.js";
-
-
 
 Project.belongsToMany(Lot, {
   through: ProjectLots,
   foreignKey: "projectID"
 });
 
-Project.belongsTo(User,{foreignKey:'manager',as:'managerID'})
+Project.belongsTo(User, { foreignKey: "manager", as: "managerID" });
 
-Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID" });
+Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID"});
 
+Project.belongsTo(Phase, { foreignKey: "phaseID" });
+Phase.hasMany(Project, { foreignKey: "phaseID" });
+// First, synchronize the Lot model
+Project.hasOne(Project, { foreignKey: "prevPhase" });
+Project.belongsTo(Project, { foreignKey: "prevPhase" });
 
-Project.belongsToMany(Phase, {
-  through: ProjectPhase,
-  foreignKey: "projectID"
+Project.hasMany(ProjectLots, { foreignKey: "projectID" });
+ProjectLots.belongsTo(Project, { foreignKey: "projectID" });
+Lot.hasMany(ProjectLots, {
+  foreignKey: "lotID",
+});
+ProjectLots.belongsTo(Lot, {
+  foreignKey: "lotID",
+
 });
 
-Phase.belongsToMany(Project, { through: ProjectPhase, foreignKey: "phaseID" });
-// First, synchronize the Lot model
-
-Project.hasMany(ProjectPhase,{foreignKey:"projectID"})
-Project.hasMany(ProjectLots,{foreignKey:"projectID"})
-ProjectPhase.belongsTo(Project,{foreignKey:"projectID"})
-ProjectLots.belongsTo(Project,{foreignKey:"projectID"})
-
-Phase.hasMany(ProjectPhase,{foreignKey:"phaseID"})
-ProjectPhase.belongsTo(Phase,{foreignKey:"phaseID"})
-Lot.hasMany(ProjectLots,{foreignKey:"lotID"})
-ProjectLots.belongsTo(Lot,{foreignKey:"lotID"})
-
-
 Lot.sync({ force: force }).then(() => {
-    logger.debug("Lot model synced with the database");
-  });
+  logger.debug("Lot model synced with the database");
+});
 
-  // Then, synchronize the Project model
-  Project.sync({ force: force }).then(() => {
-    logger.debug("Project model synced with the database");
-  });
+// Then, synchronize the Project model
+Project.sync({ force: force }).then(() => {
+  logger.debug("Project model synced with the database");
+});
 
-  // Then, synchronize the Phase model
-  Phase.sync({ force: force }).then(() => {
-    logger.debug("Phase model synced with the database");
-  });
+// Then, synchronize the Phase model
+Phase.sync({ force: force }).then(() => {
+  logger.debug("Phase model synced with the database");
+});
 
-  // Finally, synchronize the ProjectLots model
-  ProjectLots.sync({ force: force }).then(() => {
-    logger.debug("ProjectLot model synced with the database");
-  });
+// Finally, synchronize the ProjectLots model
+ProjectLots.sync({ force: force }).then(() => {
+  logger.debug("ProjectLot model synced with the database");
+});
 
-  // Optionally, synchronize the ProjectPhase model if needed
-  ProjectPhase.sync({ force: force }).then(() => {
-    logger.debug("ProjectPhase model synced with the database");
-  })
-export { User, UserProfile, Lot, Project, ProjectLots, Phase, ProjectPhase };
+export { User, UserProfile, Lot, Project, ProjectLots, Phase };
