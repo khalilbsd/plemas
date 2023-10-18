@@ -57,7 +57,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 /**
  * add a project
  */
-export const addProject = catchAsync(async (req, res, next, transaction) => {
+export const addProject = catchAsync(async (req, res, next) => {
   const data = req.body;
   console.log(data);
   if (!data.name || !data.startDate || !data.manager || !data.code)
@@ -115,7 +115,7 @@ export const addProject = catchAsync(async (req, res, next, transaction) => {
   try {
     const newProject = await Project.create(
       { ...project, customId: customID },
-      { transaction: transaction }
+
     );
 
     console.log("new project");
@@ -139,7 +139,7 @@ export const addProject = catchAsync(async (req, res, next, transaction) => {
             projectID: newProject.id,
             lotID: isAllLotsValid[lotID]
           },
-          { transaction: transaction }
+
         );
       }
     }
@@ -151,7 +151,7 @@ export const addProject = catchAsync(async (req, res, next, transaction) => {
   } catch (error) {
     console.log(error);
     logger.error(error);
-    await transaction.rollback();
+    // await transaction.rollback();
     return next(new UnknownError("Internal server error "));
   }
 });
