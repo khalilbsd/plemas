@@ -5,7 +5,8 @@
   "description": "server folder",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon --config nodemon.json server.js",
+    "start": "node server.js --prod",
+    "start:dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

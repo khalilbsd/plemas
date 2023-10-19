@@ -19,7 +19,17 @@ import passport from "./controllers/auth/passport-config.js";
 import path from "path";
 import { fileURLToPath } from "url";
 const app = express();
-dotenv.config();
+
+
+console.log(process.argv.includes('--prod') ? 'production' : 'development');
+
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: '.env.prod' });
+} else {
+  dotenv.config({ path: '.env.dev' });
+}
+
+// dotenv.config();
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
