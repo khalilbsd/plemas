@@ -5,6 +5,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Skeleton,
   TextField
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -38,6 +39,7 @@ import { addUserFormStyles, projectsStyles } from "../../style";
 import SelectLot from "../SelectLot";
 import SearchProjectCode from "./SearchProjectCode";
 import LinkProject from "./LinkProject";
+import PriorityField from "./PriorityField";
 
 
 //just for colorizing
@@ -122,6 +124,13 @@ const ProjectCreationForm = ({
     });
   };
 
+
+  const handlePriority = (selectedPriority)=>{
+    setNewProject({...newProject,priority:{...newProject.priority,value:selectedPriority}})
+  }
+
+
+
   const handleLotChange = (event) => {
     const {
       target: { value }
@@ -145,6 +154,14 @@ const ProjectCreationForm = ({
   // console.log(newProject);
 
   return (
+
+      !projectState.lots.length ||
+      !projectState.phases.length ||
+      !projectState.code ? (
+        <Skeleton variant="rounded" className={classes.formSkeleton} />
+      ) : (
+    <div className={classes.addProjectForm}>
+
     <Grid container spacing={2}>
       <div className={classes.closeModalBtn}>
         <button onClick={handleClose}>
@@ -288,7 +305,7 @@ const ProjectCreationForm = ({
         </FormControl>
       </Grid>
       <Grid item xs={12} sm={12} md={4} lg={4}>
-        <TextField
+        {/* <TextField
           type="number"
           variant="outlined"
           name="priority"
@@ -296,6 +313,13 @@ const ProjectCreationForm = ({
           label="Priorité"
           onChange={handleDataChange}
           className={externalClasses.inputs}
+        /> */}
+        <PriorityField
+          name="priority"
+          onChange={handlePriority}
+          label="Priorité"
+          priority ={newProject.priority.value}
+          // setPriority={handlePriority}
         />
       </Grid>
       <Grid item xs={12} sm={12} md={4} lg={2}>
@@ -319,6 +343,8 @@ const ProjectCreationForm = ({
             <LinkProject />
       </Grid>
     </Grid>
+    </div>
+      )
   );
 };
 

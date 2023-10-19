@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { projectsStyles } from "../style";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { useDispatch } from "react-redux";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
 // import { projectTestList } from "./test/projectList.test";
+function getRandomColor() {
+  const colors = [
+    "light-green",
+    "dark-green",
+    "orange",
+    "bright-orange",
+    "black"
+  ];
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
+}
+
+
+
 const ProjectList = ({ addForm }) => {
   const classes = projectsStyles();
   const projects = useGetStateFromStore("manage", "projectsList");
   const addProjectState = useGetStateFromStore("manage", "addProject");
   // console.log(projects);
+  const [avatarColors, setAvatarColors] = useState([]);
+
+
   const dispatch = useDispatch();
 
   const columns = [
@@ -44,22 +61,13 @@ const ProjectList = ({ addForm }) => {
     }
   ];
   //just for colorizing
-  function getRandomColor() {
-    const colors = [
-      "light-green",
-      "dark-green",
-      "orange",
-      "bright-orange",
-      "black"
-    ];
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    return colors[randomIndex];
-  }
 
   const handleNavigation = (e) => {
     e.stopPropagation();
     console.log("navigating ", e.currentTarget);
   };
+
+
 
   const projectList = () => {
     if (addForm) {
@@ -67,6 +75,10 @@ const ProjectList = ({ addForm }) => {
     }
     return projects;
   };
+  useEffect(() => {
+    const colors = projects.map(() => getRandomColor());
+    setAvatarColors(colors);
+  }, [projects]);
 
   const handleClickProject = (e) => {
     e.stopPropagation();
@@ -125,9 +137,9 @@ const ProjectList = ({ addForm }) => {
                         />
                       ) : (
                         <span
-                          key={idx}
-                          className={`${classes.avatar} ${getRandomColor()}`}
-                        >
+                        key={idx}
+                        className={`${classes.avatar} ${avatarColors[id]}`}
+                      >
                           {project[attribute].fullName[0]}
                           {project[attribute].fullName.split(" ")[1][0]}
                         </span>

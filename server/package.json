@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js --prod",
-    "start:dev": "node server.js",
+    "start:dev": "nodemon --config nodemon.json server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

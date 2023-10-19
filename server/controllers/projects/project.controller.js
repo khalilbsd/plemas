@@ -59,7 +59,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
  */
 export const addProject = catchAsync(async (req, res, next) => {
   const data = req.body;
-  console.log(data);
+
   if (!data.name || !data.startDate || !data.manager || !data.code)
     return next(
       new MissingParameter("name or start date or manager or code is missing")
@@ -69,15 +69,18 @@ export const addProject = catchAsync(async (req, res, next) => {
   if (data.code.toString().length !== 5)
     return next(new MalformedObjectId("code is not valid"));
 
-  if (data.prevPhase) {
+
     const isValidCode = await isCodeValid(data.code,data.phase);
+
     if (!isValidCode)
       return next(
         new MalformedObjectId(
           "Project already exists with that code: did you mean to create a phase?"
         )
       );
-  }
+
+
+
 
   // const projectNameValid = await Project.findOne({
   //   where: { name: data.name }
@@ -101,7 +104,7 @@ export const addProject = catchAsync(async (req, res, next) => {
 
   // check for phase:
   const phase = await getPhaseByName(data.phase);
-  console.log("phase to be added", phase);
+
   if (!phase) return next(new ElementNotFound("we couldn't find phase"));
 
   project.phaseID = phase.id;
@@ -118,15 +121,15 @@ export const addProject = catchAsync(async (req, res, next) => {
 
     );
 
-    console.log("new project");
+
     // const projectLot = await createProjectLot(newProject.id, data.lot);
     const isAllLotsValid = await isLotsValid(data.lot);
     if (!isAllLotsValid) {
       return next(new ElementNotFound("we couldn't find all the lots"));
     }
-    console.log("LOt VALID", isAllLotsValid);
+
     for (const lotID in isAllLotsValid) {
-      console.log("LOG ID ", lotID);
+
       const isProjectLotExists = await ProjectLots.findOne({
         where: {
           projectID: newProject.id,
@@ -149,7 +152,7 @@ export const addProject = catchAsync(async (req, res, next) => {
       projectPhase: newProject
     });
   } catch (error) {
-    console.log(error);
+
     logger.error(error);
     // await transaction.rollback();
     return next(new UnknownError("Internal server error "));
@@ -214,7 +217,7 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
   })
 
 
-  console.log(projectList);
+
   return res.status(200).json({
     status: "success",
     validCode: code,
@@ -356,7 +359,7 @@ export const getProjectsInPhase = catchAsync(async (req, res, next) => {
 
 export const checkProjectLinking = catchAsync(async (req, res, next) => {
   const nbProjects = await Project.count();
-  console.log(nbProjects);
+
   if (nbProjects > 0)
     return res.status(200).json({ state: "success", isLinkingPossible: true });
   return res.status(200).json({ state: "success", isLinkingPossible: false });

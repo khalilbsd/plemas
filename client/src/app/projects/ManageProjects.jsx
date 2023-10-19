@@ -1,26 +1,25 @@
-import { Grid, TextField } from "@mui/material";
+import { Grid, Skeleton, TextField } from "@mui/material";
+import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
-import { projectsStyles } from "../Components/managing/style";
-import ProjectList from "../Components/managing/projects/ProjectList";
 import { useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../constants/constants";
+import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import {
   useCreateProjectMutation,
   useGetProjectListMutation
 } from "../../store/api/projects.api";
-import { notify } from "../Components/notification/notification";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../constants/constants";
-import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import {
   clearAddProjectState,
   filterProjectsList,
   setProjectList
 } from "../../store/reducers/manage.reducer";
-import AddProject from "../Components/managing/projects/AddProject";
-import { ToastContainer } from "react-toastify";
-import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import AddBtn from "../Components/managing/AddBtn";
+import ProjectList from "../Components/managing/projects/ProjectList";
+import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
+import { projectsStyles } from "../Components/managing/style";
+import { notify } from "../Components/notification/notification";
 import faProject from "../public/svgs/light/diagram-project.svg";
-import dayjs from "dayjs";
 
 const initialError = {
   filedName: undefined,
@@ -87,10 +86,9 @@ const ManageProjects = () => {
 
   const handleOpenAddForm = () => {
     if (addProjectForm) {
-      setNewProject(newProjectInitialState)
+      setNewProject(newProjectInitialState);
       dispatch(filterProjectsList({ flag: false, value: "" }));
     } else {
-
       dispatch(filterProjectsList({ flag: true, value: "" }));
     }
 
@@ -207,17 +205,18 @@ const ManageProjects = () => {
         </Grid>
         {addProjectForm && (
           <Grid item xs={12} lg={12}>
-            <div className={classes.addProjectForm}>
-              <ProjectCreationForm
-                refreshProjects={loadProjects}
-                formOpen={addProjectForm}
-                handleClose={handleOpenAddForm}
-                codeRef={codeRef}
-                errorMessage={errorMessage}
-                setNewProject={setNewProject}
-                newProject={newProject}
-              />
-            </div>
+
+
+                <ProjectCreationForm
+                  refreshProjects={loadProjects}
+                  formOpen={addProjectForm}
+                  handleClose={handleOpenAddForm}
+                  codeRef={codeRef}
+                  errorMessage={errorMessage}
+                  setNewProject={setNewProject}
+                  newProject={newProject}
+                />
+
           </Grid>
         )}
         <Grid item xs={12} lg={12}>
@@ -227,6 +226,7 @@ const ManageProjects = () => {
           {/* <AddProject refreshProjects={loadProjects}/> */}
           <div className={classes.addBtnContainer}>
             <AddBtn
+              loading={creatingProject}
               title={!addProjectForm ? "Créer un projet" : "Nouveau projet"}
               icon={faProject}
               handleAdd={

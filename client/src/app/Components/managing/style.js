@@ -132,6 +132,21 @@ export const projectsStyles = createUseStyles({
     borderRadius: 10,
     width: "calc(100% - 80px)",
     margin: "auto",
+    overflowY:'auto',
+    '&::-webkit-scrollbar': {
+      width: '8px',
+  },
+
+  '&::-webkit-scrollbar-track': {
+      WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.3)',
+      borderRadius: '10px',
+  }
+   ,
+  '&::-webkit-scrollbar-thumb': {
+      borderRadius: '10px',
+      // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+    background:'var(--pastel-green)'
+    },
     "& .row-data": {
       display: "flex",
       padding: '5px 0',
@@ -328,4 +343,35 @@ export const projectsStyles = createUseStyles({
 
   //   }
   // }
+  hidden:{
+    display:'none'
+  },
+  priorityContainer:{
+    justifyContent:'space-evenly'
+  },
+  priorityFiled:{
+    height:30,
+    width:30,
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
+    '& button':{
+      width:'100%',
+      height:'100%',
+      border:'none',
+      outline:'none',
+      borderRadius:'100%',
+      '&:hover':{
+        opacity:0.7
+      },
+      '&.active':{
+        border:'2px solid var(--black)'
+
+      }
+    }
+  },
+  formSkeleton:{
+    width:'100%',
+    height:'170px !important'
+  }
 });

@@ -11,7 +11,7 @@ const Project = database.define(
     },
     customId: {
       type: DataTypes.STRING,
-      unique: true
+      unique: false
     },
     name: {
       type: DataTypes.STRING,
