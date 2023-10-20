@@ -141,7 +141,8 @@ export const addProject = catchAsync(async (req, res, next) => {
     });
   } catch (error) {
     logger.error(error);
-    // await transaction.rollback();
+    console.log(error)
+	  // await transaction.rollback();
     return next(new UnknownError("Internal server error "));
   }
 });

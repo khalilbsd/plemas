@@ -3,7 +3,8 @@ import { createUseStyles } from "react-jss";
 
 export const styles = createUseStyles({
   loginPage:{
-    height:'100%'
+    height:'100%',
+	  margin:'auto'
   },
   topLogo:{
     height:60,

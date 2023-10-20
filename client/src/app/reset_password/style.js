@@ -4,7 +4,8 @@ export const styles = createUseStyles({
   resetPasswordPage: {
     height: "100%",
     display: "flex",
-    justifyContent: "center",
+    margin:'auto',
+	  justifyContent: "center",
     alignItems: "center",
     "& $box button": {
       width: "100%",
