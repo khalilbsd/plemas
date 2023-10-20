@@ -13,6 +13,7 @@ import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import useGetUserInfo from "../../../hooks/user";
 import faUser from "../../public/svgs/light/user.svg";
 import faBars from "../../public/svgs/light/bars.svg";
+import { SUPERUSER_ROLE } from "../../../constants/roles";
 const SidebarComponent = () => {
   const classes = styles();
   const [collapse, setCollapse] = useState(false);
@@ -32,9 +33,9 @@ const SidebarComponent = () => {
         <div className={classes.sidebarHeader}>
           {!collapse && (
             <>
-            <div className={classes.imageContainer} >
-              <img src={Logo} alt="logo" />
-            </div>
+              <div className={classes.imageContainer}>
+                <img src={Logo} alt="logo" />
+              </div>
 
               {/* <p className={classes.companyName}>Chronos</p> */}
             </>
@@ -63,13 +64,17 @@ const SidebarComponent = () => {
           <MenuItem
             icon={
               <div className={classes.profileImageContainer}>
-                {user?.profile?.image?<img
-                  src={`${process.env.REACT_APP_SERVER_URL}${user?.profile?.image}`}
-                  className={classes.profileImage}
-                />
-                :
-
-                  <span className="initials">{user?.profile?.name[0]}{user?.profile?.lastName[0]}</span>}
+                {user?.profile?.image ? (
+                  <img
+                    src={`${process.env.REACT_APP_SERVER_URL}${user?.profile?.image}`}
+                    className={classes.profileImage}
+                  />
+                ) : (
+                  <span className="initials">
+                    {user?.profile?.name[0]}
+                    {user?.profile?.lastName[0]}
+                  </span>
+                )}
               </div>
             }
             className={classes.profile}
@@ -79,7 +84,11 @@ const SidebarComponent = () => {
               <h3 className="name">
                 {user?.profile?.name} {user?.profile?.lastName}
               </h3>
-              <p className="role">{user?.user?.role}</p>
+              <p className="role">
+                {user?.user?.role === SUPERUSER_ROLE
+                  ? "admin"
+                  : user?.user?.role}
+              </p>
             </div>
           </MenuItem>
 
@@ -106,7 +115,7 @@ const SidebarComponent = () => {
             icon={<ReactSVG src={faLogout} className={classes.linkIcon} />}
             component={<Link to="/logout" />}
           >
-            logout
+            Se déconnecté
           </MenuItem>
         </Menu>
       </div>

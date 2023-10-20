@@ -51,7 +51,7 @@ export const anonymousUrls = [
 
 export const publicUrls = [
   { title: "Not found", path: "*", Component: <PageNotFound /> },
-  { title: "Logout", path: "/logout", Component: <Logout />, icon: faLogout }
+  { title: "Se déconnecté", path: "/logout", Component: <Logout />, icon: faLogout }
 ];
 
 export const exceptPathSidebar = [

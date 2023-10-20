@@ -19,8 +19,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-/* transition  */
+/*
+/* transition
 .fadeIn {
   animation: 0.5s fadeIn forwards;
 }
@@ -49,4 +49,4 @@ code {
     transform: translate(-20px, 0);
     opacity: 0;
   }
-}
+} */

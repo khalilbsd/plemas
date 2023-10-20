@@ -63,7 +63,7 @@ export const styles = createUseStyles({
     borderRadius: 5,
     backgroundColor: "var(--dark-green)",
     fontWeight: 500,
-    textTransform: "capitalize",
+
     fontFamily: "'MyriadPro', sans-serif !important",
     fontSize: 15,
     transition: "0.3s all ease-in-out",

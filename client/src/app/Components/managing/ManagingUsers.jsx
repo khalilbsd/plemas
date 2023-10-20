@@ -23,19 +23,19 @@ import AddBtn from "./AddBtn";
 //modal
 
 import { ToastContainer, toast } from "react-toastify";
-import { EMPLOYEE_ROLE } from "../../../constants/roles";
+import { EMPLOYEE_ROLE, INTERVENANT_ROLE, SUPERUSER_ROLE } from "../../../constants/roles";
 import AddUserForm from "./AddUserForm";
 import { notify } from "../notification/notification";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { listStyle } from "./style";
-import faAddUser from '../../public/svgs/light/user-plus.svg'
+import faAddUser from "../../public/svgs/light/user-plus.svg";
 
 // ];
 
 const newUserInitialState = {
   account: {
     email: "",
-    role: EMPLOYEE_ROLE
+    role: INTERVENANT_ROLE
   },
   profile: {
     name: "",
@@ -101,17 +101,16 @@ const ManagingUsers = () => {
     e.preventDefault();
 
     try {
-      setLoadingSubmit(true)
+      setLoadingSubmit(true);
       const res = await addNewUser(newUser).unwrap();
       if (res?.createdUSer) {
         const { createdUSer, message } = res;
         if (createdUSer) dispatch(addNewUSerToList(createdUSer));
         notify(NOTIFY_SUCCESS, message);
         setNewUser(newUserInitialState);
-      setLoadingSubmit(false)
+        setLoadingSubmit(false);
 
         handleModelClose();
-
       }
     } catch (error) {
       notify(NOTIFY_ERROR, error.data?.message);
@@ -123,13 +122,13 @@ const ManagingUsers = () => {
     { field: "id", headerName: "ID", width: 90 },
     {
       field: "name",
-      headerName: "First name",
+      headerName: "Nom",
       width: 200,
       editable: false
     },
     {
       field: "lastName",
-      headerName: "Last name",
+      headerName: "Prénom",
       width: 200,
       editable: false
     },
@@ -143,11 +142,19 @@ const ManagingUsers = () => {
       field: "role",
       headerName: "Role",
       width: 150,
-      editable: false
+      editable: false,
+      renderCell: (params) => {
+        const role = params.row?.role;
+        if (role === SUPERUSER_ROLE) {
+          return <span >admin</span>;
+        } else {
+          return <span>{role}</span>;
+        }
+      }
     },
     {
       field: "active",
-      headerName: "Status",
+      headerName: "Statut",
       width: 250,
       // editable:true,
       renderCell: (params) => {
@@ -161,47 +168,47 @@ const ManagingUsers = () => {
     },
     {
       field: "isBanned",
-      headerName: "Banned",
+      headerName: "Banni",
       width: 200,
       renderCell: (params) => {
         const isBanned = params.row?.isBanned;
         if (isBanned) {
-          return <span className={classes.redLabel}>yes</span>;
+          return <span className={classes.redLabel}>Oui</span>;
         } else {
-          return <span className={classes.safeLabel}>no</span>;
+          return <span className={classes.safeLabel}>Non</span>;
         }
       }
-    },
-    {
-      field: "actions", // Add a field for actions
-      headerName: "Actions",
-      width: 200,
-      renderCell: (params) => {
-        const id = params.row.id;
-        // Render custom buttons for each row
-        return (
-          <div>
-            <button
-              onClick={() => console.log("here")}
-              alt={`block the user ${id}`}
-            >
-              <FontAwesomeIcon icon={faUserLock} />
-            </button>
-            {/* <button
-            onClick={() => {
-              // Replace 'id' with your actual identifier field
-              const id = params.row.id;
-              window.location.href = `/id/${id}`;
-            }}
-          > */}
-            <Link to={`${id}`} title={`see the details of the user ${id}`}>
-              <FontAwesomeIcon icon={faCircleInfo} />
-            </Link>
-            {/* </button> */}
-          </div>
-        );
-      }
     }
+    // {
+    //   field: "actions", // Add a field for actions
+    //   headerName: "Actions",
+    //   width: 200,
+    //   renderCell: (params) => {
+    //     const id = params.row.id;
+    //     // Render custom buttons for each row
+    //     return (
+    //       <div>
+    //         <button
+    //           onClick={() => console.log("here")}
+    //           alt={`block the user ${id}`}
+    //         >
+    //           <FontAwesomeIcon icon={faUserLock} />
+    //         </button>
+    //         {/* <button
+    //         onClick={() => {
+    //           // Replace 'id' with your actual identifier field
+    //           const id = params.row.id;
+    //           window.location.href = `/id/${id}`;
+    //         }}
+    //       > */}
+    //         <Link to={`${id}`} title={`see the details of the user ${id}`}>
+    //           <FontAwesomeIcon icon={faCircleInfo} />
+    //         </Link>
+    //         {/* </button> */}
+    //       </div>
+    //     );
+    //   }
+    // }
   ];
   return (
     <Grid container>
@@ -215,7 +222,7 @@ const ManagingUsers = () => {
       />
       <Grid item xs={12} md={12} lg={12}>
         <AddBtn
-          title="Add a user"
+          title="Ajouter un utilisateur"
           icon={faAddUser}
           handleAdd={handleModelOpen}
         />
@@ -235,7 +242,7 @@ const ManagingUsers = () => {
               }
             }}
             pageSizeOptions={[10]}
-            checkboxSelection
+
             disableRowSelectionOnClick
           />
         </Box>

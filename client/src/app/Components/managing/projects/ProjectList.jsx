@@ -46,7 +46,7 @@ const ProjectList = ({ addForm ,handleForm }) => {
       width: 200
     },
     {
-      label: "Gérant",
+      label: "Chef de projet",
       attribute: "manager",
       width: 200
     },
