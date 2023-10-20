@@ -40,7 +40,7 @@ import SelectLot from "../SelectLot";
 import SearchProjectCode from "./SearchProjectCode";
 import LinkProject from "./LinkProject";
 import PriorityField from "./PriorityField";
-
+import faSave from '../../../../public/svgs/light/floppy-disk.svg'
 
 //just for colorizing
 function getRandomColor() {
@@ -58,7 +58,7 @@ function getRandomColor() {
 const ProjectCreationForm = ({
   handleClose,
   formOpen,
-
+  handleSubmit,
   codeRef,
   errorMessage,
   setNewProject,
@@ -163,8 +163,12 @@ const ProjectCreationForm = ({
     <div className={classes.addProjectForm}>
 
     <Grid container spacing={2}>
-      <div className={classes.closeModalBtn}>
-        <button onClick={handleClose}>
+      <div className={classes.modalActionBtn}>
+
+        <button className="submit" onClick={handleSubmit}>
+          <ReactSVG src={faSave} />
+        </button>
+        <button className="close" onClick={handleClose}>
           <ReactSVG src={faClose} />
         </button>
       </div>

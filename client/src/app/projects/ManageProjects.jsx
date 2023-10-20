@@ -12,6 +12,8 @@ import {
 import {
   clearAddProjectState,
   filterProjectsList,
+  setLinkedProject,
+  setLinkingProject,
   setProjectList
 } from "../../store/reducers/manage.reducer";
 import AddBtn from "../Components/managing/AddBtn";
@@ -88,6 +90,12 @@ const ManageProjects = () => {
     if (addProjectForm) {
       setNewProject(newProjectInitialState);
       dispatch(filterProjectsList({ flag: false, value: "" }));
+      const elements = document.querySelectorAll(".row-data");
+      elements.forEach((element) => {
+        element.classList.remove("active");
+      });
+      dispatch(setLinkedProject(null));
+      dispatch(setLinkingProject(null));
     } else {
       dispatch(filterProjectsList({ flag: true, value: "" }));
     }
@@ -189,41 +197,28 @@ const ManageProjects = () => {
   return (
     <div className={classes.projectsPage}>
       <Grid container alignItems="center" spacing={2} sx={{ height: "100%" }}>
-        <Grid item xs={12} md={4} lg={2}>
-          <div className="page-title">
-            <h1>Projets</h1>
-          </div>
-        </Grid>
-        <Grid item xs={12} md={8} lg={10}>
-          <TextField
-            variant="outlined"
-            name="search"
-            label="Search"
-            size="small"
-            className={classes.searchField}
-          />
-        </Grid>
         {addProjectForm && (
           <Grid item xs={12} lg={12}>
-
-
-                <ProjectCreationForm
-                  refreshProjects={loadProjects}
-                  formOpen={addProjectForm}
-                  handleClose={handleOpenAddForm}
-                  codeRef={codeRef}
-                  errorMessage={errorMessage}
-                  setNewProject={setNewProject}
-                  newProject={newProject}
-                />
-
+            <ProjectCreationForm
+              handleSubmit={handleSubmitProject}
+              refreshProjects={loadProjects}
+              formOpen={addProjectForm}
+              handleClose={handleOpenAddForm}
+              codeRef={codeRef}
+              errorMessage={errorMessage}
+              setNewProject={setNewProject}
+              newProject={newProject}
+            />
           </Grid>
         )}
-        <Grid item xs={12} lg={12}>
-          <ProjectList addForm={addProjectForm} />
+        <Grid item xs={12} lg={12} sx={{height:'100%'}}>
+          <ProjectList
+            addForm={addProjectForm}
+            handleForm={handleOpenAddForm}
+          />
         </Grid>
-        <Grid item xs={12} lg={12}>
-          {/* <AddProject refreshProjects={loadProjects}/> */}
+        {/* <Grid item xs={12} lg={12}>
+          {/* <AddProject refreshProjects={loadProjects}/>
           <div className={classes.addBtnContainer}>
             <AddBtn
               loading={creatingProject}
@@ -234,7 +229,7 @@ const ManageProjects = () => {
               }
             />
           </div>
-        </Grid>
+        </Grid> */}
       </Grid>
       <ToastContainer
         position="bottom-left"

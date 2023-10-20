@@ -58,7 +58,7 @@ export const addUserFormStyles = createUseStyles({
     width: "100%",
     padding: "15px 0",
     color: "var(--white)",
-    height:'100%',
+    height: "100%",
     border: "none",
     borderRadius: 5,
     backgroundColor: "var(--dark-green)",
@@ -91,35 +91,33 @@ export const addUserFormStyles = createUseStyles({
 
 export const projectsStyles = createUseStyles({
   projectsPage: {
-    height: "100%"
+    height: "100%",
+    width:'100%'
   },
   listContainer: {
-    minHeight: "",
-    // height: "calc(80vh - 20px)",
-    maxHeight: "80vh",
-    // overflowY:'scroll',
+
     backgroundColor: "var(--white)",
     boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
     borderRadius: 30,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    paddingBottom: 20
+    paddingBottom: 20,
+    // transition:'all 0.3s ease-in-out'
   },
-  header:{
+  header: {
     backgroundColor: "var(--light-green)",
     padding: "20px 40px",
-    width:'calc(100% - 80px)'
+    width: "calc(100% - 80px)"
   },
   headersItem: {
-
     color: "var(--white)",
     display: "flex",
     alignItems: "flex-start",
     width: "calc(100% - 40px)",
     height: 90,
     justifyContent: "space-between",
-    fontWeight: 600,
+    fontWeight: 600
     // padding:'0 20px'
   },
   content: {
@@ -132,24 +130,23 @@ export const projectsStyles = createUseStyles({
     borderRadius: 10,
     width: "calc(100% - 80px)",
     margin: "auto",
-    overflowY:'auto',
-    '&::-webkit-scrollbar': {
-      width: '8px',
-  },
+    overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "8px"
+    },
 
-  '&::-webkit-scrollbar-track': {
-      WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.3)',
-      borderRadius: '10px',
-  }
-   ,
-  '&::-webkit-scrollbar-thumb': {
-      borderRadius: '10px',
+    "&::-webkit-scrollbar-track": {
+      WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+      borderRadius: "10px"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      borderRadius: "10px",
       // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
-    background:'var(--pastel-green)'
+      background: "var(--pastel-green)"
     },
     "& .row-data": {
       display: "flex",
-      padding: '5px 0',
+      padding: "5px 0",
       margin: "5px 0",
       width: "100%",
       borderRadius: 10,
@@ -158,17 +155,17 @@ export const projectsStyles = createUseStyles({
       "&:hover": {
         backgroundColor: "var(--app-bg-color)"
       },
-      '&.active':{
-        backgroundColor:'var(--pastel-green)',
+      "&.active": {
+        backgroundColor: "var(--pastel-green)"
         // color:'var(--white)'
       }
-    },
+    }
   },
   dataList: {
     display: "flex",
     alignItems: "center",
     gap: 10,
-    flex:1
+    flex: 1
   },
   // avatar: {
   //   width: 32,
@@ -184,12 +181,32 @@ export const projectsStyles = createUseStyles({
   // },
   addBtnContainer: {
     display: "flex",
-    justifyContent: "flex-end"
+    gap: 10,
+    alignItems:'center',
+    "& button": {
+      backgroundColor: "unset",
+      border: "none",
+      borderRadius:'100%',
+      height: 32,
+      width: 32,
+      transition:'0.3s all ease-in-out',
+      '&:hover':{
+          backgroundColor:'var(--pastel-green)'
+      },
+      "& svg": {
+        fill: "var(--white)",
+        height: 22,
+        width: 22
+      }
+    }
   },
-  closeModalBtn: {
+  modalActionBtn: {
     position: "absolute",
     right: 20,
     top: -16,
+    display:'flex',
+    gap:25,
+
     "& button": {
       backgroundColor: "unset",
       outline: "none",
@@ -201,7 +218,14 @@ export const projectsStyles = createUseStyles({
       alignItems: "center",
       justifyContent: "center",
       transition: "all 0.3s ease-in-out",
-      backgroundColor: "var(--toastify-color-error)",
+      '&.close':{
+        backgroundColor: "var(--toastify-color-error)",
+
+      },
+      '&.submit':{
+        backgroundColor: "var(--dark-green)",
+
+      },
       "&:hover": {
         backgroundColor: "lightgrey"
       }
@@ -209,7 +233,7 @@ export const projectsStyles = createUseStyles({
     "& svg": {
       width: 22,
       height: 22,
-      fill:'white',
+      fill: "white"
     }
   },
   modalTitle: {
@@ -226,116 +250,116 @@ export const projectsStyles = createUseStyles({
     }
   },
   labels: {
-    marginBottom:10,
-    fontWeight:600,
-    fontSize:14,
-    fontStyle:'italic',
-    display:'block'
-
+    marginBottom: 10,
+    fontWeight: 600,
+    fontSize: 14,
+    fontStyle: "italic",
+    display: "block"
   },
-  manager:{
-    lineHeight:'12px',
-    display:'flex',gap:10,
-    alignItems:'center',
-    '& .info':{
-      display:'flex',
-      flexDirection:'column',
-      '& .name':{
-        fontWeight:600,
-        fontSize:14
+  manager: {
+    lineHeight: "12px",
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    "& .info": {
+      display: "flex",
+      flexDirection: "column",
+      "& .name": {
+        fontWeight: 600,
+        fontSize: 14
       },
-      '& .email, .poste':{
-          color:'grey',
-          fontSize:13,
-          fontWeight:500
+      "& .email, .poste": {
+        color: "grey",
+        fontSize: 13,
+        fontWeight: 500
       }
     }
   },
-  avatar:{
-    width:32,
-    height:32,
-    color:'white',
-    fontWeight:600,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:'100%',
-    fontSize:13,
-    '&.light-green':{
-      backgroundColor: 'var(--light-green)',
+  avatar: {
+    width: 32,
+    height: 32,
+    color: "white",
+    fontWeight: 600,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "100%",
+    fontSize: 13,
+    "&.light-green": {
+      backgroundColor: "var(--light-green)"
     },
-    '&.dark-green':{
-      backgroundColor: 'var(--dark-green)',
+    "&.dark-green": {
+      backgroundColor: "var(--dark-green)"
     },
-    '&.orange':{
-      backgroundColor: 'var(--orange)',
+    "&.orange": {
+      backgroundColor: "var(--orange)"
     },
-    '&.bright-orange':{
-      backgroundColor:' var(--orange)',
+    "&.bright-orange": {
+      backgroundColor: " var(--orange)"
     },
 
-    '&.black':{
-      backgroundColor: 'var(--black)',
-    },
-  },
-  verificationMessage:{
-    color:'grey',
-    width:'70%',
-    marginTop:30,
-    display:'block',
-    margin:'auto',
-    textAlign:'center'
-  },
-  data:{
-    margin:0,
-    fontWeight:500,
-    fontSize:16,
-    '& .chip':{
-      marginRight:10,
-      fontWeight:600,
-    },
-    '&.disabled':{
-      color:'grey',
-      fontSize:13
+    "&.black": {
+      backgroundColor: "var(--black)"
     }
   },
-  projectChoice:{
-    width:'100%',
-    borderRadius:10,
-    backgroundColor:'unset',
-    textAlign:'left',
-    margin:'5px 0 ',
-    height:70,
-    border:'1px solid lightgrey',
-    display:'flex',
-    flexDirection:'column',
-    justifyContent:'center',
-    padding:'10px 20px',
-    transition:'all  0.3s ease-in-out',
-    '& .bold':{
-     fontWeight:600,
-     fontSize:14,
-     color:'var(--black)'
-    },
-    fontSize:13,
-    color:'darkgrey',
-    '&:hover':{
-     backgroundColor:'var(--pastel-green)'
-    },
-    '&[disabled]':{
-      '& .bold':{
-        color:'grey',
-      },
-      '&:hover':{
-        backgroundColor:'var(--app-bg)'
-       },
-    },
+  verificationMessage: {
+    color: "grey",
+    width: "70%",
+    marginTop: 30,
+    display: "block",
+    margin: "auto",
+    textAlign: "center"
   },
-  addProjectForm:{
-    backgroundColor:'var(--white)',
-    padding:'20px 40px ',
-    borderRadius:30,
-    position:'relative'
+  data: {
+    margin: 0,
+    fontWeight: 500,
+    fontSize: 16,
+    "& .chip": {
+      marginRight: 10,
+      fontWeight: 600
+    },
+    "&.disabled": {
+      color: "grey",
+      fontSize: 13
+    }
+  },
+  projectChoice: {
+    width: "100%",
+    borderRadius: 10,
+    backgroundColor: "unset",
+    textAlign: "left",
+    margin: "5px 0 ",
+    height: 70,
+    border: "1px solid lightgrey",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    padding: "10px 20px",
+    transition: "all  0.3s ease-in-out",
+    "& .bold": {
+      fontWeight: 600,
+      fontSize: 14,
+      color: "var(--black)"
+    },
+    fontSize: 13,
+    color: "darkgrey",
+    "&:hover": {
+      backgroundColor: "var(--pastel-green)"
+    },
+    "&[disabled]": {
+      "& .bold": {
+        color: "grey"
+      },
+      "&:hover": {
+        backgroundColor: "var(--app-bg)"
+      }
+    }
+  },
+  addProjectForm: {
+    backgroundColor: "var(--white)",
+    padding: "20px 40px ",
+    borderRadius: 30,
+    position: "relative"
   },
   // managerSelect:{
   //   '& .MuiSelect-select':{
@@ -343,35 +367,44 @@ export const projectsStyles = createUseStyles({
 
   //   }
   // }
-  hidden:{
-    display:'none'
+  hidden: {
+    display: "none"
   },
-  priorityContainer:{
-    justifyContent:'space-evenly'
+  priorityContainer: {
+    justifyContent: "space-evenly"
   },
-  priorityFiled:{
-    height:30,
-    width:30,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    '& button':{
-      width:'100%',
-      height:'100%',
-      border:'none',
-      outline:'none',
-      borderRadius:'100%',
-      '&:hover':{
-        opacity:0.7
+  priorityFiled: {
+    height: 30,
+    width: 30,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    "& button": {
+      width: "100%",
+      height: "100%",
+      border: "none",
+      outline: "none",
+      borderRadius: "100%",
+      "&:hover": {
+        opacity: 0.7
       },
-      '&.active':{
-        border:'2px solid var(--black)'
-
+      "&.active": {
+        border: "2px solid var(--black)"
       }
     }
   },
-  formSkeleton:{
-    width:'100%',
-    height:'170px !important'
+  formSkeleton: {
+    width: "100%",
+    height: "170px !important",
+    backgroundColor: "var(--pastel-green) !important"
+  },
+  search:{
+    width:'auto',
+    // backgroundColor:'var(--white)',
+    borderRadius:5,
+    '& label[data-shrink=true]':{
+      color:'var(--orange) !important',
+      backgroundColor:'unset'
+    }
   }
 });

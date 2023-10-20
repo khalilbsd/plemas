@@ -68,13 +68,14 @@ const manageSlice = createSlice({
     setLinkedProject: (state, action) => {
 
       state.addProject.linkedProjectID =action.payload
-      state.addProject.linkedProject = state.projectsList.filter(projet=>projet.id == action.payload)[0].projectCustomId
+      if (action.payload){
+        state.addProject.linkedProject = state.projectsList.filter(projet=>projet.id == action.payload)[0].projectCustomId
+      }
 
     },
     filterProjectsList: (state, action) => {
-      if (action.payload.flag) {
+
         state.addProject.isFiltering = action.payload.flag;
-      }
       const regex = new RegExp(action.payload.value, 'i'); // 'i' for case-insensitive search
 
       state.addProject.projectsListFiltered = state.projectsList.filter(

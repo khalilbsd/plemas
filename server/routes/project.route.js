@@ -5,12 +5,13 @@ import {
   generateProjectCode,
   getAllProjects,
   updateProjectDetails,
-//   changeProjectPhase,
+  //   changeProjectPhase,
   getProjectsInPhase,
   checkProjectCode,
-  checkProjectLinking
+  checkProjectLinking,
+  getProjectById
 } from "../controllers/projects/project.controller.js";
-import { SUPERUSER_ROLE } from "../constants/constants.js";
+import { CLIENT_ROLE, EMPLOYEE_ROLE, SUPERUSER_ROLE } from "../constants/constants.js";
 
 const router = express.Router();
 
@@ -56,6 +57,13 @@ router
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE]),
     updateProjectDetails
+  )
+
+  .get(
+    "/get/project/:projectID",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE, EMPLOYEE_ROLE, CLIENT_ROLE]),
+    getProjectById
   );
 // .patch('/change/project/:custom_name/phase',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),changeProjectPhase)
 export default router;

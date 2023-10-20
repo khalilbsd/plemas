@@ -22,7 +22,9 @@ User.hasMany(ResetPasswordToken, {
   onUpdate: "CASCADE"
 });
 
-User.hasMany(Project, { foreignKey: "manager" });
+User.hasMany(Project, { foreignKey: "manager", as:'managerID'});
+User.hasMany(Project, { foreignKey: "createdBy", as :"creatorDetails" });
+
 User.sync({ force: force }).then(() => {
   logger.debug("User model synced with the database");
 });
@@ -57,6 +59,9 @@ Project.belongsToMany(Lot, {
 });
 
 Project.belongsTo(User, { foreignKey: "manager", as: "managerID" });
+Project.belongsTo(User, { foreignKey: "createdBy", as: "creatorDetails" });
+
+
 
 Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID"});
 

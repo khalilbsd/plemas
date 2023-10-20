@@ -3,7 +3,12 @@ import { projectsStyles } from "../style";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { useDispatch } from "react-redux";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
+import { useNavigate } from "react-router";
+import AddBtn from "../AddBtn";
+import { ReactSVG } from "react-svg";
 // import { projectTestList } from "./test/projectList.test";
+import faAdd from '../../../public/svgs/solid/plus.svg'
+import LinkProject from "./addProject/LinkProject";
 function getRandomColor() {
   const colors = [
     "light-green",
@@ -18,10 +23,11 @@ function getRandomColor() {
 
 
 
-const ProjectList = ({ addForm }) => {
+const ProjectList = ({ addForm ,handleForm }) => {
   const classes = projectsStyles();
   const projects = useGetStateFromStore("manage", "projectsList");
   const addProjectState = useGetStateFromStore("manage", "addProject");
+  const navigate = useNavigate()
   // console.log(projects);
   const [avatarColors, setAvatarColors] = useState([]);
 
@@ -64,13 +70,17 @@ const ProjectList = ({ addForm }) => {
 
   const handleNavigation = (e) => {
     e.stopPropagation();
-    console.log("navigating ", e.currentTarget);
+    // projects/:projectID
+    const location = e.currentTarget;
+    const projectID = location.getAttribute("data-id");
+    navigate(`/projects/${projectID}`)
+    // console.log("navigating ", e.currentTarget);
   };
 
 
 
   const projectList = () => {
-    if (addForm) {
+    if (addForm || addProjectState.isFiltering ) {
       return addProjectState.projectsListFiltered;
     }
     return projects;
@@ -93,8 +103,26 @@ const ProjectList = ({ addForm }) => {
   };
 
   return (
-    <div style={addForm?{height: "calc(60vh - 20px)"}:{height: "calc(79vh - 20px)"}} className={classes.listContainer}>
+    <div
+     style={addForm?{height: "calc(100% - 188px)"}:{height: "99.5%"}}
+    className={classes.listContainer}>
       <div className={classes.header}>
+
+
+        {!addForm&&  <div className={classes.addBtnContainer}>
+
+          <LinkProject
+          className={classes.search}
+          color="secondary"
+          label="Recherche"
+          size="small"
+          />
+            <button onClick={handleForm}>
+              <ReactSVG src={faAdd} />
+            </button>
+          </div>}
+
+
         <div className={classes.headersItem}>
           {columns.map((column, counter) => (
             <div
@@ -112,7 +140,7 @@ const ProjectList = ({ addForm }) => {
           <div
             key={id}
             onClick={
-              addProjectState.isFiltering
+              addProjectState.isFiltering && addForm
                 ? handleClickProject
                 : handleNavigation
             }

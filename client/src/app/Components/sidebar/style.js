@@ -7,27 +7,30 @@ export const styles = createUseStyles({
 
     "&:not(.ps-collapsed)": {
       "& $sidebarHeader": {
-        backgroundColor: "var(--white)",
+        // backgroundColor: "var(--white)",
         justifyContent:'space-between'
       },
       "& .ps-sidebar-container": {
         padding: 20
       },
       "& .bars-icon": {
-        fill: "var(--orange) !important"
+        fill: "var(--white) !important"
       },
       "& $profile": {
         "& .ps-menu-icon": {
-          width: 72,
-          height: 72
+          width: 52,
+          height: 52,
+          marginRight:10
         },
         "& .ps-menu-label": {
-          display: "block"
+          display: "block",
+          width :'calc(100% - 52px - 10px)'
         }
       },
       "& $profileImageContainer": {
-        width: 72,
-        height: 72,
+        width: 52,
+        height: 52,
+        fontSize:24,
 
       }
     },
@@ -53,7 +56,7 @@ export const styles = createUseStyles({
   },
 
   sidebarHeader: {
-    height: 50,
+    minHeight: 50,
     // minWidth:70,
     // borderBottom: "1px solid lightgrey",
     color: "var(--black)",
@@ -61,14 +64,11 @@ export const styles = createUseStyles({
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
-    padding: "0 40px",
-
-    borderRadius: 10,
+    padding: "0 10px",
+    paddingBottom:10,
     position: "relative",
-    "& img": {
-      width: "50px"
-      // height:'100%'
-    },
+
+
     "&:after": {
       content: '""',
       background:
@@ -79,6 +79,16 @@ export const styles = createUseStyles({
       width: "100%",
       height: 1
     }
+  },
+  imageContainer:{
+    padding:5,
+    width:130,
+    background:'var(--white)',
+    borderRadius: 10,
+    "& img": {
+      width: "100%"
+      // height:'100%'
+    },
   },
   bars: {
     padding: 0,
@@ -167,12 +177,14 @@ export const styles = createUseStyles({
 
     gap: 10,
     "& .name": {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: 600,
-      margin: 0
+      margin: 0,
+      textWrap:'wrap'
     },
     "& .role": {
-      margin: 0
+      margin: 0,
+      fontSize:14
     },
     "& a": {
       height: "fit-content !important",
@@ -185,9 +197,10 @@ export const styles = createUseStyles({
       display: "none"
     },
     "& .ps-menu-icon": {
-      border: "3px solid var(--orange)",
-      padding: 3,
-      borderRadius: "100%"
+      // border: "3px solid var(--orange)",
+      // padding: 3,
+      borderRadius: "100%",
+      margin:0
     }
   },
   profileImageContainer: {
@@ -196,11 +209,12 @@ export const styles = createUseStyles({
     justifyContent:'center',
     alignItems:'center',
     fontWeight:600,
-    fontSize:32,
+    fontSize:16,
     backgroundColor:'var(--light-green)',
     height: "100%",
     borderRadius: "100%",
-    overflow: "hidden"
+    overflow: "hidden",
+    width: 35
   },
   profileImage: {
     height: "100%",

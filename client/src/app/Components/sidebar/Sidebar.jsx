@@ -32,7 +32,10 @@ const SidebarComponent = () => {
         <div className={classes.sidebarHeader}>
           {!collapse && (
             <>
+            <div className={classes.imageContainer} >
               <img src={Logo} alt="logo" />
+            </div>
+
               {/* <p className={classes.companyName}>Chronos</p> */}
             </>
           )}

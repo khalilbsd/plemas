@@ -65,7 +65,7 @@ export const exceptPathSidebar = [
 const adminManagingRoutes = [
   {
     role: SUPERUSER_ROLE,
-    title: "Manage employee",
+    title: "Gérer les utilisateurs",
     path: "/admin/manage/users",
     Component: <ManagingUsers />,
     icon: faUser
@@ -107,7 +107,7 @@ export const protectedUrls = [
 
   {
     role: SUPERUSER_ROLE,
-    title: "Manage employee",
+    title: "Gérer les utilisateurs",
     path: "/admin/manage/users",
     Component: <ManagingUsers />,
     icon: faUser,
@@ -116,7 +116,7 @@ export const protectedUrls = [
 
   {
     role: SUPERUSER_ROLE,
-    title: "Manage Projects",
+    title: "Projets",
     path: "/admin/manage/projects",
     Component: <ManageProjects />,
     icon: faProject,

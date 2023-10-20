@@ -50,7 +50,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
   });
   // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
-  projectsList.sort((a,b)=>b.code - a.code )
+  projectsList.sort((a, b) => b.code - a.code);
   res.status(200).json({ status: "success", projects: projectsList });
 });
 
@@ -69,18 +69,14 @@ export const addProject = catchAsync(async (req, res, next) => {
   if (data.code.toString().length !== 5)
     return next(new MalformedObjectId("code is not valid"));
 
+  const isValidCode = await isCodeValid(data.code, data.phase);
 
-    const isValidCode = await isCodeValid(data.code,data.phase);
-
-    if (!isValidCode)
-      return next(
-        new MalformedObjectId(
-          "Project already exists with that code: did you mean to create a phase?"
-        )
-      );
-
-
-
+  if (!isValidCode)
+    return next(
+      new MalformedObjectId(
+        "Project already exists with that code: did you mean to create a phase?"
+      )
+    );
 
   // const projectNameValid = await Project.findOne({
   //   where: { name: data.name }
@@ -116,11 +112,7 @@ export const addProject = catchAsync(async (req, res, next) => {
     phase.abbreviation
   );
   try {
-    const newProject = await Project.create(
-      { ...project, customId: customID },
-
-    );
-
+    const newProject = await Project.create({ ...project, customId: customID });
 
     // const projectLot = await createProjectLot(newProject.id, data.lot);
     const isAllLotsValid = await isLotsValid(data.lot);
@@ -129,7 +121,6 @@ export const addProject = catchAsync(async (req, res, next) => {
     }
 
     for (const lotID in isAllLotsValid) {
-
       const isProjectLotExists = await ProjectLots.findOne({
         where: {
           projectID: newProject.id,
@@ -137,13 +128,10 @@ export const addProject = catchAsync(async (req, res, next) => {
         }
       });
       if (!isProjectLotExists) {
-        await ProjectLots.create(
-          {
-            projectID: newProject.id,
-            lotID: isAllLotsValid[lotID]
-          },
-
-        );
+        await ProjectLots.create({
+          projectID: newProject.id,
+          lotID: isAllLotsValid[lotID]
+        });
       }
     }
     return res.status(200).json({
@@ -152,7 +140,6 @@ export const addProject = catchAsync(async (req, res, next) => {
       projectPhase: newProject
     });
   } catch (error) {
-
     logger.error(error);
     // await transaction.rollback();
     return next(new UnknownError("Internal server error "));
@@ -201,22 +188,14 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
 
   //projects List
 
-
-
-
-
-    const  projectList = await Project.findAll({
-      attributes: ["id","code", "name", "customId"],
-
-    });
+  const projectList = await Project.findAll({
+    attributes: ["id", "code", "name", "customId"]
+  });
 
   // convert projects List :
-  projectList.forEach(project=>{
-    project.code = project.code.toString()
-
-  })
-
-
+  projectList.forEach((project) => {
+    project.code = project.code.toString();
+  });
 
   return res.status(200).json({
     status: "success",
@@ -363,4 +342,35 @@ export const checkProjectLinking = catchAsync(async (req, res, next) => {
   if (nbProjects > 0)
     return res.status(200).json({ state: "success", isLinkingPossible: true });
   return res.status(200).json({ state: "success", isLinkingPossible: false });
+});
+
+export const getProjectById = catchAsync(async (req, res, next) => {
+  const { projectID } = req.params;
+
+  if (!projectID) return next(new MissingParameter("Missing project id"));
+  const project = await Project.findByPk(projectID, {
+    include: [
+      {
+        model: ProjectLots,
+        include: [Lot]
+      },
+      {
+        model: User,
+        as: "managerID",
+        include: [UserProfile]
+      },
+      {
+        model: User,
+        as: "creatorDetails",
+        include: [UserProfile]
+      },
+      {
+        model: Phase
+      }
+    ]
+  });
+
+  if (!project ) return next (new ElementNotFound(`Project was not found`))
+
+  res.status(200).json({state:"success",project})
 });

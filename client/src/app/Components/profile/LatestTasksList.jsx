@@ -6,10 +6,12 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import { styles } from '../../profile/style';
 const LatestTasksList = () => {
+  const classes= styles()
 
     return (
-        <List sx={{ width: '100%', bgcolor: 'background.paper',maxHeight:'calc(40vh - 80px);',overflowY:'scroll' }}>
+        <List className={classes.list}>
           <ListItem alignItems="flex-start">
             <ListItemAvatar>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />

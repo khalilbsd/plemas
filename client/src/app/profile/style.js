@@ -4,8 +4,15 @@ import { createUseStyles } from "react-jss";
 export const styles = createUseStyles({
   profileContainer: {
     maxWidth: "100%",
-    margin: "auto"
+    margin: "auto",
+    height:'100%',
+    display:'block',
+    position:'relative'
   },
+  gridItem:{
+    paddingTop:'0 !important'
+    },
+
   sizeInfoCard: {
     // marginTop:-40,
     padding: 0,
@@ -20,7 +27,11 @@ export const styles = createUseStyles({
     position: "relative",
     borderRadius: 10,
     minHeight: "40vh",
-    marginTop: -40
+    marginTop: -40,
+    height:'calc(100% - 20px )',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   pageTitle: {
     fontSize: 24
@@ -77,21 +88,23 @@ export const styles = createUseStyles({
     flexDirection: "column !important"
   },
   changePasswordBtn: {
-    backgroundColor: "var(--light-green)",
-    color: "var(--white)",
+    color: "var(--light-green)",
+
     // boxShadow: '0px 13px 22px -17px rgba(0,0,0,0.3)',
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    textAlign: "center",
+    textAlign: "left",
     padding: "5px 0",
     borderRadius: 50,
     height: 30,
     textDecoration: "none",
     fontWeight: 600,
     transition: "0.3s all ease-in-out",
+    textDecoration:'underline',
+    fontSize:14,
     "&:hover": {
-      backgroundColor: "var(--orange)"
+      color: "var(--orange)"
     }
   },
   //main info
@@ -284,5 +297,23 @@ export const styles = createUseStyles({
         height: "100%"
       }
   },
+  list:{
+    maxHeight:'calc(60vh - 80px)',
+    overflowY:'auto',
 
+    '&::-webkit-scrollbar': {
+      width: '8px',
+  },
+
+  '&::-webkit-scrollbar-track': {
+      WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.3)',
+      borderRadius: '10px',
+  }
+   ,
+  '&::-webkit-scrollbar-thumb': {
+      borderRadius: '10px',
+      // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+    background:'var(--pastel-green)'
+    },
+  }
 });
