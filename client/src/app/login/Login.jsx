@@ -19,6 +19,7 @@ import { NOTIFY_ERROR } from "../../constants/constants.js";
 import useGetAuthenticatedUser from "../../hooks/authenticated.js";
 import { useState } from "react";
 import { ReactSVG } from "react-svg";
+import { SUPERUSER_ROLE } from "../../constants/roles.js";
 const Login = () => {
   const classes = styles();
   const emailRef = useRef();
@@ -42,7 +43,14 @@ const Login = () => {
       }).unwrap();
       dispatch(setCredentials({ ...res }));
       setTimeout(() => {
-          navigate('/profile/me')
+          console.log(res);
+          if (res?.user?.role === SUPERUSER_ROLE){
+            navigate('/admin/manage/projects')
+
+          }else{
+            navigate('/profile/me')
+
+          }
           setLoading(isLoading)
       }, 2000);
     } catch (err) {
