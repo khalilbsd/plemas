@@ -25,8 +25,7 @@ const Logout = () => {
     <div>
 
     <Typography variant="h4" component="h2">
-    We logging you out !
-    see you next time
+    Nous vous déconnectons ! à la prochaine fois
 </Typography>
     </div>
   )

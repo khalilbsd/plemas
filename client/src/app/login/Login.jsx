@@ -89,7 +89,7 @@ const Login = () => {
             <Grid item xs={12} lg={12} md={12}>
               {/* <TextField required size="small" inputRef={emailRef} className={classes.input} id="email" name="email" label="Email" variant="outlined" /> */}
                 <label className={classes.labels} htmlFor="email">
-                  Email Address
+                  Addresse Email
                 </label>
               <TextField
                 required
@@ -99,21 +99,12 @@ const Login = () => {
                 className={classes.input}
                 id="email"
                 name="email"
-
                 variant="outlined"
-                // InputProps={{
-                //   startAdornment: (
-                //     <InputAdornment position="start">
-                //       {/* <AccountCircle /> */}
-                //       <FontAwesomeIcon icon={faAt} />
-                //     </InputAdornment>
-                //   )
-                // }}
               />
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
             <label className={classes.labels} htmlFor="password">
-                  Password
+                  Mot de passe
                 </label>
               <TextField
                 type="password"
@@ -128,11 +119,11 @@ const Login = () => {
               />
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
-              <Link className={classes.resetLink} to={"/reset-password"}>Forget Password ?</Link>
+              <Link className={classes.resetLink} to={"/reset-password"}>Mot de passe oublié ?</Link>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
               <Button className={classes.loginBtn} type="submit" variant="outlined">
-                login
+                Se connecter
               </Button>
             </Grid>
           </Grid>
