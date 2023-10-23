@@ -2,6 +2,7 @@ import passport from "passport";
 import { getUserByEmail } from "../controllers/users/lib.js";
 import logger from "../log/config.js";
 import { ForbiddenError, UnauthorizedError } from "../errors/http.js";
+import { UnAuthorized } from "../Utils/appError.js";
 
 //passport strategy connection
 export const authenticateUser = async (payload, done) => {
@@ -26,7 +27,8 @@ export const authenticateUser = async (payload, done) => {
       }
       if (!user) {
         // Custom response when user is not authenticated
-        throw new UnauthorizedError()
+        // throw new UnauthorizedError()
+        next(new UnAuthorized("You are not authorized for this action."))
       }
       // If authentication succeeds, store user in request object
       req.user = user;

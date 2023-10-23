@@ -70,13 +70,7 @@ const adminManagingRoutes = [
     Component: <ManagingUsers />,
     icon: faUser
   }
-  // {
-  //   role: SUPERUSER_ROLE,
-  //   title: "Manage clients",
-  //   path: "/admin/manage/projects",
-  //   Component: <ManageProjects />,
-  //   icon: faUser
-  // }
+
 ];
 
 export const protectedUrls = [
@@ -97,13 +91,7 @@ export const protectedUrls = [
     sideBar: false
   },
 
-  // {
-  //   role: EMPLOYEE_ROLE,
-  //   title: "Employee Dashboard",
-  //   path: "/dashboard/employee",
-  //   Component: <EmployeeDashboard />,
-  //   icon: faWorker
-  // },
+
 
   {
     role: SUPERUSER_ROLE,
@@ -142,7 +130,6 @@ export function getRolesBasedUrls(user, role = null) {
 }
 
 export function getRoleHomeUrl(role) {
-  console.log(role);
   switch (role) {
     case SUPERUSER_ROLE:
       return "/admin/manage/users";

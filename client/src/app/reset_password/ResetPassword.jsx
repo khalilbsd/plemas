@@ -40,18 +40,18 @@ const ResetPassword = () => {
         {!user?.isAuthenticated && (
           <Link to="/login" className={classes.goBack}>
             <ReactSVG src={faChevronLeft} className={classes.goBackIcon} />{" "}
-            Login
+            Se connecter
           </Link>
         )}
         {!isReseted && !isVerified ? (
           <>
-            <h2 className={classes.pageTitle}>Reset your password</h2>
+            <h2 className={classes.pageTitle}>Réinitialiser votre mot de passe</h2>
             <h3 className={classes.text}>
               {!isReseted &&
                 !isVerified &&
                 (!user.isAuthenticated
-                  ? "To reset your password first you need we confirm you account. Please type in  you email address in the box bellow "
-                  : "To reset your password we need you to confirm your old password first in order for us to be able to protect your account ")}
+                  ? "Pour réinitialiser votre mot de passe, vous devez d'abord confirmer votre compte. Veuillez saisir votre adresse e-mail dans la case ci-dessous."
+                  : "Pour réinitialiser votre mot de passe, vous devez d'abord confirmer votre ancien mot de passe afin que nous puissions protéger votre compte.")}
             </h3>
           </>
         ) : (
@@ -88,16 +88,17 @@ const ResetPassword = () => {
           )
         ) : (
           <div>
-            <h2>Thank you for resetting you password</h2>
+            <h2>Merci de réinitialiser votre mot de passe</h2>
             <p className={classes.text}>
-              you're password has been reset
+            votre mot de passe a été réinitialisé
               {user?.isAuthenticated ? (
                 <span>
-                  you can choose either to <Link to="/logout">logout</Link> or
-                  to continue your browsing{" "}
+                  vous pouvez choisir de vous <Link to="/logout">déconnecter </Link> or
+                  ou
+                  de poursuivre votre navigation
                 </span>
               ) : (
-                <span>you'll be redirected to login in 5 seconds </span>
+                <span>vous serez redirigé vers le formulaire de connexion dans 5 secondes</span>
               )}
             </p>
           </div>

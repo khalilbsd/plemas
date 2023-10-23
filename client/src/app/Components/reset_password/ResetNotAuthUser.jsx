@@ -58,14 +58,13 @@ const ResetNotAuthUser = ({ handleSuccess, handleFailure }) => {
               className={classes.input}
               name="email"
               variant="outlined"
-              label="email"
+              label="Adresse Email"
               inputRef={emailRef}
             />
           </Grid>
           <Grid item xs={12} md={12} lg={12}>
             <button type="submit" className={classes.emailSendBtn}>
-              {" "}
-              Send reset password email{" "}
+              réinitialiser le mot de passe
             </button>
           </Grid>
         </Grid>
@@ -81,10 +80,10 @@ const ResetNotAuthUser = ({ handleSuccess, handleFailure }) => {
         <EmailVerificationForm />
       ) : (
         <>
-        <h3 className={classes.titleAction}>Email verified </h3>
+        <h3 className={classes.titleAction}>Addresse Email vérifié </h3>
           <div className={classes.validContainer}>
-          your email has been verified and we sent you a request link to be
-          able to reset your password. You can safely close this page.
+          votre email a été vérifié et nous vous avons envoyé un lien de demande pour pouvoir réinitialiser votre mot de passe.
+          pour pouvoir réinitialiser votre mot de passe. Vous pouvez fermer cette page en toute sécurité.
         </div>
         </>
       )}

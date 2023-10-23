@@ -27,26 +27,75 @@ export const btnStyle = createUseStyles({
 });
 export const listStyle = createUseStyles({
   safeLabel: {
-    fontWeight: 500,
+    fontWeight: 600,
     fontSize: 14,
-    backgroundColor: "green",
-    borderRadius: 10,
-    color: "white",
     padding: "0px 20px",
-    width: "fit-content",
+    width: "150px",
     // margin:'auto',
-    textAlign: "center"
+    textAlign: "center",
+    color: "var(--dark-green)",
+    borderRadius: 4,
+    padding: "10px 00px",
+    border:'2px solid var(--dark-green)'
   },
   redLabel: {
-    fontWeight: 500,
+    fontWeight: 600,
     fontSize: 14,
-    backgroundColor: "red",
-    borderRadius: 10,
-    color: "white",
-    padding: "0px 20px",
-    width: "fit-content",
+    color: "var(--toastify-icon-color-error)",
+    borderRadius: 4,
+    padding: "10px 00px",
+    width: "150px",
     // margin:'auto',
-    textAlign: "center"
+    textAlign: "center",
+    border:'2px solid var(--toastify-icon-color-error)'
+  },
+  roleBtn:{
+    background:'none',
+    border:'none',
+    width:'100%',
+    textAlign:'left',
+    height:'100%'
+  },
+  list:{
+    borderTopLeftRadius:'30px !important',
+    borderTopRightRadius:'30px !important',
+    overflow:'hidden',
+    background:'var(--white)',
+'& .MuiDataGrid-virtualScrollerContent':{
+  height:'360px !important'
+},
+
+    '& .MuiDataGrid-columnHeaders':{
+      backgroundColor:'var(--light-green)',
+      color:'var(--white)',
+      '& .MuiDataGrid-columnHeaderTitle':{
+        fontWeight:'600 !important',
+
+      },
+      height:'90px !important',
+      maxHeight: '90px !important',
+      '& .MuiDataGrid-columnHeadersInner':{
+        width:'95%',
+        margin:'auto'
+      }
+    },
+    '& .MuiDataGrid-virtualScroller':{
+      width:'95%',
+      margin:'auto',
+      marginTop: -20,
+    /* z-index: 999999999999999999999999999999999999999999999999999999999999999999999999; */
+    position: 'relative',
+    background: 'var(--white)',
+    borderRadius: 15,
+    // border: '1px solid var(--app-bg-color)',
+    boxShadow:'0px 7px 33px 0px rgba(0,0,0,0.3)',
+    marginBottom: 20
+    }
+    ,'& .MuiDataGrid-row, .MuiDataGrid-cell ':{
+      minHeight:'72px !important',
+      maxHeight:'72px !important',
+      border:'none !important'
+    }
   }
 });
 

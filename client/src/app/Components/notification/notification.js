@@ -13,6 +13,6 @@ export const notify =(state,message)=>{
         progress: undefined,
         theme: state==='error'?"colored":"light"
     }
-    console.log(state,message);
+
     return toast[state](message,style)
 }

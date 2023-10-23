@@ -1,34 +1,41 @@
 import {
-  faCircleInfo,
-  faUserLock,
-  faUserPlus
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Grid } from "@mui/material";
+  Grid,
+  MenuItem,
+  Select,
+  Switch
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import useGetUsersList from "../../../hooks/manage/usersList";
 import {
   useAddNewUserMutation,
-  useGetUserListMutation
+  useBanUserMutation,
+  useChangeRoleMutation,
+  useGetUserListMutation,
+  useUnBanUserMutation
 } from "../../../store/api/users.api";
 import {
   addNewUSerToList,
-  setUsersList
+  setUsersList,
+  updateUserInList
 } from "../../../store/reducers/manage.reducer";
 import AddBtn from "./AddBtn";
 //modal
 
-import { ToastContainer, toast } from "react-toastify";
-import { EMPLOYEE_ROLE, INTERVENANT_ROLE, SUPERUSER_ROLE } from "../../../constants/roles";
-import AddUserForm from "./AddUserForm";
-import { notify } from "../notification/notification";
+import { ToastContainer } from "react-toastify";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
-import { listStyle } from "./style";
+import {
+  CLIENT_ROLE,
+  INTERVENANT_ROLE,
+  PROJECT_MANAGER_ROLE,
+  SUPERUSER_ROLE
+} from "../../../constants/roles";
 import faAddUser from "../../public/svgs/light/user-plus.svg";
+import { notify } from "../notification/notification";
+import AddUserForm from "./AddUserForm";
+import { listStyle } from "./style";
 
 // ];
 
@@ -42,6 +49,7 @@ const newUserInitialState = {
     lastName: ""
   }
 };
+const label = { inputProps: { "aria-label": "bannir l'utilisateur" } };
 
 const ManagingUsers = () => {
   const [getUserList, {}] = useGetUserListMutation();
@@ -50,9 +58,14 @@ const ManagingUsers = () => {
   const [loading, setLoading] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [newUser, setNewUser] = useState(newUserInitialState);
-  const [addNewUser, { isLoading }] = useAddNewUserMutation();
+  const [addNewUser, {}] = useAddNewUserMutation();
+  const [banUser, {}] = useBanUserMutation();
+  const [unBanUser, {}] = useUnBanUserMutation();
+  const [changeRole, {}] = useChangeRoleMutation();
   const dispatch = useDispatch();
+  const [roleChange, setRoleChange] = useState({ email: "", state: false });
   const classes = listStyle();
+
 
   useEffect(() => {
     async function userList() {
@@ -117,6 +130,54 @@ const ManagingUsers = () => {
     }
   };
 
+  const handleBanUser = async (e) => {
+    try {
+      let resp;
+      console.log(!e.target.checked);
+      dispatch(
+        updateUserInList({ ban: !e.target.checked, email: e.target.id })
+      );
+      if (!e.target.checked) {
+        resp = await banUser({ email: e.target.id }).unwrap();
+      } else {
+        resp = await unBanUser({ email: e.target.id }).unwrap();
+      }
+      notify(NOTIFY_SUCCESS, resp?.message);
+    } catch (error) {
+      notify(NOTIFY_ERROR, error?.data?.message);
+    }
+  };
+
+  const getSelectRoleForUser = (email) => {
+    if (roleChange.email === email) return true;
+    return false;
+  };
+
+  const loadRoleChangeInput = (email) => {
+    setRoleChange({
+      email: email.currentTarget.getAttribute("data-email"),
+      state: true
+    });
+  };
+
+
+
+  const handleRoleChange = async (e) => {
+    try {
+      // console.log(e.target.value);
+      // console.log(e);
+      const resp = await changeRole({email:e.target.name,role:e.target.value}).unwrap()
+      dispatch(updateUserInList({email:e.target.name,role:e.target.value}))
+      notify(NOTIFY_SUCCESS,resp?.message)
+      setRoleChange({
+        email: "",
+        state: false
+      });
+    } catch (error) {
+      notify(NOTIFY_ERROR, error?.data?.message);
+    }
+  };
+
   //column for the header of the list
   const columns = [
     { field: "id", headerName: "ID", width: 90 },
@@ -144,12 +205,45 @@ const ManagingUsers = () => {
       width: 150,
       editable: false,
       renderCell: (params) => {
-        const role = params.row?.role;
-        if (role === SUPERUSER_ROLE) {
-          return <span >admin</span>;
-        } else {
-          return <span>{role}</span>;
-        }
+        const { email, role } = params.row;
+        const ch = role === SUPERUSER_ROLE ? "admin" : role;
+
+        return (
+          <>
+            {getSelectRoleForUser(email) ? (
+              <Select
+                labelId="demo-controlled-open-select-label"
+                id="demo-controlled-open-select"
+                value={role}
+                onChange={handleRoleChange}
+                name={email}
+                inputProps={{"data-id":email}}
+                size="small"
+              >
+                <MenuItem value={role}>
+                  <em>{role === SUPERUSER_ROLE ? "admin" : role}</em>
+                </MenuItem>
+                {[
+                  SUPERUSER_ROLE,
+                  INTERVENANT_ROLE,
+                  CLIENT_ROLE,
+                  PROJECT_MANAGER_ROLE
+                ].map(
+                  (item) =>
+                    item !== role && (
+                      <MenuItem value={item} key={item}>
+                        {item === SUPERUSER_ROLE ? "admin" : item.replace('_',' ')}
+                      </MenuItem>
+                    )
+                )}
+              </Select>
+            ) : (
+              <button data-email={email} onClick={loadRoleChangeInput} className={classes.roleBtn}>
+                {ch}
+              </button>
+            )}
+          </>
+        );
       }
     },
     {
@@ -160,23 +254,30 @@ const ManagingUsers = () => {
       renderCell: (params) => {
         const active = params.row?.active;
         if (active) {
-          return <span className={classes.safeLabel}>active</span>;
+          return <span className={classes.safeLabel}>Vérifié</span>;
         } else {
-          return <span className={classes.redLabel}>inactive</span>;
+          return <span className={classes.redLabel}>non-vérifié</span>;
         }
       }
     },
     {
       field: "isBanned",
-      headerName: "Banni",
+      headerName: "Actif",
       width: 200,
       renderCell: (params) => {
         const isBanned = params.row?.isBanned;
-        if (isBanned) {
-          return <span className={classes.redLabel}>Oui</span>;
-        } else {
-          return <span className={classes.safeLabel}>Non</span>;
-        }
+        const email = params.row?.email;
+        return (
+          <Switch
+            {...label}
+            value={isBanned}
+            checked={!isBanned}
+            id={email}
+            onChange={handleBanUser}
+
+            // defaultValue={isBanned?true:false}
+          />
+        );
       }
     }
     // {
@@ -211,7 +312,7 @@ const ManagingUsers = () => {
     // }
   ];
   return (
-    <Grid container>
+    <Grid container spacing={2}>
       <AddUserForm
         loadingSubmit={loadingSubmit}
         open={openModal}
@@ -230,6 +331,7 @@ const ManagingUsers = () => {
       <Grid item xs={12} md={12} lg={12}>
         <Box sx={{ height: 400, width: "100%" }}>
           <DataGrid
+          className={classes.list}
             rows={usersList}
             columns={columns}
             loading={loading}
@@ -242,7 +344,6 @@ const ManagingUsers = () => {
               }
             }}
             pageSizeOptions={[10]}
-
             disableRowSelectionOnClick
           />
         </Box>

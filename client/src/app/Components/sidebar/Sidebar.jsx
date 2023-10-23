@@ -111,7 +111,7 @@ const SidebarComponent = () => {
       <div className={classes.sideBardBottom}>
         <Menu>
           <MenuItem
-            className={classes.link}
+            className={classes.link +'logout'}
             icon={<ReactSVG src={faLogout} className={classes.linkIcon} />}
             component={<Link to="/logout" />}
           >

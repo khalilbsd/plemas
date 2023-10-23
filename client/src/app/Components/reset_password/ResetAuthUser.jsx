@@ -71,7 +71,7 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
                 error={currentPasswordError.error}
                 size="small"
                 type="password"
-                label="Current Password"
+                label="Mot de passe actuel"
                 name="password"
                 inputRef={currentPasswordRef}
 
@@ -86,7 +86,7 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
                 error={currentPasswordError.error}
                   size="small"
                   type="password"
-                  label="New Password"
+                  label="Nouveau mot de passe"
                   name="password"
                   inputRef={newPasswordRef}
                   className={classes.input}
@@ -97,7 +97,7 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
                 error={currentPasswordError.error}
                   size="small"
                   type="password"
-                  label="Confirm new password"
+                  label="Confirmer le nouveau mot de passe"
                   name="password"
                   inputRef={confirmPasswordRef}
                   className={classes.input}
@@ -107,7 +107,7 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
           )}
           <Grid item xs={12} lg={12}>
             <button type="submit">
-              {currentIsValid ? "Change Password" : "check current password"}
+              {currentIsValid ? "Modifier le mot de passe" : "vérifier le mot de passe actuel"}
             </button>
           </Grid>
         </Grid>

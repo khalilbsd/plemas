@@ -175,7 +175,6 @@ const ManageProjects = () => {
           : null
       };
 
-      // const project = newProject;
       if (projectState.customCode !== projectState.code) {
         project.isCodeCustomized = true;
       } else {
@@ -217,19 +216,6 @@ const ManageProjects = () => {
             handleForm={handleOpenAddForm}
           />
         </Grid>
-        {/* <Grid item xs={12} lg={12}>
-          {/* <AddProject refreshProjects={loadProjects}/>
-          <div className={classes.addBtnContainer}>
-            <AddBtn
-              loading={creatingProject}
-              title={!addProjectForm ? "Créer un projet" : "Nouveau projet"}
-              icon={faProject}
-              handleAdd={
-                !addProjectForm ? handleOpenAddForm : handleSubmitProject
-              }
-            />
-          </div>
-        </Grid> */}
       </Grid>
       <ToastContainer
         position="bottom-left"

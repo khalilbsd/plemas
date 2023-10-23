@@ -116,6 +116,9 @@ export const styles = createUseStyles({
     fontWeight: 500,
     color: "var(--white)",
     textTransform: "capitalize",
+    '&.logout':{
+      textTransform:'none'
+    },
     fontSize: 14,
     transition: "0.3s all ease-in-out",
     marginTop: 5,
@@ -137,7 +140,7 @@ export const styles = createUseStyles({
     fill: "var(--white)"
   },
 
-  // profileSection: {
+
   //   padding: "15px 0",
   //   color: "var(--white)",
   //   fontWeight: 600,
@@ -168,7 +171,6 @@ export const styles = createUseStyles({
   // },
   profile: {
     marginTop: 20,
-
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -180,7 +182,8 @@ export const styles = createUseStyles({
       fontSize: 16,
       fontWeight: 600,
       margin: 0,
-      textWrap:'wrap'
+      textWrap:'wrap',
+      whiteSpace:'normal'
     },
     "& .role": {
       margin: 0,

@@ -13,7 +13,7 @@ const initialState = {
     managers: [],
     linkingProject: false,
     linkedProject: {},
-    linkedProjectID:"",
+    linkedProjectID: "",
     projectsListFiltered: [],
     isFiltering: false
   }
@@ -26,6 +26,18 @@ const manageSlice = createSlice({
     setUsersList: (state, action) => {
       state.userList = action.payload;
     },
+    updateUserInList: (state, action) => {
+      const idx = state.userList.findIndex(
+        (user) => user.email === action.payload.email
+      );
+      if (Object.keys(action.payload).includes("ban")) {
+        state.userList[idx].isBanned = action.payload.ban;
+      }
+
+      if (action.payload.role) {
+        state.userList[idx].role = action.payload.role;
+      }
+    },
     addNewUSerToList: (state, action) => {
       state.userList.push(action.payload);
     },
@@ -35,6 +47,7 @@ const manageSlice = createSlice({
     updateProjectList: (state, action) => {
       state.projectsList.push(action.payload);
     },
+
     clearManageList: (state, action) => {
       state = initialState;
     },
@@ -66,17 +79,16 @@ const manageSlice = createSlice({
       state.addProject.linkingProject = action.payload;
     },
     setLinkedProject: (state, action) => {
-
-      state.addProject.linkedProjectID =action.payload
-      if (action.payload){
-        state.addProject.linkedProject = state.projectsList.filter(projet=>projet.id == action.payload)[0].projectCustomId
+      state.addProject.linkedProjectID = action.payload;
+      if (action.payload) {
+        state.addProject.linkedProject = state.projectsList.filter(
+          (projet) => projet.id == action.payload
+        )[0].projectCustomId;
       }
-
     },
     filterProjectsList: (state, action) => {
-
-        state.addProject.isFiltering = action.payload.flag;
-      const regex = new RegExp(action.payload.value, 'i'); // 'i' for case-insensitive search
+      state.addProject.isFiltering = action.payload.flag;
+      const regex = new RegExp(action.payload.value, "i"); // 'i' for case-insensitive search
 
       state.addProject.projectsListFiltered = state.projectsList.filter(
         (project) => {
@@ -87,7 +99,6 @@ const manageSlice = createSlice({
     setIsFiltering: (state, action) => {
       state.addProject.isFiltering = action.payload;
     }
-
   }
 });
 
@@ -104,7 +115,8 @@ export const {
   setPotentielManagers,
   setLinkingProject,
   setLinkedProject,
-  filterProjectsList
+  filterProjectsList,
+  updateUserInList
 } = manageSlice.actions;
 
 export default manageSlice.reducer;

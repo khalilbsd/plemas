@@ -42,7 +42,27 @@ export const userApi = api.injectEndpoints({
         method: 'GET'
       })
     }),
-
+    banUser:builder.mutation({
+      query:(data)=>({
+        url:`/users/ban/user/deactivate`,
+        method: 'PATCH',
+        data:data
+      })
+    }),
+    unBanUser:builder.mutation({
+      query:(data)=>({
+        url:`/users/ban/user/activate`,
+        method: 'PATCH',
+        data:data
+      })
+    }),
+    changeRole:builder.mutation({
+      query:(data)=>({
+        url:`/users/change/user/role`,
+        method: 'PATCH',
+        data:data
+      })
+    }),
   })
 });
 
@@ -53,4 +73,7 @@ export const {
   useGetUserListMutation,
   useAddNewUserMutation,
   useVerifyTokenConfirmationMutation,
+  useBanUserMutation,
+  useUnBanUserMutation,
+  useChangeRoleMutation
 } = userApi;
