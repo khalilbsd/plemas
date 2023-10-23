@@ -1,5 +1,5 @@
 import passport from "passport";
-import { getUserByEmail } from "../controllers/users/user.controller.js";
+import { getUserByEmail } from "../controllers/users/lib.js";
 import logger from "../log/config.js";
 import { ForbiddenError, UnauthorizedError } from "../errors/http.js";
 

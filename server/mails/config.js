@@ -1,22 +1,21 @@
-import nodemailer from "nodemailer";
 import ejs from "ejs";
+import nodemailer from "nodemailer";
 import path from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
+import { config } from "../environment.config.js";
 
-dotenv.config();
 
 export const transporter = nodemailer.createTransport({
 
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    host: config.email_host,
+    port: config.email_port,
     auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: config.email_username,
+        pass: config.email_password,
     },
     secure:false,
     tls: {
-        rejectUnauthorized:process.env.EMAIL_USE_TLS
+        rejectUnauthorized:config.email_use_tls
     }
 });
 
@@ -34,7 +33,7 @@ export const send = ({ template, args, ...options }) =>
                     console.log(err);
                     return reject(err);}
                 const mailOptions = {
-                    from: process.env.EMAIL_USERNAME,
+                    from: config.EMAIL_USERNAME,
                     html: html,
                     ...options,
                 };

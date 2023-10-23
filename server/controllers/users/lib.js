@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { readFileSync } from "fs";
-import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import { getRSAPublicKey } from "../../Utils/utils.js";
+import { User, UserProfile } from "../../db/relations.js";
+import { config } from "../../environment.config.js";
 
 //static routes
 
@@ -15,7 +15,7 @@ import { getRSAPublicKey } from "../../Utils/utils.js";
 export const encryptPassword = async (password) => {
   const hashed = await bcrypt.hash(
     password,
-    parseInt(process.env.SALT_ROUNDS_BCRYPT)
+    parseInt(config.salt_rounds_bcrypt)
   );
   return hashed;
 };
@@ -42,8 +42,8 @@ export const serializeProfile = (userInfo, userId) => {
 };
 
 export const generateToken = async (userID) => {
-  return jwt.sign({ userID }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
+  return jwt.sign({ userID }, config.jwt_secret, {
+    expiresIn: config.jwt_expires_in
   });
 };
 
@@ -70,4 +70,33 @@ export const createPasswordSetToken = async () => {
 
   // const passwords = { tokenToSend, tokenToSave };
   return tokenToSave.substring(0,128);
+};
+
+
+/**
+ * returns the user by email
+ */
+
+/*
+ *  get user By id : return the user if found or null
+ * @param {*} id
+ * @returns
+ */
+export const getUserByEmail = async (email, includeProfile = true,withBanned=false) => {
+  if (!email) return null;
+
+  const queryOptions = {
+    where: { email: email, isBanned: withBanned }
+  };
+
+  // Conditionally include the UserProfile relation based on includeProfile parameter
+  if (includeProfile) {
+    queryOptions.include = UserProfile;
+  }
+
+  const user = await User.findOne(queryOptions);
+
+  if (user) return user;
+
+  return null;
 };

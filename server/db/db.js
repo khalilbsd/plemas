@@ -1,8 +1,8 @@
 // db.js
+import cls from 'cls-hooked';
 import { Sequelize } from "sequelize";
+import { config } from "../environment.config.js";
 import logger from "../log/config.js";
-import dotenv from "dotenv";
-import cls from 'cls-hooked'
 // Initialize Sequelize with your database connection details
 //for test purposes use
 /**
@@ -10,12 +10,11 @@ import cls from 'cls-hooked'
  */
 const namespace =cls.createNamespace("chronos-namespace")
 
-dotenv.config();
 Sequelize.useCLS(namespace)
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORd,
+  config.db_name,
+  config.db_user,
+  config.db_password,
   {
     host: "localhost",
     dialect: "mysql",

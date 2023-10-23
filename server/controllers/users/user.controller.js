@@ -2,10 +2,13 @@ import { createMediaUrl } from "../../Utils/FileManager.js";
 import {
   AppError,
   ElementNotFound,
-  MalformedObjectId
+  MalformedObjectId,
+  MissingParameter
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
+import { CLIENT_ROLE, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/constants.js";
 import { UserProfile } from "../../db/relations.js";
+import { config } from "../../environment.config.js";
 import { UnauthorizedError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import { send } from "../../mails/config.js";
@@ -13,6 +16,7 @@ import User from "../../models/users/User.model.js";
 import {
   createPasswordSetToken,
   encryptPassword,
+  getUserByEmail,
   serializeProfile,
   serializeUser
 } from "./lib.js";
@@ -148,16 +152,18 @@ export const addUser = catchAsync(async (req, res, next) => {
       );
     logger.info(`userProfile ${userProfile.id} created successfully`);
   }
+  console.log(config.lms_host);
+
 
   if (user.token) {
     logger.info(`sending email confirmation for user ${user.id}`);
-    const url = `http://${process.env.LMS_HOST}/auth/account/confirmation/${user.token}`;
+    const url = `http://${config.lms_host}/auth/account/confirmation/${user.token}`;
     try {
       await send({
         template: "account_verification_token",
         to: user.email,
         subject: `Account Verification Link (valid for ${
-          process.env.VERIF_TOKEN_EXPIRES_IN / 60000
+          config.verify_token_expires_in / 60000
         } min)`,
         args: { url }
       });
@@ -206,35 +212,14 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
   });
 });
 
-// export const getUserByEmail = async (email) => {
-//   if (!email) return null;
-//   const user = await User.findOne({
-//     where: { email: email,isBanned:false },
-//     include: UserProfile
-//   });
-//   if (user) return user;
 
-//   return null;
-// };
-export const getUserByEmail = async (email, includeProfile = true) => {
-  if (!email) return null;
 
-  const queryOptions = {
-    where: { email: email, isBanned: false }
-  };
 
-  // Conditionally include the UserProfile relation based on includeProfile parameter
-  if (includeProfile) {
-    queryOptions.include = UserProfile;
-  }
-
-  const user = await User.findOne(queryOptions);
-
-  if (user) return user;
-
-  return null;
-};
-
+/*
+ *  get user By id : return the user if found or null
+ * @param {*} id
+ * @returns
+ */
 export const getUserByID = async (id) => {
   if (!id) return null;
   const user = await User.findByPk(id);
@@ -243,6 +228,9 @@ export const getUserByID = async (id) => {
   return user;
 };
 
+/**
+ update user profile : accepts all the fields of the user
+ */
 export const updateProfile = catchAsync(async (req, res, next) => {
   // const { userId } = req.params;
 
@@ -273,7 +261,9 @@ export const updateProfile = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: "success", message: "user profile updated successfully" });
 });
-
+/**
+ update user image  : this is a standalone api  to lighten up the request
+ */
 export const updateProfileImage = catchAsync(async (req, res, next) => {
   if (!req.user.isSuperUser) {
     if (req.body.email !== req.user.email) return next(new UnauthorizedError());
@@ -306,13 +296,11 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   url = createMediaUrl(req.file);
   userProfile.image = url;
   userProfile.save();
-  return res
-    .status(200)
-    .json({
-      status: "success",
-      message: "profile image updated successfully",
-      url
-    });
+  return res.status(200).json({
+    status: "success",
+    message: "profile image updated successfully",
+    url
+  });
 });
 
 export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
@@ -342,3 +330,76 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ message: "token validated: Welcome", email: user.email });
 });
+
+/**
+ * this api is to change the user role
+ * accepts  email and role
+ */
+export const changeUserRole = catchAsync(async (req, res, next) => {
+  const { email, role } = req.body;
+  if ((!email, !role))
+    return next(new MissingParameter("the email and role are mandatory"));
+  //check if role exists : for now the list of roles is hardcode in server/constant
+  if (
+    ![
+      SUPERUSER_ROLE,
+      INTERVENANT_ROLE,
+      PROJECT_MANAGER_ROLE,
+      CLIENT_ROLE
+    ].includes(role)
+  )
+    return next(new ElementNotFound("roles doesn't exist"));
+
+  const user = await getUserByEmail(email);
+  if (!user) return next(new ElementNotFound("User not found"));
+
+  if (role === SUPERUSER_ROLE){
+    user.isSuperUser =true
+  }
+  user.role = role;
+
+  user.save();
+
+  return res.status(200).json({
+    status: "success",
+    message: "The user role has been updated successfully "
+  });
+});
+
+
+/**
+ * ban user api : this api will deactivate the user if it's active  otherwise a  404 will returned
+ * if the user is not found  || the user is already banned
+ */
+export const banUser= catchAsync(async(req,res,next)=>{
+  const {email} = req.body
+  if (!email) return next(new MissingParameter("Email is mandatory"))
+
+  const user = await getUserByEmail(email,false,false)
+  if (!user) return next(new ElementNotFound("User not found"))
+  user.isBanned = true
+  user.save()
+
+  return res.status(200).json({state:"success",message:`user ${email} has been banned`})
+})
+
+/**
+ * un ban user api : this api will activate the user if it's banned otherwise a  404 will returned
+ * if the user is not found  || the user is already active
+ */
+export const unBanUser= catchAsync(async(req,res,next)=>{
+  const {email} = req.body
+  if (!email) return next(new MissingParameter("Email is mandatory"))
+
+  const user = await getUserByEmail(email,false,true)
+  if (!user) return next(new ElementNotFound("User not found or is already unbanned"))
+  user.isBanned = false
+  user.save()
+
+  return res.status(200).json({state:"success",message:`user ${email} has been unbanned`})
+
+
+
+})
+
+

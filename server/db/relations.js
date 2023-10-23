@@ -1,11 +1,9 @@
 import logger from "../log/config.js";
-import User from "../models/users/User.model.js";
-import dotenv from "dotenv";
-import ResetPasswordToken from "../models/users/ResetPasswordToken.model.js";
 import Project from "../models/project/Project.model.js";
+import ResetPasswordToken from "../models/users/ResetPasswordToken.model.js";
+import User from "../models/users/User.model.js";
 
-dotenv.config();
-const force = process.env.FORCE_DB_SYNC === "true";
+const force = config.force_db_sync === "true";
 
 logger.debug("------- Preforming DataBase synchronization");
 
@@ -22,8 +20,8 @@ User.hasMany(ResetPasswordToken, {
   onUpdate: "CASCADE"
 });
 
-User.hasMany(Project, { foreignKey: "manager", as:'managerID'});
-User.hasMany(Project, { foreignKey: "createdBy", as :"creatorDetails" });
+User.hasMany(Project, { foreignKey: "manager", as: "managerID" });
+User.hasMany(Project, { foreignKey: "createdBy", as: "creatorDetails" });
 
 User.sync({ force: force }).then(() => {
   logger.debug("User model synced with the database");
@@ -49,9 +47,10 @@ ResetPasswordToken.sync({ force: force }).then(() => {
 });
 
 //references  project
-import ProjectLots from "../models/project/ProjectLot.model.js";
+import { config } from "../environment.config.js";
 import Lot from "../models/project/Lot.model.js.js";
 import Phase from "../models/project/Phase.model.js";
+import ProjectLots from "../models/project/ProjectLot.model.js";
 
 Project.belongsToMany(Lot, {
   through: ProjectLots,
@@ -61,9 +60,7 @@ Project.belongsToMany(Lot, {
 Project.belongsTo(User, { foreignKey: "manager", as: "managerID" });
 Project.belongsTo(User, { foreignKey: "createdBy", as: "creatorDetails" });
 
-
-
-Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID"});
+Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID" });
 
 Project.belongsTo(Phase, { foreignKey: "phaseID" });
 Phase.hasMany(Project, { foreignKey: "phaseID" });
@@ -74,11 +71,10 @@ Project.belongsTo(Project, { foreignKey: "prevPhase" });
 Project.hasMany(ProjectLots, { foreignKey: "projectID" });
 ProjectLots.belongsTo(Project, { foreignKey: "projectID" });
 Lot.hasMany(ProjectLots, {
-  foreignKey: "lotID",
+  foreignKey: "lotID"
 });
 ProjectLots.belongsTo(Lot, {
-  foreignKey: "lotID",
-
+  foreignKey: "lotID"
 });
 
 Lot.sync({ force: force }).then(() => {
@@ -100,4 +96,5 @@ ProjectLots.sync({ force: force }).then(() => {
   logger.debug("ProjectLot model synced with the database");
 });
 
-export { User, UserProfile, Lot, Project, ProjectLots, Phase };
+export { Lot, Phase, Project, ProjectLots, User, UserProfile };
+

@@ -3,10 +3,9 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { UnknownError } from "./appError.js";
-import dotenv from 'dotenv'
 
 
-dotenv.config()
+
 export const createMedia = (fileName, mediaDirectory, content) =>
   new Promise((resolve, reject) => {
     if (!fs.existsSync(path.join("../images", mediaDirectory))) {

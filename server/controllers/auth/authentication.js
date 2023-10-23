@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { Op } from "sequelize";
 import {
   AppError,
   ElementNotFound,
@@ -9,19 +9,20 @@ import {
   UnknownError
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
+import { config } from "../../environment.config.js";
+import logger from "../../log/config.js";
+import { send } from "../../mails/config.js";
+import ResetPasswordToken from "../../models/users/ResetPasswordToken.model.js";
+import User from "../../models/users/User.model.js";
 import {
   createPasswordSetToken,
   encryptPassword,
+  getUserByEmail,
   serializeUser
 } from "../users/lib.js";
-import { getUserByEmail } from "../users/user.controller.js";
-import User from "../../models/users/User.model.js";
-import logger from "../../log/config.js";
-import ResetPasswordToken from "../../models/users/ResetPasswordToken.model.js";
-import { send } from "../../mails/config.js";
-import { Op } from "sequelize";
 
-dotenv.config();
+
+
 
 export const login = catchAsync(async (req, res, next) => {
   const user = await getUserByEmail(req.body.email);
@@ -44,7 +45,8 @@ export const login = catchAsync(async (req, res, next) => {
         role: user.role,
         isSuperUser: user.isSuperUser
       },
-      process.env.JWT_SECRET,
+
+      config.jwt_secret,
       { expiresIn: "2d" }
     );
 
@@ -239,7 +241,7 @@ export const sendResetPasswordEmailToken = catchAsync(
     });
 
 
-    if (count >= process.env.RESET_PASSWORD_REQUEST_LIMIT) {
+    if (count >= config.reset_password_request_limit) {
       logger.error(
         `user ${user.id} has exceeded the limit of password reset request: number of requests ${count}`
       );
@@ -254,7 +256,7 @@ export const sendResetPasswordEmailToken = catchAsync(
     //saving user token
     const passwordResetToken = await ResetPasswordToken.create({
       token: token,
-      expiresAt: Date.now() + 1 * process.env.RESET_PASSWORD_TOKEN_EXPIRES_IN,
+      expiresAt: Date.now() + 1 * config.reset_password_token_expires_in,
       userID: user.id
     });
     if (!passwordResetToken)
@@ -268,7 +270,7 @@ export const sendResetPasswordEmailToken = catchAsync(
     // sending email
 
     try {
-      const url = `http://${process.env.LMS_HOST}/reset-password/request/token/${passwordResetToken.token}`;
+      const url = `http://${config.lms_host}/reset-password/request/token/${passwordResetToken.token}`;
       await send({
         template: "reset_password_email",
         to: user.email,

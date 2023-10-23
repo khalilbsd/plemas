@@ -32,17 +32,6 @@ const UserProfile = database.define("UserProfile", {
 
 
 
-// UserProfile.sync({ force: true }).then(() => {
-//   logger.debug("User model synced with the database");
-// });
-// UserProfile.belongsTo(User,{
-//     foreignKey:'userId'
-// });
-
-// UserProfile.sync({ force: process.env.FORCE_DB_SYNC }).then(() => {
-//     logger.debug("User model synced with the database");
-//   });
-
 
 
 

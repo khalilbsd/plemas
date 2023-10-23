@@ -1,17 +1,18 @@
+
+
 import bodyParser from "body-parser";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
+import { config } from "./environment.config.js";
 import { globalErrorHandler } from "./Utils/errorHandler.js";
 import { handleError } from "./middleware/errors.js";
-//session
-// routes
+
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import projectRoutes from "./routes/project.route.js";
-import phasesRoutes from "./routes/phase.route.js"
-import lotRoutes from "./routes/lot.route.js"
+import phasesRoutes from "./routes/phase.route.js";
+import lotRoutes from "./routes/lot.route.js";
 // import passport from "passport";
 // import { authUser } from "./controllers/auth/authentication.js";
 import passport from "./controllers/auth/passport-config.js";
@@ -19,15 +20,6 @@ import passport from "./controllers/auth/passport-config.js";
 import path from "path";
 import { fileURLToPath } from "url";
 const app = express();
-
-
-console.log(process.argv.includes('--prod') ? 'production' : 'development');
-
-if (process.env.NODE_ENV === 'production') {
-  dotenv.config({ path: '.env.prod' });
-} else {
-  dotenv.config({ path: '.env.dev' });
-}
 
 // dotenv.config();
 
@@ -38,10 +30,7 @@ app.use(morgan("dev"));
 app.use(handleError);
 app.use(express.json());
 
-
-
 app.use(passport.initialize());
-
 
 //static routes
 const __filename = fileURLToPath(import.meta.url);
@@ -73,7 +62,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const PORT = process.env.PORT;
+const PORT = config.port
 app.listen(PORT, () => console.log(`server running on post : ${PORT}`));
 app.all("*", (req, res, next) => {
   const err = new Error(`can't find ${req.originalUrl}`);
