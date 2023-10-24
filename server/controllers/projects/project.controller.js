@@ -26,6 +26,7 @@ import {
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
 import { createProjectLot } from "./projectLot.controller.js";
+import moment from "moment";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -141,32 +142,107 @@ export const addProject = catchAsync(async (req, res, next) => {
     });
   } catch (error) {
     logger.error(error);
-    console.log(error)
-	  // await transaction.rollback();
+    console.log(error);
+    // await transaction.rollback();
     return next(new UnknownError("Internal server error "));
   }
 });
 
 export const updateProjectDetails = catchAsync(async (req, res, next) => {
   const details = req.body;
+  console.log(details);
+    if (!details || !Object.keys(details).length)
+      return next(new MissingParameter("Des paramètres manquants"));
+    let phase;
+    if (details.phase || details.code) {
 
-  if (!details || !Object.keys(details).length)
-    return next(new MissingParameter("missing parameters"));
-  if (details.code || details.customId)
-    return next(
-      new AppError(
-        "you can not change the value of the custom id or the project code",
-        403
-      )
-    );
+      const objectQuery = {
+        // id:req.params.projectID
+      };
+      if (details.phase) {
+        phase = await Phase.findOne({ where: { name: details.phase } });
+        objectQuery.phaseID = phase.id;
+      }
+      if (details.code) {
+        objectQuery.code = details.code;
+      }
+      const projectWithPhase = await Project.findOne({ where: objectQuery });
+      console.log("FOOUNDDD PROJECT WITH PHASE",projectWithPhase);
+      if (projectWithPhase)
+        return next(
+          new AppError("un projet avec ce code et cette phase existe déjà", 403)
+        );
+    }
 
-  const project = await getProjectByCustomID(req.params.customID);
-  if (!project) return next(new ElementNotFound("Project not found"));
-  logger.info("attempting to update the project info");
-  await project.update({ ...details });
-  return res
-    .status(200)
-    .json({ status: "success", message: "Project details updated" });
+    const project = await Project.findByPk(req.params.projectID);
+    if (!project) return next(new ElementNotFound("Projet introuvable"));
+    logger.info("attempting to update the project info");
+    if (details.code && (details.code).toString()?.length !== 5)
+      return next(
+        new AppError("le code du projet doit contenir 5 caractères", 401)
+      );
+
+    if (details.startDate)
+      details.startDate = moment(details.startDate, "DD/MM/YYYY");
+
+    console.log(details );
+    let newProject
+    if (!details.phase){
+      await project.update({ ...details });
+    }else{
+      // const phase = await Phase.findOne({where:{name : details.phase.name}})
+      // newProject =  Project.build({...details})
+
+      details.customId = generateProjectCustomID(details.code,details.name,phase.abbreviation)
+      details.phaseID = phase.id
+      details.createdBy = req.user.id
+      newProject = await Project.create({...details})
+
+    }
+
+    const queryObjectPL ={}
+    if (phase) {
+      console.log("new  PROJECT ",newProject);
+      await newProject.reload()
+      queryObjectPL.projectID = newProject.id
+    }else{
+      queryObjectPL.projectID = req.params.projectID
+    }
+    // creation of new projects lots
+    for (const lotIdx  in  details.lots){
+      const lt = await Lot.findOne({ where: { name: details.lots[lotIdx] } });
+      queryObjectPL.lotID = lt.id
+
+      const [lot,created] = await ProjectLots.findOrCreate({
+        // where:  { lotID: lt.id, projectID: req.params.projectID }})
+        where: queryObjectPL})
+    }
+
+    // destruction of existing  projects lots
+    if (!phase){
+      const projectLots = await ProjectLots.findAll({
+        where: { projectID: req.params.projectID },
+        attributes: ["lotID", "projectID"],
+        include: [
+          {
+            model: Lot,
+            attributes: ["name"]
+          }
+        ]
+      });
+      projectLots.forEach(async (pl) => {
+        if (!details.lots.includes(pl.lot.name)) {
+          await pl.destroy();
+        }
+      });
+
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Les détails des projets ont été mis à jour"
+    });
+
 });
 
 export const generateProjectCode = catchAsync(async (req, res, next) => {
@@ -175,7 +251,7 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
   const currentYear = date.getFullYear();
 
   if (currentYear.toString().length !== 4)
-    return next(new UnknownError("something went wrong"));
+    return next(new UnknownError("quelque chose n'a pas fonctionné"));
   var code = undefined;
   if (type !== "old") {
     const latestProjectCode = await Project.max("code");
@@ -353,25 +429,49 @@ export const getProjectById = catchAsync(async (req, res, next) => {
     include: [
       {
         model: ProjectLots,
-        include: [Lot]
+        attributes: ["lotID"],
+        include: [{ model: Lot, attributes: ["name"] }]
+      },
+      {
+        model: Project,
+        attributes: ["name"],
+        include: [
+          {
+            model: Phase,
+            attributes: ["name"]
+          }
+        ]
       },
       {
         model: User,
         as: "managerID",
-        include: [UserProfile]
+        attributes: ["email"],
+        include: [
+          {
+            model: UserProfile,
+            attributes: ["name", "lastName", "image"]
+          }
+        ]
       },
       {
         model: User,
         as: "creatorDetails",
-        include: [UserProfile]
+        attributes: ["email"],
+        include: [
+          {
+            model: UserProfile,
+            attributes: ["name", "lastName", "image"]
+          }
+        ]
       },
       {
-        model: Phase
+        model: Phase,
+        attributes: ["name", "abbreviation"]
       }
     ]
   });
 
-  if (!project ) return next (new ElementNotFound(`Project was not found`))
+  if (!project) return next(new ElementNotFound(`Project was not found`));
 
-  res.status(200).json({state:"success",project})
+  res.status(200).json({ state: "success", project });
 });

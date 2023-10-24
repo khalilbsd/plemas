@@ -217,7 +217,7 @@ const ManageProjects = () => {
           />
         </Grid>
       </Grid>
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-left"
         autoClose={5000}
         hideProgressBar={false}
@@ -228,7 +228,7 @@ const ManageProjects = () => {
         draggable
         pauseOnHover
         theme="colored"
-      />
+      /> */}
     </div>
   );
 };

@@ -53,7 +53,7 @@ router
     addProject
   )
   .patch(
-    "/change/:customID",
+    "/change/:projectID",
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE]),
     updateProjectDetails

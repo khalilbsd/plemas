@@ -2,12 +2,17 @@ import { createUseStyles } from "react-jss";
 
 export const projectDetails = createUseStyles({
   projectDetailsPage: {
-    height: "100%"
+    height: "100%",
+    width: "100%"
   },
   card: {
     backgroundColor: "var(--white)",
     borderRadius: 30,
-    overflow: "hidden"
+    overflow: "hidden",
+    transition: "all 0.2s ease-in-out",
+    "&.colored": {
+      backgroundColor: "var(--light-green)"
+    }
   },
   headerSkeleton: {
     minHeight: 200,
@@ -18,119 +23,117 @@ export const projectDetails = createUseStyles({
     padding: 20
   },
   projetHeader: {
-    minHeight: 100,
+    minHeight: 40,
     background: "var(--light-green)",
     color: "var(--white)",
     width: "100%",
+    maxWidth: "100%",
     height: "100%",
-    padding: 20,
+
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    "& .headerInfo": {
+      transition: "all 0.2s ease-in-out",
+      whiteSpace: "nowrap",
+      textWrap: "wrap",
+      "&.hidden": {
+        width: "0 ",
+        overflow: "hidden ",
+        opacity: 0
+      },
+      "&.collapsed": {
+        opacity: 1,
+        width: "100% !important"
+      }
+    }
+  },
+  seeMoreProject: {
+    background: "none",
+    border: "none",
+    color: "var(--white)",
+    display: "flex",
+    alignItems: "center",
+    fontWeight: 600,
+    gap: 10,
+    transition: "all 0.2s ease-in-out",
+    borderRadius: 30,
+    padding: 10,
+    marginLeft: "auto",
+    "&:hover": {
+      background: "var(--pastel-green)"
+    },
+    "& svg": {
+      width: 18,
+      fill: "var(--white)"
+    }
   },
   projectTitle: {
     margin: 0,
     fontSiz: 24
   },
-  subTitle: {
-    fontSize: 14,
-    fontWeight: 500,
-    fontStyle: "initial",
-    margin: 0
-  },
-  kApiContainer: {
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "space-evenly"
-  },
-  keyFigure: {
+
+  mainInfo: {
     backgroundColor: "var(--white)",
-    height: 100,
-    width: 100,
-    borderRadius: 40,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "stretch",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    transition: "all 0.3s ease-in-out",
+    paddingLeft: 20,
+    paddingRight: 20,
+    overflow: "hidden",
     position: "relative",
-    "& .content": {
-      flexDirection: "column",
-      justifyContent: "space-around",
-      display: "flex",
-      padding: 20
+    opacity: 0,
+    "&.hidden": {
+      height: 0,
+      overflow: "hidden"
     },
-    "& .value": {
-      color: "var(--black)",
-      fontSize: 28,
-      fontWeight: 800,
-      margin: 0
-    },
-    "& .labels": {
-      color: "var(--black)",
-      fontSize: 14,
-      fontWeight: 600,
-      margin: 0
-    },
-    "& .icon": {
-      position: "absolute",
-      right: -10,
-      bottom: -10,
-      width: 34,
-      height: 34,
-      background: "var(--white)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: "100%",
-      border: "1px solid  var(--orange)",
-      "& svg": {
-        fill: "var(--orange)",
-        height: 18,
-        width: 18
-      }
+    "&.collapsed": {
+      opacity: 1,
+      paddingTop: 20,
+      paddingBottom: 20,
+      height: "auto",
+      overflow: "visible"
     }
   },
-  mainInfo: {
-    padding: 20
-  },
-  mainInfoSkeleton:{
-    minHeight:600,
+  mainInfoSkeleton: {
+    minHeight: 600,
     backgroundColor: "var(--pastel-green) !important",
     width: "100%",
     height: "100%",
     borderRadius: "30px !important",
     padding: 20
   },
-  sectionTitle:{
-    fontSize:24,
-    fontWeight:600,
-    margin:0,
-    textTransform:'capitalize'
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 600,
+    margin: 0,
+    textTransform: "capitalize"
   },
-  data:{
-    marginTop:10,
-    '& .label':{
-        fontSize:14,
-        fontStyle:'italic',
-        fontWeight:600,
-        margin:0
+  data: {
+    marginTop: 10,
+    "& .label": {
+      fontSize: 14,
+      fontStyle: "italic",
+      fontWeight: 600,
+      margin: 0
     },
-    '& .value':{
-        fontWeight:700
+    "& .value": {
+      fontWeight: 700
     }
   },
   manager: {
     display: "flex",
     gap: 10,
     alignItems: "center",
-    '& img':{
+    "& img": {
       height: 52,
       width: 52,
-      borderRadius: "100%",
+      borderRadius: "100%"
     },
     "& .initials": {
       backgroundColor: "var(--orange)",
       height: 52,
       width: 52,
+      minWidth: 52,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
@@ -145,6 +148,63 @@ export const projectDetails = createUseStyles({
         fontWeight: 500,
         color: "grey"
       }
+    }
+  },
+  priority: {
+    width: 52,
+    height: 52,
+    borderRadius: "100%",
+    overflow: "hidden",
+    "& .circle": {
+      objectFit: "fill",
+      width: "100%",
+      height: "100%"
+    }
+  },
+  actions: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    display:'flex',
+    justifyContent:'flex-end',
+    alignItems:'center',
+    gap:20,
+    minWidth:100,
+    "& button": {
+      height: 42,
+      minWidth: 42,
+      width: 42,
+      borderRadius: "100%",
+      overflow: "hidden",
+      display:'flex',
+      alignItems:'center',
+      justifyContent:'center',
+      transition:'width 0.2s ease-in-out',
+      '& .text':{
+        width:0,
+        overflow:'hidden',
+        transition:'all 0.2s ease-in-out',
+      },
+      "& svg": {
+        height: 20,
+        width: 20,
+        fill:'var(--white)'
+      },
+      '&:hover':{
+        borderRadius:30,
+        width:'100%',
+        '& .text':{
+          width:'100%',
+          marginLeft:5
+        },
+      },
+      color:'var(--white)',
+      backgroundColor:'var(--light-green)',
+      border:'none',
+      '&.cancel':{
+        backgroundColor:'var(--toastify-color-error)',
+      }
+
     }
   }
 });

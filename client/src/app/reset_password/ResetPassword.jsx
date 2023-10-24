@@ -104,7 +104,7 @@ const ResetPassword = () => {
           </div>
         )}
       </Box>
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-left"
         autoClose={5000}
         hideProgressBar={false}
@@ -115,7 +115,7 @@ const ResetPassword = () => {
         draggable
         pauseOnHover
         theme="colored"
-      />
+      /> */}
     </div>
   );
 };

@@ -128,7 +128,7 @@ const Login = () => {
             </Grid>
           </Grid>
         </form>
-        <ToastContainer
+        {/* <ToastContainer
           position="bottom-left"
           autoClose={5000}
           hideProgressBar={false}
@@ -139,7 +139,7 @@ const Login = () => {
           draggable
           pauseOnHover
           theme="colored"
-        />
+        /> */}
       </Box>
     </div>
     </div>

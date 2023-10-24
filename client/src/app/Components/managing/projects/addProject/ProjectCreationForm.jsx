@@ -323,6 +323,7 @@ const ProjectCreationForm = ({
           onChange={handlePriority}
           label="Priorité"
           priority ={newProject.priority.value}
+
           // setPriority={handlePriority}
         />
       </Grid>
@@ -336,6 +337,7 @@ const ProjectCreationForm = ({
               handleChange={handleLotChange}
               error={getErrorMessage("lot")?.error}
               errorText={getErrorMessage("lot")?.message}
+              label={true}
             />
           </>
         ) : (

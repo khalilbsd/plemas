@@ -348,7 +348,7 @@ const ManagingUsers = () => {
           />
         </Box>
       </Grid>
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-left"
         autoClose={5000}
         hideProgressBar={false}
@@ -359,7 +359,7 @@ const ManagingUsers = () => {
         draggable
         pauseOnHover
         theme="colored"
-      />
+      /> */}
     </Grid>
   );
 };

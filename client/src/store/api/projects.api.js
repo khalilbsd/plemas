@@ -57,7 +57,15 @@ export const projectApi = api.injectEndpoints({
         url:`projects/get/project/${projectID}`,
         method:'GET'
       })
-    })
+    }),
+    updateProject :builder.mutation({
+      query:({body,projectID}) =>(
+        {
+        url:`projects/change/${projectID}`,
+        method:'PATCH',
+        data:body
+      })
+    }),
   }),
 });
 
@@ -70,5 +78,6 @@ export const {
   useGetPotentielManagersMutation,
   useCreateProjectMutation,
   useGetChoiceForProjectCreationMutation,
-  useGetProjectByIDMutation
+  useGetProjectByIDMutation,
+  useUpdateProjectMutation
 } = projectApi;

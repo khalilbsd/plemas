@@ -2,10 +2,7 @@ import { Stack } from "@mui/system";
 import React from "react";
 import { projectsStyles } from "../../style";
 
-const PriorityField = ({ name, onChange, label,priority
-}) => {
-  const classes = projectsStyles();
-  const colors = [
+export const priorityColors = [
     {
       code: "#3AEBA0",
       value: 1
@@ -27,6 +24,9 @@ const PriorityField = ({ name, onChange, label,priority
       value: 5
     }
   ];
+const PriorityField = ({ name, onChange, label,priority
+}) => {
+  const classes = projectsStyles();
 
 
   const selectPriority = (e)=>{
@@ -42,7 +42,7 @@ const PriorityField = ({ name, onChange, label,priority
     <>
       <label>{label}</label>
       <Stack direction="row" className={classes.priorityContainer}>
-        {colors.map(({ code, value }) => (
+        {priorityColors.map(({ code, value }) => (
           <div key={value} className={classes.priorityFiled}>
             <button
                 onClick={selectPriority}

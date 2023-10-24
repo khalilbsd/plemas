@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { useGetAuthenticatedUserInfoMutation } from "../store/api/users.api";
 import useGetUserInfo from "../hooks/user";
 import { setUserInfo } from "../store/reducers/user.reducer";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const userObject = useGetAuthenticatedUser();
@@ -109,6 +110,18 @@ function App() {
             </Route>
           )}
         </Routes>
+        <ToastContainer
+          position="bottom-left"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
       </div>
     </div>
   );

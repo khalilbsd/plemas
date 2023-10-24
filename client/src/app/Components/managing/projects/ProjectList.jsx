@@ -9,7 +9,7 @@ import { ReactSVG } from "react-svg";
 // import { projectTestList } from "./test/projectList.test";
 import faAdd from '../../../public/svgs/solid/plus.svg'
 import LinkProject from "./addProject/LinkProject";
-function getRandomColor() {
+export function getRandomColor() {
   const colors = [
     "light-green",
     "dark-green",

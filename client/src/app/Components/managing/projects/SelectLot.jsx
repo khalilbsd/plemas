@@ -35,13 +35,15 @@ export default function SelectLot({
   initialValue,
   handleChange,
   error,
-  errorText
+  errorText,
+  label,
+  size
 }) {
   const theme = useTheme();
   return (
     <div>
       <FormControl required className={classes} error={error}>
-        <InputLabel id="lot-multiple-chip-label">Lots</InputLabel>
+       {label&& <InputLabel id="lot-multiple-chip-label">Lots</InputLabel>}
         <Select
           required
           labelId="lot-multiple-chip-label"
@@ -50,9 +52,11 @@ export default function SelectLot({
           multiple
           value={initialValue}
           onChange={handleChange}
+          size={size?size:"medium"}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+
               {selected.map((value) => (
                 <Chip size="small" key={value} label={value} />
               ))}
