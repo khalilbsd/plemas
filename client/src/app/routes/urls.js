@@ -4,29 +4,22 @@ import Login from "../login/Login";
 import Logout from "../logout/Logout.jsx";
 import UserProfile from "../profile/UserProfile";
 // import { faBriefcase, faHouse, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import AdminDashboard from "../dashboards/AdminDashboard";
-import { EmployeeDashboard } from "../dashboards/EmployeeDashboard";
 import {
   ALL_ROLES,
   CLIENT_ROLE,
-  EMPLOYEE_ROLE,
   SUPERUSER_ROLE
 } from "../../constants/roles";
-import ManagingLayout from "../managing/ManagingLayout";
 import ManagingUsers from "../Components/managing/ManagingUsers";
 
 //icons
-import faUser from "../public/svgs/light/user.svg";
-import faProject from '../public/svgs/light/diagram-project.svg'
-import faAdmin from "../public/svgs/light/bars-progress.svg";
-import faWorker from "../public/svgs/light/briefcase.svg";
-import faLogout from "../public/svgs/light/right-from-bracket.svg";
-import faManage from "../public/svgs/light/list-check.svg";
-import AuthConfirmation from "../confirmation/AuthConfirmation";
-import ResetPassword from "../reset_password/ResetPassword";
 import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";
+import AuthConfirmation from "../confirmation/AuthConfirmation";
 import ManageProjects from "../projects/ManageProjects";
 import ProjectDetails from "../projects/ProjectDetails";
+import faProject from '../public/svgs/light/diagram-project.svg';
+import faLogout from "../public/svgs/light/right-from-bracket.svg";
+import faUser from "../public/svgs/light/user.svg";
+import ResetPassword from "../reset_password/ResetPassword";
 
 export const anonymousUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },
@@ -62,16 +55,7 @@ export const exceptPathSidebar = [
   "/reset-password"
 ];
 
-const adminManagingRoutes = [
-  {
-    role: SUPERUSER_ROLE,
-    title: "Gérer les utilisateurs",
-    path: "/admin/manage/users",
-    Component: <ManagingUsers />,
-    icon: faUser
-  }
 
-];
 
 export const protectedUrls = [
   {
@@ -79,7 +63,8 @@ export const protectedUrls = [
     title: "Reset Password",
     path: "/settings/account/change-password",
     Component: <ResetPassword />,
-    sideBar: false
+    sideBar: false,
+    superUser:true
   },
 
   {
@@ -88,27 +73,39 @@ export const protectedUrls = [
     path: "/profile/me",
     Component: <UserProfile />,
     icon: faUser,
-    sideBar: false
+    sideBar: false,
+    superUser:true
   },
 
 
 
   {
-    role: SUPERUSER_ROLE,
+    role: [SUPERUSER_ROLE],
     title: "Gérer les utilisateurs",
     path: "/admin/manage/users",
     Component: <ManagingUsers />,
     icon: faUser,
-    sideBar: true
+    sideBar: true,
+    superUser:true
   },
 
   {
-    role: SUPERUSER_ROLE,
+    role: [SUPERUSER_ROLE],
     title: "Projets",
     path: "/admin/manage/projects",
     Component: <ManageProjects />,
     icon: faProject,
-    sideBar: true
+    sideBar: true,
+    superUser:true
+  },
+  {
+    role: ALL_ROLES,
+    title: "Projets",
+    path: "/projects",
+    Component: <ManageProjects />,
+    icon: faProject,
+    sideBar: true,
+    superUser:false
   },
   {
     role: ALL_ROLES,
@@ -116,18 +113,26 @@ export const protectedUrls = [
     path: "/projects/:projectID",
     Component: <ProjectDetails />,
 
-    sideBar: false
+    sideBar: false,
+    superUser:true
   },
 
 ];
 
 export function getRolesBasedUrls(user, role = null) {
-  if (user && user.isSuperUser) return protectedUrls;
-
-  const accessRole = !role ? user.role : role;
-
-  return protectedUrls.filter((url) => url.role === accessRole);
+  if (user && user.isSuperUser) return protectedUrls.filter(url => url.superUser);
+  const accessRole = !role ? user?.role : role;
+  return protectedUrls.filter((url) => url.role.includes(accessRole) );
 }
+
+
+
+
+
+
+
+
+
 
 export function getRoleHomeUrl(role) {
   switch (role) {
@@ -136,8 +141,6 @@ export function getRoleHomeUrl(role) {
 
     case CLIENT_ROLE:
       return "/dashboard/client";
-    case EMPLOYEE_ROLE:
-      return "/dashboard/employee";
     default:
       return "/dashboard/employee";
   }

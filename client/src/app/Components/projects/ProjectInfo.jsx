@@ -1,22 +1,22 @@
 import {
   Chip,
   Grid,
+  MenuItem,
   Select,
   Skeleton,
-  TextField,
-  MenuItem
+  TextField
 } from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/en-gb";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import faSave from "../../public/svgs/light/floppy-disk.svg";
-import faEdit from "../../public/svgs/light/pen.svg";
-import faCancel from "../../public/svgs/light/xmark.svg";
-import { projectDetails } from "./style";
-import useGetAuthenticatedUser from "../../../hooks/authenticated";
-import { SUPERUSER_ROLE } from "../../../constants/roles";
-import { notify } from "../notification/notification";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
+import { SUPERUSER_ROLE } from "../../../constants/roles";
+import useGetAuthenticatedUser from "../../../hooks/authenticated";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useGetLotsMutation,
   useGetPhasesMutation,
@@ -28,15 +28,16 @@ import {
   setPhases,
   setPotentielManagers
 } from "../../../store/reducers/manage.reducer";
-import { useDispatch } from "react-redux";
+import faSave from "../../public/svgs/light/floppy-disk.svg";
+import faEdit from "../../public/svgs/light/pen.svg";
+import faCancel from "../../public/svgs/light/xmark.svg";
 import SelectLot from "../managing/projects/SelectLot";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import "dayjs/locale/en-gb";
+import { notify } from "../notification/notification";
+import { projectDetails } from "./style";
 
-import { projectsStyles } from "../managing/style";
+import { setEditProject } from "../../../store/reducers/project.reducer";
 import { formattedDate } from "../../../store/utils";
+import { projectsStyles } from "../managing/style";
 
 const initialState = {
   code: "",
@@ -50,7 +51,7 @@ const initialState = {
   priority: ""
 };
 
-const ProjectInfo = ({ loading, open }) => {
+const ProjectInfo = ({ loading, open, handleClose }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const editData = useGetStateFromStore("manage", "addProject");
   const { user } = useGetAuthenticatedUser();
@@ -100,6 +101,10 @@ const ProjectInfo = ({ loading, open }) => {
     setEdit((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    dispatch(setEditProject(edit));
+  }, [edit]);
+
   const handleUpdate = async () => {
     try {
       const data = { ...editedProject };
@@ -107,7 +112,6 @@ const ProjectInfo = ({ loading, open }) => {
         delete data.phase;
         if (data.code === project.code) delete data.code;
       }
-
       data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
       // }
 
@@ -116,6 +120,7 @@ const ProjectInfo = ({ loading, open }) => {
         projectID: project.id
       }).unwrap();
       notify(NOTIFY_SUCCESS, res?.message);
+      setEdit(false);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
     }

@@ -102,6 +102,7 @@ const SidebarComponent = () => {
                     icon={<ReactSVG src={icon} className={classes.linkIcon} />}
                     component={<Link to={path} />}
                   >
+
                     {title}
                   </MenuItem>
                 )

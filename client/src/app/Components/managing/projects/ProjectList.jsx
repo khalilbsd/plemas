@@ -7,8 +7,14 @@ import { useNavigate } from "react-router";
 import AddBtn from "../AddBtn";
 import { ReactSVG } from "react-svg";
 // import { projectTestList } from "./test/projectList.test";
-import faAdd from '../../../public/svgs/solid/plus.svg'
+import faAdd from "../../../public/svgs/solid/plus.svg";
 import LinkProject from "./addProject/LinkProject";
+import useGetAuthenticatedUser from "../../../../hooks/authenticated";
+import {
+  PROJECT_MANAGER_ROLE,
+  SUPERUSER_ROLE
+} from "../../../../constants/roles";
+import useIsUserCanAccess from "../../../../hooks/access";
 export function getRandomColor() {
   const colors = [
     "light-green",
@@ -21,16 +27,17 @@ export function getRandomColor() {
   return colors[randomIndex];
 }
 
-
-
-const ProjectList = ({ addForm ,handleForm }) => {
+const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
+  const { isSuperUser, isManager, role } = useIsUserCanAccess();
   const projects = useGetStateFromStore("manage", "projectsList");
   const addProjectState = useGetStateFromStore("manage", "addProject");
-  const navigate = useNavigate()
+  const { user } = useGetAuthenticatedUser();
+  const navigate = useNavigate();
   // console.log(projects);
   const [avatarColors, setAvatarColors] = useState([]);
 
+// console.log("isSuperUser",isSuperUser, ", isManager ", isManager," role ", role);
 
   const dispatch = useDispatch();
 
@@ -73,14 +80,12 @@ const ProjectList = ({ addForm ,handleForm }) => {
     // projects/:projectID
     const location = e.currentTarget;
     const projectID = location.getAttribute("data-id");
-    navigate(`/projects/${projectID}`)
+    navigate(`/projects/${projectID}`);
     // console.log("navigating ", e.currentTarget);
   };
 
-
-
   const projectList = () => {
-    if (addForm || addProjectState.isFiltering ) {
+    if (addForm || addProjectState.isFiltering) {
       return addProjectState.projectsListFiltered;
     }
     return projects;
@@ -95,33 +100,33 @@ const ProjectList = ({ addForm ,handleForm }) => {
     const location = e.currentTarget;
     const projectID = location.getAttribute("data-id");
     dispatch(setLinkedProject(projectID));
-    const elements = document.querySelectorAll('.row-data');
+    const elements = document.querySelectorAll(".row-data");
     elements.forEach((element) => {
-      element.classList.remove('active');
+      element.classList.remove("active");
     });
     location.classList.add("active");
   };
 
   return (
     <div
-     style={addForm?{height: "calc(100% - 188px)"}:{height: "99.5%"}}
-    className={classes.listContainer}>
+      style={addForm ? { height: "calc(100% - 188px)" } : { height: "99.5%" }}
+      className={classes.listContainer}
+    >
       <div className={classes.header}>
-
-
-        {!addForm&&  <div className={classes.addBtnContainer}>
-
-          <LinkProject
-          className={classes.search}
-          color="secondary"
-          label="Recherche"
-          size="small"
-          />
-            <button onClick={handleForm}>
-              <ReactSVG src={faAdd} />
-            </button>
-          </div>}
-
+        {(isSuperUser || isManager) &&
+          !addForm && (
+            <div className={classes.addBtnContainer}>
+              <LinkProject
+                className={classes.search}
+                color="secondary"
+                label="Recherche"
+                size="small"
+              />
+              <button onClick={handleForm}>
+                <ReactSVG src={faAdd} />
+              </button>
+            </div>
+          )}
 
         <div className={classes.headersItem}>
           {columns.map((column, counter) => (
@@ -165,9 +170,9 @@ const ProjectList = ({ addForm ,handleForm }) => {
                         />
                       ) : (
                         <span
-                        key={idx}
-                        className={`${classes.avatar} ${avatarColors[id]}`}
-                      >
+                          key={idx}
+                          className={`${classes.avatar} ${avatarColors[id]}`}
+                        >
                           {project[attribute].fullName[0]}
                           {project[attribute].fullName.split(" ")[1][0]}
                         </span>

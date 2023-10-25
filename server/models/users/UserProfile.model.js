@@ -26,7 +26,19 @@ const UserProfile = database.define("UserProfile", {
     userID:{
         type:DataTypes.INTEGER,
         allowNull:false
-    }
+    },
+   street:{
+        type:DataTypes.STRING,
+   },
+   city:{
+    type:DataTypes.STRING,
+   },
+   region:{
+    type:DataTypes.STRING,
+   },
+   hideDate:{
+        type:DataTypes.STRING
+   }
 
 }, { timestamps: true });
 

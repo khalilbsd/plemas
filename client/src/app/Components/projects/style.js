@@ -151,15 +151,31 @@ export const projectDetails = createUseStyles({
     }
   },
   priority: {
-    width: 52,
-    height: 52,
-    borderRadius: "100%",
-    overflow: "hidden",
+    position:'relative',
+    // overflow: "hidden",
+    display:'flex',
+    justifyContent: "center",
+
     "& .circle": {
-      objectFit: "fill",
-      width: "100%",
-      height: "100%"
+      width: 52,
+      height: 52,
+      borderRadius: "100%",
+
     }
+  },
+  priorityUpdateContainer:{
+    position:'absolute ',
+    bottom:'-70%',
+
+    left:'auto',
+    right:'auto',
+    zIndex:999,
+
+    width:'auto',
+    backgroundColor:'var(--white)',
+    borderRadius:15,
+    border:'1px solid var(--app-bg-color)',
+
   },
   actions: {
     position: "absolute",

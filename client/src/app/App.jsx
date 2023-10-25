@@ -27,13 +27,12 @@ function App() {
   const location = useLocation();
   const [displayLocation, setDisplayLocation] = useState(location);
   const [transitionStage, setTransistionStage] = useState("fadeIn");
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { user: userAccount, profile } = useGetUserInfo();
   const [getAuthenticatedUserInfo, { isLoading }] =
     useGetAuthenticatedUserInfoMutation();
 
   useEffect(() => {
-
     async function loadUserInfo() {
       try {
         if (userObject.user?.email) {
@@ -49,12 +48,11 @@ function App() {
     }
 
     userObject.refetch();
-    if (userObject?.isAuthenticated &&( !userAccount || !profile)  ) {
+    if (userObject?.isAuthenticated && (!userAccount || !profile)) {
       loadUserInfo();
     }
     if (location !== displayLocation) setTransistionStage("fadeOut");
-
-  }, [location, displayLocation,userObject.loading]);
+  }, [location, displayLocation, userObject.loading]);
 
   const renderRoutes = (urls) => {
     return urls.map(({ path, Component, nested }, key) => (
@@ -100,7 +98,7 @@ function App() {
 
           {/* Protected routes for ALL_ROLES */}
           <Route element={<ProtectedRoute user={userObject} />}>
-            {renderRoutes(getRolesBasedUrls(null, ALL_ROLES))}
+            {renderRoutes(getRolesBasedUrls(null))}
           </Route>
 
           {/* Protected routes based on user role */}

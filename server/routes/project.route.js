@@ -11,7 +11,7 @@ import {
   checkProjectLinking,
   getProjectById
 } from "../controllers/projects/project.controller.js";
-import { CLIENT_ROLE, SUPERUSER_ROLE } from "../constants/constants.js";
+import { ALL_ROLES, CLIENT_ROLE, SUPERUSER_ROLE } from "../constants/constants.js";
 
 const router = express.Router();
 
@@ -19,7 +19,8 @@ router
   .get(
     "/all",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    // checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole(ALL_ROLES),
     getAllProjects
   )
   .get(
@@ -62,7 +63,7 @@ router
   .get(
     "/get/project/:projectID",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE, CLIENT_ROLE]),
+    checkUserRole(ALL_ROLES),
     getProjectById
   );
 // .patch('/change/project/:custom_name/phase',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),changeProjectPhase)
