@@ -2,7 +2,7 @@ import logger from "../log/config.js";
 import Project from "../models/project/Project.model.js";
 import ResetPasswordToken from "../models/users/ResetPasswordToken.model.js";
 import User from "../models/users/User.model.js";
-
+import Intervenant from "../models/tasks/Intervenant.model.js"
 const force = config.force_db_sync === "true";
 
 logger.debug("------- Preforming DataBase synchronization");
@@ -20,8 +20,30 @@ User.hasMany(ResetPasswordToken, {
   onUpdate: "CASCADE"
 });
 
-User.hasMany(Project, { foreignKey: "manager", as: "managerID" });
-User.hasMany(Project, { foreignKey: "createdBy", as: "creatorDetails" });
+// User.hasMany(Project, { foreignKey: "manager", as: "managerID" });
+// User.hasMany(Project, { foreignKey: "createdBy", as: "creatorDetails" });
+
+// //intervenant
+
+// User.belongsToMany(Project, {
+//   through: Intervenant,
+//   foreignKey: "intervenantID",
+//   as: "intervenant"
+// });
+
+// User model associations
+User.hasMany(Project, { foreignKey: "manager", as: "managedProjects" });
+User.hasMany(Project, { foreignKey: "createdBy", as: "createdProjects" });
+// Intervenant model association
+User.belongsToMany(Project, {
+  through: Intervenant,
+  foreignKey: "intervenantID",
+  as: "intervenantProjects"
+});
+User.hasMany(Intervenant,{foreignKey: "intervenantID",})
+Intervenant.belongsTo(User,{foreignKey: "intervenantID",});
+
+
 
 User.sync({ force: force }).then(() => {
   logger.debug("User model synced with the database");
@@ -57,8 +79,25 @@ Project.belongsToMany(Lot, {
   foreignKey: "projectID"
 });
 
-Project.belongsTo(User, { foreignKey: "manager", as: "managerID" });
+// Project.belongsTo(User, { foreignKey: "manager", as: "managerID" });
+// Project.belongsTo(User, { foreignKey: "createdBy", as: "creatorDetails" });
+// /* intervenant  */
+// Project.belongsToMany(User,{through:Intervenant,foreignKey:"projectID",as:"intervention"})
+
+// Project model associations
+Project.belongsTo(User, { foreignKey: "manager", as: "managerDetails" });
 Project.belongsTo(User, { foreignKey: "createdBy", as: "creatorDetails" });
+
+Project.belongsToMany(User, {
+  through: Intervenant,
+  foreignKey: "projectID",
+  as: "intervenants"
+});
+
+
+Project.hasMany(Intervenant,{foreignKey: "projectID"})
+Intervenant.belongsTo(Project,{foreignKey: "projectID",})
+
 
 Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID" });
 
@@ -91,10 +130,15 @@ Phase.sync({ force: force }).then(() => {
   logger.debug("Phase model synced with the database");
 });
 
-// Finally, synchronize the ProjectLots model
+// then, synchronize the ProjectLots model
 ProjectLots.sync({ force: force }).then(() => {
   logger.debug("ProjectLot model synced with the database");
 });
+// Finally, synchronize the Intervenant model
+Intervenant.sync({ force: force }).then(() => {
+  logger.debug("Intervenant model synced with the database");
+});
+
+
 
 export { Lot, Phase, Project, ProjectLots, User, UserProfile };
-

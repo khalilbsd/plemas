@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "universal-cookie";
+import jwt_decode from "jwt-decode";
 
 const cookies = new Cookies();
 
@@ -14,27 +15,44 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-     try {
-      state.user = action.payload?.user;
-      localStorage.setItem("user", JSON.stringify(action.payload?.user));
-      //setting the token in the cookies
-      cookies.set("session_token",(action.payload?.token)?.split('Bearer ')[1],{
-        path: "/",
-        domain: process.env.REACT_APP_DOMAIN,
-        maxAge:172800,
+      try {
+        // localStorage.setItem("user", JSON.stringify(action.payload?.user));
+        const  token  = action.payload?.token?.split("Bearer ")[1]
+        //setting the token in the cookies
+        const decodedToken = jwt_decode(token)
+        state.user = decodedToken;
 
-      });
+        const currentTime = Date.now() / 1000;
+        const expirationTime = decodedToken.exp;
 
-      // console.log("cookie is set for domain",process.env.REACT_APP_DOMAIN);
-     } catch (error) {
-      console.log(error);
-     }
+        // Calculate the time remaining in seconds
+        const timeRemaining = expirationTime - currentTime;
 
+        cookies.set(
+          "session_token",
+          token,
+          {
+            path: "/",
+            domain: process.env.REACT_APP_DOMAIN,
+            maxAge: timeRemaining
+          }
+        );
+
+        // console.log("cookie is set for domain",process.env.REACT_APP_DOMAIN);
+      } catch (error) {
+        console.log(error);
+      }
     },
     logout: (state, action) => {
+    try {
       state.user = null;
-      localStorage.removeItem("user");
-      cookies.remove("session_token");
+      cookies.remove("session_token",{
+        path: "/",
+        domain: process.env.REACT_APP_DOMAIN,
+      });
+    } catch (error) {
+      console.log(error);
+    }
     }
   }
 });

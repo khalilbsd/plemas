@@ -52,7 +52,6 @@ export const login = catchAsync(async (req, res, next) => {
 
     return res.status(200).json({
       message: "You have successfully logged in",
-      user: serializeUser(user),
       token: `Bearer ${token}`,
       expiresIn: "2d",
       redirectUrl: redirectUrl

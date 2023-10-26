@@ -81,7 +81,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
   useEffect(() => {
     if (
       user?.role === SUPERUSER_ROLE ||
-      user?.email === project?.managerID?.email
+      user?.email === project?.managerDetails?.email
     ) {
       loadPhasesAndLots();
       setEditedProject({
@@ -339,23 +339,23 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                 {!edit ? (
                   <div className="value">
                     <div className={classes.manager}>
-                      {project.managerID?.UserProfile?.image ? (
+                      {project.managerDetails?.UserProfile?.image ? (
                         <img
-                          src={`${process.env.REACT_APP_SERVER_URL}${project.managerID?.UserProfile?.image}`}
-                          alt={`avatar for user ${project.managerID?.UserProfile?.name}`}
+                          src={`${process.env.REACT_APP_SERVER_URL}${project.managerDetails?.UserProfile?.image}`}
+                          alt={`avatar for user ${project.managerDetails?.UserProfile?.name}`}
                         />
                       ) : (
                         <span className="initials">
-                          {project.managerID?.UserProfile?.name[0]}
-                          {project.managerID?.UserProfile?.lastName[0]}
+                          {project.managerDetails?.UserProfile?.name[0]}
+                          {project.managerDetails?.UserProfile?.lastName[0]}
                         </span>
                       )}
                       <p className="manager-name">
-                        {project.managerID?.UserProfile?.name}
-                        {project.managerID?.UserProfile?.lastName}
+                        {project.managerDetails?.UserProfile?.name}
+                        {project.managerDetails?.UserProfile?.lastName}
                         <br />
                         <span className="email">
-                          {project.managerID?.email}
+                          {project.managerDetails?.email}
                         </span>
                       </p>
                     </div>

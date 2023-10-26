@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   AppError,
   ElementNotFound,
@@ -7,7 +8,6 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { PROJECT_PHASE_STATUS_IN_PROGRESS } from "../../constants/constants.js";
-import sequelize from "../../db/db.js";
 import {
   Lot,
   Phase,
@@ -19,14 +19,11 @@ import logger from "../../log/config.js";
 import Project from "../../models/project/Project.model.js";
 import {
   generateProjectCustomID,
-  getProjectByCustomID,
   isCodeValid,
   serializeProject
 } from "./lib.js";
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
-import { createProjectLot } from "./projectLot.controller.js";
-import moment from "moment";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -41,8 +38,13 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
       },
       {
         model: User,
-        as: "managerID",
-        include: [UserProfile]
+        as: "managerDetails",
+        attributes:["email"],
+
+        include: [{
+          model:UserProfile,
+          attributes:["image","name","lastName"]
+        }]
       },
       {
         model: Phase
@@ -444,7 +446,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
       },
       {
         model: User,
-        as: "managerID",
+        as: "managerDetails",
         attributes: ["email"],
         include: [
           {

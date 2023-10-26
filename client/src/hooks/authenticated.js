@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/reducers/auth";
-
+import decode from 'jwt-decode'
 const initialState = {
   isAuthenticated: false,
   user: null,
@@ -17,15 +17,25 @@ function useGetAuthenticatedUser() {
   const dispatch = useDispatch()
   useEffect(() => {
     async function getUser() {
-      const storedUser = await localStorage.getItem("user");
-      const token  = await cookies.get('session_token')
-      // console.log(token);
-      if (storedUser && token)  {
 
+      const token  = await cookies.get('session_token')
+      if (!token) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          isAuthenticated: false,
+          user: null,
+          loading: false,
+        }));
+        dispatch(logout())
+        return
+      }
+
+      const storedUser = decode(token)
+      if (storedUser && token)  {
         setUser((prevUser) => ({
           ...prevUser,
           isAuthenticated: true,
-          user: JSON.parse(storedUser),
+          user: storedUser,
           loading: false,
         }));
       } else {
