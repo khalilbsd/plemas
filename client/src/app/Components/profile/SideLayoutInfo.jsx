@@ -63,7 +63,7 @@ const SideLayoutInfo = () => {
         poste: postRef.current.value,
         phone: phoneRef.current.value
       };
-      await updateUserProfile(updatedProfile);
+      await updateUserProfile(updatedProfile).unwrap();
       //check if image exists
 
       dispatch(updateUserInfoProfile(updatedProfile));

@@ -237,14 +237,9 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   // const { userId } = req.params;
 
   const newProfile = req.body;
-  if (!newProfile.email)
-    return next(new AppError("The email was not provided", 500));
+  console.log(newProfile);
 
-  if (!req.user.isSuperUser) {
-    if (newProfile.email != req.user.email)
-      return next(new UnauthorizedError());
-  }
-  const user = await User.findOne({ where: { email: newProfile.email } });
+  const user = await User.findOne({ where: { email: newProfile.email || req.user.email } });
   if (!user) {
     const errorMsg = `the user : ${newProfile.email} is not found`;
     logger.error(errorMsg);
@@ -294,7 +289,6 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
     removeTmp(req.file.tempFilePath);
     return res.status(400).json({ msg: "File format is incorrect." });
   }
-  // url = await createMedia(req.user._id, '/users/', req.file.buffer);
   url = createMediaUrl(req.file);
   userProfile.image = url;
   userProfile.save();
