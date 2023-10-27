@@ -1,19 +1,15 @@
-import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { Menu, MenuItem, Sidebar, SubMenu } from "react-pro-sidebar";
+import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { Link } from "react-router-dom";
 import Logo from "../../public/svgs/Kairos logo_3.svg";
-import { getRolesBasedUrls, protectedUrls } from "../../routes/urls";
+import { getRolesBasedUrls } from "../../routes/urls";
 import { styles } from "./style";
 
-import faLogout from "../../public/svgs/light/right-from-bracket.svg";
 import { ReactSVG } from "react-svg";
-import useGetAuthenticatedUser from "../../../hooks/authenticated";
-import useGetUserInfo from "../../../hooks/user";
-import faUser from "../../public/svgs/light/user.svg";
-import faBars from "../../public/svgs/light/bars.svg";
 import { SUPERUSER_ROLE } from "../../../constants/roles";
+import useGetUserInfo from "../../../hooks/user";
+import faBars from "../../public/svgs/light/bars.svg";
+import faLogout from "../../public/svgs/light/right-from-bracket.svg";
 const SidebarComponent = () => {
   const classes = styles();
   const [collapse, setCollapse] = useState(false);
@@ -68,6 +64,7 @@ const SidebarComponent = () => {
                   <img
                     src={`${process.env.REACT_APP_SERVER_URL}${user?.profile?.image}`}
                     className={classes.profileImage}
+                    alt="user avatar"
                   />
                 ) : (
                   <span className="initials">

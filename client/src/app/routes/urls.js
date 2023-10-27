@@ -112,7 +112,6 @@ export const protectedUrls = [
     title: "Detail de projet",
     path: "/projects/:projectID",
     Component: <ProjectDetails />,
-
     sideBar: false,
     superUser:true
   },
@@ -120,17 +119,11 @@ export const protectedUrls = [
 ];
 
 export function getRolesBasedUrls(user, role = null) {
+  console.log(user,role);
   if (user && user.isSuperUser) return protectedUrls.filter(url => url.superUser);
   const accessRole = !role ? user?.role : role;
   return protectedUrls.filter((url) => url.role.includes(accessRole) );
 }
-
-
-
-
-
-
-
 
 
 

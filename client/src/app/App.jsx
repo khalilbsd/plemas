@@ -1,25 +1,23 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import {
   anonymousUrls,
   getRolesBasedUrls,
-  protectedUrls,
   publicUrls
 } from "./routes/urls";
-import ProtectedRoute from "./routes/ProtectedRoute";
 
-import Loading from "./Components/loading/Loading";
-import useGetAuthenticatedUser from "../hooks/authenticated";
-import Sidebar from "./Components/sidebar/Sidebar";
-import useRenderLocation from "../hooks/location";
-import { ALL_ROLES, SUPERUSER_ROLE } from "../constants/roles";
-import Anonymous from "./routes/Anonymous";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useGetAuthenticatedUserInfoMutation } from "../store/api/users.api";
-import useGetUserInfo from "../hooks/user";
-import { setUserInfo } from "../store/reducers/user.reducer";
 import { ToastContainer } from "react-toastify";
+import useGetAuthenticatedUser from "../hooks/authenticated";
+import useRenderLocation from "../hooks/location";
+import useGetUserInfo from "../hooks/user";
+import { useGetAuthenticatedUserInfoMutation } from "../store/api/users.api";
+import { setUserInfo } from "../store/reducers/user.reducer";
+import Loading from "./Components/loading/Loading";
+import Sidebar from "./Components/sidebar/Sidebar";
+import Anonymous from "./routes/Anonymous";
 
 function App() {
   const userObject = useGetAuthenticatedUser();
@@ -29,7 +27,7 @@ function App() {
   const [transitionStage, setTransistionStage] = useState("fadeIn");
   const dispatch = useDispatch();
   const { user: userAccount, profile } = useGetUserInfo();
-  const [getAuthenticatedUserInfo, { isLoading }] =
+  const [getAuthenticatedUserInfo, {}] =
     useGetAuthenticatedUserInfoMutation();
 
   useEffect(() => {

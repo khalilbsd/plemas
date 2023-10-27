@@ -357,6 +357,9 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
 
   if (role === SUPERUSER_ROLE){
     user.isSuperUser =true
+  }else{
+    user.isSuperUser =false
+
   }
   user.role = role;
 
