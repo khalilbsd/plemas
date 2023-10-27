@@ -16,6 +16,7 @@ export const config = {
     jwt_secret:process.env.JWT_SECRET,
     session_secret_key:process.env.SESSION_SECRET_KEY,
     force_db_sync:process.env.FORCE_DB_SYNC,
+    alter_db_sync:process.env.ALTER_DB_SYNC,
     server_url:process.env.SERVER_URL,
     jwt_expires_in:process.env.JWT_EXPIRES_IN,
     service:process.env.SERVICE,

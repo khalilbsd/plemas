@@ -36,7 +36,7 @@ const UserProfile = database.define("UserProfile", {
    region:{
     type:DataTypes.STRING,
    },
-   hideDate:{
+   hireDate:{
         type:DataTypes.STRING
    }
 
