@@ -97,6 +97,7 @@ const ProjectCreationForm = ({
         dispatch(setLot(lotsData?.lots));
       } catch (e) {
         handleClose();
+        console.log("habyt nekhdm")
         notify(NOTIFY_ERROR, e?.data?.message);
       }
     }

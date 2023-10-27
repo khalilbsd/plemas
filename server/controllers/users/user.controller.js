@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { createMediaUrl } from "../../Utils/FileManager.js";
 import {
   AppError,
@@ -77,7 +78,8 @@ export const getAll = catchAsync(async (req, res, next) => {
 export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
   const users = await User.findAll({
     where: {
-      isBanned: false
+      isBanned: false,
+      [Op.or]:[{role:SUPERUSER_ROLE},{role:PROJECT_MANAGER_ROLE}]
     },
     attributes: ["id", "email"],
     include: [

@@ -1,9 +1,9 @@
-import { Grid, Skeleton, TextField } from "@mui/material";
+import { Grid } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../constants/constants";
+import useIsUserCanAccess from "../../hooks/access";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import {
   useCreateProjectMutation,
@@ -16,12 +16,10 @@ import {
   setLinkingProject,
   setProjectList
 } from "../../store/reducers/manage.reducer";
-import AddBtn from "../Components/managing/AddBtn";
 import ProjectList from "../Components/managing/projects/ProjectList";
 import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import { projectsStyles } from "../Components/managing/style";
 import { notify } from "../Components/notification/notification";
-import faProject from "../public/svgs/light/diagram-project.svg";
 
 const initialError = {
   filedName: undefined,
@@ -68,6 +66,7 @@ const ManageProjects = () => {
   const [errorMessage, setErrorMessage] = useState(initialError);
   const [newProject, setNewProject] = useState(newProjectInitialState);
   const projectState = useGetStateFromStore("manage", "addProject");
+  const { isSuperUser, isManager } = useIsUserCanAccess();
 
   //ADD hooks
   const [createProject, { isLoading: creatingProject }] =
@@ -196,7 +195,8 @@ const ManageProjects = () => {
   return (
     <div className={classes.projectsPage}>
       <Grid container alignItems="center" spacing={2} sx={{ height: "100%" }}>
-        {addProjectForm && (
+        {(isSuperUser||isManager)&&
+        addProjectForm && (
           <Grid item xs={12} lg={12}>
             <ProjectCreationForm
               handleSubmit={handleSubmitProject}
@@ -217,18 +217,6 @@ const ManageProjects = () => {
           />
         </Grid>
       </Grid>
-      {/* <ToastContainer
-        position="bottom-left"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      /> */}
     </div>
   );
 };

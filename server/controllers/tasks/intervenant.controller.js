@@ -18,7 +18,6 @@ export const getAllIntervenants = catchAsync(async (req, res, next) => {
       {
         model: Intervenant,
         as:"intervenants",
-
         include: [
           {
             model: User,

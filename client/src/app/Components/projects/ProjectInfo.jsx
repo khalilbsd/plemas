@@ -38,6 +38,7 @@ import { projectDetails } from "./style";
 import { setEditProject } from "../../../store/reducers/project.reducer";
 import { formattedDate } from "../../../store/utils";
 import { projectsStyles } from "../managing/style";
+import ProjectIntervenant from "./ProjectIntervenant";
 
 const initialState = {
   code: "",
@@ -406,14 +407,14 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
         </Grid>
 
         <Grid item xs={12} sm={12} md={6} lg={3}>
-          <Grid container spacing={2}>
-            {/* listee des intervenant  */}
-            <Grid item xs={12}>
-              <div className={classes.data}>
-                <p className="label">les Intervenants</p>
-                <div className="value">not implemented</div>
-              </div>
-            </Grid>
+          {/* listee des intervenant  */}
+          <Grid item xs={12}>
+            <div className={classes.data}>
+              <p className="label">les Intervenants</p>
+            </div>
+
+              <ProjectIntervenant />
+
           </Grid>
         </Grid>
       </Grid>

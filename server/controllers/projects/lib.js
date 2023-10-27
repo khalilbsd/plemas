@@ -108,7 +108,6 @@ function getProjectLots(lots) {
 export const serializeProject = (projects) => {
   const list = [];
   projects.forEach((element) => {
-    console.log(element.managerDetails);
     list.push({
       id: element.id,
       code: element.code,

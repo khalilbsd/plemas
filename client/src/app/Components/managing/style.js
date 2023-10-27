@@ -36,7 +36,7 @@ export const listStyle = createUseStyles({
     color: "var(--dark-green)",
     borderRadius: 4,
     padding: "10px 00px",
-    border:'2px solid var(--dark-green)'
+    border: "2px solid var(--dark-green)"
   },
   redLabel: {
     fontWeight: 600,
@@ -47,54 +47,53 @@ export const listStyle = createUseStyles({
     width: "150px",
     // margin:'auto',
     textAlign: "center",
-    border:'2px solid var(--toastify-icon-color-error)'
+    border: "2px solid var(--toastify-icon-color-error)"
   },
-  roleBtn:{
-    background:'none',
-    border:'none',
-    width:'100%',
-    textAlign:'left',
-    height:'100%'
+  roleBtn: {
+    background: "none",
+    border: "none",
+    width: "100%",
+    textAlign: "left",
+    height: "100%"
   },
-  list:{
-    borderTopLeftRadius:'30px !important',
-    borderTopRightRadius:'30px !important',
-    overflow:'hidden',
-    background:'var(--white)',
-'& .MuiDataGrid-virtualScrollerContent':{
-  height:'360px !important'
-},
+  list: {
+    borderTopLeftRadius: "30px !important",
+    borderTopRightRadius: "30px !important",
+    overflow: "hidden",
+    background: "var(--white)",
+    "& .MuiDataGrid-virtualScrollerContent": {
+      height: "360px !important"
+    },
 
-    '& .MuiDataGrid-columnHeaders':{
-      backgroundColor:'var(--light-green)',
-      color:'var(--white)',
-      '& .MuiDataGrid-columnHeaderTitle':{
-        fontWeight:'600 !important',
-
+    "& .MuiDataGrid-columnHeaders": {
+      backgroundColor: "var(--light-green)",
+      color: "var(--white)",
+      "& .MuiDataGrid-columnHeaderTitle": {
+        fontWeight: "600 !important"
       },
-      height:'90px !important',
-      maxHeight: '90px !important',
-      '& .MuiDataGrid-columnHeadersInner':{
-        width:'95%',
-        margin:'auto'
+      height: "90px !important",
+      maxHeight: "90px !important",
+      "& .MuiDataGrid-columnHeadersInner": {
+        width: "95%",
+        margin: "auto"
       }
     },
-    '& .MuiDataGrid-virtualScroller':{
-      width:'95%',
-      margin:'auto',
+    "& .MuiDataGrid-virtualScroller": {
+      width: "95%",
+      margin: "auto",
       marginTop: -20,
-    /* z-index: 999999999999999999999999999999999999999999999999999999999999999999999999; */
-    position: 'relative',
-    background: 'var(--white)',
-    borderRadius: 15,
-    // border: '1px solid var(--app-bg-color)',
-    boxShadow:'0px 7px 33px 0px rgba(0,0,0,0.3)',
-    marginBottom: 20
-    }
-    ,'& .MuiDataGrid-row, .MuiDataGrid-cell ':{
-      minHeight:'72px !important',
-      maxHeight:'72px !important',
-      border:'none !important'
+      /* z-index: 999999999999999999999999999999999999999999999999999999999999999999999999; */
+      position: "relative",
+      background: "var(--white)",
+      borderRadius: 15,
+      // border: '1px solid var(--app-bg-color)',
+      boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
+      marginBottom: 20
+    },
+    "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
+      minHeight: "72px !important",
+      maxHeight: "72px !important",
+      border: "none !important"
     }
   }
 });
@@ -141,17 +140,24 @@ export const addUserFormStyles = createUseStyles({
 export const projectsStyles = createUseStyles({
   projectsPage: {
     height: "100%",
-    width:'100%'
+    width: "100%"
+  },
+
+  empty: {
+    margin: "auto",
+    width: "60%",
+    fontSize: 18,
+    color: "lightgrey",
+    textAlign:'center'
   },
   listContainer: {
-
     backgroundColor: "var(--white)",
     boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
     borderRadius: 30,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    paddingBottom: 20,
+    paddingBottom: 20
     // transition:'all 0.3s ease-in-out'
   },
   header: {
@@ -231,16 +237,16 @@ export const projectsStyles = createUseStyles({
   addBtnContainer: {
     display: "flex",
     gap: 10,
-    alignItems:'center',
+    alignItems: "center",
     "& button": {
       backgroundColor: "unset",
       border: "none",
-      borderRadius:'100%',
+      borderRadius: "100%",
       height: 32,
       width: 32,
-      transition:'0.3s all ease-in-out',
-      '&:hover':{
-          backgroundColor:'var(--pastel-green)'
+      transition: "0.3s all ease-in-out",
+      "&:hover": {
+        backgroundColor: "var(--pastel-green)"
       },
       "& svg": {
         fill: "var(--white)",
@@ -253,8 +259,8 @@ export const projectsStyles = createUseStyles({
     position: "absolute",
     right: 20,
     top: -16,
-    display:'flex',
-    gap:25,
+    display: "flex",
+    gap: 25,
 
     "& button": {
       backgroundColor: "unset",
@@ -267,13 +273,11 @@ export const projectsStyles = createUseStyles({
       alignItems: "center",
       justifyContent: "center",
       transition: "all 0.3s ease-in-out",
-      '&.close':{
-        backgroundColor: "var(--toastify-color-error)",
-
+      "&.close": {
+        backgroundColor: "var(--toastify-color-error)"
       },
-      '&.submit':{
-        backgroundColor: "var(--dark-green)",
-
+      "&.submit": {
+        backgroundColor: "var(--dark-green)"
       },
       "&:hover": {
         backgroundColor: "lightgrey"
@@ -447,13 +451,13 @@ export const projectsStyles = createUseStyles({
     height: "170px !important",
     backgroundColor: "var(--pastel-green) !important"
   },
-  search:{
-    width:'auto',
+  search: {
+    width: "auto",
     // backgroundColor:'var(--white)',
-    borderRadius:5,
-    '& label[data-shrink=true]':{
-      color:'var(--orange) !important',
-      backgroundColor:'unset'
+    borderRadius: 5,
+    "& label[data-shrink=true]": {
+      color: "var(--orange) !important",
+      backgroundColor: "unset"
     }
   }
 });

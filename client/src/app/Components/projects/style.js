@@ -221,6 +221,36 @@ export const projectDetails = createUseStyles({
         backgroundColor:'var(--toastify-color-error)',
       }
 
+    },
+  },
+  intervenantsContainer:{
+
+    display:'flex',
+
+    alignItems:'center',
+
+  '& button':{
+      display:'flex',
+      justifyContent:'center',
+      alignItems:'center',
+      width:42,
+      border:'none',
+      backgroundColor:'var(--app-bg-color)',
+      height:42,
+      borderRadius:'100%',
+      marginLeft:10,
+      transition:'0.2s all ease-in-out',
+      '&:hover':{
+        backgroundColor:'var(--orange)',
+        '& svg':{
+          fill:'var(--white)',
+        }
+      },
+      '& svg':{
+        width:18,
+        height:18,
+        fill:'var(--orange)'
+      }
     }
   }
 });

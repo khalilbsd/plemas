@@ -18,7 +18,7 @@ const ProjectHeader = ({ loading }) => {
   const classes = projectDetails();
   const [details, setDetails] = useState(false);
   const [priorityChange, setPriorityChange] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const getPriorityColor = (id) => {
     const priority = priorityColors.filter((color) => color.value === id)[0];
     if (!priority) return { code: "var(--bright-orange)", value: -1 };
@@ -38,11 +38,10 @@ const ProjectHeader = ({ loading }) => {
 
   const changePriority = (e) => {
     setPriorityChange((prevPrio) => !prevPrio);
-
   };
 
   const handleUpdatePriority = (priority) => {
-    dispatch(setProjectPriority(parseInt(priority)))
+    dispatch(setProjectPriority(parseInt(priority)));
   };
 
   return (

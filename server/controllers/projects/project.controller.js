@@ -7,7 +7,7 @@ import {
   UnknownError
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import { PROJECT_PHASE_STATUS_IN_PROGRESS } from "../../constants/constants.js";
+import { PROJECT_MANAGER_ROLE, PROJECT_PHASE_STATUS_IN_PROGRESS, SUPERUSER_ROLE } from "../../constants/constants.js";
 import {
   Lot,
   Phase,
@@ -24,33 +24,61 @@ import {
 } from "./lib.js";
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
+import Intervenant from "../../models/tasks/Intervenant.model.js";
+import { Op } from "sequelize";
 
 /**
  * Get all the project that exists and in which phase is the project in
  *
  */
 export const getAllProjects = catchAsync(async (req, res, next) => {
-  const projects = await Project.findAll({
-    include: [
-      {
-        model: ProjectLots,
-        include: [Lot]
-      },
-      {
-        model: User,
-        as: "managerDetails",
-        attributes:["email"],
 
-        include: [{
-          model:UserProfile,
-          attributes:["image","name","lastName"]
-        }]
-      },
-      {
-        model: Phase
-      }
-    ]
-  });
+  let projects = []
+  const objectQuery = {}
+  if (req.user.role === PROJECT_MANAGER_ROLE){
+    objectQuery.manager = req.user.id
+  }
+
+
+
+  if (req.user.role !== PROJECT_MANAGER_ROLE && req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser ){
+    const interventions = await Intervenant.findAll({where:{intervenantID:req.user.id},attributes:['projectID']})
+    let projectIds = []
+    interventions.forEach(project=>{
+      projectIds.push({id:project.projectID})
+    })
+
+
+    objectQuery[Op.or] = projectIds;
+
+  }
+
+  console.log(objectQuery);
+
+
+
+    projects = await Project.findAll({
+      where:objectQuery,
+      include: [
+        {
+          model: ProjectLots,
+          include: [Lot]
+        },
+        {
+          model: User,
+          as: "managerDetails",
+          attributes:["email"],
+          include: [{
+            model:UserProfile,
+            attributes:["image","name","lastName"]
+          }]
+        },
+        {
+          model: Phase
+        }
+      ]
+    });
+
   // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
   projectsList.sort((a, b) => b.code - a.code);

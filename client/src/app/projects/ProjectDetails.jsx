@@ -1,16 +1,15 @@
 import { Grid } from "@mui/material";
 import React, { useEffect } from "react";
-import { projectDetails } from "../Components/projects/style";
-import ProjectHeader from "../Components/projects/ProjectHeader";
-import ProjectTasks from "../Components/projects/ProjectTasks";
-import ProjectRequests from "../Components/projects/ProjectRequests";
-import { useGetProjectByIDMutation } from "../../store/api/projects.api";
-import { useParams } from "react-router";
-import { notify } from "../Components/notification/notification";
-import { NOTIFY_ERROR } from "../../constants/constants";
 import { useDispatch } from "react-redux";
+import { useParams } from "react-router";
+import { NOTIFY_ERROR } from "../../constants/constants";
+import { useGetProjectByIDMutation } from "../../store/api/projects.api";
 import { setProject } from "../../store/reducers/project.reducer";
-import ProjectInfo from "../Components/projects/ProjectInfo";
+import { notify } from "../Components/notification/notification";
+import ProjectHeader from "../Components/projects/ProjectHeader";
+import ProjectRequests from "../Components/projects/ProjectRequests";
+import ProjectTasks from "../Components/projects/ProjectTasks";
+import { projectDetails } from "../Components/projects/style";
 
 const ProjectDetails = () => {
   const classes = projectDetails();
@@ -37,10 +36,6 @@ const ProjectDetails = () => {
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <ProjectHeader loading={isLoading} />
         </Grid>
-        {/* <Grid item xs={12} sm={12} md={12} lg={12}>
-          <ProjectInfo loading={isLoading} />
-        </Grid> */}
-
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <div className={classes.card}>
             <ProjectTasks loading={isLoading} />

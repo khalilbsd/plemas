@@ -29,11 +29,12 @@ export function getRandomColor() {
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
-  const { isSuperUser, isManager, role } = useIsUserCanAccess();
+  const { isSuperUser, isManager } = useIsUserCanAccess();
   const projects = useGetStateFromStore("manage", "projectsList");
   const addProjectState = useGetStateFromStore("manage", "addProject");
   const { user } = useGetAuthenticatedUser();
   const navigate = useNavigate();
+  const [emptyMessage, setEmptyMessage] = useState("")
   // console.log(projects);
   const [avatarColors, setAvatarColors] = useState([]);
 
@@ -91,8 +92,14 @@ const ProjectList = ({ addForm, handleForm }) => {
     return projects;
   };
   useEffect(() => {
+    if (!projects.length) {
+      setEmptyMessage("Vous n'intervenez dans aucun projet pour l'instant ! Veuillez patienter.")
+      return
+    }
+    setEmptyMessage("")
     const colors = projects.map(() => getRandomColor());
     setAvatarColors(colors);
+
   }, [projects]);
 
   const handleClickProject = (e) => {
@@ -113,7 +120,7 @@ const ProjectList = ({ addForm, handleForm }) => {
       className={classes.listContainer}
     >
       <div className={classes.header}>
-        {(isSuperUser || isManager) &&
+        {
           !addForm && (
             <div className={classes.addBtnContainer}>
               <LinkProject
@@ -122,9 +129,12 @@ const ProjectList = ({ addForm, handleForm }) => {
                 label="Recherche"
                 size="small"
               />
+              {
+                (isSuperUser || isManager) &&
               <button onClick={handleForm}>
                 <ReactSVG src={faAdd} />
               </button>
+              }
             </div>
           )}
 
@@ -141,6 +151,11 @@ const ProjectList = ({ addForm, handleForm }) => {
         </div>
       </div>
       <div className={classes.content}>
+        {emptyMessage&&
+          <h2 className={classes.empty}>
+            {emptyMessage}
+            </h2>
+        }
         {projectList().map((project, id) => (
           <div
             key={id}
