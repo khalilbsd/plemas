@@ -32,37 +32,37 @@ router
   .get(
     "/creation/choice",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     checkProjectLinking
   )
   .get(
     "/phase/activated",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     getProjectsInPhase
   )
   .get(
     "/generate/code",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     generateProjectCode
   )
   .post(
     "/verify/code/",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     checkProjectCode
   )
   .post(
     "/add",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     addProject
   )
   .patch(
     "/change/:projectID",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     updateProjectDetails
   )
 
