@@ -3,8 +3,8 @@ import { createUseStyles } from "react-jss";
 export const btnStyle = createUseStyles({
   btn: {
     width: 200,
-    '&.large':{
-      width:'100%'
+    "&.large": {
+      width: "100%"
     },
     height: 50,
     borderRadius: 5,
@@ -151,7 +151,7 @@ export const projectsStyles = createUseStyles({
     width: "60%",
     fontSize: 18,
     color: "lightgrey",
-    textAlign:'center'
+    textAlign: "center"
   },
   listContainer: {
     backgroundColor: "var(--white)",
@@ -169,14 +169,55 @@ export const projectsStyles = createUseStyles({
     width: "calc(100% - 80px)"
   },
   headersItem: {
-    color: "var(--white)",
     display: "flex",
-    alignItems: "flex-start",
-    width: "calc(100% - 40px)",
-    height: 90,
-    justifyContent: "space-between",
-    fontWeight: 600
+    "& .static-data": {
+      // width:'100%',
+      color: "var(--white)",
+      display: "flex",
+      alignItems: "flex-start",
+      width: "calc(100% - 40px)",
+      minHeight: 90,
+      justifyContent: "space-between",
+      fontWeight: 600,
+      fontSize: 14
+    },
+    "& .dates-data": {
+      color: "var(--white)",
+      display: "flex",
+      alignItems: "flex-start",
+      width: "calc(100% - 40px)",
+      minHeight: 90,
+      justifyContent: "space-between",
+      fontWeight: 600,
+      fontSize: 14
+    }
     // padding:'0 20px'
+  },
+  column: {
+    fontSize: 14,
+    textWrap: "nowrap",
+    whiteSpace: "nowrap"
+  },
+  dateColumn: {
+    textWrap: "nowrap",
+    whiteSpace: "nowrap",
+    position: "relative",
+
+    flex: 1,
+    height: 50
+  },
+  dateTitle: {
+    position: "absolute",
+
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    transform: "rotate(45deg) translate(0px, 0px)",
+    fontSize: 12,
+    textWrap: "nowrap",
+    whiteSpace: "nowrap",
+    margin: "0 -100%"
   },
   content: {
     padding: 20,
@@ -210,12 +251,19 @@ export const projectsStyles = createUseStyles({
       borderRadius: 10,
       justifyContent: "space-between",
       transition: "all 0.3s ease-in-out",
+      alignItems: "center",
       "&:hover": {
         backgroundColor: "var(--app-bg-color)"
       },
       "&.active": {
         backgroundColor: "var(--pastel-green)"
         // color:'var(--white)'
+      },
+      "& .progress-bar": {
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: "var(--orange)",
+        width: "100%"
       }
     }
   },
@@ -223,7 +271,8 @@ export const projectsStyles = createUseStyles({
     display: "flex",
     alignItems: "center",
     gap: 10,
-    flex: 1
+    flex: 1,
+    fontSize: 14
   },
   // avatar: {
   //   width: 32,
@@ -332,11 +381,11 @@ export const projectsStyles = createUseStyles({
     }
   },
   avatar: {
-    '&:not(.chip)':{
+    "&:not(.chip)": {
       width: 32,
       minWidth: 32,
       height: 32,
-      fontWeight: 600,
+      fontWeight: 600
     },
     color: "var(--white) !important",
     display: "flex",
@@ -458,19 +507,19 @@ export const projectsStyles = createUseStyles({
     backgroundColor: "var(--pastel-green) !important"
   },
   search: {
-    width: "auto",
+    width: "30%",
     // backgroundColor:'var(--white)',
+    backgroundColor: "white",
     borderRadius: 5,
     "& label[data-shrink=true]": {
-      color: "var(--orange) !important",
-      backgroundColor: "unset"
+      color: "var(--orange) !important"
     }
   },
-  intevDialog:{
-    width:300
+  intevDialog: {
+    width: 300
   },
-  multipleUsers:{
-    marginBottom:'5px !important',
-    width:'100%'
+  multipleUsers: {
+    marginBottom: "5px !important",
+    width: "100%"
   }
 });

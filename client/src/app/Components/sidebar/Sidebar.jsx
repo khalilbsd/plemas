@@ -12,7 +12,7 @@ import faBars from "../../public/svgs/light/bars.svg";
 import faLogout from "../../public/svgs/light/right-from-bracket.svg";
 const SidebarComponent = () => {
   const classes = styles();
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const user = useGetUserInfo();
   const handleCollapse = () => {
     setCollapse(!collapse);

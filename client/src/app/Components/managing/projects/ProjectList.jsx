@@ -9,27 +9,24 @@ import { projectsStyles } from "../style";
 import useIsUserCanAccess from "../../../../hooks/access";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import LinkProject from "./addProject/LinkProject";
+import { Chip } from "@mui/material";
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const projects = useGetStateFromStore("manage", "projectsList");
+  const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const addProjectState = useGetStateFromStore("manage", "addProject");
   const navigate = useNavigate();
-  const [emptyMessage, setEmptyMessage] = useState("")
+  const [emptyMessage, setEmptyMessage] = useState("");
 
   const dispatch = useDispatch();
 
   const columns = [
     {
-      label: "ID",
-      attribute: "code",
-      width: 200
-    },
-    {
-      label: "Phase v",
-      attribute: "activePhase",
+      label: "Nom du projet",
+      attribute: "projectCustomId",
       width: 200
     },
     {
@@ -38,8 +35,13 @@ const ProjectList = ({ addForm, handleForm }) => {
       width: 200
     },
     {
-      label: "Nom du projet",
-      attribute: "projectCustomId",
+      label: "Lots",
+      attribute: "lots",
+      width: 200
+    },
+    {
+      label: "Phase",
+      attribute: "activePhase",
       width: 200
     },
     {
@@ -47,13 +49,20 @@ const ProjectList = ({ addForm, handleForm }) => {
       attribute: "tasks",
       width: 200
     },
+
     {
       label: "Status",
       attribute: "phaseStatus",
       width: 200
+    },
+    {
+      label: "",
+      attribute: "dates",
+      width: "auto"
     }
   ];
   //just for colorizing
+  // const calculatedWidth =  columns.length / 22
 
   const handleNavigation = (e) => {
     e.stopPropagation();
@@ -72,12 +81,12 @@ const ProjectList = ({ addForm, handleForm }) => {
   };
   useEffect(() => {
     if (!projects.length) {
-      setEmptyMessage("Vous n'intervenez dans aucun projet pour l'instant ! Veuillez patienter.")
-      return
+      setEmptyMessage(
+        "Vous n'intervenez dans aucun projet pour l'instant ! Veuillez patienter."
+      );
+      return;
     }
-    setEmptyMessage("")
-
-
+    setEmptyMessage("");
   }, [projects]);
 
   const handleClickProject = (e) => {
@@ -98,42 +107,57 @@ const ProjectList = ({ addForm, handleForm }) => {
       className={classes.listContainer}
     >
       <div className={classes.header}>
-        {
-          !addForm && (
-            <div className={classes.addBtnContainer}>
-              <LinkProject
-                className={classes.search}
-                color="secondary"
-                label="Recherche"
-                size="small"
-              />
-              {
-                (isSuperUser || isManager) &&
+        {!addForm && (
+          <div className={classes.addBtnContainer}>
+            <LinkProject
+              className={classes.search}
+              color="secondary"
+              label=" "
+              size="small"
+            />
+            {(isSuperUser || isManager) && (
               <button onClick={handleForm}>
                 <ReactSVG src={faAdd} />
               </button>
-              }
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
         <div className={classes.headersItem}>
-          {columns.map((column, counter) => (
+          <div className="static-data">
+          {columns
+            .filter((col) => col.attribute !== "dates")
+            .map((column, counter) => (
+              <div
+                key={counter}
+                className={classes.column}
+                style={{ minWidth: 150, maxWidth: 150 }}
+              >
+                <p>{column.label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="dates-data">
+
+          {twoWeeksDates.map(({ date, weekend }) => (
             <div
-              key={counter}
-              className={classes.column}
-              style={{ width: 200 }}
+              key={date}
+              className={classes.dateColumn}
+              // style={{ minWidth: 14, maxWidth: 14 }}
             >
-              <p className={classes.columnTitle}>{column.label}</p>
+              <p
+                className={`${classes.dateTitle} ${weekend ? "disabled" : ""}`}
+              >
+                {date}
+              </p>
             </div>
           ))}
+          </div>
+
         </div>
       </div>
       <div className={classes.content}>
-        {emptyMessage&&
-          <h2 className={classes.empty}>
-            {emptyMessage}
-            </h2>
-        }
+        {emptyMessage && <h2 className={classes.empty}>{emptyMessage}</h2>}
         {projectList().map((project, id) => (
           <div
             key={id}
@@ -145,40 +169,55 @@ const ProjectList = ({ addForm, handleForm }) => {
             className="row-data"
             data-id={`${project.id}`}
           >
-            {columns.map(({ attribute }, key) => (
-              <div
-                key={key}
-                className={classes.dataList}
-                style={{ width: 200 }}
-              >
-                {project[attribute].constructor == Object ? (
-                  Object.keys(project[attribute]).map((item, idx) =>
-                    item === "image" ? (
-                      project[attribute][item] ? (
-                        <img
-                          key={idx}
-                          className={classes.avatar}
-                          src={`${process.env.REACT_APP_SERVER_URL}${project[attribute][item]}`}
-                          alt={`manager avatar ${idx}`}
-                        />
+            {columns
+              .filter((col) => col.attribute !== "dates")
+              .map(({ attribute }, key) => (
+                <div
+                  key={key}
+                  className={classes.dataList}
+                  style={{
+                    minWidth: 150,
+                    maxWidth: 150
+                  }}
+                >
+                  {project[attribute].constructor == Object ? (
+                    Object.keys(project[attribute]).map((item, idx) =>
+                      item === "image" ? (
+                        project[attribute][item] ? (
+                          <img
+                            key={idx}
+                            className={classes.avatar}
+                            src={`${process.env.REACT_APP_SERVER_URL}${project[attribute][item]}`}
+                            alt={`manager avatar ${idx}`}
+                          />
+                        ) : (
+                          <span
+                            key={idx}
+                            className={`${classes.avatar} ${
+                              colors[id % colors.length]
+                            }`}
+                          >
+                            {project[attribute].fullName[0].toUppercase()}
+                            {project[attribute].fullName
+                              .split(" ")[1][0]
+                              .toUppercase()}
+                          </span>
+                        )
                       ) : (
-                        <span
-                          key={idx}
-                          className={`${classes.avatar} ${colors[id % colors.length]}`}
-                        >
-                          {project[attribute].fullName[0].toUppercase()}
-                          {project[attribute].fullName.split(" ")[1][0].toUppercase()}
-                        </span>
+                        <p key={idx}>{project[attribute][item]}</p>
                       )
-                    ) : (
-                      <p key={idx}>{project[attribute][item]}</p>
                     )
-                  )
-                ) : (
-                  <p>{project[attribute]}</p>
-                )}
-              </div>
-            ))}
+                  ) : project[attribute].constructor == Array ? (
+                    Object.keys(project[attribute]).map((content) => (
+                      <Chip key={content} label={project[attribute][content]} />
+                    ))
+                  ) : (
+                    <p>{project[attribute]}</p>
+                  )}
+                </div>
+              ))}
+
+            <span className="progress-bar"></span>
           </div>
         ))}
       </div>

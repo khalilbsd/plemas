@@ -20,6 +20,7 @@ import ProjectList from "../Components/managing/projects/ProjectList";
 import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import { projectsStyles } from "../Components/managing/style";
 import { notify } from "../Components/notification/notification";
+import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
 
 const initialError = {
   filedName: undefined,
@@ -77,6 +78,7 @@ const ManageProjects = () => {
       const data = await getProjectList().unwrap();
 
       dispatch(setProjectList(data.projects));
+      dispatch(setTwoWeeksDatesList(data.dates));
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }

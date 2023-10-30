@@ -21,7 +21,7 @@ const LinkProject = ({label,className,color,size}) => {
   return (
     <TextField
     className={className?className:externalClasses.inputs}
-    label={label?label:"Recherche phase lié"}
+    label={label?(label === ' '?"":label):"Recherche phase lié"}
     type="text"
     value={projectState.linkedProjectID?projectState.linkedProject:phase}
     id="linkPhase"

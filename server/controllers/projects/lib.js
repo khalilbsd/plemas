@@ -127,3 +127,37 @@ export const serializeProject = (projects) => {
 
   return list;
 };
+
+export function calculateDates(nbWeeks) {
+  const currentDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(currentDate.getDate() + nbWeeks * 7); // Calculate the end date (2 weeks from today)
+
+  const dateList = [];
+
+  while (currentDate <= endDate) {
+    let item = { date: new Date(currentDate) };
+
+    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+      item.weekend = false;
+    } else {
+      item.weekend = true;
+    }
+
+    dateList.push(item);
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  const formattedDateList = dateList.map((item) => {
+    const dayNames = new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(item.date);
+    const dateStr = item.date.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return { date: `${dayNames} ${dateStr}`, weekend: item.weekend };
+  });
+
+  return formattedDateList;
+}
+

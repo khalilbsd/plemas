@@ -22,6 +22,7 @@ import {
 import logger from "../../log/config.js";
 import Project from "../../models/project/Project.model.js";
 import {
+  calculateDates,
   generateProjectCustomID,
   isCodeValid,
   serializeProject
@@ -92,7 +93,11 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
   // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
   projectsList.sort((a, b) => b.code - a.code);
-  res.status(200).json({ status: "success", projects: projectsList });
+
+  const dates =  calculateDates(2)
+
+
+  res.status(200).json({ status: "success", projects: projectsList , dates:dates });
 });
 
 /**

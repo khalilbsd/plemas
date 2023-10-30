@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   projectDetails: {},
-  edit: false
+  edit: false,
+  twoWeeksList :[]
 };
 
 const projectSlice = createSlice({
@@ -17,11 +18,14 @@ const projectSlice = createSlice({
     },
     setProjectPriority: (state, action) => {
       state.projectDetails.priority = action.payload;
+    },
+    setTwoWeeksDatesList:(state,action)=>{
+      state.twoWeeksList = action.payload
     }
   }
 });
 
-export const { setProject, setEditProject, setProjectPriority } =
+export const { setProject, setEditProject, setProjectPriority,setTwoWeeksDatesList } =
   projectSlice.actions;
 
 export default projectSlice.reducer;
