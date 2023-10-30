@@ -1,44 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { projectsStyles } from "../style";
-import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { useDispatch } from "react-redux";
-import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
 import { useNavigate } from "react-router";
-import AddBtn from "../AddBtn";
 import { ReactSVG } from "react-svg";
+import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
+import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
+import { projectsStyles } from "../style";
 // import { projectTestList } from "./test/projectList.test";
+import useIsUserCanAccess from "../../../../hooks/access";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import LinkProject from "./addProject/LinkProject";
-import useGetAuthenticatedUser from "../../../../hooks/authenticated";
-import {
-  PROJECT_MANAGER_ROLE,
-  SUPERUSER_ROLE
-} from "../../../../constants/roles";
-import useIsUserCanAccess from "../../../../hooks/access";
-export function getRandomColor() {
-  const colors = [
-    "light-green",
-    "dark-green",
-    "orange",
-    "bright-orange",
-    "black"
-  ];
-  const randomIndex = Math.floor(Math.random() * colors.length);
-  return colors[randomIndex];
-}
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const projects = useGetStateFromStore("manage", "projectsList");
+  const colors = useGetStateFromStore("userInfo", "avatarColors");
   const addProjectState = useGetStateFromStore("manage", "addProject");
-  const { user } = useGetAuthenticatedUser();
   const navigate = useNavigate();
   const [emptyMessage, setEmptyMessage] = useState("")
-  // console.log(projects);
-  const [avatarColors, setAvatarColors] = useState([]);
-
-// console.log("isSuperUser",isSuperUser, ", isManager ", isManager," role ", role);
 
   const dispatch = useDispatch();
 
@@ -97,8 +76,7 @@ const ProjectList = ({ addForm, handleForm }) => {
       return
     }
     setEmptyMessage("")
-    const colors = projects.map(() => getRandomColor());
-    setAvatarColors(colors);
+
 
   }, [projects]);
 
@@ -186,10 +164,10 @@ const ProjectList = ({ addForm, handleForm }) => {
                       ) : (
                         <span
                           key={idx}
-                          className={`${classes.avatar} ${avatarColors[id]}`}
+                          className={`${classes.avatar} ${colors[id % colors.length]}`}
                         >
-                          {project[attribute].fullName[0]}
-                          {project[attribute].fullName.split(" ")[1][0]}
+                          {project[attribute].fullName[0].toUppercase()}
+                          {project[attribute].fullName.split(" ")[1][0].toUppercase()}
                         </span>
                       )
                     ) : (

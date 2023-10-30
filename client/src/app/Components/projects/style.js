@@ -124,10 +124,13 @@ export const projectDetails = createUseStyles({
     display: "flex",
     gap: 10,
     alignItems: "center",
+    height:' 52px !important',
+    width: '52px !important',
     "& img": {
       height: 52,
       width: 52,
-      borderRadius: "100%"
+      borderRadius: "100%",
+      objectFit:'fill'
     },
     "& .initials": {
       backgroundColor: "var(--orange)",
@@ -226,17 +229,18 @@ export const projectDetails = createUseStyles({
   intervenantsContainer:{
 
     display:'flex',
-
+    marginTop:1,
     alignItems:'center',
+
 
   '& button':{
       display:'flex',
       justifyContent:'center',
       alignItems:'center',
-      width:42,
+      width:52,
       border:'none',
       backgroundColor:'var(--app-bg-color)',
-      height:42,
+      height:52,
       borderRadius:'100%',
       marginLeft:10,
       transition:'0.2s all ease-in-out',
@@ -247,10 +251,43 @@ export const projectDetails = createUseStyles({
         }
       },
       '& svg':{
-        width:18,
-        height:18,
+        width:28,
+        height:28,
         fill:'var(--orange)'
       }
+    }
+  },
+  detailIntervenant:{
+    backgroundColor:'var(--app-bg-color)',
+    padding:10,
+    borderRadius:20,
+    marginTop:5,
+    width:'fit-content',
+    '& p':{
+      fontSize:14,
+      margin:0,
+      '&.email, &.name':{
+        fontWeight:600,
+        marginBottom:10
+      },
+      '&.hours':{
+        color:'var(--orange)',
+        border:'2px solid var(--orange)',
+        borderRadius:5,
+        width:'fit-content',
+        padding:15,
+        fontWeight:600,
+        fontSize:12
+      },
+    },
+    '& button':{
+      marginTop:15,
+      background:'var(--toastify-color-progress-error)',
+      color:'var(--white)',
+      height:40,
+      borderRadius:10,
+      border:'none',
+      width:'100%',
     }
   }
 });

@@ -39,6 +39,8 @@ import { setEditProject } from "../../../store/reducers/project.reducer";
 import { formattedDate } from "../../../store/utils";
 import { projectsStyles } from "../managing/style";
 import ProjectIntervenant from "./ProjectIntervenant";
+import ProjectUserLists from "./ProjectUserLists";
+import useIsUserCanAccess from "../../../hooks/access";
 
 const initialState = {
   code: "",
@@ -55,7 +57,12 @@ const initialState = {
 const ProjectInfo = ({ loading, open, handleClose }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const editData = useGetStateFromStore("manage", "addProject");
-  const { user } = useGetAuthenticatedUser();
+
+  const {
+    user,
+    isAuthenticated,
+  } = useGetAuthenticatedUser();
+  const {isSuperUser,isManager} = useIsUserCanAccess()
   const [edit, setEdit] = useState(false);
   const classes = projectDetails();
   const externalProjectClasses = projectsStyles();
@@ -81,8 +88,9 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
 
   useEffect(() => {
     if (
-      user?.role === SUPERUSER_ROLE ||
-      user?.email === project?.managerDetails?.email
+      isAuthenticated &&
+      (user?.role === SUPERUSER_ROLE ||
+        user?.email === project?.managerDetails?.email)
     ) {
       loadPhasesAndLots();
       setEditedProject({
@@ -122,6 +130,10 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
       }).unwrap();
       notify(NOTIFY_SUCCESS, res?.message);
       setEdit(false);
+      setTimeout(() => {
+        window.location.reload(false);
+
+      }, 1000);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
     }
@@ -202,12 +214,16 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                 {!edit ? (
                   <div className="value">{project.phase?.name}</div>
                 ) : (
+                  !editData.phases.length
+                  ?
+                  <Skeleton variant="rectangular" width={150} height={50} />
+                  :
                   <Select
                     name="phase"
                     labelId="phase-select-label"
                     id="phase"
                     onChange={handleChange}
-                    value={editedProject.phase}
+                    value={editData?.phases? editedProject.phase:""}
                     size="small"
                   >
                     {editData?.phases.map((phase, phaseIdx) => (
@@ -338,6 +354,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               <div className={classes.data}>
                 <p className="label">Chef de project</p>
                 {!edit ? (
+
                   <div className="value">
                     <div className={classes.manager}>
                       {project.managerDetails?.UserProfile?.image ? (
@@ -362,44 +379,15 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                     </div>
                   </div>
                 ) : (
-                  <Select
-                    name="manager"
-                    labelId="manager-select-label"
-                    id="manager"
-                    size="small"
-                    sx={{ maxWidth: "100%", textOverflow: "ellipsis" }}
-                    value={editedProject.manager}
-                    onChange={handleChange}
-                  >
-                    {editData.managers.map((manager, managerIdx) => (
-                      <MenuItem
-                        className={externalProjectClasses.MenuItem}
-                        key={managerIdx}
-                        value={manager.id}
-                      >
-                        <div className={externalProjectClasses.manager}>
-                          {manager.image ? (
-                            <img
-                              src={`${process.env.REACT_APP_SERVER_URL}${manager.image}`}
-                              className={externalProjectClasses.avatar}
-                            />
-                          ) : (
-                            <span
-                              className={`${externalProjectClasses.avatar}`}
-                            >
-                              {manager.name[0]}
-                              {manager.lastName[0]}
-                            </span>
-                          )}
-                          <div className="info">
-                            <span className="name">{`${manager.name} ${manager.lastName}`}</span>
-                            <span className="email">{manager.email}</span>
-                            <span className="poste">{manager.poste}</span>
-                          </div>
-                        </div>
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  !editData.managers.length?
+                  <Skeleton variant="rectangular" width={210} height={50} />
+                  :
+                  <ProjectUserLists
+                    handleChange={handleChange}
+                    userValue={editedProject.manager}
+                    list={editData.managers}
+                    externalClass={externalProjectClasses}
+                  />
                 )}
               </div>
             </Grid>
@@ -413,12 +401,13 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               <p className="label">les Intervenants</p>
             </div>
 
-              <ProjectIntervenant />
-
+            <ProjectIntervenant />
           </Grid>
         </Grid>
       </Grid>
-      <div className={classes.actions}>
+     {
+     (isSuperUser || (isManager && user?.email===project?.managerDetails?.email))&&
+     <div className={classes.actions}>
         {edit && (
           <button onClick={handleEdit} className="cancel">
             <ReactSVG src={faCancel} />
@@ -429,7 +418,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
           <ReactSVG src={!edit ? faEdit : faSave} />
           <span className="text">{!edit ? "Éditer" : "Enregistrer"}</span>
         </button>
-      </div>
+      </div>}
     </div>
   );
 };

@@ -42,18 +42,7 @@ import LinkProject from "./LinkProject";
 import PriorityField from "./PriorityField";
 import faSave from '../../../../public/svgs/light/floppy-disk.svg'
 
-//just for colorizing
-function getRandomColor() {
-  const colors = [
-    "light-green",
-    "dark-green",
-    "orange",
-    "bright-orange",
-    "black"
-  ];
-  const randomIndex = Math.floor(Math.random() * colors.length);
-  return colors[randomIndex];
-}
+
 
 const ProjectCreationForm = ({
   handleClose,
@@ -66,6 +55,7 @@ const ProjectCreationForm = ({
   //   addForm
 }) => {
   const projectState = useGetStateFromStore("manage", "addProject");
+  const colors = useGetStateFromStore("userInfo", "avatarColors");
 
   // const codeRef = useRef();
   const classes = projectsStyles();
@@ -263,9 +253,9 @@ const ProjectCreationForm = ({
                       className={classes.avatar}
                     />
                   ) : (
-                    <span className={`${classes.avatar} ${getRandomColor()}`}>
-                      {manager.name[0]}
-                      {manager.lastName[0]}
+                    <span className={`${classes.avatar} ${colors[managerIdx % colors.length]}`}>
+                      {manager.name[0].toUppercase()}
+                      {manager.lastName[0].toUppercase()}
                     </span>
                   )}
                   <div className="info">

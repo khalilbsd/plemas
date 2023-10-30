@@ -3,6 +3,9 @@ import { createUseStyles } from "react-jss";
 export const btnStyle = createUseStyles({
   btn: {
     width: 200,
+    '&.large':{
+      width:'100%'
+    },
     height: 50,
     borderRadius: 5,
     color: "var(--white)",
@@ -329,10 +332,13 @@ export const projectsStyles = createUseStyles({
     }
   },
   avatar: {
-    width: 32,
-    height: 32,
-    color: "white",
-    fontWeight: 600,
+    '&:not(.chip)':{
+      width: 32,
+      minWidth: 32,
+      height: 32,
+      fontWeight: 600,
+    },
+    color: "var(--white) !important",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -459,5 +465,12 @@ export const projectsStyles = createUseStyles({
       color: "var(--orange) !important",
       backgroundColor: "unset"
     }
+  },
+  intevDialog:{
+    width:300
+  },
+  multipleUsers:{
+    marginBottom:'5px !important',
+    width:'100%'
   }
 });

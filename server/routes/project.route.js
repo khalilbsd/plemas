@@ -14,9 +14,10 @@ import {
 import {
   ALL_ROLES,
   CLIENT_ROLE,
+  PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../constants/constants.js";
-import { addIntervenantToProject, getAllIntervenants } from "../controllers/tasks/intervenant.controller.js";
+import { addIntervenantToProject, getAllIntervenants, removeIntervenantFromProject } from "../controllers/tasks/intervenant.controller.js";
 
 const router = express.Router();
 
@@ -81,8 +82,14 @@ router
   .post(
     "/intervenants/:projectID/add",
     isUserAuthenticated,
-    checkUserRole(ALL_ROLES),
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     addIntervenantToProject
+  )
+  .delete(
+    "/intervenants/:projectID/remove",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
+    removeIntervenantFromProject
   );
 
 export default router;

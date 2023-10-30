@@ -3,6 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   profile: null,
+  avatarColors:[
+    "light-green",
+    "orange",
+    "dark-green",
+    "black",
+    "bright-orange",
+  ]
 };
 
 const userSlice = createSlice({
@@ -22,7 +29,7 @@ const userSlice = createSlice({
       Object.keys(attToUpdate).forEach((key)=>{
         state.profile[key]=attToUpdate[key]
       })
-    }
+    },
   }
 });
 

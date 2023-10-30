@@ -7,7 +7,11 @@ import {
   UnknownError
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import { PROJECT_MANAGER_ROLE, PROJECT_PHASE_STATUS_IN_PROGRESS, SUPERUSER_ROLE } from "../../constants/constants.js";
+import {
+  PROJECT_MANAGER_ROLE,
+  PROJECT_PHASE_STATUS_IN_PROGRESS,
+  SUPERUSER_ROLE
+} from "../../constants/constants.js";
 import {
   Lot,
   Phase,
@@ -32,52 +36,58 @@ import { Op } from "sequelize";
  *
  */
 export const getAllProjects = catchAsync(async (req, res, next) => {
-
-  let projects = []
-  const objectQuery = {}
-  if (req.user.role === PROJECT_MANAGER_ROLE){
-    objectQuery.manager = req.user.id
+  let projects = [];
+  const objectQuery = {};
+  if (req.user.role === PROJECT_MANAGER_ROLE) {
+    // objectQuery.manager = req.user.id;
+    objectQuery[Op.or] = [{ manager: req.user.id }];
   }
-
-
-
-  if (req.user.role !== PROJECT_MANAGER_ROLE && req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser ){
-    const interventions = await Intervenant.findAll({where:{intervenantID:req.user.id},attributes:['projectID']})
-    let projectIds = []
-    interventions.forEach(project=>{
-      projectIds.push({id:project.projectID})
-    })
-
-
-    objectQuery[Op.or] = projectIds;
-
-  }
-
-  console.log(objectQuery);
-
-
-
-    projects = await Project.findAll({
-      where:objectQuery,
-      include: [
-        {
-          model: ProjectLots,
-          include: [Lot]
-        },
-        {
-          model: User,
-          as: "managerDetails",
-          attributes:["email"],
-          include: [{
-            model:UserProfile,
-            attributes:["image","name","lastName"]
-          }]
-        },
-        {
-          model: Phase
-        }
-      ]
+  if (
+    req.user.role === PROJECT_MANAGER_ROLE ||
+    (req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser)
+  ) {
+    let interventions = await Intervenant.findAll({
+      where: { intervenantID: req.user.id },
+      attributes: ["projectID"]
     });
+    let projectIds = [];
+    interventions.forEach((project) => {
+      projectIds.push({ id: project.projectID });
+    });
+
+    if (objectQuery[Op.or]) {
+      projectIds.forEach((ids) => {
+        objectQuery[Op.or].push(ids);
+      });
+      // objectQuery[Op.or].push(projectIds)
+    } else {
+      objectQuery[Op.or] = projectIds;
+    }
+  }
+
+  projects = await Project.findAll({
+    where: objectQuery,
+    include: [
+      {
+        model: ProjectLots,
+        include: [Lot]
+      },
+      {
+        model: User,
+        as: "managerDetails",
+        attributes: ["email"],
+        include: [
+          {
+            model: UserProfile,
+            attributes: ["image", "name", "lastName"]
+          }
+        ]
+      },
+      {
+        model: Phase
+      }
+    ]
+  });
 
   // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
@@ -181,98 +191,91 @@ export const addProject = catchAsync(async (req, res, next) => {
 export const updateProjectDetails = catchAsync(async (req, res, next) => {
   const details = req.body;
   console.log(details);
-    if (!details || !Object.keys(details).length)
-      return next(new MissingParameter("Des paramètres manquants"));
-    let phase;
-    if (details.phase || details.code) {
-
-      const objectQuery = {
-        // id:req.params.projectID
-      };
-      if (details.phase) {
-        phase = await Phase.findOne({ where: { name: details.phase } });
-        objectQuery.phaseID = phase.id;
-      }
-      if (details.code) {
-        objectQuery.code = details.code;
-      }
-      const projectWithPhase = await Project.findOne({ where: objectQuery });
-      console.log("FOOUNDDD PROJECT WITH PHASE",projectWithPhase);
-      if (projectWithPhase)
-        return next(
-          new AppError("un projet avec ce code et cette phase existe déjà", 403)
-        );
+  if (!details || !Object.keys(details).length)
+    return next(new MissingParameter("Des paramètres manquants"));
+  let phase;
+  if (details.phase || details.code) {
+    const objectQuery = {
+      // id:req.params.projectID
+    };
+    if (details.phase) {
+      phase = await Phase.findOne({ where: { name: details.phase } });
+      objectQuery.phaseID = phase.id;
     }
+    if (details.code) {
+      objectQuery.code = details.code;
+    }
+    const projectWithPhase = await Project.findOne({ where: objectQuery  });
 
-    const project = await Project.findByPk(req.params.projectID);
-    if (!project) return next(new ElementNotFound("Projet introuvable"));
-    logger.info("attempting to update the project info");
-    if (details.code && (details.code).toString()?.length !== 5)
+    if (projectWithPhase)
       return next(
-        new AppError("le code du projet doit contenir 5 caractères", 401)
+        new AppError("un projet avec ce code et cette phase existe déjà", 403)
       );
+  }
 
-    if (details.startDate)
-      details.startDate = moment(details.startDate, "DD/MM/YYYY");
+  const project = await Project.findByPk(req.params.projectID,{include:[Phase]});
+  console.log("----------- project details",project.phase.abbreviation);
+  if (!project) return next(new ElementNotFound("Projet introuvable"));
+  logger.info("attempting to update the project info");
+  if (details.code && details.code.toString()?.length !== 5)
+    return next(
+      new AppError("le code du projet doit contenir 5 caractères", 401)
+    );
 
-    console.log(details );
-    let newProject
-    if (!details.phase){
-      await project.update({ ...details });
-    }else{
-      // const phase = await Phase.findOne({where:{name : details.phase.name}})
-      // newProject =  Project.build({...details})
+  if (details.phase) {
+    details.phaseID = phase.id;
+  }
 
-      details.customId = generateProjectCustomID(details.code,details.name,phase.abbreviation)
-      details.phaseID = phase.id
-      details.createdBy = req.user.id
-      newProject = await Project.create({...details})
 
-    }
+  details.customId = generateProjectCustomID(
+    details.code || project.code,
+    details.name || project.name,
+    phase?.abbreviation || project.phase.abbreviation
 
-    const queryObjectPL ={}
-    if (phase) {
-      console.log("new  PROJECT ",newProject);
-      await newProject.reload()
-      queryObjectPL.projectID = newProject.id
-    }else{
-      queryObjectPL.projectID = req.params.projectID
-    }
-    // creation of new projects lots
-    for (const lotIdx  in  details.lots){
-      const lt = await Lot.findOne({ where: { name: details.lots[lotIdx] } });
-      queryObjectPL.lotID = lt.id
+  );
 
-      const [lot,created] = await ProjectLots.findOrCreate({
-        // where:  { lotID: lt.id, projectID: req.params.projectID }})
-        where: queryObjectPL})
-    }
+  if (details.startDate)
+    details.startDate = moment(details.startDate, "DD/MM/YYYY");
 
-    // destruction of existing  projects lots
-    if (!phase){
-      const projectLots = await ProjectLots.findAll({
-        where: { projectID: req.params.projectID },
-        attributes: ["lotID", "projectID"],
-        include: [
-          {
-            model: Lot,
-            attributes: ["name"]
-          }
-        ]
-      });
-      projectLots.forEach(async (pl) => {
-        if (!details.lots.includes(pl.lot.name)) {
-          await pl.destroy();
-        }
-      });
+  await project.update({ ...details });
 
-    }
+  const queryObjectPL = {};
+  queryObjectPL.projectID = req.params.projectID;
 
-    return res.status(200).json({
-      status: "success",
-      message: "Les détails des projets ont été mis à jour"
+  // creation of new projects lots
+  for (const lotIdx in details.lots) {
+    const lt = await Lot.findOne({ where: { name: details.lots[lotIdx] } });
+    queryObjectPL.lotID = lt.id;
+
+    const [lot, created] = await ProjectLots.findOrCreate({
+      // where:  { lotID: lt.id, projectID: req.params.projectID }})
+      where: queryObjectPL
     });
+  }
 
+  // destruction of existing  projects lots
+  // if (!phase) {
+  const projectLots = await ProjectLots.findAll({
+    where: { projectID: req.params.projectID },
+    attributes: ["lotID", "projectID"],
+    include: [
+      {
+        model: Lot,
+        attributes: ["name"]
+      }
+    ]
+  });
+  projectLots.forEach(async (pl) => {
+    if (!details.lots.includes(pl.lot.name)) {
+      await pl.destroy();
+    }
+  });
+  // }
+
+  return res.status(200).json({
+    status: "success",
+    message: "Les détails des projets ont été mis à jour"
+  });
 });
 
 export const generateProjectCode = catchAsync(async (req, res, next) => {

@@ -7,7 +7,12 @@ import {
   MissingParameter
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import { CLIENT_ROLE, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/constants.js";
+import {
+  CLIENT_ROLE,
+  INTERVENANT_ROLE,
+  PROJECT_MANAGER_ROLE,
+  SUPERUSER_ROLE
+} from "../../constants/constants.js";
 import { UserProfile } from "../../db/relations.js";
 import { config } from "../../environment.config.js";
 import { UnauthorizedError } from "../../errors/http.js";
@@ -21,6 +26,7 @@ import {
   serializeProfile,
   serializeUser
 } from "./lib.js";
+import Intervenant from "../../models/tasks/Intervenant.model.js";
 
 /*
 admin api to list all the users
@@ -79,7 +85,7 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
   const users = await User.findAll({
     where: {
       isBanned: false,
-      [Op.or]:[{role:SUPERUSER_ROLE},{role:PROJECT_MANAGER_ROLE}]
+      [Op.or]: [{ role: SUPERUSER_ROLE }, { role: PROJECT_MANAGER_ROLE }]
     },
     attributes: ["id", "email"],
     include: [
@@ -90,6 +96,54 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
     ]
   });
   // console.log(users);
+  const simplifiedUsers = users.map((user) => {
+    const { id, email } = user.toJSON();
+    const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
+    const { name, lastName, image, poste } = userProfile || "";
+    return {
+      id,
+      email,
+      lastName,
+      name,
+      image,
+      poste
+    };
+  });
+
+  res.json({ users: simplifiedUsers });
+});
+
+export const getPotentielIntervenants = catchAsync(async (req, res, next) => {
+  const { projectID } = req.params;
+  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const objectQuery = {
+    isBanned: false,
+    role: { [Op.ne]: CLIENT_ROLE }
+  };
+  const existingIntervenants = await Intervenant.findAll({
+    where: { projectID: projectID },
+    attributes: ["intervenantID"]
+  });
+  if (existingIntervenants) {
+    let list = [];
+    existingIntervenants.forEach((inter) => {
+      list.push(inter.intervenantID);
+    });
+    objectQuery.id = {
+      [Op.notIn]: list
+    };
+  }
+
+  const users = await User.findAll({
+    where: objectQuery,
+    attributes: ["id", "email"],
+    include: [
+      {
+        model: UserProfile,
+        attributes: ["name", "lastName", "image", "poste"]
+      }
+    ]
+  });
   const simplifiedUsers = users.map((user) => {
     const { id, email } = user.toJSON();
     const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
@@ -156,7 +210,6 @@ export const addUser = catchAsync(async (req, res, next) => {
   }
   console.log(config.lms_host);
 
-
   if (user.token) {
     logger.info(`sending email confirmation for user ${user.id}`);
     const url = `http://${config.lms_host}/auth/account/confirmation/${user.token}`;
@@ -214,9 +267,6 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
   });
 });
 
-
-
-
 /*
  *  get user By id : return the user if found or null
  * @param {*} id
@@ -239,7 +289,9 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   const newProfile = req.body;
   console.log(newProfile);
 
-  const user = await User.findOne({ where: { email: newProfile.email || req.user.email } });
+  const user = await User.findOne({
+    where: { email: newProfile.email || req.user.email }
+  });
   if (!user) {
     const errorMsg = `the user : ${newProfile.email} is not found`;
     logger.error(errorMsg);
@@ -349,11 +401,10 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
   const user = await getUserByEmail(email);
   if (!user) return next(new ElementNotFound("User not found"));
 
-  if (role === SUPERUSER_ROLE){
-    user.isSuperUser =true
-  }else{
-    user.isSuperUser =false
-
+  if (role === SUPERUSER_ROLE) {
+    user.isSuperUser = true;
+  } else {
+    user.isSuperUser = false;
   }
   user.role = role;
 
@@ -365,40 +416,39 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
   });
 });
 
-
 /**
  * ban user api : this api will deactivate the user if it's active  otherwise a  404 will returned
  * if the user is not found  || the user is already banned
  */
-export const banUser= catchAsync(async(req,res,next)=>{
-  const {email} = req.body
-  if (!email) return next(new MissingParameter("Email is mandatory"))
+export const banUser = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) return next(new MissingParameter("Email is mandatory"));
 
-  const user = await getUserByEmail(email,false,false)
-  if (!user) return next(new ElementNotFound("User not found"))
-  user.isBanned = true
-  user.save()
+  const user = await getUserByEmail(email, false, false);
+  if (!user) return next(new ElementNotFound("User not found"));
+  user.isBanned = true;
+  user.save();
 
-  return res.status(200).json({state:"success",message:`user ${email} has been banned`})
-})
+  return res
+    .status(200)
+    .json({ state: "success", message: `user ${email} has been banned` });
+});
 
 /**
  * un ban user api : this api will activate the user if it's banned otherwise a  404 will returned
  * if the user is not found  || the user is already active
  */
-export const unBanUser= catchAsync(async(req,res,next)=>{
-  const {email} = req.body
-  if (!email) return next(new MissingParameter("Email is mandatory"))
+export const unBanUser = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) return next(new MissingParameter("Email is mandatory"));
 
-  const user = await getUserByEmail(email,false,true)
-  if (!user) return next(new ElementNotFound("User not found or is already unbanned"))
-  user.isBanned = false
-  user.save()
+  const user = await getUserByEmail(email, false, true);
+  if (!user)
+    return next(new ElementNotFound("User not found or is already unbanned"));
+  user.isBanned = false;
+  user.save();
 
-  return res.status(200).json({state:"success",message:`user ${email} has been unbanned`})
-
-
-
-})
-
-
+  return res
+    .status(200)
+    .json({ state: "success", message: `user ${email} has been unbanned` });
+});

@@ -43,30 +43,55 @@ export const projectApi = api.injectEndpoints({
       query: (data) => ({
         url: "projects/add",
         method: "POST",
-        data:data
+        data: data
       })
     }),
-    getChoiceForProjectCreation :builder.mutation({
-      query:() =>({
-        url:'projects/creation/choice',
-        method:'GET'
+    getChoiceForProjectCreation: builder.mutation({
+      query: () => ({
+        url: "projects/creation/choice",
+        method: "GET"
       })
     }),
-    getProjectByID :builder.mutation({
-      query:(projectID) =>({
-        url:`projects/get/project/${projectID}`,
-        method:'GET'
+    getProjectByID: builder.mutation({
+      query: (projectID) => ({
+        url: `projects/get/project/${projectID}`,
+        method: "GET"
       })
     }),
-    updateProject :builder.mutation({
-      query:({body,projectID}) =>(
-        {
-        url:`projects/change/${projectID}`,
-        method:'PATCH',
-        data:body
+    updateProject: builder.mutation({
+      query: ({ body, projectID }) => ({
+        url: `projects/change/${projectID}`,
+        method: "PATCH",
+        data: body
       })
     }),
-  }),
+    addIntervenants: builder.mutation({
+      query: ({ body, projectID }) => ({
+        url: `projects/intervenants/${projectID}/add`,
+        method: "POST",
+        data: body
+      })
+    }),
+    getPotentielIntervenants: builder.mutation({
+      query: (projectID) => ({
+        url: `users/potentiel/intervenants/${projectID}/list`,
+        method: "GET"
+      })
+    }),
+    getProjectIntervenants: builder.mutation({
+      query: (projectID) => ({
+        url: `projects/intervenants/${projectID}`,
+        method: "GET"
+      })
+    }),
+    removeIntervenantFromProject: builder.mutation({
+      query: ({ body, projectID }) => ({
+        url: `projects/intervenants/${projectID}/remove`,
+        method: "DELETE",
+        data: body
+      })
+    })
+  })
 });
 
 export const {
@@ -79,5 +104,9 @@ export const {
   useCreateProjectMutation,
   useGetChoiceForProjectCreationMutation,
   useGetProjectByIDMutation,
-  useUpdateProjectMutation
+  useUpdateProjectMutation,
+  useAddIntervenantsMutation,
+  useGetPotentielIntervenantsMutation,
+  useGetProjectIntervenantsMutation,
+  useRemoveIntervenantFromProjectMutation
 } = projectApi;
