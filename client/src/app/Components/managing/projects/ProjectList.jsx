@@ -197,10 +197,10 @@ const ProjectList = ({ addForm, handleForm }) => {
                               colors[id % colors.length]
                             }`}
                           >
-                            {project[attribute].fullName[0].toUppercase()}
-                            {project[attribute].fullName
+                            {project[attribute]?.fullName[0]?.toUpperCase()}
+                            {project[attribute]?.fullName
                               .split(" ")[1][0]
-                              .toUppercase()}
+                              .toUpperCase()}
                           </span>
                         )
                       ) : (

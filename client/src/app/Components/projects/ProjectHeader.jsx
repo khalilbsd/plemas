@@ -70,7 +70,7 @@ const ProjectHeader = ({ loading }) => {
           </Grid>
           <Grid item xs={3} sm={3} md={2} lg={1} xl={1}>
             <div className={`headerInfo ${!details ? "hidden" : "collapsed"}`}>
-              {project?.priority && (
+              {project?.priority !== undefined && (
                 <div
                   onClick={edit ? changePriority : undefined}
                   data-priority={getPriorityColor(project.priority)?.value}
@@ -82,6 +82,7 @@ const ProjectHeader = ({ loading }) => {
                     }}
                     className="circle"
                   ></div>
+	
                   {priorityChange && (
                     <div className={classes.priorityUpdateContainer}>
                       <PriorityField
