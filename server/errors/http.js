@@ -22,7 +22,7 @@ class BadRequestError extends HttpError {
 
 class UnauthorizedError extends HttpError {
     statusCode = 401;
-    httpMessage = "Unauthorized";
+    httpMessage = "You are not authorized for this action.";
 }
 
 class InternalServerError extends HttpError {
