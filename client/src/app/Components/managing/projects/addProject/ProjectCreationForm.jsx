@@ -254,8 +254,8 @@ const ProjectCreationForm = ({
                     />
                   ) : (
                     <span className={`${classes.avatar} ${colors[managerIdx % colors.length]}`}>
-                      {manager.name[0].toUppercase()}
-                      {manager.lastName[0].toUppercase()}
+                      {manager.name[0].toUpperCase()}
+                      {manager.lastName[0].toUpperCase()}
                     </span>
                   )}
                   <div className="info">

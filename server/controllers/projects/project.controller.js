@@ -135,7 +135,11 @@ export const addProject = catchAsync(async (req, res, next) => {
     return next(new MalformedObjectId("lots and phase are mandatory"));
 
   // create pure project instance to use
-  let project = { ...data };
+console.log("--------------------------------------- details",data)
+  if (data.startDate)
+    data.startDate = moment(data.startDate, "DD/MM/YYYY");
+
+	let project = { ...data };
 
   project.createdBy = req.user.id;
   project.overAllStatus = PROJECT_PHASE_STATUS_IN_PROGRESS;
@@ -239,6 +243,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
   );
 
+console.log("--------------------------------------- details",details)
   if (details.startDate)
     details.startDate = moment(details.startDate, "DD/MM/YYYY");
 
