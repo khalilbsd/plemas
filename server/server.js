@@ -13,6 +13,7 @@ import userRoutes from "./routes/user.route.js";
 import projectRoutes from "./routes/project.route.js";
 import phasesRoutes from "./routes/phase.route.js";
 import lotRoutes from "./routes/lot.route.js";
+import taskRoutes from "./routes/tasks.route.js"
 // import passport from "passport";
 // import { authUser } from "./controllers/auth/authentication.js";
 import passport from "./controllers/auth/passport-config.js";
@@ -45,6 +46,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/phases", phasesRoutes);
 app.use("/api/lots", lotRoutes);
+app.use("/api/tasks", taskRoutes);
 
 import "./db/relations.js";
 

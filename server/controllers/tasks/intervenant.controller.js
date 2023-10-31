@@ -20,14 +20,16 @@ export const getAllIntervenants = catchAsync(async (req, res, next) => {
   if (!projectID) return next(new MissingParameter("le projet est requis"));
 
   const project = await Project.findByPk(projectID, {
+    group:'intervenantID',
     include: [
       {
         model: Intervenant,
+
         as: "intervenants",
+
         include: [
           {
             model: User,
-
             attributes: ["email"],
             include: [
               {
@@ -81,7 +83,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
 
     const intervenant = await Intervenant.create({
       intervenantID: user.id,
-      projectID: projectID
+      projectID: projectID,
     });
 
     if (!intervenant) {
