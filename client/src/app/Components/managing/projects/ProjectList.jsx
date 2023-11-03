@@ -190,9 +190,9 @@ const ProjectList = ({ addForm, handleForm }) => {
 
             }else{
               position = startIdx !== -1 ? (startIdx  ) *50 : 0
-              width = dueIdx !== -1 ? (dueIdx  )*50 : (convertedDates.length - startIdx)  * 50
+              width = dueIdx !== -1 ? dueIdx?dueIdx*50:1*50  : (convertedDates.length - startIdx)  * 50
             }
-            console.log("exited with position",position ," and width ",width);
+            console.log("exited with position",position ," and width ",width ,due);
             return (
               <div key={task.id} style={{width:width,transform: `translateX(${position}px)` }}  className={classes.progressBarContainer}>
                 <span className={classes.progressBar}> {start} {due}</span>
