@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   userList: [],
   projectsList: [],
+  projectsTaskList: [],
 
   addProject: {
     existantProjects: [],
@@ -42,8 +43,10 @@ const manageSlice = createSlice({
       state.userList.push(action.payload);
     },
     setProjectList: (state, action) => {
-      state.projectsList = action?.payload;
+      state.projectsList = action?.payload.projects;
+      state.projectsTaskList = action?.payload.tasks;
     },
+
     updateProjectList: (state, action) => {
       state.projectsList.push(action.payload);
     },
@@ -116,7 +119,7 @@ export const {
   setLinkingProject,
   setLinkedProject,
   filterProjectsList,
-  updateUserInList
+  updateUserInList,
 } = manageSlice.actions;
 
 export default manageSlice.reducer;

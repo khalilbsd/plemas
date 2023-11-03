@@ -77,13 +77,15 @@ const ManageProjects = () => {
     try {
       const data = await getProjectList().unwrap();
 
-      dispatch(setProjectList(data.projects));
+      dispatch(setProjectList({projects:data.projects,tasks:data.projectsTasks}));
       dispatch(setTwoWeeksDatesList(data.dates));
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   }
   useEffect(() => {
+
     loadProjects();
   }, []);
 

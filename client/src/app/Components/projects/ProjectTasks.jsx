@@ -152,11 +152,11 @@ const ProjectTasks = ({ openAddTask }) => {
       headerName: "Actions",
       width: 150,
       renderCell: (params) => {
-        const emailsList = params.row.intervenants.map(
+        const emailsList = params.row.intervenants?.map(
           (worker) => worker?.user?.email
         );
         if (!user) return <Skeleton className={classes.joinBtnSkeleton} />;
-        if (!emailsList.includes(user?.email)) {
+        if (!emailsList?.includes(user?.email)) {
           return (
             <button
               data-task-id={params.row.id}
@@ -171,7 +171,7 @@ const ProjectTasks = ({ openAddTask }) => {
           (item) => item.user.email === user.email
         )[0];
 
-        if (emailsList.includes(user?.email)) {
+        if (emailsList?.includes(user?.email)) {
           return (
             <>
               <button

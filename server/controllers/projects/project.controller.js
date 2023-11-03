@@ -16,6 +16,7 @@ import {
   Lot,
   Phase,
   ProjectLots,
+  Task,
   User,
   UserProfile
 } from "../../db/relations.js";
@@ -96,8 +97,31 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   const dates =  calculateDates(2)
 
+  let tasks=[]
+ for (const projIdx in projectsList){
+      let projectTasks= await Task.findAll({
+        attributes:["id","name","name","startDate","dueDate","state"],
+        include:[{
+          model:Intervenant,
+          attributes:["id"],
+          where:{
+            projectID:projectsList[projIdx].id
+          }
+        }
+        ]
+      })
 
-  res.status(200).json({ status: "success", projects: projectsList , dates:dates });
+      if (projectTasks){
+        tasks.push({
+          projectID:projectsList[projIdx].id,
+          tasks:projectTasks
+        })
+      }
+
+  }
+
+
+  res.status(200).json({ status: "success", projects: projectsList , dates:dates ,projectsTasks:tasks });
 });
 
 /**

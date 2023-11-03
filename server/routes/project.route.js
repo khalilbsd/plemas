@@ -1,31 +1,36 @@
 import express from "express";
-import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
-import {
-  addProject,
-  generateProjectCode,
-  getAllProjects,
-  updateProjectDetails,
-  //   changeProjectPhase,
-  getProjectsInPhase,
-  checkProjectCode,
-  checkProjectLinking,
-  getProjectById
-} from "../controllers/projects/project.controller.js";
 import {
   ALL_ROLES,
-  CLIENT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../constants/constants.js";
-import { addIntervenantToProject, getAllIntervenants, removeIntervenantFromProject } from "../controllers/tasks/intervenant.controller.js";
+import {
+  addProject,
+  checkProjectCode,
+  checkProjectLinking,
+  generateProjectCode,
+  getAllProjects,
+  getProjectById,
+  //   changeProjectPhase,
+  getProjectsInPhase,
+  updateProjectDetails
+} from "../controllers/projects/project.controller.js";
+import {
+  addIntervenantToProject,
+  getAllIntervenants,
+  removeIntervenantFromProject
+} from "../controllers/tasks/intervenant.controller.js";
+import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
 
 const router = express.Router();
+
+
+
 
 router
   .get(
     "/all",
     isUserAuthenticated,
-    // checkUserRole([SUPERUSER_ROLE]),
     checkUserRole(ALL_ROLES),
     getAllProjects
   )
@@ -82,13 +87,13 @@ router
   .post(
     "/intervenants/:projectID/add",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
     addIntervenantToProject
   )
   .delete(
     "/intervenants/:projectID/remove",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
     removeIntervenantFromProject
   );
 
