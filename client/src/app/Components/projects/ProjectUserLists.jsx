@@ -59,7 +59,7 @@ const ProjectUserLists = ({
                       />
                     ) : (
                       <Avatar className={`${externalClass.avatar} ${colors[idx % colors.length]} chip`} >
-                        {value.name[0].toUpperCase()}{value.lastName[0].toUpperCase()}
+                        {value?.name[0].toUpperCase()}{value?.lastName[0].toUpperCase()}
                       </Avatar>
                     )
                   }
@@ -74,15 +74,15 @@ const ProjectUserLists = ({
           {list.map((user,idx) => (
             <MenuItem key={user.id} value={user}>
               <div className={externalClass.manager}>
-                {user.image ? (
+                {user?.image ? (
                   <img
                     src={`${process.env.REACT_APP_SERVER_URL}${user.image}`}
                     className={externalClass.avatar}
                   />
                 ) : (
                   <span className={`${externalClass.avatar} ${colors[idx % colors.length]}`}>
-                    {user.name[0].toUpperCase()}
-                    {user.lastName[0].toUpperCase()}
+                    {user?.name[0].toUpperCase()}
+                    {user?.lastName[0].toUpperCase()}
                   </span>
                 )}
                 <div className="info">

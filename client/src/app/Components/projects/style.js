@@ -3,9 +3,14 @@ import { createUseStyles } from "react-jss";
 export const projectDetails = createUseStyles({
   projectDetailsPage: {
     height: "100%",
-    width: "100%"
+    width: "100%",
+    display:'flex',
+
+    alignItems:'center',
+    flexDirection:'column'
   },
   card: {
+    position:'relative',
     backgroundColor: "var(--white)",
     borderRadius: 30,
     overflow: "hidden",
@@ -126,6 +131,7 @@ export const projectDetails = createUseStyles({
     alignItems: "center",
     height:' 52px !important',
     width: '52px !important',
+
     "& img": {
       height: 52,
       width: 52,
@@ -144,6 +150,22 @@ export const projectDetails = createUseStyles({
       color: "var(--white)",
       fontSize: 24
     },
+    "&.small":{
+      height:'32px !important',
+      width:'32px !important',
+      fontSize:18,
+      '& img':{
+        height:32,
+        width:32,
+      },
+      '& .initials':{
+        height:32,
+        width:32,
+        fontSize:18
+      }
+    },
+
+
     "& .manager-name": {
       fontWeight: 600,
       fontSize: 16,
@@ -189,6 +211,20 @@ export const projectDetails = createUseStyles({
     alignItems:'center',
     gap:20,
     minWidth:100,
+    '&.pr ':{
+      position:'unset',
+      marginTop:20,
+      marginRight:20,
+      marginBottom:20,
+      '& button:hover':{
+        width:100,
+      },
+    },
+    '&.top':{
+      bottom:'unset',
+      top:20,
+    },
+    '&.right':{right:20},
     "& button": {
       height: 42,
       minWidth: 42,
@@ -255,6 +291,18 @@ export const projectDetails = createUseStyles({
         height:28,
         fill:'var(--orange)'
       }
+    },
+
+    '&.small':{
+      '& button':{
+        width:32,
+        height:32,
+        '& svg':{
+          width:22,
+          height:22,
+
+        }
+      }
     }
   },
   detailIntervenant:{
@@ -291,3 +339,68 @@ export const projectDetails = createUseStyles({
     }
   }
 });
+
+
+
+export const projectTaskDetails= createUseStyles({
+  skeleton:{
+    width:'100%',
+    height:'400px !important',
+    transform :' none !important',
+    backgroundColor: "var(--pastel-green) !important",
+    borderRadius: "30px !important",
+  },
+  addTaskForm:{
+    position:'relative',
+    background:'var(--white)',
+    width:'100%',
+    maxWidth:'calc(100% - 40px)',
+    borderRadius:30,
+    padding:20,
+  },
+  inputs:{
+    width:'100%'
+  },
+  joiBtn:{
+    minWidth:100,
+    height:'80%',
+    background: 'none',
+    border: 'none',
+    backgroundColor: 'var(--orange)',
+    borderRadius: 5,
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'var(--white)',
+    transition:'all 0.3s ease-in-out',
+    '&:hover':{
+
+      backgroundColor: 'var(--pastel-orange)',
+    }
+  },
+  joinBtnSkeleton:{
+    width:100,
+    height:'80%'
+
+  },
+  intervenantsSkeleton:{
+    width:150,
+    height:'80%'
+  },
+  persistHours:{
+    width:'100%',
+    height:50,
+    background: 'none',
+    border: 'none',
+    backgroundColor: 'var(--orange)',
+    borderRadius: 5,
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'var(--white)',
+    transition:'all 0.3s ease-in-out',
+    marginTop:10,
+    '&:hover':{
+
+      backgroundColor: 'var(--pastel-orange)',
+    }
+  }
+})
