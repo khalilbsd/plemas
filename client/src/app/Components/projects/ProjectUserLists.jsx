@@ -72,7 +72,7 @@ const ProjectUserLists = ({
           MenuProps={MenuProps}
         >
           {list.map((user,idx) => (
-            <MenuItem key={user.id} value={user}>
+            <MenuItem key={idx} value={user}>
               <div className={externalClass.manager}>
                 {user?.image ? (
                   <img
@@ -112,7 +112,7 @@ const ProjectUserLists = ({
       {list.map((user,idx) => (
         <MenuItem
           className={externalClass.MenuItem}
-          key={user.id}
+          key={idx}
           value={user.id}
         >
           <div className={externalClass.manager}>

@@ -252,7 +252,7 @@ const ProjectTasks = ({ openAddTask }) => {
       valueOptions: TASK_STATES,
 
       renderCell:(params)=>{
-        const taskStatus= TASK_STATE_TRANSLATION.filter(state=>state.value === params.row.state)[0].label
+        const taskStatus= TASK_STATE_TRANSLATION.filter(state=>state?.value === params.row?.state)[0]?.label
         return (<span className={`${classes.task} ${taskStatus}`}>{params.row.state}</span>)
     }
   },
