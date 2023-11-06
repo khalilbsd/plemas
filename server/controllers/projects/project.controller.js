@@ -98,9 +98,14 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
   const dates =  calculateDates(2)
 
   let tasks=[]
+  const today = new Date();
  for (const projIdx in projectsList){
       let projectTasks= await Task.findAll({
         attributes:["id","name","name","startDate","dueDate","state"],
+        order:[['dueDate','ASC']],
+        where:{'dueDate':{
+          [Op.gte]:today
+        }},
         include:[{
           model:Intervenant,
           attributes:["id"],

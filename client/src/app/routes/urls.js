@@ -135,6 +135,6 @@ export function getRoleHomeUrl(role) {
     case CLIENT_ROLE:
       return "/dashboard/client";
     default:
-      return "/dashboard/employee";
+      return "/projects";
   }
 }

@@ -87,6 +87,10 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
       const data = { ...task };
       data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
       data.dueDate = dayjs(data.dueDate).format("DD/MM/YYYY");
+      if (data.dueDate < data.startDate){
+        notify(NOTIFY_ERROR,"la date d'échéance doit être supérieure à la date de début")
+        return
+      }
       if (data.intervenants.length) {
         data.intervenants = data.intervenants.map((user) => user.email);
       } else {

@@ -120,14 +120,15 @@ export const listStyle = createUseStyles({
         //   height: "170px !important",
         // maxHeight: "170px !important",
         "& .MuiDataGrid-columnHeader": {
-          // height:'170px !important'
+          paddingLeft:'0 !important'
         }
       },
       "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
         minHeight: "52px !important",
         maxHeight: "unset !important",
         border: "none !important",
-        alignItems: "flex-start"
+        alignItems: "flex-start",
+        padding:'7px 0'
       }
     }
   }
@@ -297,12 +298,11 @@ export const projectsStyles = createUseStyles({
   progressBarContainer:{
     height:52,
     display:'flex',
-    alignItems:'center'
   },
   progressBar: {
     height: 20,
     borderRadius: 5,
-    backgroundColor: "var(--orange)",
+    backgroundColor: "var(--bright-orange)",
     width: "100%",
     "&.empty": {
       backgroundColor: "var(--app-bg-color)"
@@ -451,6 +451,15 @@ export const projectsStyles = createUseStyles({
       backgroundColor: "var(--black)"
     }
   },
+  managerContainer:{
+    display:'flex',
+    gap:5,
+    alignItems:'center'
+  },
+  managerFullName:{
+    margin:0,
+    whiteSpace:'normal'
+  },
   verificationMessage: {
     color: "grey",
     width: "70%",
@@ -565,5 +574,21 @@ export const projectsStyles = createUseStyles({
   },
   taskStates: {
     height: 52
+  },
+  projectName:{
+    borderLeft:'8px solid',
+    margin:0,
+    paddingLeft:5,
+    borderTopLeftRadius:5,
+    borderBottomLeftRadius:5,
+  },
+  task:{
+    borderLeft:'1px solid var(--app-bg-color)',
+    paddingLeft:5,
+  },
+  emptyTasks:{
+    margin:0,
+    color:'var(--bright-orange)',
+    whiteSpace:'normal'
   }
 });

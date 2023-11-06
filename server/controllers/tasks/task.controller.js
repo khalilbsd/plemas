@@ -99,6 +99,8 @@ export const createTask = catchAsync(async (req, res, next) => {
   const data = req.body;
   data.startDate = moment(startDate, "DD/MM/YYYY");
   data.dueDate = moment(dueDate, "DD/MM/YYYY");
+  if (data.startDate > data.dueDate) return next(new AppError("la date d'échéance doit être supérieure à la date de début",400))
+
 
   const task = await Task.create({ ...data });
   let message = "la tâche a été créée avec succès";

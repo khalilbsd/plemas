@@ -9,10 +9,11 @@ import { listStyle, projectsStyles } from "../style";
 import useIsUserCanAccess from "../../../../hooks/access";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import LinkProject from "./addProject/LinkProject";
-import { Chip } from "@mui/material";
+import { Avatar, Chip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { formattedDate } from "../../../../store/utils";
 import dayjs from "dayjs";
+import { priorityColors } from "./addProject/PriorityField";
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
@@ -27,8 +28,19 @@ const ProjectList = ({ addForm, handleForm }) => {
   const [emptyMessage, setEmptyMessage] = useState("");
 
   const dispatch = useDispatch();
+  const getPriorityColor = (id) => {
+    const priority = priorityColors.filter((color) => color.value === id)[0];
+    if (!priority) return { code: "var(--bright-orange)", value: -1 };
+
+    return { code: priority.code, value: priority.value };
+  };
+
+
+
 
   function projectTasks(projectID) {
+
+
     const projectTasksList = tasks?.filter(
       (item) => item.projectID === projectID
     );
@@ -55,27 +67,43 @@ const ProjectList = ({ addForm, handleForm }) => {
       {
         headerName: "Nom du projet",
         field: "projectCustomId",
-        width: 200
+        width: 200,
+        renderCell:(params)=>{
+          return (
+            <p
+            style={{
+              borderColor: getPriorityColor(params.row.priority).code
+            }}
+            className={classes.projectName}>{params.row?.projectCustomId}</p>
+          )
+        }
       },
       {
         headerName: "Chef de projet",
         field: "manager",
         width: 200,
         renderCell: (params) => {
+
           if (params.row.manager.image) {
             return (
-              <>
-                <img
+              <div className={classes.managerContainer}>
+
+                {/* <img
                   className={classes.avatar}
                   src={`${process.env.REACT_APP_SERVER_URL}${params.row.manager.image}`}
                   alt={`manager ${params.row.manager.fullName} avatar`}
                 />
-                <p>{params.row.manager.fullName}</p>
-              </>
+                <p className={classes.managerFullName}>{params.row.manager.fullName}</p> */}
+ <Chip
+  avatar={<Avatar alt={params.row.manager.fullName}   src={`${process.env.REACT_APP_SERVER_URL}${params.row.manager.image}`} />}
+  label={params.row.manager.fullName}
+  variant="outlined"
+/>
+              </div>
             );
           }
           return (
-            <>
+            <div className={classes.managerContainer}>
               <span
                 className={`${classes.avatar} ${
                   colors[params.row.id % colors?.length]
@@ -84,8 +112,8 @@ const ProjectList = ({ addForm, handleForm }) => {
                 {params.row.manager?.fullName[0]?.toUpperCase()}
                 {params.row.manager?.fullName.split(" ")[1][0].toUpperCase()}
               </span>
-              <p>{params.row.manager.fullName}</p>
-            </>
+              <p className={classes.managerFullName}>{params.row.manager.fullName}</p>
+            </div>
           );
         }
       },
@@ -110,12 +138,17 @@ const ProjectList = ({ addForm, handleForm }) => {
         width: 200,
         renderCell: (params) => {
           return (
-            <div>
-              {projectTasks(params.row.id)?.length &&
-                projectTasks(params.row.id)?.map((task) => (
-                  <div className={classes.taskStates}>{task?.name}</div>
-                ))}
-            </div>
+
+              projectTasks(params.row.id)?.length?
+              <div className={classes.task}>
+                {projectTasks(params.row.id)?.length &&
+                  projectTasks(params.row.id)?.map((task) => (
+                    <div className={classes.taskStates}>{task?.name}</div>
+                  ))}
+              </div> :
+              <p className={classes.emptyTasks}>il n'y a pas de tâches planifiées</p>
+
+
           );
         }
       },
@@ -127,10 +160,13 @@ const ProjectList = ({ addForm, handleForm }) => {
         renderCell: (params) => {
           return (
             <div>
-              {projectTasks(params.row.id)?.length &&
+              {projectTasks(params.row.id)?.length ?
                 projectTasks(params.row.id)?.map((task) => (
                   <div className={classes.taskStates}>{task?.state}</div>
-                ))}
+                ))
+              :
+              <span></span>
+              }
             </div>
           );
         }
@@ -138,7 +174,7 @@ const ProjectList = ({ addForm, handleForm }) => {
       {
         headerName: "dates",
         field: "dates",
-        width: 1000,
+        width: 750,
         renderHeader: () => {
           return (
             <div className={classes.datesData}>
