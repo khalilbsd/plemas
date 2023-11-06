@@ -4,6 +4,8 @@ import { Grid, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import 'dayjs/locale/en-gb';
+
 import {
   useCreateTaskMutation,
   useGetTaskPotentialIntervenantsMutation
@@ -20,6 +22,7 @@ import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faClose from "../../public/svgs/light/xmark.svg";
 import { ReactSVG } from "react-svg";
 import Loading from "../loading/Loading";
+
 
 const ProjectTaskAdd = ({ closeAddTask }) => {
   const classes = projectTaskDetails();
@@ -39,8 +42,9 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
 
   const [getTaskPotentialIntervenants] =
     useGetTaskPotentialIntervenantsMutation();
-  const [createTask, { isLoading: creatingTask }] = useCreateTaskMutation();
+    const [createTask, { isLoading: creatingTask }] = useCreateTaskMutation();
 
+    useEffect(() => {
   async function loadTaskPotentialIntervenants() {
     try {
       const res = await getTaskPotentialIntervenants({ projectID }).unwrap();
@@ -51,9 +55,8 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
     }
   }
 
-  useEffect(() => {
     loadTaskPotentialIntervenants();
-  }, []);
+  });
 
   const handleChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -133,7 +136,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
             />
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={2}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
               <DatePicker
                 className={classes.inputs}
                 label="Date début du tache"
@@ -146,7 +149,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
             </LocalizationProvider>
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={2}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
               <DatePicker
                 // className={externalClasses.inputs}
                 label="Échéance du tache"

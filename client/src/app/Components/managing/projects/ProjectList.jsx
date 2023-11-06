@@ -9,7 +9,7 @@ import { listStyle, projectsStyles } from "../style";
 import useIsUserCanAccess from "../../../../hooks/access";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import LinkProject from "./addProject/LinkProject";
-import { Avatar, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { formattedDate } from "../../../../store/utils";
 import dayjs from "dayjs";
@@ -88,17 +88,12 @@ const ProjectList = ({ addForm, handleForm }) => {
             return (
               <div className={classes.managerContainer}>
 
-                {/* <img
+                <img
                   className={classes.avatar}
                   src={`${process.env.REACT_APP_SERVER_URL}${params.row.manager.image}`}
                   alt={`manager ${params.row.manager.fullName} avatar`}
                 />
-                <p className={classes.managerFullName}>{params.row.manager.fullName}</p> */}
- <Chip
-  avatar={<Avatar alt={params.row.manager.fullName}   src={`${process.env.REACT_APP_SERVER_URL}${params.row.manager.image}`} />}
-  label={params.row.manager.fullName}
-  variant="outlined"
-/>
+                <p className={classes.managerFullName}>{params.row.manager.fullName}</p>
               </div>
             );
           }

@@ -35,12 +35,12 @@ import SelectLot from "../managing/projects/SelectLot";
 import { notify } from "../notification/notification";
 import { projectDetails } from "./style";
 
+import useIsUserCanAccess from "../../../hooks/access";
 import { setEditProject } from "../../../store/reducers/project.reducer";
 import { formattedDate } from "../../../store/utils";
 import { projectsStyles } from "../managing/style";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
-import useIsUserCanAccess from "../../../hooks/access";
 
 const initialState = {
   code: "",
@@ -54,39 +54,35 @@ const initialState = {
   priority: ""
 };
 
-const ProjectInfo = ({ loading, open, handleClose }) => {
+const ProjectInfo = ({ loading, open }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const editData = useGetStateFromStore("manage", "addProject");
 
-  const {
-    user,
-    isAuthenticated,
-  } = useGetAuthenticatedUser();
-  const {isSuperUser,isManager} = useIsUserCanAccess()
+  const { user, isAuthenticated } = useGetAuthenticatedUser();
+  const { isSuperUser, isManager } = useIsUserCanAccess();
   const [edit, setEdit] = useState(false);
   const classes = projectDetails();
   const externalProjectClasses = projectsStyles();
-  const [getLots, {}] = useGetLotsMutation();
-  const [getPhases, {}] = useGetPhasesMutation();
-  const [getPotentielManagers, {}] = useGetPotentielManagersMutation();
+  const [getLots] = useGetLotsMutation();
+  const [getPhases] = useGetPhasesMutation();
+  const [getPotentielManagers] = useGetPotentielManagersMutation();
   const dispatch = useDispatch();
   const [editedProject, setEditedProject] = useState(initialState);
-  const [updateProject, { isLoading: updating }] = useUpdateProjectMutation();
-
-  async function loadPhasesAndLots() {
-    try {
-      const phasesData = await getPhases().unwrap();
-      const lotsData = await getLots().unwrap();
-      const data = await getPotentielManagers().unwrap();
-      dispatch(setPhases(phasesData?.phases));
-      dispatch(setLot(lotsData?.lots));
-      dispatch(setPotentielManagers(data.users));
-    } catch (e) {
-      notify(NOTIFY_ERROR, e?.data?.message);
-    }
-  }
+  const [updateProject] = useUpdateProjectMutation();
 
   useEffect(() => {
+    async function loadPhasesAndLots() {
+      try {
+        const phasesData = await getPhases().unwrap();
+        const lotsData = await getLots().unwrap();
+        const data = await getPotentielManagers().unwrap();
+        dispatch(setPhases(phasesData?.phases));
+        dispatch(setLot(lotsData?.lots));
+        dispatch(setPotentielManagers(data.users));
+      } catch (e) {
+        notify(NOTIFY_ERROR, e?.data?.message);
+      }
+    }
     if (
       isAuthenticated &&
       (user?.role === SUPERUSER_ROLE ||
@@ -132,7 +128,6 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
       setEdit(false);
       setTimeout(() => {
         window.location.reload(false);
-
       }, 1000);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
@@ -170,11 +165,12 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
         <Grid item xs={12}>
           <h3 className={classes.sectionTitle}>Information générale</h3>
         </Grid>
-        {/* start date du projet  */}
-        <Grid item xs={12} sm={12} md={6} lg={3}>
+        <Grid item xs={12} sm={12} md={6} lg={8}>
+          <div className={`${classes.card} internal`}>
+
           <Grid container spacing={2}>
             {/* project code  */}
-            <Grid item xs={12} sm={6} md={6} lg={6}>
+            <Grid item xs={12}sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">Code </p>
                 {!edit ? (
@@ -191,7 +187,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               </div>
             </Grid>
             {/* project name */}
-            <Grid item xs={12} sm={6} md={6} lg={6}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">Nom du projet </p>
                 {!edit ? (
@@ -208,22 +204,20 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               </div>
             </Grid>
             {/* project phase */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">la Phase</p>
                 {!edit ? (
                   <div className="value">{project.phase?.name}</div>
-                ) : (
-                  !editData.phases.length
-                  ?
+                ) : !editData.phases.length ? (
                   <Skeleton variant="rectangular" width={150} height={50} />
-                  :
+                ) : (
                   <Select
                     name="phase"
                     labelId="phase-select-label"
                     id="phase"
                     onChange={handleChange}
-                    value={editData?.phases? editedProject.phase:""}
+                    value={editData?.phases ? editedProject.phase : ""}
                     size="small"
                   >
                     {editData?.phases.map((phase, phaseIdx) => (
@@ -237,7 +231,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
             </Grid>
 
             {/* projects lot  */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">les Lots</p>
                 {!edit ? (
@@ -256,12 +250,9 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                 )}
               </div>
             </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={3}>
-          <Grid container spacing={2}>
+
             {/* project state  */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">l'Etat du projet</p>
                 <div className="value">not implemented</div>
@@ -269,7 +260,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
             </Grid>
 
             {/* date debut */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">Date début </p>
                 {!edit ? (
@@ -302,7 +293,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               </div>
             </Grid>
             {/* date fin */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={3} md={3} lg={3}>
               <div className={classes.data}>
                 <p className="label">Date Fin</p>
                 <div className="value">
@@ -317,8 +308,11 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               </div>
             </Grid>
           </Grid>
+          </div>
         </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={3}>
+
+        <Grid item xs={12} sm={12} md={6} lg={4}>
+        <div className={`${classes.card} internal`}>
           <Grid container spacing={2}>
             {/* creator */}
             {/* <Grid item xs={12}>
@@ -352,9 +346,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
             {/* manager */}
             <Grid item xs={12}>
               <div className={classes.data}>
-                <p className="label">Chef de project</p>
                 {!edit ? (
-
                   <div className="value">
                     <div className={classes.manager}>
                       {project.managerDetails?.UserProfile?.image ? (
@@ -377,11 +369,11 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                         </span>
                       </p>
                     </div>
+                    <span className="position">Chef de projet</span>
                   </div>
-                ) : (
-                  !editData.managers.length?
+                ) : !editData.managers.length ? (
                   <Skeleton variant="rectangular" width={210} height={50} />
-                  :
+                ) : (
                   <ProjectUserLists
                     handleChange={handleChange}
                     userValue={editedProject.manager}
@@ -391,34 +383,38 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                 )}
               </div>
             </Grid>
-          </Grid>
-        </Grid>
+            <Grid item xs={12} >
+              {/* listee des intervenant  */}
+              <Grid item xs={12}>
+                <div className={classes.data}>
+                  <p className="label">
+                    Total des heures des intervenant:{" "}
+                    {project.projectNbHours ? project.projectNbHours : 0}h{" "}
+                  </p>
+                </div>
 
-        <Grid item xs={12} sm={12} md={6} lg={3}>
-          {/* listee des intervenant  */}
-          <Grid item xs={12}>
-            <div className={classes.data}>
-              <p className="label">les Intervenants</p>
-            </div>
-
-            <ProjectIntervenant />
+                <ProjectIntervenant />
+              </Grid>
+            </Grid>
           </Grid>
+          </div>
         </Grid>
       </Grid>
-     {
-     (isSuperUser || (isManager && user?.email===project?.managerDetails?.email))&&
-     <div className={classes.actions}>
-        {edit && (
-          <button onClick={handleEdit} className="cancel">
-            <ReactSVG src={faCancel} />
-            <span className="text">Annuler</span>
+      {(isSuperUser ||
+        (isManager && user?.email === project?.managerDetails?.email)) && (
+        <div className={classes.actions}>
+          {edit && (
+            <button onClick={handleEdit} className="cancel">
+              <ReactSVG src={faCancel} />
+              <span className="text">Annuler</span>
+            </button>
+          )}
+          <button onClick={!edit ? handleEdit : handleUpdate}>
+            <ReactSVG src={!edit ? faEdit : faSave} />
+            <span className="text">{!edit ? "Éditer" : "Enregistrer"}</span>
           </button>
-        )}
-        <button onClick={!edit ? handleEdit : handleUpdate}>
-          <ReactSVG src={!edit ? faEdit : faSave} />
-          <span className="text">{!edit ? "Éditer" : "Enregistrer"}</span>
-        </button>
-      </div>}
+        </div>
+      )}
     </div>
   );
 };

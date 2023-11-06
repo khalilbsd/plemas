@@ -32,6 +32,7 @@ import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
 import Intervenant from "../../models/tasks/Intervenant.model.js";
 import { Op } from "sequelize";
+import sequelize from "../../db/db.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -540,5 +541,14 @@ export const getProjectById = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
 
-  res.status(200).json({ state: "success", project });
+  const projectHours = await Intervenant.sum('nbHours',{
+    where:{projectID:project.id}
+  })
+
+console.log(projectHours)
+  const result = project.toJSON()
+  result.projectNbHours = projectHours
+console.log(result);
+
+  res.status(200).json({ status: "success", project:result });
 });

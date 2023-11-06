@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import database from "../../db/db.js";
+import { TASK_STATE_DOING } from "../../constants/constants.js";
 
 const Task = database.define("task", {
     name:{
@@ -27,7 +28,7 @@ const Task = database.define("task", {
     state:{
         type:DataTypes.STRING,
         allowNull:false,
-        defaultValue:"doing",
+        defaultValue:TASK_STATE_DOING,
     }
 
 }, { timestamps: true });

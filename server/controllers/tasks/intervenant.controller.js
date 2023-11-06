@@ -158,6 +158,11 @@ export const removeIntervenantFromProject = catchAsync(
         )
       );
     // removing intervenant
+    if (intervenant.nbHours > 0){
+      return next(new AppError(
+        "Vous ne pouvez pas retirer cet intervenant",304
+      ))
+    }
     //TODO:: add task check rules
     await intervenant.destroy();
     res

@@ -11,7 +11,8 @@ import {
     getDailyTasks,
     getProjectTasks,
     getTaskPotentialIntervenants,
-    updateIntervenantHours
+    updateIntervenantHours,
+    updateTaskInfo
 } from "../controllers/tasks/task.controller.js";
 import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
 
@@ -53,6 +54,12 @@ router
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
     getTaskPotentialIntervenants
+  )
+  .patch(
+    "/update_details/task/:taskID",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
+    updateTaskInfo
   );
 
 export default router;

@@ -11,8 +11,10 @@ import Task from "../../models/tasks/tasks.model.js";
 import moment from "moment";
 import logger from "../../log/config.js";
 import {
+  INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
-  SUPERUSER_ROLE
+  SUPERUSER_ROLE,
+  TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
 import { projectPotentialIntervenants } from "../users/user.controller.js";
@@ -50,15 +52,15 @@ export const getProjectTasks = catchAsync(async (req, res, next) => {
   });
 
   tasks = tasks.map((task) => {
-    if (task.intervenants.length === 0 && !task.intervenants[0].user) {
+    if (task.intervenants.length === 0 || !task.intervenants[0].user) {
       task.intervenants = [];
-    }
 
+    }
+    task.state = TASK_STATE_TRANSLATION.filter(state=>state.value === task.state)[0].label
     return task;
   });
 
   return res.status(200).json({
-    // intervenants: project.intervenants
     intervenants: tasks
   });
 });
@@ -304,17 +306,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateTaskInfo = catchAsync(async (req, res, next) => {
-  const { taskID } = req.params;
-  if (!taskID) return next(new MissingParameter("la tache est requise"));
-  const task = await Task.findByPk(taskID);
-  if (!task) return next(new ElementNotFound("la tache est introuvable"));
-  await task.update({ ...req.body });
-  logger.info(`updating the task ${task.id}`);
-  return res
-    .status(200)
-    .json({ status: "succuss", message: "tache mis a jours" });
-});
+
 
 export const getDailyTasks = catchAsync(async (req, res, next) => {});
 
@@ -396,3 +388,26 @@ export const getTaskPotentialIntervenants = catchAsync(
     });
   }
 );
+
+
+export const updateTaskInfo = catchAsync(async (req, res, next) => {
+  const { taskID } = req.params;
+  if (!taskID) return next(new MissingParameter("la tache est requise"));
+  const task = await Task.findByPk(taskID);
+  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+  let data ={}
+  if ([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE].includes(req.user.role) ){
+    data =req.body
+    delete data.id
+  }
+  if (req.body.state){
+      data.state = TASK_STATE_TRANSLATION.filter(state=>state.label === req.body.state)[0].value
+  }
+  await task.update({ ...data });
+
+  logger.info(`updating the task ${task.id}`);
+  return res
+    .status(200)
+    .json({ status: "succuss", message: "tache mis a jours" });
+});
+

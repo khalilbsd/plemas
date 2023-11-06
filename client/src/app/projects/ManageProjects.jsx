@@ -68,6 +68,7 @@ const ManageProjects = () => {
   const [newProject, setNewProject] = useState(newProjectInitialState);
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
+  const projectList = useGetStateFromStore("manage", "projectsList");
 
   //ADD hooks
   const [createProject, { isLoading: creatingProject }] =
@@ -85,8 +86,9 @@ const ManageProjects = () => {
     }
   }
   useEffect(() => {
-
-    loadProjects();
+    if (!projectList.length){
+      loadProjects();
+    }
   }, []);
 
   const handleOpenAddForm = () => {

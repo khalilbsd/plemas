@@ -43,6 +43,13 @@ export const taskApi = api.injectEndpoints({
         data: body
       })
     }),
+    updateTask: builder.mutation({
+      query: ({ body, taskID }) => ({
+        url: `tasks/update_details/task/${taskID}`,
+        method: "PATCH",
+        data: body
+      })
+    }),
   })
 });
 
@@ -52,5 +59,6 @@ export const {
   useAddIntervenantToTaskMutation,
   useCreateTaskMutation,
   useAssociateToTaskMutation,
-  useAssignHoursInTaskMutation
+  useAssignHoursInTaskMutation,
+  useUpdateTaskMutation
 } = taskApi;
