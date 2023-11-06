@@ -139,7 +139,7 @@ const ProjectTasks = ({ openAddTask }) => {
   };
 
   const handleEditClick = (id, isIntervenant) => () => {
-    if (user.email && isIntervenant) {
+    if (user?.email && isIntervenant) {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
       return;
     }
@@ -292,7 +292,7 @@ const ProjectTasks = ({ openAddTask }) => {
         }
 
         const taskHours = row?.intervenants?.filter(
-          (item) => item.user.email === user?.email
+          (item) => item.user?.email === user?.email
         )[0];
 
         if (emailsList?.includes(user?.email) && taskHours) {
