@@ -62,11 +62,13 @@ export const projectIntervenantList = async (projectID) => {
   // });
 
   const intervenants = await Intervenant.findAll({
+    group: ["intervenantID","id","user->UserProfile.id","user.id"],
     where: {
       projectID: projectID,
       intervenantID: { [Op.ne]: null }
     },
-    group: "intervenantID",
+    attributes:["*"],
+
     include: [
       {
         model: User,
@@ -79,7 +81,6 @@ export const projectIntervenantList = async (projectID) => {
         ]
       }
     ],
-
   });
 
 
