@@ -4,6 +4,7 @@ import {
   ElementNotFound,
   MalformedObjectId,
   MissingParameter,
+  UnAuthorized,
   UnknownError
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
@@ -96,38 +97,46 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
   const projectsList = serializeProject(projects);
   projectsList.sort((a, b) => b.code - a.code);
 
-  const dates =  calculateDates(2)
+  const dates = calculateDates(2);
 
-  let tasks=[]
+  let tasks = [];
   const today = new Date();
- for (const projIdx in projectsList){
-      let projectTasks= await Task.findAll({
-        attributes:["id","name","name","startDate","dueDate","state"],
-        order:[['dueDate','ASC']],
-        where:{'dueDate':{
-          [Op.gte]:today
-        }},
-        include:[{
-          model:Intervenant,
-          attributes:["id"],
-          where:{
-            projectID:projectsList[projIdx].id
+  for (const projIdx in projectsList) {
+    let projectTasks = await Task.findAll({
+      attributes: ["id", "name", "name", "startDate", "dueDate", "state"],
+      order: [["dueDate", "ASC"]],
+      where: {
+        "dueDate": {
+          [Op.gte]: today
+        }
+      },
+      include: [
+        {
+          model: Intervenant,
+          attributes: ["id"],
+          where: {
+            projectID: projectsList[projIdx].id
           }
         }
-        ]
-      })
+      ]
+    });
 
-      if (projectTasks){
-        tasks.push({
-          projectID:projectsList[projIdx].id,
-          tasks:projectTasks
-        })
-      }
-
+    if (projectTasks) {
+      tasks.push({
+        projectID: projectsList[projIdx].id,
+        tasks: projectTasks
+      });
+    }
   }
 
-
-  res.status(200).json({ status: "success", projects: projectsList , dates:dates ,projectsTasks:tasks });
+  res
+    .status(200)
+    .json({
+      status: "success",
+      projects: projectsList,
+      dates: dates,
+      projectsTasks: tasks
+    });
 });
 
 /**
@@ -165,11 +174,9 @@ export const addProject = catchAsync(async (req, res, next) => {
     return next(new MalformedObjectId("lots and phase are mandatory"));
 
   // create pure project instance to use
-console.log("--------------------------------------- details",data)
-  if (data.startDate)
-    data.startDate = moment(data.startDate, "DD/MM/YYYY");
+  if (data.startDate) data.startDate = moment(data.startDate, "DD/MM/YYYY");
 
-	let project = { ...data };
+  let project = { ...data };
 
   project.createdBy = req.user.id;
   project.overAllStatus = PROJECT_PHASE_STATUS_IN_PROGRESS;
@@ -229,7 +236,6 @@ console.log("--------------------------------------- details",data)
 
 export const updateProjectDetails = catchAsync(async (req, res, next) => {
   const details = req.body;
-  console.log(details);
   if (!details || !Object.keys(details).length)
     return next(new MissingParameter("Des paramètres manquants"));
   let phase;
@@ -244,7 +250,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     if (details.code) {
       objectQuery.code = details.code;
     }
-    const projectWithPhase = await Project.findOne({ where: objectQuery  });
+    const projectWithPhase = await Project.findOne({ where: objectQuery });
 
     if (projectWithPhase)
       return next(
@@ -252,8 +258,10 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
       );
   }
 
-  const project = await Project.findByPk(req.params.projectID,{include:[Phase]});
-  console.log("----------- project details",project.phase.abbreviation);
+  const project = await Project.findByPk(req.params.projectID, {
+    include: [Phase]
+  });
+
   if (!project) return next(new ElementNotFound("Projet introuvable"));
   logger.info("attempting to update the project info");
   if (details.code && details.code.toString()?.length !== 5)
@@ -265,15 +273,12 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     details.phaseID = phase.id;
   }
 
-
   details.customId = generateProjectCustomID(
     details.code || project.code,
     details.name || project.name,
     phase?.abbreviation || project.phase.abbreviation
-
   );
 
-console.log("--------------------------------------- details",details)
   if (details.startDate)
     details.startDate = moment(details.startDate, "DD/MM/YYYY");
 
@@ -372,90 +377,6 @@ export const checkProjectCode = catchAsync(async (req, res, next) => {
     .json({ status: "succuss", message: "code is valid", isValid: true, code });
 });
 
-// export const changeProjectPhase = catchAsync(async (req, res, next) => {
-//   const customID = req.params.custom_name;
-
-//   if (!customID || !req.body.phase)
-//     return next(
-//       new MissingParameter("project custom ID and phase name is mandatory")
-//     );
-//   const project = await Project.findOne({
-//     where: { customID: customID },
-//   });
-//   // console.log(project.projectPhases);
-//   if (!project)
-//     return next(new ElementNotFound("there is no project with this custom id"));
-
-//   const phaseAbb = await Phase.findOne({ where: { name: req.body.phase } });
-
-//   if (!phaseAbb)
-//     return next(new ElementNotFound("there is no phase with this name"));
-
-//   const projectPhase = await getProjectPhaseFromOldPhases(
-//     project.projectPhases,
-//     phaseAbb
-//   );
-//   if (projectPhase < 0) {
-//     // await ProjectPhase.create({
-//     //   activePhase: true,
-//     //   phaseID: phaseAbb.id,
-//     //   projectID: project.id
-//     // });
-//     //deactivate other phases
-//     project.projectPhases.forEach((element) => {
-//       element.activePhase = false;
-//       element.save();
-//     });
-
-//     //updating customID
-//     project.customId = generateProjectCustomID(
-//       project.code,
-//       project.name,
-//       phaseAbb.abbreviation
-//     );
-//     project.save();
-
-//     return res.status(200).json({
-//       success: "success",
-//       message: `project is now in phase ${phaseAbb.name}`,
-//       created: true,
-//       updated: false
-//     });
-//   }
-//   logger.info("checking if the provided phase is the same as the current one");
-//   if (project.projectPhases[projectPhase].activePhase == true) {
-//     logger.info("nothing to do the provided phase is already active");
-//     return next(new NothingChanged("Phase is already active"));
-//   }
-
-//   logger.info(
-//     "setting the new phase that already exist  to  active and disabling the other ones"
-//   );
-//   //update project to old phases
-//   project.projectPhases[projectPhase].activePhase = true;
-//   project.projectPhases[projectPhase].save();
-//   //deactivate other phases
-//   project.projectPhases.forEach(async (element) => {
-//     if (element.phaseID !== phaseAbb.id) {
-//       element.activePhase = false;
-//       element.save();
-//     }
-//   });
-//   //updating customID
-//   project.customId = generateProjectCustomID(
-//     project.code,
-//     project.name,
-//     phaseAbb.abbreviation
-//   );
-//   project.save();
-//   return res.status(200).json({
-//     success: "success",
-//     message: `project is now in phase ${phaseAbb.name}`,
-//     created: false,
-//     updated: true
-//   });
-// });
-
 export const getProjectsInPhase = catchAsync(async (req, res, next) => {
   const { phase } = req.query;
   if (!phase) return res.status(200).json({ status: "success", projects: [] });
@@ -546,14 +467,50 @@ export const getProjectById = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
 
-  const projectHours = await Intervenant.sum('nbHours',{
-    where:{projectID:project.id}
-  })
+  const projectHours = await Intervenant.sum("nbHours", {
+    where: { projectID: project.id }
+  });
+  const result = project.toJSON();
+  result.projectNbHours = projectHours;
 
-console.log(projectHours)
-  const result = project.toJSON()
-  result.projectNbHours = projectHours
-console.log(result);
+  res.status(200).json({ status: "success", project: result });
+});
 
-  res.status(200).json({ status: "success", project:result });
+export const assignManagerHours = catchAsync(async (req, res, next) => {
+  const { projectID } = req.params;
+  if (!projectID) return next(new MissingParameter("Missing project id"));
+  const project = await Project.findByPk(projectID);
+
+  if (!project) return next(new ElementNotFound("Projet introuvable"));
+  let userId;
+
+  if (req.user.role === PROJECT_MANAGER_ROLE) {
+    if (req.user.id !== project.manager)
+      return next(new UnAuthorized("Vous n’êtes pas le chef du ce projet"));
+    userId = req.user.id;
+  }
+
+  if (req.user.isSuperUser && req.user.role === SUPERUSER_ROLE) {
+    userId = req.body.user;
+  }
+  const user = await User.findByPk(userId);
+  if (!user) return next(new ElementNotFound("le chef projet est introuvable"));
+
+  const hours = parseInt(req.body.hours);
+  if (isNaN(hours) || hours < 0)
+    return next(
+      new AppError("le nombre des heurs doit être un chiffre positif ", 400)
+    );
+  if (hours < project.managerHours)
+    return next(
+      new AppError("vous ne pouvez pas diminuer votre nombre d'heures", 400)
+    );
+
+  project.managerHours = hours;
+
+  await project.save()
+
+
+  return res.status(200).json({status:'success',message:'heurs renseigner avec succès'});
+
 });

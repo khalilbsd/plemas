@@ -151,11 +151,42 @@ export const projectDetails = createUseStyles({
     },
     "& .position": {
       fontWeight: 500,
+      width:150,
       color: "var(--orange)",
       border: "2px solid var(--orange)",
       padding: 15,
       borderRadius: 5,
-      marginLeft: "5%"
+      marginLeft: "5%",
+      background:'none',
+      transition:'all 0.3s ease-in-out',
+      '& .init':{
+        height:14,
+        display:'block',
+        width:'100%',
+        overflow: "block"
+      },
+      '& .changed':{
+        height:0,
+        display:'block',
+        width:0,
+        overflow: "hidden"
+      },
+      '&:hover':{
+
+      backgroundColor: "var(--orange)",
+      color:'var(--white)',
+      '& .changed':{
+        height:14,
+        width:'100%',
+        overflow: "visible"
+      },
+      '& .init':{
+        height:0,
+        width:0,
+        overflow: "hidden"
+      },
+
+      }
     }
   },
   manager: {
@@ -423,8 +454,29 @@ export const projectTaskDetails = createUseStyles({
     marginTop: 10,
     "&:hover": {
       backgroundColor: "var(--pastel-orange)"
+    },
+    display:'flex',
+    alignItems:'center',
+    justifyContent: 'center',
+    gap:10
+  },
+  btnLoader:{
+    width:'20%',
+    '& span':{
+      height:'28px !important',
+      width:'28px !important'
     }
   },
+  btnSaveIcon:{
+    height:22,
+    width:22,
+    '& svg':{
+      height:22,
+      width:22,
+      fill:'var(--white)'
+    }
+  },
+
   icon: {
     width: 18,
     height: 18

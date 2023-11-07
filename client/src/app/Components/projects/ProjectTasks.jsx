@@ -40,6 +40,7 @@ import faAdd from "../../public/svgs/solid/plus.svg";
 import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import { projectDetails, projectTaskDetails } from "./style";
+import HoursPopUp from "./HoursPopUp";
 
 // const CustomSaveIcon = () => (
 //   <FaSave width={24} height={24} /> // Customize the width and height as needed
@@ -68,7 +69,7 @@ const ProjectTasks = ({ openAddTask }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
-  const [assignHoursInTask] = useAssignHoursInTaskMutation();
+  const [assignHoursInTask,{isLoading:loadingHoursPerTask}] = useAssignHoursInTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
 
   const classes = projectTaskDetails();
@@ -77,7 +78,7 @@ const ProjectTasks = ({ openAddTask }) => {
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
   const [hours, setHours] = useState(false);
-  const [nbHours, setNbHours] = useState({ taskID: "", nbHours: 0 });
+  const [nbHours, setNbHours] = useState({ taskID: "", hours: 0 });
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -307,8 +308,19 @@ const ProjectTasks = ({ openAddTask }) => {
                 onClick={handleHoursOpen}
                 color="inherit"
               />
-
-              <Dialog
+                <HoursPopUp
+                open={hours}
+                close={handleHoursClose}
+                title=" Renseigner votre heurs"
+                text="Vous pouvez renseigner votre heurs ici"
+                handleChange={handleHoursChange}
+                defaultVal={nbHours?.hours}
+                minValue={taskHours.nbHours}
+                submit={assignHours}
+                btnText="Confirmer"
+                loading={loadingHoursPerTask}
+                />
+              {/* <Dialog
                 open={hours}
                 onClose={handleHoursClose}
                 aria-labelledby="alert-dialog-title"
@@ -336,8 +348,8 @@ const ProjectTasks = ({ openAddTask }) => {
                     confirmer
                   </buttonKU>
                 </DialogContent>
-                <DialogActions></DialogActions>
-              </Dialog>
+
+              </Dialog> */}
             </>
           );
         }

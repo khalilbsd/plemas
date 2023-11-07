@@ -24,9 +24,6 @@ export const getAllIntervenants = catchAsync(async (req, res, next) => {
 
   const intervenants = await projectIntervenantList(projectID);
 
-
-  console.log("returned results",intervenants);
-
   if (!intervenants) {
     return res.status(200).json({ status: "success", intervenants: [] });
   }
@@ -62,12 +59,12 @@ export const projectIntervenantList = async (projectID) => {
   // });
 
   const intervenants = await Intervenant.findAll({
-    group: ["intervenantID","id","user->UserProfile.id","user.id"],
+    group: ["intervenantID", "id", "user->UserProfile.id", "user.id"],
     where: {
       projectID: projectID,
       intervenantID: { [Op.ne]: null }
     },
-    attributes:["*"],
+    attributes: ["*"],
 
     include: [
       {
@@ -80,9 +77,8 @@ export const projectIntervenantList = async (projectID) => {
           }
         ]
       }
-    ],
+    ]
   });
-
 
   return intervenants;
 };

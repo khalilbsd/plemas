@@ -149,7 +149,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
 
   const { taskID } = req.body;
   if (!taskID) return next(new MissingParameter("la tache est requis"));
-  const task = await Task.findByPk(projectID);
+  const task = await Task.findByPk(taskID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
 
   if (

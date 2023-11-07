@@ -13,7 +13,8 @@ import {
   getProjectById,
   //   changeProjectPhase,
   getProjectsInPhase,
-  updateProjectDetails
+  updateProjectDetails,
+  assignManagerHours
 } from "../controllers/projects/project.controller.js";
 import {
   addIntervenantToProject,
@@ -95,6 +96,12 @@ router
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
     removeIntervenantFromProject
+  )
+  .patch(
+    "/change/manager/assign/hours/:projectID",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
+    assignManagerHours
   );
 
 export default router;
