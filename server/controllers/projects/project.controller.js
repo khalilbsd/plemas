@@ -16,6 +16,7 @@ import {
   Lot,
   Phase,
   ProjectLots,
+  Task,
   User,
   UserProfile
 } from "../../db/relations.js";
@@ -31,6 +32,7 @@ import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
 import Intervenant from "../../models/tasks/Intervenant.model.js";
 import { Op } from "sequelize";
+import sequelize from "../../db/db.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -96,8 +98,36 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   const dates =  calculateDates(2)
 
+  let tasks=[]
+  const today = new Date();
+ for (const projIdx in projectsList){
+      let projectTasks= await Task.findAll({
+        attributes:["id","name","name","startDate","dueDate","state"],
+        order:[['dueDate','ASC']],
+        where:{'dueDate':{
+          [Op.gte]:today
+        }},
+        include:[{
+          model:Intervenant,
+          attributes:["id"],
+          where:{
+            projectID:projectsList[projIdx].id
+          }
+        }
+        ]
+      })
 
-  res.status(200).json({ status: "success", projects: projectsList , dates:dates });
+      if (projectTasks){
+        tasks.push({
+          projectID:projectsList[projIdx].id,
+          tasks:projectTasks
+        })
+      }
+
+  }
+
+
+  res.status(200).json({ status: "success", projects: projectsList , dates:dates ,projectsTasks:tasks });
 });
 
 /**
@@ -516,5 +546,14 @@ export const getProjectById = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
 
-  res.status(200).json({ state: "success", project });
+  const projectHours = await Intervenant.sum('nbHours',{
+    where:{projectID:project.id}
+  })
+
+console.log(projectHours)
+  const result = project.toJSON()
+  result.projectNbHours = projectHours
+console.log(result);
+
+  res.status(200).json({ status: "success", project:result });
 });

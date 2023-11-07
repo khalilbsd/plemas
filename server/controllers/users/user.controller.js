@@ -116,14 +116,65 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
 export const getPotentielIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
   if (!projectID) return next(new MissingParameter("le projet est requis"));
+  // const objectQuery = {
+  //   isBanned: false,
+  //   role: { [Op.ne]: CLIENT_ROLE }
+  // };
+  // const existingIntervenants = await Intervenant.findAll({
+  //   where: { projectID: projectID },
+  //   attributes: ["intervenantID"]
+  // });
+  // if (existingIntervenants) {
+  //   let list = [];
+  //   existingIntervenants.forEach((inter) => {
+  //     list.push(inter.intervenantID);
+  //   });
+  //   objectQuery.id = {
+  //     [Op.notIn]: list
+  //   };
+  // }
+
+  // const users = await User.findAll({
+  //   where: objectQuery,
+  //   attributes: ["id", "email"],
+  //   include: [
+  //     {
+  //       model: UserProfile,
+  //       attributes: ["name", "lastName", "image", "poste"]
+  //     }
+  //   ]
+  // });
+  // const simplifiedUsers = users.map((user) => {
+  //   const { id, email } = user.toJSON();
+  //   const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
+  //   const { name, lastName, image, poste } = userProfile || "";
+  //   return {
+  //     id,
+  //     email,
+  //     lastName,
+  //     name,
+  //     image,
+  //     poste
+  //   };
+  // });
+
+  const simplifiedUsers = await projectPotentialIntervenants(projectID);
+  console.log(simplifiedUsers);
+  return res.json({ users: simplifiedUsers });
+});
+
+export const projectPotentialIntervenants = async (projectID) => {
   const objectQuery = {
     isBanned: false,
     role: { [Op.ne]: CLIENT_ROLE }
   };
   const existingIntervenants = await Intervenant.findAll({
-    where: { projectID: projectID },
+    where: { projectID: projectID, intervenantID: { [Op.nq]: null } },
     attributes: ["intervenantID"]
   });
+
+
+
   if (existingIntervenants) {
     let list = [];
     existingIntervenants.forEach((inter) => {
@@ -158,8 +209,8 @@ export const getPotentielIntervenants = catchAsync(async (req, res, next) => {
     };
   });
 
-  res.json({ users: simplifiedUsers });
-});
+  return simplifiedUsers;
+};
 
 export const addUser = catchAsync(async (req, res, next) => {
   const data = req.body;

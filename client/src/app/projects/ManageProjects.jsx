@@ -68,6 +68,7 @@ const ManageProjects = () => {
   const [newProject, setNewProject] = useState(newProjectInitialState);
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
+  const projectList = useGetStateFromStore("manage", "projectsList");
 
   //ADD hooks
   const [createProject, { isLoading: creatingProject }] =
@@ -77,14 +78,17 @@ const ManageProjects = () => {
     try {
       const data = await getProjectList().unwrap();
 
-      dispatch(setProjectList(data.projects));
+      dispatch(setProjectList({projects:data.projects,tasks:data.projectsTasks}));
       dispatch(setTwoWeeksDatesList(data.dates));
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   }
   useEffect(() => {
-    loadProjects();
+    if (!projectList.length){
+      loadProjects();
+    }
   }, []);
 
   const handleOpenAddForm = () => {

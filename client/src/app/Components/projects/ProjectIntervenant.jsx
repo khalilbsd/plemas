@@ -33,14 +33,19 @@ import {
 import { useDispatch } from "react-redux";
 import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
+import {
+  useAddIntervenantToTaskMutation,
+  useGetTaskPotentialIntervenantsMutation
+} from "../../../store/api/tasks.api";
 
 function AddIntervenant(props) {
-  const { onClose, open, potentialIntervenants } = props;
+  const { onClose, open, potentialIntervenants, taskId } = props;
 
   const { projectID } = useParams();
   const [intervenants, setIntervenants] = useState([]);
   const [addIntervenants, { isLoading: updatingIntervenants }] =
     useAddIntervenantsMutation();
+  const [addIntervenantToTask] = useAddIntervenantToTaskMutation();
   const externalProjectClasses = projectsStyles();
   const handleChange = (event) => {
     const {
@@ -57,8 +62,6 @@ function AddIntervenant(props) {
     onClose();
   };
 
-
-
   const submitIntervenants = async () => {
     try {
       const list = [];
@@ -67,12 +70,26 @@ function AddIntervenant(props) {
         notify(NOTIFY_INFO, "pas d'intervenant sélectionné");
         return;
       }
-      const res = await addIntervenants({
-        body: { emails: list },
-        projectID: projectID
-      }).unwrap();
+      let res;
+      if (!taskId) {
+        res = await addIntervenants({
+          body: { emails: list },
+          projectID: projectID
+        }).unwrap();
+      } else {
+        res = await addIntervenantToTask({
+          body: {
+            emails: list,
+            taskID: taskId
+          },
+          projectID: projectID
+        }).unwrap();
+      }
       notify(NOTIFY_SUCCESS, res?.message);
       handleClose();
+      setTimeout(() => {
+        window.location.reload(false);
+      }, 1000);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
@@ -81,7 +98,9 @@ function AddIntervenant(props) {
   return (
     <Dialog onClose={handleClose} open={open}>
       {!updatingIntervenants && (
-        <DialogTitle>Ajouter un intervenant</DialogTitle>
+        <DialogTitle>
+          Ajouter un intervenant {taskId ? `pour une tache` : ""}
+        </DialogTitle>
       )}
       <DialogContent className={externalProjectClasses.intevDialog}>
         {!updatingIntervenants ? (
@@ -121,28 +140,38 @@ AddIntervenant.propTypes = {
   // selectedValue: PropTypes.string.isRequired
 };
 
-const ProjectIntervenant = () => {
+const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
   const { isSuperUser, isManager } = useIsUserCanAccess();
-  const {user} = useGetAuthenticatedUser();
-  const [getPotentielIntervenants] = useGetPotentielIntervenantsMutation();
-  const [removeIntervenantFromProject] =
-    useRemoveIntervenantFromProjectMutation();
-  const [getProjectIntervenants, { isLoading }] =
-    useGetProjectIntervenantsMutation();
+  const { user } = useGetAuthenticatedUser();
   const project = useGetStateFromStore("project", "projectDetails");
-
   const { projectID } = useParams();
+  const dispatch = useDispatch();
   const colors = useGetStateFromStore("userInfo", "avatarColors");
-
   const [potentielIntervenants, setPotentielIntervenants] = useState([]);
+  const [taskPotentielIntervenants, setTaskPotentielIntervenants] = useState(
+    []
+  );
   const [intervenantsDialog, setIntervenantsDialog] = useState(false);
   const [intervenants, setIntervenants] = useState([]);
+
   const [detailIntervenant, setDetailIntervenant] = useState({
     open: false,
     details: undefined
   });
   const classes = projectDetails();
+  //api calls
+  const [getTaskPotentialIntervenants] =
+    useGetTaskPotentialIntervenantsMutation();
 
+  const [removeIntervenantFromProject] =
+    useRemoveIntervenantFromProjectMutation();
+
+  const [getProjectIntervenants, { isLoading }] =
+    useGetProjectIntervenantsMutation();
+
+  const [getPotentielIntervenants] = useGetPotentielIntervenantsMutation();
+
+  // handle modal
   const openAddIntervenant = () => {
     setIntervenantsDialog(true);
   };
@@ -151,27 +180,58 @@ const ProjectIntervenant = () => {
     setIntervenantsDialog(false);
   };
 
-  async function loadIntervenants() {
-    try {
-      const list = await getProjectIntervenants(projectID).unwrap();
-      setIntervenants(list.intervenants);
-      if ((isManager && user?.email === project?.managerDetails?.email ) || isSuperUser ) {
-        const res = await getPotentielIntervenants(projectID).unwrap();
-        setPotentielIntervenants(res?.users);
-
+  useEffect(() => {
+    // load intervenants from database
+    async function loadIntervenants() {
+      try {
+        const list = await getProjectIntervenants(projectID).unwrap();
+        setIntervenants(list.intervenants);
+        if (
+          (isManager && user?.email === project?.managerDetails?.email) ||
+          isSuperUser
+        ) {
+          const res = await getPotentielIntervenants(projectID).unwrap();
+          setPotentielIntervenants(res?.users);
+        }
+      } catch (error) {
+        console.log(error);
+        notify(NOTIFY_ERROR, error?.data.message);
       }
-
-
-
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data.message);
     }
-  }
+
+
+    if (!taskIntervenants && !taskId) {
+      loadIntervenants();
+    } else {
+      //to set initial intervenants list
+      setIntervenants(taskIntervenants || []);
+    }
+  }, [intervenantsDialog, projectID, taskId]);
 
   useEffect(() => {
-
-    loadIntervenants();
-  }, [intervenantsDialog, projectID]);
+    async function loadTaskPotentialIntervenants(taskId) {
+      try {
+        const res = await getTaskPotentialIntervenants({
+          projectID: projectID,
+          taskID: taskId
+        }).unwrap();
+        setTaskPotentielIntervenants(res?.taskPotentials);
+      } catch (error) {
+        notify(NOTIFY_ERROR, error?.data?.message);
+      }
+    }
+    if (intervenantsDialog) {
+      if (
+        taskId &&
+        taskIntervenants &&
+        ((isManager && user?.email === project?.managerDetails?.email) ||
+          isSuperUser)
+      ) {
+        //to load potentialIntervenants
+        loadTaskPotentialIntervenants(taskId);
+      }
+    }
+  }, [intervenantsDialog]);
 
   const showIntervenantDetails = (intervenant) => {
     if (
@@ -201,27 +261,39 @@ const ProjectIntervenant = () => {
   };
   return (
     <div>
-      <div className={classes.intervenantsContainer}>
+      <div
+        className={`${classes.intervenantsContainer} ${taskId ? "small" : ""}`}
+      >
         {!isLoading ? (
           <>
             <AvatarGroup max={8} spacing={10}>
               {intervenants.map((intervenant, idx) =>
                 intervenant?.user?.UserProfile?.image ? (
                   <Avatar
-                    onClick={() => showIntervenantDetails(intervenant)}
+                    onClick={
+                      !taskId
+                        ? () => showIntervenantDetails(intervenant)
+                        : undefined
+                    }
                     key={idx}
                     className={`${classes.manager} ${
                       colors[idx % colors.length]
-                    }`}
+                    } ${taskId ? "small" : ""}`}
                     alt={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
                     src={`${process.env.REACT_APP_SERVER_URL}${intervenant?.user?.UserProfile.image}`}
                   />
                 ) : (
                   <Avatar
+                    onClick={
+                      !taskId
+                        ? () => showIntervenantDetails(intervenant)
+                        : undefined
+                    }
                     key={idx}
                     className={`${classes.manager} ${
                       colors[idx % colors.length]
-                    }`}
+                    } ${taskId ? "small" : ""}
+                    `}
                   >
                     {intervenant?.user?.UserProfile?.name[0]?.toUpperCase()}
                     {intervenant?.user?.UserProfile?.lastName[0]?.toUpperCase()}
@@ -229,18 +301,25 @@ const ProjectIntervenant = () => {
                 )
               )}
             </AvatarGroup>
-            {((isManager && project?.managerDetails?.email === user?.email) || isSuperUser) && (
-                <>
-                  <button onClick={openAddIntervenant}>
-                    <ReactSVG src={faAdd} />
-                  </button>
-                  <AddIntervenant
-                    open={intervenantsDialog}
-                    onClose={closeAddIntervenant}
-                    potentialIntervenants={potentielIntervenants}
-                  />
-                </>
-              )}
+            {((isManager && project?.managerDetails?.email === user?.email) ||
+              isSuperUser) && (
+              <>
+                <button onClick={openAddIntervenant}>
+                  <ReactSVG src={faAdd} />
+                </button>
+                <AddIntervenant
+                  taskId={taskId ? taskId : null}
+                  taskIntervenants={true}
+                  open={intervenantsDialog}
+                  onClose={closeAddIntervenant}
+                  potentialIntervenants={
+                    taskPotentielIntervenants?.length
+                      ? taskPotentielIntervenants
+                      : potentielIntervenants
+                  }
+                />
+              </>
+            )}
           </>
         ) : (
           <Skeleton variant="circular" width={42} height={42} sx={{ mt: 1 }} />
@@ -253,8 +332,10 @@ const ProjectIntervenant = () => {
             {detailIntervenant.details.user.UserProfile.name}{" "}
             {detailIntervenant.details.user.UserProfile.lastName}
           </p>
-          <p className="hours">nb d'heures: 10h</p>
+          <p className="hours">nb d'heures: {detailIntervenant?.details?.nbHours}h</p>
+          {console.log(detailIntervenant.details)}
           <button
+          disabled={detailIntervenant?.details?.nbHours> 0 }
             onClick={() =>
               removeIntervenant(detailIntervenant.details.user.email)
             }

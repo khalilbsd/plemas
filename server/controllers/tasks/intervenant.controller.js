@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import {
   AppError,
   ElementNotFound,
@@ -18,16 +19,38 @@ import { getUserByEmail } from "../users/lib.js";
 export const getAllIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
   if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const projectExist  = await Project.findByPk(projectID)
+  if (!projectExist) return next(new ElementNotFound("projet introuvable"));
 
-  const project = await Project.findByPk(projectID, {
+  const project = await projectIntervenantList(projectID)
+
+  if (!project){
+
+    return res
+      .status(200)
+      .json({ status: "success", intervenants:[] });
+  }
+  return res
+    .status(200)
+    .json({ status: "success", intervenants: project.intervenants });
+});
+
+
+
+export const projectIntervenantList = async (projectID)=>{
+
+  const project = await  Project.findByPk(projectID, {
+    group:'intervenantID',
     include: [
       {
         model: Intervenant,
         as: "intervenants",
+        where:{
+          intervenantID:{[Op.ne]:null}
+        },
         include: [
           {
             model: User,
-
             attributes: ["email"],
             include: [
               {
@@ -40,12 +63,13 @@ export const getAllIntervenants = catchAsync(async (req, res, next) => {
       }
     ]
   });
-  if (!project) return next(new ElementNotFound("projet introuvable"));
 
-  res
-    .status(200)
-    .json({ status: "success", intervenants: project.intervenants });
-});
+  return project
+}
+
+
+
+
 export const addIntervenantToProject = catchAsync(async (req, res, next) => {
   if (
     req.user.role !== SUPERUSER_ROLE &&
@@ -68,7 +92,6 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
   }
 
   const { emails } = req.body;
-  console.log("EMAIL");
   if (!emails) return next(new MissingParameter("Emails est requis"));
   for (const email in emails) {
     const user = await getUserByEmail(emails[email]);
@@ -81,7 +104,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
 
     const intervenant = await Intervenant.create({
       intervenantID: user.id,
-      projectID: projectID
+      projectID: projectID,
     });
 
     if (!intervenant) {
@@ -100,7 +123,6 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
 export const removeIntervenantFromProject = catchAsync(
   async (req, res, next) => {
     //check if the user have the right to remove a intervenant
-    console.log(req.user.role);
     if (
       req.user.role !== SUPERUSER_ROLE &&
       req.user.role !== PROJECT_MANAGER_ROLE
@@ -136,6 +158,11 @@ export const removeIntervenantFromProject = catchAsync(
         )
       );
     // removing intervenant
+    if (intervenant.nbHours > 0){
+      return next(new AppError(
+        "Vous ne pouvez pas retirer cet intervenant",304
+      ))
+    }
     //TODO:: add task check rules
     await intervenant.destroy();
     res

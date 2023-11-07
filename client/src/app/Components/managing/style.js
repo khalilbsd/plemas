@@ -97,6 +97,39 @@ export const listStyle = createUseStyles({
       minHeight: "72px !important",
       maxHeight: "72px !important",
       border: "none !important"
+    },
+    "&.integrated": {
+      overflow: "visible",
+      "& .MuiDataGrid-main": {
+        overflow: "visible"
+      },
+      "& .MuiDataGrid-columnHeaderTitleContainerContent": {
+        width: "100%",
+        overflow: "visible"
+      },
+      "& .MuiDataGrid-columnHeaderTitleContainer": {
+        overflow: "visible"
+      },
+      borderTopLeftRadius: "0px !important",
+      borderTopRightRadius: "0px !important",
+      background: "transparent !important",
+      border: "none",
+      "& .MuiDataGrid-columnHeaders": {
+        borderRadius: 0,
+        overflow: "visible",
+        //   height: "170px !important",
+        // maxHeight: "170px !important",
+        "& .MuiDataGrid-columnHeader": {
+          paddingLeft:'0 !important'
+        }
+      },
+      "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
+        minHeight: "52px !important",
+        maxHeight: "unset !important",
+        border: "none !important",
+        alignItems: "flex-start",
+        padding:'7px 0'
+      }
     }
   }
 });
@@ -180,19 +213,20 @@ export const projectsStyles = createUseStyles({
       justifyContent: "space-between",
       fontWeight: 600,
       fontSize: 14
-    },
-    "& .dates-data": {
-      color: "var(--white)",
-      display: "flex",
-      alignItems: "flex-start",
-      width: "calc(100% - 40px)",
-      minHeight: 90,
-      justifyContent: "space-between",
-      fontWeight: 600,
-      fontSize: 14
     }
+
     // padding:'0 20px'
   },
+  datesData: {
+    color: "var(--white)",
+    display: "flex",
+    alignItems: "flex-start",
+    width: "calc(100% - 40px)",
+    minHeight: 90,
+    fontWeight: 600,
+    fontSize: 14
+  },
+
   column: {
     fontSize: 14,
     textWrap: "nowrap",
@@ -202,8 +236,7 @@ export const projectsStyles = createUseStyles({
     textWrap: "nowrap",
     whiteSpace: "nowrap",
     position: "relative",
-
-    flex: 1,
+    width: 50,
     height: 50
   },
   dateTitle: {
@@ -259,12 +292,20 @@ export const projectsStyles = createUseStyles({
         backgroundColor: "var(--pastel-green)"
         // color:'var(--white)'
       },
-      "& .progress-bar": {
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: "var(--orange)",
-        width: "100%"
-      }
+
+    }
+  },
+  progressBarContainer:{
+    height:52,
+    display:'flex',
+  },
+  progressBar: {
+    height: 20,
+    borderRadius: 5,
+    backgroundColor: "var(--bright-orange)",
+    width: "100%",
+    "&.empty": {
+      backgroundColor: "var(--app-bg-color)"
     }
   },
   dataList: {
@@ -410,6 +451,15 @@ export const projectsStyles = createUseStyles({
       backgroundColor: "var(--black)"
     }
   },
+  managerContainer:{
+    display:'flex',
+    gap:5,
+    alignItems:'center'
+  },
+  managerFullName:{
+    margin:0,
+    whiteSpace:'normal'
+  },
   verificationMessage: {
     color: "grey",
     width: "70%",
@@ -521,5 +571,24 @@ export const projectsStyles = createUseStyles({
   multipleUsers: {
     marginBottom: "5px !important",
     width: "100%"
+  },
+  taskStates: {
+    height: 52
+  },
+  projectName:{
+    borderLeft:'8px solid',
+    margin:0,
+    paddingLeft:5,
+    borderTopLeftRadius:5,
+    borderBottomLeftRadius:5,
+  },
+  task:{
+    borderLeft:'1px solid var(--app-bg-color)',
+    paddingLeft:5,
+  },
+  emptyTasks:{
+    margin:0,
+    color:'var(--bright-orange)',
+    whiteSpace:'normal'
   }
 });

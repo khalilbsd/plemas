@@ -5,7 +5,8 @@ export const style = createUseStyles({
     loaderContainer:{
         display:'flex',
         width:'100%',
-        justifyContent:'center'
+        justifyContent:'center',
+        margin:'auto',
     }
 })
 

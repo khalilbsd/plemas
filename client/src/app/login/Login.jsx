@@ -1,25 +1,21 @@
-import { Box, Button, InputAdornment, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLoginUserMutation } from "../../store/api/auth/authentification.js";
 import { setCredentials } from "../../store/reducers/auth.js";
 // import logo from "../public/images/chronos.png";
-import logo from '../public/svgs/Kairos logo_3.svg'
+import logo from '../public/svgs/Kairos logo_3.svg';
 import { styles } from "./style.js";
 // import AccountCircle from '@mui/icons-material/AccountCircle';
-import { faAt, faLock } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Loading from "../Components/loading/Loading.jsx";
-import { notify } from "../Components/notification/notification.js";
-import { NOTIFY_ERROR } from "../../constants/constants.js";
-import useGetAuthenticatedUser from "../../hooks/authenticated.js";
 import { useState } from "react";
 import { ReactSVG } from "react-svg";
+import { NOTIFY_ERROR } from "../../constants/constants.js";
 import { SUPERUSER_ROLE } from "../../constants/roles.js";
+import Loading from "../Components/loading/Loading.jsx";
+import { notify } from "../Components/notification/notification.js";
 const Login = () => {
   const classes = styles();
   const emailRef = useRef();

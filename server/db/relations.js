@@ -2,8 +2,16 @@ import logger from "../log/config.js";
 import Project from "../models/project/Project.model.js";
 import ResetPasswordToken from "../models/users/ResetPasswordToken.model.js";
 import User from "../models/users/User.model.js";
-import Intervenant from "../models/tasks/Intervenant.model.js"
-import database from './db.js'
+import Intervenant from "../models/tasks/Intervenant.model.js";
+import database from "./db.js";
+import UserProfile from "../models/users/UserProfile.model.js";
+//references  project
+import { config } from "../environment.config.js";
+import Lot from "../models/project/Lot.model.js.js";
+import Phase from "../models/project/Phase.model.js";
+import ProjectLots from "../models/project/ProjectLot.model.js";
+import Task from "../models/tasks/tasks.model.js";
+
 const force = config.force_db_sync === "true";
 const db_sync = config.alter_db_sync === "true";
 
@@ -21,58 +29,51 @@ User.hasMany(ResetPasswordToken, {
   onDelete: "CASCADE",
   onUpdate: "CASCADE"
 });
-
-
-
-// User model associations
-User.hasMany(Project, { foreignKey: "manager", as: "managedProjects" });
-User.hasMany(Project, { foreignKey: "createdBy", as: "createdProjects" });
-// Intervenant model association
-User.belongsToMany(Project, {
-  through: Intervenant,
-  foreignKey: "intervenantID",
-  as: "intervenantProjects"
-});
-User.hasMany(Intervenant,{foreignKey: "intervenantID",})
-Intervenant.belongsTo(User,{foreignKey: "intervenantID",});
-
-import UserProfile from "../models/users/UserProfile.model.js";
-
 UserProfile.belongsTo(User, {
   foreignKey: "userID"
 });
-
 
 ResetPasswordToken.belongsTo(User, {
   foreignKey: "userID"
 });
 
-//references  project
-import { config } from "../environment.config.js";
-import Lot from "../models/project/Lot.model.js.js";
-import Phase from "../models/project/Phase.model.js";
-import ProjectLots from "../models/project/ProjectLot.model.js";
+// User model associations
+// Project model associations
+Project.belongsTo(User, { foreignKey: "manager", as: "managerDetails" });
+Project.belongsTo(User, { foreignKey: "createdBy", as: "creatorDetails" });
+
+User.hasMany(Project, { foreignKey: "manager", as: "managedProjects" });
+User.hasMany(Project, { foreignKey: "createdBy", as: "createdProjects" });
+// Intervenant model association
+
+// User.belongsToMany(Project, {
+//   through: Intervenant,
+//   foreignKey: "intervenantID",
+//   as: "intervenantProjects"
+// });
+
+User.hasMany(Intervenant, { foreignKey: "intervenantID" });
+Intervenant.belongsTo(User, { foreignKey: "intervenantID" });
+
+// Project.belongsToMany(User, {
+//   through: Intervenant,
+//   foreignKey: "projectID",
+//   as: "intervenants"
+// });
+Project.hasMany(Intervenant, { foreignKey: "projectID" });
+Intervenant.belongsTo(Project, { foreignKey: "projectID" });
+
+
+Task.hasMany(Intervenant,{foreignKey:'taskID'})
+Intervenant.belongsTo(Task,{foreignKey:'taskID'})
+
+
+
 
 Project.belongsToMany(Lot, {
   through: ProjectLots,
   foreignKey: "projectID"
 });
-
-
-// Project model associations
-Project.belongsTo(User, { foreignKey: "manager", as: "managerDetails" });
-Project.belongsTo(User, { foreignKey: "createdBy", as: "creatorDetails" });
-
-Project.belongsToMany(User, {
-  through: Intervenant,
-  foreignKey: "projectID",
-  as: "intervenants"
-});
-
-
-Project.hasMany(Intervenant,{foreignKey: "projectID"})
-Intervenant.belongsTo(Project,{foreignKey: "projectID",})
-
 
 Lot.belongsToMany(Project, { through: ProjectLots, foreignKey: "lotID" });
 
@@ -91,9 +92,10 @@ ProjectLots.belongsTo(Lot, {
   foreignKey: "lotID"
 });
 
+database.sync({ force: force, alter: db_sync }).then(() => {
+  logger.info(
+    `database synced with force ( ${force} ) and alter ( ${db_sync} )`
+  );
+});
 
-database.sync({force:force,alter:db_sync}).then(() => {
-    logger.info(`database synced with force ( ${force} ) and alter ( ${db_sync} )`);
-  });
-
-export { Lot, Phase, Project, ProjectLots, User, UserProfile };
+export { Lot, Phase, Project, ProjectLots, User, UserProfile ,Task, Intervenant };
