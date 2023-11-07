@@ -289,6 +289,7 @@ const ProjectList = ({ addForm, handleForm }) => {
               label=" "
               size="small"
             />
+
             {(isSuperUser || isManager) && (
               <button onClick={handleForm}>
                 <ReactSVG src={faAdd} />
