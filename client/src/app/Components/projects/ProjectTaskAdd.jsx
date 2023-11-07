@@ -56,7 +56,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
   }
 
     loadTaskPotentialIntervenants();
-  });
+  },[dispatch]);
 
   const handleChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });

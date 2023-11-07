@@ -299,6 +299,7 @@ const ProjectList = ({ addForm, handleForm }) => {
         )}
       </div>
       <DataGrid
+        loading={!projectList()?.length  }
         className={`${listClasses.list} integrated`}
         rows={projectList()}
         columns={getColumns()}
@@ -310,11 +311,11 @@ const ProjectList = ({ addForm, handleForm }) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5
+              pageSize: 9
             }
           }
         }}
-        pageSizeOptions={[5]}
+        pageSizeOptions={[9]}
         // disableRowSelectionOnClick
       />
     </div>
