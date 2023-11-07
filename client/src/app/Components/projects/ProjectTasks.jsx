@@ -272,8 +272,8 @@ const ProjectTasks = ({ openAddTask }) => {
       cellClassName: "actions",
       getActions: ({ id, row }) => {
         const renderActions = [];
-        if (!user?.email)
-          return [<Skeleton className={classes.joinBtnSkeleton} />];
+        // if (!user?.email)
+        //   return [<Skeleton className={classes.joinBtnSkeleton} />];
 
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email

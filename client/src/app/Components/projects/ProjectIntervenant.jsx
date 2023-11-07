@@ -333,7 +333,6 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
             {detailIntervenant.details.user.UserProfile.lastName}
           </p>
           <p className="hours">nb d'heures: {detailIntervenant?.details?.nbHours}h</p>
-          {console.log(detailIntervenant.details)}
           <button
           disabled={detailIntervenant?.details?.nbHours> 0 }
             onClick={() =>
