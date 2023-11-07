@@ -29,7 +29,6 @@ export const getProjectTasks = catchAsync(async (req, res, next) => {
   if (!project) return next(new ElementNotFound("le projet est introuvable"));
   // test
   let tasks = await Task.findAll({
-
     include: [
       {
         model: Intervenant,
@@ -48,15 +47,16 @@ export const getProjectTasks = catchAsync(async (req, res, next) => {
         ]
       }
     ],
-    order:[['dueDate','DESC']],
+    order: [["dueDate", "DESC"]]
   });
 
   tasks = tasks.map((task) => {
     if (task.intervenants.length === 0 || !task.intervenants[0].user) {
       task.intervenants = [];
-
     }
-    task.state = TASK_STATE_TRANSLATION.filter(state=>state.value === task.state)[0].label
+    task.state = TASK_STATE_TRANSLATION.filter(
+      (state) => state.value === task.state
+    )[0].label;
     return task;
   });
 
@@ -101,8 +101,13 @@ export const createTask = catchAsync(async (req, res, next) => {
   const data = req.body;
   data.startDate = moment(startDate, "DD/MM/YYYY");
   data.dueDate = moment(dueDate, "DD/MM/YYYY");
-  if (data.startDate > data.dueDate) return next(new AppError("la date d'échéance doit être supérieure à la date de début",400))
-
+  if (data.startDate > data.dueDate)
+    return next(
+      new AppError(
+        "la date d'échéance doit être supérieure à la date de début",
+        400
+      )
+    );
 
   const task = await Task.create({ ...data });
   let message = "la tâche a été créée avec succès";
@@ -147,7 +152,10 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
   const task = await Task.findByPk(projectID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
 
-  if (![SUPERUSER_ROLE, PROJECT_MANAGER_ROLE].includes(req.user.role) || (!req.body.emails)) {
+  if (
+    ![SUPERUSER_ROLE, PROJECT_MANAGER_ROLE].includes(req.user.role) ||
+    !req.body.emails
+  ) {
     //check if there is an empty intervention
     const empty = await Intervenant.findOne({
       where: { intervenantID: { [Op.eq]: null }, projectID, taskID }
@@ -293,8 +301,10 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
     return next(new AppError("rien n'est modifié", 304));
   if (parseInt(hours) < 0)
     return next(new AppError("le nombres des heures doit être positive"));
-  task.totalHours = task.totalHours? task.totalHours + parseInt(hours) - intervention.nbHours  : parseInt(hours);
-  await task.save()
+  task.totalHours = task.totalHours
+    ? task.totalHours + parseInt(hours) - intervention.nbHours
+    : parseInt(hours);
+  await task.save();
   intervention.nbHours = parseInt(hours);
   await intervention.save();
   logger.info(
@@ -306,8 +316,6 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   });
 });
 
-
-
 export const getDailyTasks = catchAsync(async (req, res, next) => {});
 
 export const getTaskPotentialIntervenants = catchAsync(
@@ -318,11 +326,11 @@ export const getTaskPotentialIntervenants = catchAsync(
     const project = await Project.findByPk(projectID);
     if (!project) return next(new ElementNotFound("le projet est introuvable"));
     const projectIntervenants = await projectIntervenantList(projectID);
-    let intervenants =[]
-    let serializedIntervenant = []
-    if (projectIntervenants){
-      intervenants= projectIntervenants.intervenants
-       serializedIntervenant = intervenants.map((worker) => {
+    // let intervenants = [];
+    let serializedIntervenant = [];
+    if (projectIntervenants) {
+      // intervenants = projectIntervenants.intervenants;
+      serializedIntervenant = projectIntervenants.map((worker) => {
         return {
           id: worker.intervenantID,
           email: worker?.user?.email,
@@ -332,7 +340,7 @@ export const getTaskPotentialIntervenants = catchAsync(
         };
       });
     }
-      // return next(new AppError("quelque chose n'a pas fonctionné"));
+    // return next(new AppError("quelque chose n'a pas fonctionné"));
 
     const { taskID } = req.body;
 
@@ -389,19 +397,20 @@ export const getTaskPotentialIntervenants = catchAsync(
   }
 );
 
-
 export const updateTaskInfo = catchAsync(async (req, res, next) => {
   const { taskID } = req.params;
   if (!taskID) return next(new MissingParameter("la tache est requise"));
   const task = await Task.findByPk(taskID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
-  let data ={}
-  if ([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE].includes(req.user.role) ){
-    data =req.body
-    delete data.id
+  let data = {};
+  if ([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE].includes(req.user.role)) {
+    data = req.body;
+    delete data.id;
   }
-  if (req.body.state){
-      data.state = TASK_STATE_TRANSLATION.filter(state=>state.label === req.body.state)[0].value
+  if (req.body.state) {
+    data.state = TASK_STATE_TRANSLATION.filter(
+      (state) => state.label === req.body.state
+    )[0].value;
   }
   await task.update({ ...data });
 
@@ -410,4 +419,3 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: "succuss", message: "tache mis a jours" });
 });
-

@@ -1,2 +1,4 @@
 node_modules
 /log/combined.log
+combined.log
+*.log

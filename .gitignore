@@ -1,3 +1,4 @@
 /node_modules
-server/log/combined.log
+combined.log
 /server/log/*.log
+*.log

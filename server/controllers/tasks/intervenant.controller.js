@@ -19,56 +19,72 @@ import { getUserByEmail } from "../users/lib.js";
 export const getAllIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
   if (!projectID) return next(new MissingParameter("le projet est requis"));
-  const projectExist  = await Project.findByPk(projectID)
+  const projectExist = await Project.findByPk(projectID);
   if (!projectExist) return next(new ElementNotFound("projet introuvable"));
 
-  const project = await projectIntervenantList(projectID)
+  const intervenants = await projectIntervenantList(projectID);
 
-  if (!project){
 
-    return res
-      .status(200)
-      .json({ status: "success", intervenants:[] });
+  console.log("returned results",intervenants);
+
+  if (!intervenants) {
+    return res.status(200).json({ status: "success", intervenants: [] });
   }
   return res
     .status(200)
-    .json({ status: "success", intervenants: project.intervenants });
+    .json({ status: "success", intervenants: intervenants });
 });
 
+export const projectIntervenantList = async (projectID) => {
+  // const project = await Project.findByPk(projectID, {
+  //   group: "intervenantID",
+  //   include: [
+  //     {
+  //       model: Intervenant,
+  //       as: "intervenants",
+  //       where: {
+  //         intervenantID: { [Op.ne]: null }
+  //       },
+  //       include: [
+  //         {
+  //           model: User,
+  //           attributes: ["email"],
+  //           include: [
+  //             {
+  //               model: UserProfile,
+  //               attributes: ["name", "lastName", "image"]
+  //             }
+  //           ]
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // });
 
-
-export const projectIntervenantList = async (projectID)=>{
-
-  const project = await  Project.findByPk(projectID, {
-    group:'intervenantID',
+  const intervenants = await Intervenant.findAll({
+    where: {
+      projectID: projectID,
+      intervenantID: { [Op.ne]: null }
+    },
+    group: "intervenantID",
     include: [
       {
-        model: Intervenant,
-        as: "intervenants",
-        where:{
-          intervenantID:{[Op.ne]:null}
-        },
+        model: User,
+        attributes: ["email"],
         include: [
           {
-            model: User,
-            attributes: ["email"],
-            include: [
-              {
-                model: UserProfile,
-                attributes: ["name", "lastName", "image"]
-              }
-            ]
+            model: UserProfile,
+            attributes: ["name", "lastName", "image"]
           }
         ]
       }
-    ]
+    ],
+
   });
 
-  return project
-}
 
-
-
+  return intervenants;
+};
 
 export const addIntervenantToProject = catchAsync(async (req, res, next) => {
   if (
@@ -104,7 +120,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
 
     const intervenant = await Intervenant.create({
       intervenantID: user.id,
-      projectID: projectID,
+      projectID: projectID
     });
 
     if (!intervenant) {
@@ -146,22 +162,23 @@ export const removeIntervenantFromProject = catchAsync(
       return next(new UnAuthorized("vous n'êtes pas le chef de ce projet"));
     }
     //check if intervenant is a indeed withing this project
-    const user = await User.findOne({where:{email},attributes:["id"]})
-    if (!user) return next(new ElementNotFound("intervenant non trouvé"))
+    const user = await User.findOne({ where: { email }, attributes: ["id"] });
+    if (!user) return next(new ElementNotFound("intervenant non trouvé"));
     const intervenant = await Intervenant.findOne({
-      where: { projectID, intervenantID:user.id }
+      where: { projectID, intervenantID: user.id }
     });
     if (!intervenant)
       return next(
         new AppError(
-          "rien est change l'utilisateur n'est pas un intervenant dans ce projet",304
+          "rien est change l'utilisateur n'est pas un intervenant dans ce projet",
+          304
         )
       );
     // removing intervenant
-    if (intervenant.nbHours > 0){
-      return next(new AppError(
-        "Vous ne pouvez pas retirer cet intervenant",304
-      ))
+    if (intervenant.nbHours > 0) {
+      return next(
+        new AppError("Vous ne pouvez pas retirer cet intervenant", 304)
+      );
     }
     //TODO:: add task check rules
     await intervenant.destroy();
