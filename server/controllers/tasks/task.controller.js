@@ -14,6 +14,7 @@ import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
+  TASK_STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
@@ -129,24 +130,26 @@ export const createTask = catchAsync(async (req, res, next) => {
       taskID: task.id
     });
   }
-  await task.reload({include:[
-    {
-      model: Intervenant,
-      where: { projectID: projectID },
-      include: [
-        {
-          model: User,
-          attributes: ["email", "role"],
-          include: [
-            {
-              model: UserProfile,
-              attributes: ["name", "lastName", "image"]
-            }
-          ]
-        }
-      ]
-    }
-  ]})
+  await task.reload({
+    include: [
+      {
+        model: Intervenant,
+        where: { projectID: projectID },
+        include: [
+          {
+            model: User,
+            attributes: ["email", "role"],
+            include: [
+              {
+                model: UserProfile,
+                attributes: ["name", "lastName", "image"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  });
   task.state = TASK_STATE_TRANSLATION.filter(
     (state) => state.value === task.state
   )[0].label;
@@ -337,7 +340,40 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getDailyTasks = catchAsync(async (req, res, next) => {});
+export const getDailyTasks = catchAsync(async (req, res, next) => {
+  //all tasks
+  const allTasksRaw = await Intervenant.findAll({
+    where: { intervenantID: req.user.id },
+
+    include: [
+      {
+        model: Project,
+        attributes: ["customId", "name"]
+      },
+      {
+        model: Task,
+
+        where: { state: TASK_STATE_DOING },
+        as: "task"
+      }
+    ]
+  });
+  //convert tasks data to json
+  const allTasks = allTasksRaw.map((t) => t.toJSON());
+
+  // projects tasks that i can join  : divided from all tasks (taskID === null)
+  const joinableTasks = allTasks.filter((t) => !t.taskID);
+  // ili  todays tasks (dueDate === Date.now() and taskID !== null)
+  const today = moment(new Date(), "DD/MM/YYYY").startOf("day");
+  const todaysTasks = allTasks.filter(
+    ({ task, taskID }) =>
+      taskID && today.isSame(moment(task.dueDate, "DD/MM/YYYY").startOf("day"))
+  );
+
+  return res
+    .status(200)
+    .json({ todaysTasks: todaysTasks, joinableTasks, allTasks });
+});
 
 export const getTaskPotentialIntervenants = catchAsync(
   async (req, res, next) => {

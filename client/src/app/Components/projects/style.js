@@ -489,6 +489,8 @@ export const projectTaskDetails = createUseStyles({
     padding: 8,
     border: "2px solid",
     flex: 1,
+    display:'block',
+    width:'100%',
     textAlign: "center",
     "&.doing": {
       color: "var(--orange)",

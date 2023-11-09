@@ -18,6 +18,7 @@ import {
   Lot,
   Phase,
   ProjectLots,
+  Request,
   Task,
   User,
   UserProfile
@@ -88,6 +89,9 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
       },
       {
         model: Phase
+      },
+      {
+        model:Request
       }
     ]
   });

@@ -60,7 +60,7 @@ export const listStyle = createUseStyles({
     height: "100%"
   },
   list: {
-    height:'calc(100% - 53px) !important',
+    height: "calc(100% - 53px) !important",
     borderTopLeftRadius: "30px !important",
     borderTopRightRadius: "30px !important",
 
@@ -121,7 +121,7 @@ export const listStyle = createUseStyles({
         //   height: "170px !important",
         // maxHeight: "170px !important",
         "& .MuiDataGrid-columnHeader": {
-          paddingLeft:'0 !important'
+          paddingLeft: "0 !important"
         }
       },
       "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
@@ -129,8 +129,11 @@ export const listStyle = createUseStyles({
         maxHeight: "unset !important",
         border: "none !important",
         alignItems: "flex-start",
-        padding:'7px 0'
+        padding: "7px 0"
       }
+    },
+    "& .notTreatedRequest": {
+      backgroundColor: "#e74c3c2e !important"
     }
   }
 });
@@ -251,7 +254,8 @@ export const projectsStyles = createUseStyles({
     fontSize: 12,
     textWrap: "nowrap",
     whiteSpace: "nowrap",
-    margin: "0 -100%"
+    margin: "0 -100%",
+    "&.disabled": { opacity: 0.5 }
   },
   content: {
     padding: 20,
@@ -292,13 +296,12 @@ export const projectsStyles = createUseStyles({
       "&.active": {
         backgroundColor: "var(--pastel-green)"
         // color:'var(--white)'
-      },
-
+      }
     }
   },
-  progressBarContainer:{
-    height:52,
-    display:'flex',
+  progressBarContainer: {
+    height: 52,
+    display: "flex"
   },
   progressBar: {
     height: 20,
@@ -452,14 +455,14 @@ export const projectsStyles = createUseStyles({
       backgroundColor: "var(--black)"
     }
   },
-  managerContainer:{
-    display:'flex',
-    gap:5,
-    alignItems:'center'
+  managerContainer: {
+    display: "flex",
+    gap: 5,
+    alignItems: "center"
   },
-  managerFullName:{
-    margin:0,
-    whiteSpace:'normal'
+  managerFullName: {
+    margin: 0,
+    whiteSpace: "normal"
   },
   verificationMessage: {
     color: "grey",
@@ -576,20 +579,27 @@ export const projectsStyles = createUseStyles({
   taskStates: {
     height: 52
   },
-  projectName:{
-    borderLeft:'8px solid',
-    margin:0,
-    paddingLeft:5,
-    borderTopLeftRadius:5,
-    borderBottomLeftRadius:5,
+  projectName: {
+    margin: 0,
+    paddingLeft: 5,
+    position: "relative",
+    display:'flex',
+    "& .priority": {
+      display: "block",
+      marginRight: 5,
+      width: 18,
+      height: 18,
+      borderRadius:'100%'
+    }
   },
-  task:{
-    borderLeft:'1px solid var(--app-bg-color)',
-    paddingLeft:5,
+
+  task: {
+    borderLeft: "1px solid var(--app-bg-color)",
+    paddingLeft: 5
   },
-  emptyTasks:{
-    margin:0,
-    color:'var(--bright-orange)',
-    whiteSpace:'normal'
+  emptyTasks: {
+    margin: 0,
+    color: "var(--bright-orange)",
+    whiteSpace: "normal"
   }
 });
