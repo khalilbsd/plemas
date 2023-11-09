@@ -1,4 +1,5 @@
 import moment from "moment";
+import { Op } from "sequelize";
 import {
   AppError,
   ElementNotFound,
@@ -23,6 +24,7 @@ import {
 } from "../../db/relations.js";
 import logger from "../../log/config.js";
 import Project from "../../models/project/Project.model.js";
+import Intervenant from "../../models/tasks/Intervenant.model.js";
 import {
   calculateDates,
   generateProjectCustomID,
@@ -31,9 +33,6 @@ import {
 } from "./lib.js";
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
-import Intervenant from "../../models/tasks/Intervenant.model.js";
-import { Op } from "sequelize";
-import sequelize from "../../db/db.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -129,14 +128,12 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     }
   }
 
-  res
-    .status(200)
-    .json({
-      status: "success",
-      projects: projectsList,
-      dates: dates,
-      projectsTasks: tasks
-    });
+  res.status(200).json({
+    status: "success",
+    projects: projectsList,
+    dates: dates,
+    projectsTasks: tasks
+  });
 });
 
 /**
@@ -508,9 +505,9 @@ export const assignManagerHours = catchAsync(async (req, res, next) => {
 
   project.managerHours = hours;
 
-  await project.save()
+  await project.save();
 
-
-  return res.status(200).json({status:'success',message:'heurs renseigner avec succès'});
-
+  return res
+    .status(200)
+    .json({ status: "success", message: "heurs renseigner avec succès" });
 });

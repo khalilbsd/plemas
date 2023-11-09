@@ -312,7 +312,7 @@ const ManagingUsers = () => {
     // }
   ];
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{height:'100%'}}>
       <AddUserForm
         loadingSubmit={loadingSubmit}
         open={openModal}
@@ -321,15 +321,15 @@ const ManagingUsers = () => {
         changeStateAccount={handleChangeAccount}
         changeStateProfile={handleChangeProfile}
       />
-      <Grid item xs={12} md={12} lg={12}>
+      <Grid item xs={12} md={12} lg={12}  >
         <AddBtn
           title="Ajouter un utilisateur"
           icon={faAddUser}
           handleAdd={handleModelOpen}
         />
       </Grid>
-      <Grid item xs={12} md={12} lg={12}>
-        <Box sx={{ height: 400, width: "100%" }}>
+      <Grid item xs={12} md={12} lg={12} sx={{height:'100%'}}>
+
           <DataGrid
           className={classes.list}
             rows={usersList}
@@ -339,14 +339,14 @@ const ManagingUsers = () => {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 10
+                  pageSize: 8
                 }
               }
             }}
-            pageSizeOptions={[10]}
+            pageSizeOptions={[8]}
             disableRowSelectionOnClick
           />
-        </Box>
+
       </Grid>
       {/* <ToastContainer
         position="bottom-left"

@@ -60,12 +60,13 @@ export const listStyle = createUseStyles({
     height: "100%"
   },
   list: {
+    height:'calc(100% - 53px) !important',
     borderTopLeftRadius: "30px !important",
     borderTopRightRadius: "30px !important",
-    overflow: "hidden",
+
     background: "var(--white)",
     "& .MuiDataGrid-virtualScrollerContent": {
-      height: "360px !important"
+      // height: "360px !important"
     },
 
     "& .MuiDataGrid-columnHeaders": {

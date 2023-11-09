@@ -1,9 +1,4 @@
-import { Skeleton, TextField } from "@mui/material";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Skeleton } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -31,36 +26,15 @@ import {
   useUpdateTaskMutation
 } from "../../../store/api/tasks.api";
 import { setProjectTask } from "../../../store/reducers/task.reducer";
-import { ReactComponent as FaClock } from "../../public/svgs/light/clock.svg";
-import { ReactComponent as FaSave } from "../../public/svgs/light/floppy-disk.svg";
-import { ReactComponent as FaEdit } from "../../public/svgs/light/pen.svg";
-import { ReactComponent as FaJoin } from "../../public/svgs/light/user-plus.svg";
-import { ReactComponent as FaCancel } from "../../public/svgs/light/xmark.svg";
+
 import faAdd from "../../public/svgs/solid/plus.svg";
+import { CustomCancelIcon, CustomClockIcon, CustomEditIcon, CustomJoinIcon, CustomSaveIcon } from "../icons";
 import { notify } from "../notification/notification";
+import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import { projectDetails, projectTaskDetails } from "./style";
-import HoursPopUp from "./HoursPopUp";
 
-// const CustomSaveIcon = () => (
-//   <FaSave width={24} height={24} /> // Customize the width and height as needed
-// );
 
-const CustomSaveIcon = ({ className }) => (
-  <FaSave className={className} /> // Customize the width and height as needed
-);
-const CustomClockIcon = ({ className }) => (
-  <FaClock className={className} /> // Customize the width and height as needed
-);
-const CustomJoinIcon = ({ className }) => (
-  <FaJoin className={className} /> // Customize the width and height as needed
-);
-const CustomCancelIcon = ({ className }) => (
-  <FaCancel className={className} /> // Customize the width and height as needed
-);
-const CustomEditIcon = ({ className }) => (
-  <FaEdit className={className} /> // Customize the width and height as needed
-);
 
 const ProjectTasks = ({ openAddTask }) => {
   const { projectID } = useParams();
@@ -182,7 +156,7 @@ const ProjectTasks = ({ openAddTask }) => {
 
       return updatedRow;
     } catch (error) {
-      notify(NOTIFY_ERROR, error?.message);
+      notify(NOTIFY_ERROR, error?.data.message);
     }
   };
 
@@ -320,36 +294,7 @@ const ProjectTasks = ({ openAddTask }) => {
                 btnText="Confirmer"
                 loading={loadingHoursPerTask}
                 />
-              {/* <Dialog
-                open={hours}
-                onClose={handleHoursClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">
-                  Renseigner votre heurs
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Vous pouvez renseigner votre heurs ici
-                  </DialogContentText>
-                  <TextField
-                    label="heurs"
-                    type="number"
-                    className={classes.inputs}
-                    onChange={handleHoursChange}
-                    defaultValue={nbHours.hours}
-                    inputProps={{ min: 0 }}
-                  />
-                  <buttonKU
-                    className={classes.persistHours}
-                    onClick={assignHours}
-                  >
-                    confirmer
-                  </buttonKU>
-                </DialogContent>
 
-              </Dialog> */}
             </>
           );
         }
@@ -419,7 +364,7 @@ const ProjectTasks = ({ openAddTask }) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5
+              pageSize: 4
             }
           }
         }}
@@ -428,7 +373,7 @@ const ProjectTasks = ({ openAddTask }) => {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
-        pageSizeOptions={[5]}
+        pageSizeOptions={[4]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
       />

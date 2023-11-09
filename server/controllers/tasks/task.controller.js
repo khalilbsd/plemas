@@ -129,6 +129,27 @@ export const createTask = catchAsync(async (req, res, next) => {
       taskID: task.id
     });
   }
+  await task.reload({include:[
+    {
+      model: Intervenant,
+      where: { projectID: projectID },
+      include: [
+        {
+          model: User,
+          attributes: ["email", "role"],
+          include: [
+            {
+              model: UserProfile,
+              attributes: ["name", "lastName", "image"]
+            }
+          ]
+        }
+      ]
+    }
+  ]})
+  task.state = TASK_STATE_TRANSLATION.filter(
+    (state) => state.value === task.state
+  )[0].label;
   return res.status(200).json({ status: "success", message, task });
 });
 

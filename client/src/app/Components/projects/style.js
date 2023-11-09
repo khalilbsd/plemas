@@ -221,6 +221,7 @@ export const projectDetails = createUseStyles({
         width: 32
       },
       "& .initials": {
+        minWidth: "32px !important",
         height: 32,
         width: 32,
         fontSize: 18
