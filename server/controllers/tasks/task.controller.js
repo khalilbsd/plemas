@@ -19,6 +19,7 @@ import {
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
 import { projectPotentialIntervenants } from "../users/user.controller.js";
+import InterventionHour from "../../models/tasks/interventionHours.model.js";
 
 /*
  * params [projectID] REQUIRED
@@ -300,8 +301,8 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   if (!projectID) return next(new MissingParameter("le projet est requis"));
   const project = await Project.findByPk(projectID);
   if (!project) return next(new ElementNotFound("let projet est introuvable"));
-  const { taskID, hours } = req.body;
-  if (!taskID || !hours)
+  const { taskID, hours ,date } = req.body;
+  if (!taskID || !hours || !date)
     return next(new MissingParameter("la tache et les heurs sont requis"));
 
   const task = await Task.findByPk(taskID);
@@ -331,9 +332,24 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   await task.save();
   intervention.nbHours = parseInt(hours);
   await intervention.save();
+
   logger.info(
     `updating the hours number of the intervenant ${req.user.id} on the task ${task.id} in the project ${project.id}`
   );
+  const interventionHours = await InterventionHour.findOne({
+    where: { interventionID: intervention.id, date: moment(date) }
+  });
+  if (interventionHours) {
+    interventionHours.hours = parseInt(hours);
+    await interventionHours.save();
+  } else {
+    await InterventionHour.create({
+      hours: hours,
+      interventionID: intervention.id,
+      date: moment(date)
+    });
+  }
+
   res.status(200).json({
     status: "success",
     message: "horaires de travail mis à jour avec succès"
@@ -341,38 +357,118 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
 });
 
 export const getDailyTasks = catchAsync(async (req, res, next) => {
-  //all tasks
+  //my tasks
+  let history
+  if (!req.query.history){
+    // history = new Date()
+    history = moment()
+  }else{
+   history= moment(req.query.history,"DD/MM/YYYY")
+
+  }
+  console.log('-------------------------------',history,req.query.history)
   const allTasksRaw = await Intervenant.findAll({
     where: { intervenantID: req.user.id },
-
     include: [
       {
         model: Project,
-        attributes: ["id","customId", "name"]
+        attributes: ["id", "customId", "name"]
       },
       {
         model: Task,
 
-        where: { state: TASK_STATE_DOING },
+        where: { state: TASK_STATE_DOING ,
+          createdAt: {
+            [Op.lt]: history
+          }
+        },
         as: "task"
       }
     ]
   });
   //convert tasks data to json
-  const allTasks = allTasksRaw.map((t) => t.toJSON());
+  let allTasks = allTasksRaw.map((t) => t.toJSON());
 
   // projects tasks that i can join  : divided from all tasks (taskID === null)
-  const joinableTasks = allTasks.filter((t) => !t.taskID);
-  // ili  todays tasks (dueDate === Date.now() and taskID !== null)
-  const today = moment(new Date(), "DD/MM/YYYY").startOf("day");
-  const todaysTasks = allTasks.filter(
-    ({ task, taskID }) =>
-      taskID && today.isSame(moment(task.dueDate, "DD/MM/YYYY").startOf("day"))
-  );
+  let joinableTasks = allTasks.filter((t) => !t.taskID);
+  let otherTasks = [];
+  for (const idx in allTasks) {
+    let projectExist = otherTasks.filter(
+      (item) => item.projectID === allTasks[idx].projectID
+    );
+    if (projectExist.length) continue;
+    let taskTreeRaw = await Intervenant.findAll({
+      where: {
+        projectID: allTasks[idx].projectID,
+        taskId: {
+          [Op.ne]: allTasks[idx].taskID
+        }
+        // intervenantID:{
+        //   [Op.ne]:req.user.id
+        // }
+      },
+      group: "taskID",
+      include: [
+        {
+          model: Project,
+          attributes: ["id", "customId", "name"]
+        },
+        {
+          model: Task,
 
-  return res
-    .status(200)
-    .json({ todaysTasks: todaysTasks, joinableTasks, allTasks });
+          where: { state: TASK_STATE_DOING },
+          as: "task"
+        }
+      ]
+    });
+
+    let tasksTree = taskTreeRaw.map((t) => t.toJSON());
+    // console.log("TASKS TREEEEEE" ,tasksTree.length)
+
+    otherTasks = otherTasks.concat(tasksTree);
+  }
+
+  //  console.log(otherTasks)
+  let tmp = [];
+  otherTasks.map((t) => {
+    let clear = true;
+    for (const i in allTasks) {
+      if (allTasks[i].taskID === t.taskID) {
+        clear = false;
+        return;
+      }
+    }
+    if (clear) tmp.push(t);
+  });
+
+  joinableTasks = joinableTasks.concat(tmp);
+  //  joinableTasks = joinableTasks.concat(otherTasks)
+
+  // // ili  todays tasks (dueDate === Date.now() and taskID !== null)
+  // const today = moment(new Date(), "DD/MM/YYYY").startOf("day");
+  // const todaysTasks = allTasks.filter(
+  //   ({ task, taskID }) =>
+  //     taskID && today.isSame(moment(task.dueDate, "DD/MM/YYYY").startOf("day"))
+  // );
+
+
+
+  for( const index in  allTasks){
+    let interventionHours = await InterventionHour.findOne({
+      where: { interventionID: allTasks[index].id,
+        date : history
+        }
+    });
+    if (interventionHours) {
+      allTasks[index].nbHours = interventionHours.hours;
+    } else {
+      allTasks[index].nbHours = 0;
+    }
+
+  }
+
+
+  return res.status(200).json({ joinableTasks, allTasks });
 });
 
 export const getTaskPotentialIntervenants = catchAsync(

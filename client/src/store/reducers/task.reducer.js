@@ -4,7 +4,6 @@ const initialState = {
   projectTasks: [],
   taskPotentielIntervenants: [],
   // userDailyTasks:[],
-  userDailyTasks: [],
   userPotentialTasks: [],
   userGeneralTasks: []
 };
@@ -28,11 +27,19 @@ const taskSlice = createSlice({
     },
     setUserDailyTasks: (state, action) => {
       state.userGeneralTasks = action.payload.allTasks;
-      state.userDailyTasks = action.payload.todaysTasks;
+
       state.userPotentialTasks = action.payload.joinableTasks;
     },
-    updateUserDailyTasksHours: (state, action) => {
-      state.userDailyTasks = state.userDailyTasks.map(task=>{
+    updateUserPotentialTasks:(state,action)=>{
+
+      const task = state.userPotentialTasks.filter(t=>t.taskID === action.payload)
+
+
+      state.userGeneralTasks.push(task[0])
+      state.userPotentialTasks= state.userPotentialTasks.filter(t=>t.taskID !== action.payload)
+    },
+    updateUserGeneralTasksHours: (state, action) => {
+      state.userGeneralTasks = state.userGeneralTasks.map(task=>{
           if (task.id === action.payload.id) {
             task.nbHours = action.payload.hours
           }
@@ -51,7 +58,8 @@ export const {
   updateProjectTask,
   clearProjectTasks,
   setUserDailyTasks,
-  updateUserDailyTasksHours
+  updateUserGeneralTasksHours,
+  updateUserPotentialTasks
   // setUserGeneralTasks,
   // setUserPotentialTasks
 

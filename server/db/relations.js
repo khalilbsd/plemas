@@ -12,6 +12,7 @@ import Phase from "../models/project/Phase.model.js";
 import ProjectLots from "../models/project/ProjectLot.model.js";
 import Task from "../models/tasks/tasks.model.js";
 import Request from "../models/requests/requests.model.js";
+import InterventionHour from "../models/tasks/interventionHours.model.js";
 const force = config.force_db_sync === "true";
 const db_sync = config.alter_db_sync === "true";
 
@@ -58,7 +59,8 @@ Intervenant.belongsTo(Project, { foreignKey: "projectID" });
 Task.hasMany(Intervenant,{foreignKey:'taskID'})
 Intervenant.belongsTo(Task,{foreignKey:'taskID'})
 
-
+Intervenant.hasMany(InterventionHour,{foreignKey:'interventionID'})
+InterventionHour.belongsTo(Intervenant,{foreignKey:'interventionID'})
 
 
 Project.belongsToMany(Lot, {

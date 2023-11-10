@@ -9,8 +9,8 @@ export const taskApi = api.injectEndpoints({
       })
     }),
     getDailyLogTasks: builder.mutation({
-      query: () => ({
-        url: `tasks/daily/all`,
+      query: (date) => ({
+        url: `tasks/daily/all?history=${date}`,
         method: "GET"
       })
     }),
