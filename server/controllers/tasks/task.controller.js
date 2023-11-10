@@ -348,7 +348,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
     include: [
       {
         model: Project,
-        attributes: ["customId", "name"]
+        attributes: ["id","customId", "name"]
       },
       {
         model: Task,
