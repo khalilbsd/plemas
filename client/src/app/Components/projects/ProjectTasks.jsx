@@ -20,7 +20,6 @@ import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
-  useAssignHoursInTaskMutation,
   useAssociateToTaskMutation,
   useGetProjectTasksMutation,
   useUpdateTaskMutation
@@ -28,9 +27,8 @@ import {
 import { setProjectTask } from "../../../store/reducers/task.reducer";
 
 import faAdd from "../../public/svgs/solid/plus.svg";
-import { CustomCancelIcon, CustomClockIcon, CustomEditIcon, CustomJoinIcon, CustomSaveIcon } from "../icons";
+import { CustomCancelIcon, CustomEditIcon, CustomJoinIcon, CustomSaveIcon } from "../icons";
 import { notify } from "../notification/notification";
-import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import { projectDetails, projectTaskDetails } from "./style";
 
@@ -43,7 +41,6 @@ const ProjectTasks = ({ openAddTask }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
-  const [assignHoursInTask,{isLoading:loadingHoursPerTask}] = useAssignHoursInTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
 
   const classes = projectTaskDetails();
@@ -51,21 +48,11 @@ const ProjectTasks = ({ openAddTask }) => {
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
-  const [hours, setHours] = useState(false);
-  const [nbHours, setNbHours] = useState({ taskID: "", hours: 0 });
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
-  const handleHoursOpen = (e) => {
-    const hours = e.currentTarget.getAttribute("data-task-hours");
-    const task = e.currentTarget.getAttribute("data-task-id");
-    setNbHours({ hours: hours, taskID: task });
-    setHours(true);
-  };
 
-  const handleHoursClose = () => {
-    setHours(false);
-  };
+
 
   const joinTask = async (e) => {
     try {
@@ -87,25 +74,7 @@ const ProjectTasks = ({ openAddTask }) => {
     }
   };
 
-  const assignHours = async (e) => {
-    try {
-      const assigned = await assignHoursInTask({
-        body: nbHours,
-        projectID
-      }).unwrap();
-      notify(NOTIFY_SUCCESS, assigned.message);
-      const res = await getProjectTasks(projectID).unwrap();
-      dispatch(setProjectTask(res?.intervenants));
-      handleHoursClose();
-      setNbHours(0);
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
-  };
 
-  const handleHoursChange = (e) => {
-    setNbHours({ ...nbHours, hours: e.target.value });
-  };
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -266,38 +235,6 @@ const ProjectTasks = ({ openAddTask }) => {
           );
         }
 
-        const taskHours = row?.intervenants?.filter(
-          (item) => item.user?.email === user?.email
-        )[0];
-
-        if (emailsList?.includes(user?.email) && taskHours) {
-          renderActions.push(
-            <>
-              <GridActionsCellItem
-                data-task-id={row.id}
-                data-task-hours={taskHours.nbHours}
-                icon={<CustomClockIcon className={classes.icon} />}
-                label="renseigner heurs"
-                className="textPrimary"
-                onClick={handleHoursOpen}
-                color="inherit"
-              />
-                <HoursPopUp
-                open={hours}
-                close={handleHoursClose}
-                title=" Renseigner votre heurs"
-                text="Vous pouvez renseigner votre heurs ici"
-                handleChange={handleHoursChange}
-                defaultVal={nbHours?.hours}
-                minValue={taskHours.nbHours}
-                submit={assignHours}
-                btnText="Confirmer"
-                loading={loadingHoursPerTask}
-                />
-
-            </>
-          );
-        }
 
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 

@@ -26,7 +26,6 @@ const TasksList = ({ handleJoinable, joinable, tasks,handleDateChange,historyDat
     projectID,
     taskID,
     interventionID,
-    history
   ) => {
     console.log(hours, projectID, taskID);
     console.log("changing hours ");
