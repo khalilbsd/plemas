@@ -134,7 +134,7 @@ export const styles = createUseStyles({
   bottomSide: {
     padding: 20,
     paddingTop: 0,
-    height: "calc(100% - 20px)"
+    height: "calc(100% - 40px)"
   },
   hoverCard: {
     height: "100%",
@@ -266,7 +266,7 @@ export const styles = createUseStyles({
     padding: 20,
     marginTop: -40,
     height: "100%",
-    // maxHeight: "60%",
+    maxHeight: "calc(100% - 10px)",
     boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
     background: "white",
     borderRadius: 10,
