@@ -28,12 +28,14 @@
     "react-svg": "^16.1.26"
   },
   "cspell": {
-    "language":"en,fr",
+    "language": "en,fr",
     "version": "0.2",
     "ignorePaths": [],
     "dictionaryDefinitions": [],
     "dictionaries": [],
-    "words": [],
+    "words": [
+      "interv"
+    ],
     "ignoreWords": [],
     "import": []
   }

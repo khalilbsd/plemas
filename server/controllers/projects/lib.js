@@ -105,6 +105,17 @@ function getProjectLots(lots) {
  * @returns array of objects with reduced info
  */
 
+export function isAllRequestsTreated(requests){
+    if(!requests.length) return true
+    // let res =true
+    for (const idx in requests){
+      if (!requests[idx].state) return false
+    }
+
+    return true
+}
+
+
 export const serializeProject = (projects) => {
   const list = [];
   projects.forEach((element) => {
@@ -121,7 +132,8 @@ export const serializeProject = (projects) => {
       tasks: "in progress",
       phaseStatus: "tasks in progress",
       lots: getProjectLots(element.projectLots),
-      priority: element.priority
+      priority: element.priority,
+      requestsTreated : isAllRequestsTreated(element.requests)
     });
   });
 

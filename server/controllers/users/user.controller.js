@@ -18,6 +18,7 @@ import { config } from "../../environment.config.js";
 import { UnauthorizedError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import { send } from "../../mails/config.js";
+import Intervenant from "../../models/tasks/Intervenant.model.js";
 import User from "../../models/users/User.model.js";
 import {
   createPasswordSetToken,
@@ -26,7 +27,6 @@ import {
   serializeProfile,
   serializeUser
 } from "./lib.js";
-import Intervenant from "../../models/tasks/Intervenant.model.js";
 
 /*
 admin api to list all the users
@@ -116,50 +116,7 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
 export const getPotentielIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
   if (!projectID) return next(new MissingParameter("le projet est requis"));
-  // const objectQuery = {
-  //   isBanned: false,
-  //   role: { [Op.ne]: CLIENT_ROLE }
-  // };
-  // const existingIntervenants = await Intervenant.findAll({
-  //   where: { projectID: projectID },
-  //   attributes: ["intervenantID"]
-  // });
-  // if (existingIntervenants) {
-  //   let list = [];
-  //   existingIntervenants.forEach((inter) => {
-  //     list.push(inter.intervenantID);
-  //   });
-  //   objectQuery.id = {
-  //     [Op.notIn]: list
-  //   };
-  // }
-
-  // const users = await User.findAll({
-  //   where: objectQuery,
-  //   attributes: ["id", "email"],
-  //   include: [
-  //     {
-  //       model: UserProfile,
-  //       attributes: ["name", "lastName", "image", "poste"]
-  //     }
-  //   ]
-  // });
-  // const simplifiedUsers = users.map((user) => {
-  //   const { id, email } = user.toJSON();
-  //   const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
-  //   const { name, lastName, image, poste } = userProfile || "";
-  //   return {
-  //     id,
-  //     email,
-  //     lastName,
-  //     name,
-  //     image,
-  //     poste
-  //   };
-  // });
-
   const simplifiedUsers = await projectPotentialIntervenants(projectID);
-  console.log(simplifiedUsers);
   return res.json({ users: simplifiedUsers });
 });
 
@@ -229,7 +186,6 @@ export const addUser = catchAsync(async (req, res, next) => {
     // next(new AppError("user already exists", 403));
   }
   // password encryption
-  let emailToken;
   if (newUser.password) {
     const encrypted = await encryptPassword(newUser.password);
     newUser.password = encrypted;
@@ -259,8 +215,6 @@ export const addUser = catchAsync(async (req, res, next) => {
       );
     logger.info(`userProfile ${userProfile.id} created successfully`);
   }
-  console.log(config.lms_host);
-
   if (user.token) {
     logger.info(`sending email confirmation for user ${user.id}`);
     const url = `http://${config.lms_host}/auth/account/confirmation/${user.token}`;
@@ -338,7 +292,6 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   // const { userId } = req.params;
 
   const newProfile = req.body;
-  console.log(newProfile);
 
   const user = await User.findOne({
     where: { email: newProfile.email || req.user.email }

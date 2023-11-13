@@ -1,9 +1,4 @@
-import { Skeleton, TextField } from "@mui/material";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Skeleton } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -25,41 +20,19 @@ import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
-  useAssignHoursInTaskMutation,
   useAssociateToTaskMutation,
   useGetProjectTasksMutation,
   useUpdateTaskMutation
 } from "../../../store/api/tasks.api";
 import { setProjectTask } from "../../../store/reducers/task.reducer";
-import { ReactComponent as FaClock } from "../../public/svgs/light/clock.svg";
-import { ReactComponent as FaSave } from "../../public/svgs/light/floppy-disk.svg";
-import { ReactComponent as FaEdit } from "../../public/svgs/light/pen.svg";
-import { ReactComponent as FaJoin } from "../../public/svgs/light/user-plus.svg";
-import { ReactComponent as FaCancel } from "../../public/svgs/light/xmark.svg";
+
 import faAdd from "../../public/svgs/solid/plus.svg";
+import { CustomCancelIcon, CustomEditIcon, CustomJoinIcon, CustomSaveIcon } from "../icons";
 import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import { projectDetails, projectTaskDetails } from "./style";
 
-// const CustomSaveIcon = () => (
-//   <FaSave width={24} height={24} /> // Customize the width and height as needed
-// );
 
-const CustomSaveIcon = ({ className }) => (
-  <FaSave className={className} /> // Customize the width and height as needed
-);
-const CustomClockIcon = ({ className }) => (
-  <FaClock className={className} /> // Customize the width and height as needed
-);
-const CustomJoinIcon = ({ className }) => (
-  <FaJoin className={className} /> // Customize the width and height as needed
-);
-const CustomCancelIcon = ({ className }) => (
-  <FaCancel className={className} /> // Customize the width and height as needed
-);
-const CustomEditIcon = ({ className }) => (
-  <FaEdit className={className} /> // Customize the width and height as needed
-);
 
 const ProjectTasks = ({ openAddTask }) => {
   const { projectID } = useParams();
@@ -68,7 +41,6 @@ const ProjectTasks = ({ openAddTask }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
-  const [assignHoursInTask] = useAssignHoursInTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
 
   const classes = projectTaskDetails();
@@ -76,21 +48,11 @@ const ProjectTasks = ({ openAddTask }) => {
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
-  const [hours, setHours] = useState(false);
-  const [nbHours, setNbHours] = useState({ taskID: "", nbHours: 0 });
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
-  const handleHoursOpen = (e) => {
-    const hours = e.currentTarget.getAttribute("data-task-hours");
-    const task = e.currentTarget.getAttribute("data-task-id");
-    setNbHours({ hours: hours, taskID: task });
-    setHours(true);
-  };
 
-  const handleHoursClose = () => {
-    setHours(false);
-  };
+
 
   const joinTask = async (e) => {
     try {
@@ -112,25 +74,7 @@ const ProjectTasks = ({ openAddTask }) => {
     }
   };
 
-  const assignHours = async (e) => {
-    try {
-      const assigned = await assignHoursInTask({
-        body: nbHours,
-        projectID
-      }).unwrap();
-      notify(NOTIFY_SUCCESS, assigned.message);
-      const res = await getProjectTasks(projectID).unwrap();
-      dispatch(setProjectTask(res?.intervenants));
-      handleHoursClose();
-      setNbHours(0);
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
-  };
 
-  const handleHoursChange = (e) => {
-    setNbHours({ ...nbHours, hours: e.target.value });
-  };
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -181,7 +125,7 @@ const ProjectTasks = ({ openAddTask }) => {
 
       return updatedRow;
     } catch (error) {
-      notify(NOTIFY_ERROR, error?.message);
+      notify(NOTIFY_ERROR, error?.data.message);
     }
   };
 
@@ -271,8 +215,8 @@ const ProjectTasks = ({ openAddTask }) => {
       cellClassName: "actions",
       getActions: ({ id, row }) => {
         const renderActions = [];
-        if (!user?.email)
-          return [<Skeleton className={classes.joinBtnSkeleton} />];
+        // if (!user?.email)
+        //   return [<Skeleton className={classes.joinBtnSkeleton} />];
 
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
@@ -291,56 +235,6 @@ const ProjectTasks = ({ openAddTask }) => {
           );
         }
 
-        const taskHours = row?.intervenants?.filter(
-          (item) => item.user?.email === user?.email
-        )[0];
-
-        if (emailsList?.includes(user?.email) && taskHours) {
-          renderActions.push(
-            <>
-              <GridActionsCellItem
-                data-task-id={row.id}
-                data-task-hours={taskHours.nbHours}
-                icon={<CustomClockIcon className={classes.icon} />}
-                label="renseigner heurs"
-                className="textPrimary"
-                onClick={handleHoursOpen}
-                color="inherit"
-              />
-
-              <Dialog
-                open={hours}
-                onClose={handleHoursClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">
-                  Renseigner votre heurs
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Vous pouvez renseigner votre heurs ici
-                  </DialogContentText>
-                  <TextField
-                    label="heurs"
-                    type="number"
-                    className={classes.inputs}
-                    onChange={handleHoursChange}
-                    defaultValue={nbHours.hours}
-                    inputProps={{ min: 0 }}
-                  />
-                  <buttonKU
-                    className={classes.persistHours}
-                    onClick={assignHours}
-                  >
-                    confirmer
-                  </buttonKU>
-                </DialogContent>
-                <DialogActions></DialogActions>
-              </Dialog>
-            </>
-          );
-        }
 
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
@@ -407,7 +301,7 @@ const ProjectTasks = ({ openAddTask }) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5
+              pageSize: 4
             }
           }
         }}
@@ -416,7 +310,7 @@ const ProjectTasks = ({ openAddTask }) => {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
-        pageSizeOptions={[5]}
+        pageSizeOptions={[4]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
       />

@@ -1,5 +1,5 @@
-import { Grid, TextField } from "@mui/material";
-import { useRef, useState } from "react";
+import { Grid, MenuItem, Select, TextField } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import useGetUserInfo from "../../../hooks/user";
 import { useUpdateUserProfileMutation } from "../../../store/api/users.api";
@@ -10,19 +10,22 @@ import { useDispatch } from "react-redux";
 import { updateUserInfoProfile } from "../../../store/reducers/user.reducer";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { notify } from "../notification/notification";
-
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { cities } from "../../../store/tn_countries";
+import dayjs from "dayjs";
 const initialErrorState = {
   state: false,
   message: ""
 };
 
-const resetError={
+const resetError = {
   email: initialErrorState,
   name: initialErrorState,
   lastName: initialErrorState,
   poste: initialErrorState,
   phone: initialErrorState
-}
+};
 
 const SideLayoutInfo = () => {
   const [profileImage, setProfileImage] = useState(null);
@@ -32,22 +35,44 @@ const SideLayoutInfo = () => {
 
   const [updateUserProfile, {}] = useUpdateUserProfileMutation();
   const [error, setError] = useState(resetError);
+  const [region, setRegion] = useState(null);
+  const [city, setCity] = useState(profile?.city?profile.city:"");
   //profile Ref attributes
   const nameRef = useRef();
   const lastNameRef = useRef();
   const postRef = useRef();
   const phoneRef = useRef();
+  const hireDateRef = useRef();
+  const streetRef = useRef();
+  const cityRef = useRef();
+
+
+
+  // useEffect(() => {
+  //   setCity(profile?.city?profile.city:"")
+  // }, [profile])
+
 
   const dispatch = useDispatch();
   const [edit, setEdit] = useState(false);
   if (!user || !profile) return <Loading />;
 
+  const selectRegion = (e) => {
+
+    setRegion(e.target?.value);
+    setCity("")
+  };
+  const selectCity = (e) => {
+    setCity(e.target?.value);
+  };
+
   const handleEdit = () => {
-    setError(resetError)
+    setError(resetError);
+    setRegion(null);
+    setCity(null);
     setEdit(!edit);
   };
   const saveProfile = async () => {
-
     if (
       !checkStringIntegrity("name", nameRef.current.value) ||
       !checkStringIntegrity("lastName", lastNameRef.current.value) ||
@@ -61,8 +86,14 @@ const SideLayoutInfo = () => {
         name: nameRef.current.value,
         lastName: lastNameRef.current.value,
         poste: postRef.current.value,
-        phone: phoneRef.current.value
+        phone: phoneRef.current.value,
+        hireDate: hireDateRef.current.value,
+        city: city?city:profile.city,
+        region:region?region: profile.region,
+        street:streetRef.current.value
       };
+      console.log(updatedProfile);
+      // setCity(updatedProfile.city)
       await updateUserProfile(updatedProfile).unwrap();
       //check if image exists
 
@@ -95,38 +126,45 @@ const SideLayoutInfo = () => {
   };
 
   const checkStringIntegrity = (attribute, string) => {
-
-
     if (string.length < 2 || string.length > 20) {
       setError({
         ...error,
         [attribute]: {
           state: true,
-          message: `${ attribute == 'name'?'Nom':'Prénom' } invalide : doit minimum contenir 2 characters et au maximum 20`
+          message: `${
+            attribute == "name" ? "Nom" : "Prénom"
+          } invalide : doit minimum contenir 2 characters et au maximum 20`
         }
       });
       return false;
     } else {
-
       setError({
         ...error,
         [attribute]: {
-          state:false,
-          message:""
+          state: false,
+          message: ""
         }
       });
       return true;
     }
   };
 
+  const getErrorMessage = (field) => {
+    if (error[field]) return error[field];
+    return;
+  };
 
-  const getErrorMessage=(field)=>{
-    if ( error[field])
-    return  error[field]
-    return
-  }
+  const getRegions = () => {
+    let regions = cities.map((city) => city.region);
+    return regions.filter((item, index) => regions.indexOf(item) === index);
+  };
+  const getCities = () => {
+    if (profile.region && !region){
+      return cities.filter((item) => item.region === profile.region);
 
-
+    }
+    return cities.filter((item) => item.region === region);
+  };
 
   return (
     <>
@@ -143,7 +181,7 @@ const SideLayoutInfo = () => {
         <div className={classes.profileInformation}>
           <Grid
             container
-            spacing={3}
+            spacing={2}
             alignItems="center"
             justifyContent="space-between"
           >
@@ -161,12 +199,15 @@ const SideLayoutInfo = () => {
                         inputRef={nameRef}
                         variant="outlined"
                         size="small"
-                        min
                         name="name"
-                        inputProps={{maxLength:20}}
+                        inputProps={{ maxLength: 20 }}
                         defaultValue={profile.name}
                         error={getErrorMessage("name").state}
-                        helperText={getErrorMessage('name').state?getErrorMessage('name').message:""}
+                        helperText={
+                          getErrorMessage("name").state
+                            ? getErrorMessage("name").message
+                            : ""
+                        }
                       />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={6}>
@@ -176,9 +217,13 @@ const SideLayoutInfo = () => {
                         variant="outlined"
                         size="small"
                         name="lastName"
-                        inputProps={{maxLength:20}}
+                        inputProps={{ maxLength: 20 }}
                         error={getErrorMessage("lastName").state}
-                        helperText={getErrorMessage('lastName').state?getErrorMessage('lastName').message:""}
+                        helperText={
+                          getErrorMessage("lastName").state
+                            ? getErrorMessage("lastName").message
+                            : ""
+                        }
                         defaultValue={profile.lastName}
                       />
                     </Grid>
@@ -187,7 +232,7 @@ const SideLayoutInfo = () => {
               )}
               <span className={classes.labels}>
                 {/* {!edit ? "Nom complet" : "Nom et prénom"} */}
-                 Nom complet
+                Nom complet
               </span>
             </Grid>
             <Grid className={classes.formItem} item xs={12} lg={12}>
@@ -200,14 +245,16 @@ const SideLayoutInfo = () => {
                   <h2 className={classes.profileInfo}>**************</h2>
                   <span className={classes.labels}>Mot de passe</span>
                 </Grid>
-              {edit&&  <Grid sx={{ textAlign: "right" }} item xs={12} sm={6} lg={6}>
-                  <Link
-                    className={classes.changePasswordBtn}
-                    to="/settings/account/change-password"
-                  >
-                    Changer mon mot de passe
-                  </Link>
-                </Grid>}
+                {edit && (
+                  <Grid sx={{ textAlign: "right" }} item xs={12} sm={6} lg={6}>
+                    <Link
+                      className={classes.changePasswordBtn}
+                      to="/settings/account/change-password"
+                    >
+                      Changer mon mot de passe
+                    </Link>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
             <Grid className={classes.formItem} item xs={12} lg={12}>
@@ -241,7 +288,7 @@ const SideLayoutInfo = () => {
                 <TextField
                   className={classes.input}
                   inputRef={phoneRef}
-                  error={getErrorMessage('phone').state}
+                  error={getErrorMessage("phone").state}
                   variant="outlined"
                   size="small"
                   name="phone"
@@ -251,19 +298,108 @@ const SideLayoutInfo = () => {
                     maxLength: 8
                   }}
                   defaultValue={profile.phone}
-                  helperText={getErrorMessage('phone').state? getErrorMessage('phone').message:""}
+                  helperText={
+                    getErrorMessage("phone").state
+                      ? getErrorMessage("phone").message
+                      : ""
+                  }
                 />
               )}
               <span className={classes.labels}>Téléphone</span>
             </Grid>
-
+            <Grid className={classes.formItem} item xs={12} lg={12}>
+              {!edit ? (
+                <h2 className={classes.profileInfo}>
+                  {profile.hireDate
+                    ? profile.hireDate
+                    : "Veuillez saisir votre date d'embauche"}
+                </h2>
+              ) : (
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="en-gb"
+                >
+                  <DatePicker
+                    className={classes.input}
+                    label="Date d'embauche"
+                    size="small"
+                    slotProps={{
+                      textField: { variant: "outlined", size: "small" }
+                    }}
+                    inputRef={hireDateRef}
+                    defaultValue={
+                      profile.hireDate
+                        ? dayjs(profile.hireDate, "DD/MM/YYYY")
+                        : dayjs()
+                    }
+                    // onChange={(newValue) => {
+                    //   setTask({ ...task, startDate: newValue });
+                    // }}
+                  />
+                </LocalizationProvider>
+              )}
+              <span className={classes.labels}>date d'embauche</span>
+            </Grid>
+            <Grid className={classes.formItem} item xs={12} lg={12}>
+              {!edit ? (
+                <h2 className={classes.profileInfo}>
+                  {profile.city || profile.street || profile.region
+                    ? `${profile.street} ${profile.city} ${profile.region}`
+                    : "Veuillez saisir votre adresse"}
+                </h2>
+              ) : (
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={12} md={3} lg={3}>
+                    <TextField
+                      className={classes.street}
+                      type="text"
+                      inputRef={streetRef}
+                      size="small"
+                      defaultValue={profile.street}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={3} lg={3}>
+                    <Select
+                      className={classes.input}
+                      value={!region?profile.region?profile.region:"":region}
+                      size="small"
+                      onChange={selectRegion}
+                    >
+                      {getRegions().map((entry, key) => (
+                        <MenuItem key={key} value={entry}>
+                          {entry}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={3} lg={3}>
+                    <Select
+                      className={classes.input}
+                      value={city?city:""}
+                      disabled={!region && !profile.region}
+                      inputRef={cityRef}
+                      size="small"
+                      onChange={selectCity}
+                    >
+                      {getCities().map(({ city }, idx) => (
+                        <MenuItem value={city} key={idx}>
+                          {city}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Grid>
+                </Grid>
+              )}
+              <span className={classes.labels}>Adresse</span>
+            </Grid>
           </Grid>
-          <Grid container
-           spacing={3}
-           alignItems="center"
-           justifyContent="space-between"
-          >
           <Grid
+            container
+            spacing={3}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Grid
               className={classes.formItem}
               item
               xs={12}

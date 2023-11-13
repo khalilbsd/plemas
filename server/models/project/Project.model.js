@@ -39,6 +39,11 @@ const Project = database.define(
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    managerHours:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue:0
+    },
     isCodeCustomized: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -15,6 +15,7 @@ import projectTestRoutes from "./routes/test/project.test.route.js";
 import phasesRoutes from "./routes/phase.route.js";
 import lotRoutes from "./routes/lot.route.js";
 import taskRoutes from "./routes/tasks.route.js"
+import requestRoutes from "./routes/request.route.js"
 // import passport from "passport";
 // import { authUser } from "./controllers/auth/authentication.js";
 import passport from "./controllers/auth/passport-config.js";
@@ -48,6 +49,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/phases", phasesRoutes);
 app.use("/api/lots", lotRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/requests", requestRoutes);
 //testing routes
 app.use("/api/projects/test", projectTestRoutes);
 

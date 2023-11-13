@@ -20,7 +20,8 @@ import faProject from '../public/svgs/light/diagram-project.svg';
 import faLogout from "../public/svgs/light/right-from-bracket.svg";
 import faUser from "../public/svgs/light/user.svg";
 import ResetPassword from "../reset_password/ResetPassword";
-
+import DailyLog from "../dailylog/DailyLog.jsx";
+import faTimeLine from '../public/svgs/light/list-timeline.svg'
 export const anonymousUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },
   { title: "Login", path: "/login", Component: <Login /> },
@@ -115,12 +116,21 @@ export const protectedUrls = [
     sideBar: false,
     superUser:true
   },
+  {
+    role: ALL_ROLES,
+    title:"Daily log",
+    path:'/my/daily',
+    Component :<DailyLog />,
+    icon:faTimeLine,
+    sideBar:true,
+    superUser:true
+  }
 
 ];
 
 export function getRolesBasedUrls(user, role = null) {
 
-  if (user && user.isSuperUser) return protectedUrls.filter(url => url.superUser);
+  if (user && user?.isSuperUser) return protectedUrls.filter(url => url.superUser);
   const accessRole = !role ? user?.role : role;
   return protectedUrls.filter((url) => url.role.includes(accessRole) );
 }

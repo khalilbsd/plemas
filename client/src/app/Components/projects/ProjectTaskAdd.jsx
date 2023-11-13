@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { projectTaskDetails } from "./style";
 import { Grid, TextField } from "@mui/material";
-import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import 'dayjs/locale/en-gb';
+import dayjs from "dayjs";
+import "dayjs/locale/en-gb";
+import React, { useEffect, useState } from "react";
+import { projectTaskDetails } from "./style";
 
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router";
+import { ReactSVG } from "react-svg";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useCreateTaskMutation,
   useGetTaskPotentialIntervenantsMutation
 } from "../../../store/api/tasks.api";
-import { notify } from "../notification/notification";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
-import { useParams } from "react-router";
-import { useDispatch } from "react-redux";
-import { setTaskCreationPotentielIntervenants, updateProjectTask } from "../../../store/reducers/task.reducer";
-import ProjectUserLists from "./ProjectUserLists";
-import { projectsStyles } from "../managing/style";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
+import {
+  setTaskCreationPotentielIntervenants,
+  updateProjectTask
+} from "../../../store/reducers/task.reducer";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faClose from "../../public/svgs/light/xmark.svg";
-import { ReactSVG } from "react-svg";
 import Loading from "../loading/Loading";
-
+import { projectsStyles } from "../managing/style";
+import { notify } from "../notification/notification";
+import ProjectUserLists from "./ProjectUserLists";
 
 const ProjectTaskAdd = ({ closeAddTask }) => {
   const classes = projectTaskDetails();
@@ -31,6 +33,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
     "task",
     "taskPotentielIntervenants"
   );
+  const project = useGetStateFromStore("project","projectDetails")
   const { projectID } = useParams();
   const dispatch = useDispatch();
   const [task, setTask] = useState({
@@ -42,21 +45,21 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
 
   const [getTaskPotentialIntervenants] =
     useGetTaskPotentialIntervenantsMutation();
-    const [createTask, { isLoading: creatingTask }] = useCreateTaskMutation();
+  const [createTask, { isLoading: creatingTask }] = useCreateTaskMutation();
 
-    useEffect(() => {
-  async function loadTaskPotentialIntervenants() {
-    try {
-      const res = await getTaskPotentialIntervenants({ projectID }).unwrap();
-      dispatch(setTaskCreationPotentielIntervenants(res?.potentials));
-    } catch (error) {
-      console.log(error);
-      notify(NOTIFY_ERROR, error?.data.message);
+  useEffect(() => {
+    async function loadTaskPotentialIntervenants() {
+      try {
+        const res = await getTaskPotentialIntervenants({ projectID }).unwrap();
+        dispatch(setTaskCreationPotentielIntervenants(res?.potentials));
+      } catch (error) {
+        console.log(error);
+        notify(NOTIFY_ERROR, error?.data.message);
+      }
     }
-  }
 
     loadTaskPotentialIntervenants();
-  },[dispatch]);
+  }, [dispatch,getTaskPotentialIntervenants,projectID]);
 
   const handleChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -88,20 +91,26 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
     e.preventDefault();
     try {
       const data = { ...task };
-      data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
-      data.dueDate = dayjs(data.dueDate).format("DD/MM/YYYY");
-      if (data.dueDate < data.startDate){
-        notify(NOTIFY_ERROR,"la date d'échéance doit être supérieure à la date de début")
-        return
+      data.startDate = dayjs(data.startDate);
+      data.dueDate = dayjs(data.dueDate);
+      if (data.dueDate < data.startDate) {
+        notify(
+          NOTIFY_ERROR,
+          "la date d'échéance doit être supérieure à la date de début"
+        );
+        return;
       }
       if (data.intervenants.length) {
         data.intervenants = data.intervenants.map((user) => user.email);
       } else {
         delete data.intervenants;
       }
+
+      data.startDate = data.startDate.format("DD/MM/YYYY");
+      data.dueDate = data.dueDate.format("DD/MM/YYYY");
       const res = await createTask({ body: data, projectID }).unwrap();
       notify(NOTIFY_SUCCESS, res?.message);
-      dispatch(updateProjectTask(res.task))
+      dispatch(updateProjectTask(res.task));
       closeAddTask();
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
@@ -136,11 +145,15 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
             />
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={2}>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="en-gb"
+            >
               <DatePicker
                 className={classes.inputs}
                 label="Date début du tache"
                 // value={newProject.startDate}
+                minDate={dayjs(project.startDate)}
                 defaultValue={task.startDate}
                 onChange={(newValue) => {
                   setTask({ ...task, startDate: newValue });
@@ -149,7 +162,10 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
             </LocalizationProvider>
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={2}>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="en-gb"
+            >
               <DatePicker
                 // className={externalClasses.inputs}
                 label="Échéance du tache"

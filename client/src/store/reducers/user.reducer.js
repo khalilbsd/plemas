@@ -29,6 +29,7 @@ const userSlice = createSlice({
       Object.keys(attToUpdate).forEach((key)=>{
         state.profile[key]=attToUpdate[key]
       })
+
     },
   }
 });

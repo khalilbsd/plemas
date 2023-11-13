@@ -43,13 +43,13 @@ const UserProfile = () => {
     <div className={classes.profileContainer}>
       {/* left right layout */}
       <Grid container spacing={5} sx={{marginTop:0,height:'100%'}}>
-        <Grid item xs={12} sm={12} md={12} lg={6} xl={4}  className={classes.gridItem}>
+        <Grid sx={{height:'100%'}} item xs={12} sm={12} md={12} lg={6} xl={4}  className={classes.gridItem}>
           <div className={classes.hoverCard}>
 
           <SideLayoutInfo />
           </div>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={6} xl={8} className={classes.gridItem} sx={{opacity:0.4}}>
+        <Grid item xs={12} sm={12} md={12} lg={6} xl={8} className={classes.gridItem} sx={{opacity:0.4 ,height:'100%'}}>
           <div className={classes.hoverCard}>
 
           <SideLayoutMain />

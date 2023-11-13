@@ -31,3 +31,20 @@ export const TASK_STATE_TRANSLATION =[
   value:TASK_STATE_BLOCKED,
 },
 ]
+
+
+export const REQUEST_STATES_VALUES=[true,false]
+export const REQUEST_STATES_TREATED="traité"
+export const REQUEST_STATES_NOT_TREATED="non traité"
+export const REQUEST_STATES_LABELS=["traité","non traité"]
+
+export const REQUEST_STATE_TRANSLATION =[
+  {
+  value:false,
+  label:REQUEST_STATES_NOT_TREATED,
+},
+  {
+  value:true,
+  label:REQUEST_STATES_TREATED,
+},
+]

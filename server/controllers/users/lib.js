@@ -7,10 +7,7 @@ import { config } from "../../environment.config.js";
 
 //static routes
 
-
-
 // const currentFilePath = new URL(import.meta.url).pathname;
-
 
 export const encryptPassword = async (password) => {
   const hashed = await bcrypt.hash(
@@ -37,6 +34,12 @@ export const serializeProfile = (userInfo, userId) => {
     poste: userInfo.poste,
     phone: userInfo.phone,
     image: userInfo.image,
+
+    city: userInfo.city ? userInfo.city : "",
+    street: userInfo.street ? userInfo.street : "",
+    region: userInfo.region ? userInfo.region : "",
+
+    hireDate: userInfo.hireDate,
     userID: userId
   };
 };
@@ -51,10 +54,9 @@ export const createPasswordSetToken = async () => {
   /* @ DESC:: creating to double edge tokens one to send  and one to save
    */
   //accessing the key pairs
-  const publicKey = await getRSAPublicKey()
+  const publicKey = await getRSAPublicKey();
   //creating  a random bytes to  generate send token
   const tokenToSend = crypto.randomBytes(32).toString("hex");
-
 
   // Encrypt the token ,using the public key (for tokenToSave)
   const encryptedToken = crypto.publicEncrypt(
@@ -69,9 +71,8 @@ export const createPasswordSetToken = async () => {
   const tokenToSave = encryptedToken.toString("hex");
 
   // const passwords = { tokenToSend, tokenToSave };
-  return tokenToSave.substring(0,128);
+  return tokenToSave.substring(0, 128);
 };
-
 
 /**
  * returns the user by email
@@ -82,7 +83,11 @@ export const createPasswordSetToken = async () => {
  * @param {*} id
  * @returns
  */
-export const getUserByEmail = async (email, includeProfile = true,withBanned=false) => {
+export const getUserByEmail = async (
+  email,
+  includeProfile = true,
+  withBanned = false
+) => {
   if (!email) return null;
 
   const queryOptions = {

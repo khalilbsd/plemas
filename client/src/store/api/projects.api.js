@@ -90,6 +90,13 @@ export const projectApi = api.injectEndpoints({
         method: "DELETE",
         data: body
       })
+    }),
+    assignManagerHours: builder.mutation({
+      query: ({ body, projectID }) => ({
+        url: `projects/change/manager/assign/hours/${projectID}`,
+        method: "PATCH",
+        data: body
+      })
     })
 
   })
@@ -109,5 +116,6 @@ export const {
   useAddIntervenantsMutation,
   useGetPotentielIntervenantsMutation,
   useGetProjectIntervenantsMutation,
-  useRemoveIntervenantFromProjectMutation
+  useRemoveIntervenantFromProjectMutation,
+  useAssignManagerHoursMutation
 } = projectApi;

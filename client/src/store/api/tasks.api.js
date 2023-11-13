@@ -8,6 +8,12 @@ export const taskApi = api.injectEndpoints({
         method: "GET"
       })
     }),
+    getDailyLogTasks: builder.mutation({
+      query: (date) => ({
+        url: `tasks/daily/all?history=${date}`,
+        method: "GET"
+      })
+    }),
     getTaskPotentialIntervenants: builder.mutation({
       query: ({ projectID, taskID }) => ({
         url: `tasks/project/${projectID}/potential/task/intervenants/list`,
@@ -60,5 +66,6 @@ export const {
   useCreateTaskMutation,
   useAssociateToTaskMutation,
   useAssignHoursInTaskMutation,
-  useUpdateTaskMutation
+  useUpdateTaskMutation,
+  useGetDailyLogTasksMutation
 } = taskApi;
