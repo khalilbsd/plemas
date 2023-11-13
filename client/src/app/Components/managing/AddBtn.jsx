@@ -8,7 +8,7 @@ const AddBtn = ({ handleAdd, title, icon, loading ,large }) => {
     <div>
       <button
         className={`${classes.btn} ${large?'large':""}`}
-        onClick={handleAdd}
+        onClick={!loading?handleAdd:undefined}
         disabled={loading ? true : false}
       >
         {!loading ? (

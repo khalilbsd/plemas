@@ -24,7 +24,7 @@ export const btnStyle = createUseStyles({
     }
   },
   icon: {
-    width: 28,
+    width: 18,
     fill: "var(--white)"
   }
 });

@@ -277,7 +277,6 @@ const ProjectList = ({ addForm, handleForm }) => {
 
 
   const getRowClassName = (params) => {
-    console.log("id ",params.row.id ,params.row.requestsTreated)
     return params.row.requestsTreated === false ? "notTreatedRequest" : "";
   };
 

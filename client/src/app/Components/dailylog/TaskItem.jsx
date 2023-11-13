@@ -5,6 +5,8 @@ import Slider from "@mui/material/Slider";
 import { TASK_STATE_TRANSLATION } from "../../../constants/constants";
 import { CustomJoinIcon } from "../icons";
 import dayjs from "dayjs";
+import { useDispatch } from "react-redux";
+import { updateUserGeneralTasksHours } from "../../../store/reducers/task.reducer";
 
 const TaskItem = ({
   hours,
@@ -15,7 +17,7 @@ const TaskItem = ({
   joinTask,
   joinDisabled
 }) => {
-  //   const handleChange = () => {};
+  const dispatch= useDispatch()
   console.log();
   const classes = dailyLogStyle();
   const marks = [
@@ -62,6 +64,14 @@ const TaskItem = ({
 
 
 
+const handleChange = (hours,interventionID)=>{
+  console.log("changingggggh");
+  dispatch(
+
+    updateUserGeneralTasksHours({ id: interventionID, hours: hours })
+  );
+}
+
   return (
     <div
       className={`${classes.taskItem}
@@ -99,7 +109,7 @@ const TaskItem = ({
           max={8}
           step={1}
           value={hours}
-          // onChange={(event,value)=>handleChange(value,id)}
+          onChange={(event,value)=>handleChange(value,id)}
           onChangeCommitted={(event, value) =>
             handleChangeSubmit(value, project.id, task.id, id)
           }

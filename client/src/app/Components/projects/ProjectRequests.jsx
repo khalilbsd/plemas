@@ -51,12 +51,13 @@ const ProjectRequests = () => {
   const [addRequest, setAddRequest] = useState(false);
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
+  const [creatingRequest, setCreatingRequest] = useState(false)
   const requests = useGetStateFromStore("project", "projectRequest");
   const [getProjectRequest, { isLoading: loadingRequests }] =
     useGetProjectRequestMutation();
   const [updateProjectRequest, { isLoading: updatingRequest }] =
     useUpdateProjectRequestMutation();
-  const [createProjectRequest, { isLoading: creatingRequest }] =
+  const [createProjectRequest] =
     useCreateProjectRequestMutation();
     const [deleteProjectRequest,{isLoading:deletingRequest}]=
 useDeleteProjectRequestMutation()
@@ -90,7 +91,7 @@ useDeleteProjectRequestMutation()
     } catch (error) {
         notify(NOTIFY_ERROR, error?.data?.message);
     }
-    console.log(id);
+
   };
 
   const handleCancelClick = (id) => () => {
@@ -102,7 +103,7 @@ useDeleteProjectRequestMutation()
 
   const processRowUpdate = async (newRow) => {
     try {
-      console.log(newRow.id);
+
       let body = {
         state: REQUEST_STATE_TRANSLATION.filter(
           (state) => state.label === newRow.state
@@ -224,7 +225,7 @@ useDeleteProjectRequestMutation()
         } else {
           if (
             isSuperUser ||
-            (isManager && user.email === project?.managerDetails?.email)
+            (isManager && user.email === project?.managerDetails?.email ) || user?.email === row.requestCreator?.email
           ) {
             renderActions.push(
               <GridActionsCellItem
@@ -286,12 +287,17 @@ useDeleteProjectRequestMutation()
       closeAddRequest();
     }
     try {
+      setCreatingRequest(true)
       const res = await createProjectRequest({
         description,
         projectID
       }).unwrap();
+      closeAddRequest();
       dispatch(updateRequestList(res.newRequest));
       notify(NOTIFY_SUCCESS, res?.message);
+      setTimeout(() => {
+        setCreatingRequest(false)
+      }, 500);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }

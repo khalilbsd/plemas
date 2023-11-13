@@ -110,6 +110,7 @@ export const createTask = catchAsync(async (req, res, next) => {
         400
       )
     );
+  if (data.startDate < project.startDate) return next(new AppError("la date de début de la tâche ne peut pas être antérieure à la date de début du projet"))
 
   const task = await Task.create({ ...data });
   let message = "la tâche a été créée avec succès";
@@ -301,7 +302,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   if (!projectID) return next(new MissingParameter("le projet est requis"));
   const project = await Project.findByPk(projectID);
   if (!project) return next(new ElementNotFound("let projet est introuvable"));
-  const { taskID, hours ,date } = req.body;
+  const { taskID, hours, date } = req.body;
   if (!taskID || hours === undefined || !date)
     return next(new MissingParameter("la tache et les heurs sont requis"));
 
@@ -321,24 +322,41 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
         "l'intervenant n'est pas inclut dans cette tache du projet"
       )
     );
+    const interventionHours = await InterventionHour.findOne({
+      where: { interventionID: intervention.id, date: moment(date) }
+    });
 
-  if (parseInt(hours) === intervention.nbHours)
+
+
+  if (parseInt(hours) === intervention.nbHours && interventionHours)
     return next(new AppError("rien n'est modifié", 304));
   if (parseInt(hours) < 0)
     return next(new AppError("le nombres des heures doit être positive"));
-  task.totalHours = task.totalHours
-    ? task.totalHours + parseInt(hours) - intervention.nbHours
+
+
+
+    console.log("------------------------- found intervention ",interventionHours)
+  if (interventionHours){
+    task.totalHours = task.totalHours
+    ? task.totalHours + (parseInt(hours) - interventionHours.hours)
     : parseInt(hours);
+    intervention.nbHours = intervention.nbHours + ( parseInt(hours) - interventionHours.hours);
+    // intervention.nbHours = parseInt(hours);
+  }else{
+    task.totalHours = task.totalHours? task.totalHours + parseInt(hours) : parseInt(hours)
+
+    intervention.nbHours = intervention.nbHours + parseInt(hours)
+    console.log("------------------------- NOT FOUND  intervention ",intervention.nbHours, parseInt(hours) ,intervention.nbHours + parseInt(hours))
+
+  }
+
   await task.save();
-  intervention.nbHours = parseInt(hours);
   await intervention.save();
 
   logger.info(
     `updating the hours number of the intervenant ${req.user.id} on the task ${task.id} in the project ${project.id}`
   );
-  const interventionHours = await InterventionHour.findOne({
-    where: { interventionID: intervention.id, date: moment(date) }
-  });
+
   if (interventionHours) {
     interventionHours.hours = parseInt(hours);
     await interventionHours.save();
@@ -358,15 +376,14 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
 
 export const getDailyTasks = catchAsync(async (req, res, next) => {
   //my tasks
-  let history
-  if (!req.query.history){
+  let history;
+  if (!req.query.history) {
     // history = new Date()
-    history = moment()
-  }else{
-   history= moment(req.query.history,"DD/MM/YYYY")
-
+    history = moment();
+  } else {
+    history = moment(req.query.history, "DD/MM/YYYY");
   }
-  console.log('-------------------------------',history,req.query.history)
+  console.log("-------------------------------", history, req.query.history);
   const allTasksRaw = await Intervenant.findAll({
     where: { intervenantID: req.user.id },
     include: [
@@ -377,9 +394,10 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
       {
         model: Task,
 
-        where: { state: TASK_STATE_DOING ,
-          createdAt: {
-            [Op.lt]: history
+        where: {
+          state: TASK_STATE_DOING,
+          startDate: {
+            [Op.lte]: history
           }
         },
         as: "task"
@@ -451,22 +469,16 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   //     taskID && today.isSame(moment(task.dueDate, "DD/MM/YYYY").startOf("day"))
   // );
 
-
-
-  for( const index in  allTasks){
+  for (const index in allTasks) {
     let interventionHours = await InterventionHour.findOne({
-      where: { interventionID: allTasks[index].id,
-        date : history
-        }
+      where: { interventionID: allTasks[index].id, date: history }
     });
     if (interventionHours) {
       allTasks[index].nbHours = interventionHours.hours;
     } else {
       allTasks[index].nbHours = 0;
     }
-
   }
-
 
   return res.status(200).json({ joinableTasks, allTasks });
 });

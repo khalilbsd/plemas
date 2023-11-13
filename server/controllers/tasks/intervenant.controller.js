@@ -33,33 +33,9 @@ export const getAllIntervenants = catchAsync(async (req, res, next) => {
 });
 
 export const projectIntervenantList = async (projectID) => {
-  // const project = await Project.findByPk(projectID, {
-  //   group: "intervenantID",
-  //   include: [
-  //     {
-  //       model: Intervenant,
-  //       as: "intervenants",
-  //       where: {
-  //         intervenantID: { [Op.ne]: null }
-  //       },
-  //       include: [
-  //         {
-  //           model: User,
-  //           attributes: ["email"],
-  //           include: [
-  //             {
-  //               model: UserProfile,
-  //               attributes: ["name", "lastName", "image"]
-  //             }
-  //           ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // });
-
+  let grouped= []
   const intervenants = await Intervenant.findAll({
-    group: ["intervenantID"],
+
     where: {
       projectID: projectID,
       intervenantID: { [Op.ne]: null }
@@ -77,10 +53,22 @@ export const projectIntervenantList = async (projectID) => {
           }
         ]
       }
-    ]
+    ],
+    // group: "intervenantID",
   });
+  const formattedIntervenants = intervenants.map(item=>item.toJSON())
+  formattedIntervenants.map(interv=>{
+  let lineIdx = grouped.map(item=>item.intervenantID).indexOf(interv.intervenantID)
+  console.log(lineIdx)
+  if (lineIdx > -1) {
+    formattedIntervenants[lineIdx].nbHours +=interv.nbHours
+  }else{
+    grouped.push(interv)
+  }
 
-  return intervenants;
+  })
+
+  return grouped;
 };
 
 export const addIntervenantToProject = catchAsync(async (req, res, next) => {

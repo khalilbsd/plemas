@@ -51,7 +51,8 @@ const ProjectCreationForm = ({
   codeRef,
   errorMessage,
   setNewProject,
-  newProject
+  newProject,
+  loading
   //   addForm
 }) => {
   const projectState = useGetStateFromStore("manage", "addProject");
@@ -156,9 +157,16 @@ const ProjectCreationForm = ({
     <Grid container spacing={2}>
       <div className={classes.modalActionBtn}>
 
-        <button className="submit" onClick={handleSubmit}>
-          <ReactSVG src={faSave} />
+          {
+          !loading?
+        <button className="submit" onClick={!loading?handleSubmit:undefined}>
+            <ReactSVG src={faSave} />
+
+
         </button>
+         :
+         <Loading  color="var(--light-green)"/>
+        }
         <button className="close" onClick={handleClose}>
           <ReactSVG src={faClose} />
         </button>

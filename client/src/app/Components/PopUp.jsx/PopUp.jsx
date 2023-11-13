@@ -46,7 +46,7 @@ const PopUp = ({
         <AddBtn
           handleAdd={handleSubmit}
           title={btnText}
-          large="large"
+          // large="large"
           icon={icon}
           loading={loading}
         />

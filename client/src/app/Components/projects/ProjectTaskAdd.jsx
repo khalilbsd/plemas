@@ -33,6 +33,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
     "task",
     "taskPotentielIntervenants"
   );
+  const project = useGetStateFromStore("project","projectDetails")
   const { projectID } = useParams();
   const dispatch = useDispatch();
   const [task, setTask] = useState({
@@ -152,6 +153,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
                 className={classes.inputs}
                 label="Date début du tache"
                 // value={newProject.startDate}
+                minDate={dayjs(project.startDate)}
                 defaultValue={task.startDate}
                 onChange={(newValue) => {
                   setTask({ ...task, startDate: newValue });

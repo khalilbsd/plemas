@@ -69,9 +69,9 @@ const ManageProjects = () => {
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const projectList = useGetStateFromStore("manage", "projectsList");
-
+const [creatingProject, setCreatingProject] = useState(false)
   //ADD hooks
-  const [createProject, { isLoading: creatingProject }] =
+  const [createProject] =
     useCreateProjectMutation();
 
   async function loadProjects() {
@@ -156,6 +156,7 @@ const ManageProjects = () => {
     }
 
     try {
+      setCreatingProject(true)
       const {
         code: { value: codeValue },
         name: { value: nameValue },
@@ -190,9 +191,13 @@ const ManageProjects = () => {
 
       notify(NOTIFY_SUCCESS, data.message);
       handleOpenAddForm();
+      setTimeout(() => {
+        setCreatingProject(false)
+      }, 300);
       dispatch(clearAddProjectState());
       loadProjects();
       setNewProject(newProjectInitialState);
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
     }
@@ -205,6 +210,7 @@ const ManageProjects = () => {
         addProjectForm && (
           <Grid item xs={12} lg={12}>
             <ProjectCreationForm
+              loading={creatingProject}
               handleSubmit={handleSubmitProject}
               refreshProjects={loadProjects}
               formOpen={addProjectForm}
