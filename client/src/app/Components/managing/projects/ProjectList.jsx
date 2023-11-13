@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { ReactSVG } from "react-svg";
@@ -6,16 +6,16 @@ import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
 import { listStyle, projectsStyles } from "../style";
 // import { projectTestList } from "./test/projectList.test";
-import useIsUserCanAccess from "../../../../hooks/access";
-import faAdd from "../../../public/svgs/solid/plus.svg";
-import LinkProject from "./addProject/LinkProject";
 import { Chip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { formattedDate } from "../../../../store/utils";
 import dayjs from "dayjs";
-import { priorityColors } from "./addProject/PriorityField";
 import { TASK_STATE_TRANSLATION } from "../../../../constants/constants";
+import useIsUserCanAccess from "../../../../hooks/access";
+import { formattedDate } from "../../../../store/utils";
+import faAdd from "../../../public/svgs/solid/plus.svg";
 import { projectTaskDetails } from "../../projects/style";
+import LinkProject from "./addProject/LinkProject";
+import { priorityColors } from "./addProject/PriorityField";
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
@@ -29,7 +29,7 @@ const ProjectList = ({ addForm, handleForm }) => {
   const addProjectState = useGetStateFromStore("manage", "addProject");
   const navigate = useNavigate();
   const listClasses = listStyle();
-  const [emptyMessage, setEmptyMessage] = useState("");
+  // const [emptyMessage, setEmptyMessage] = useState("");
 
   const dispatch = useDispatch();
   const getPriorityColor = (id) => {
@@ -257,15 +257,15 @@ const ProjectList = ({ addForm, handleForm }) => {
     }
     return projects;
   };
-  useEffect(() => {
-    if (!projects?.length) {
-      setEmptyMessage(
-        "Vous n'intervenez dans aucun projet pour l'instant ! Veuillez patienter."
-      );
-      return;
-    }
-    setEmptyMessage("");
-  }, [projects]);
+  // useEffect(() => {
+  //   if (!projects?.length) {
+  //     setEmptyMessage(
+  //       "Vous n'intervenez dans aucun projet pour l'instant ! Veuillez patienter."
+  //     );
+  //     return;
+  //   }
+  //   setEmptyMessage("");
+  // }, [projects]);
 
   const handleClickProject = (rowID) => {
     dispatch(setLinkedProject(rowID));

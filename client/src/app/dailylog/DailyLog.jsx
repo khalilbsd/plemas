@@ -12,8 +12,6 @@ import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import dayjs from "dayjs";
 const DailyLog = () => {
   const classes = dailyLogStyle();
-
-  const dailyTasks = useGetStateFromStore("task", "userDailyTasks");
   const generalTasks = useGetStateFromStore("task", "userGeneralTasks");
   const [history, setHistory] = useState(dayjs(new Date()));
   const [openJoinableTasks, setOpenJoinableTasks] = useState(false);
@@ -42,7 +40,7 @@ const DailyLog = () => {
       }
     }
     loadDailyTasks();
-  }, [history]);
+  }, [history,dispatch,getDailyLogTasks]);
 
   const handleOpenJoinableTasks = () => {
     setOpenJoinableTasks((pevState) => !pevState);
@@ -54,11 +52,11 @@ const DailyLog = () => {
         .startOf("day")
         .isSame(dayjs(new Date()).startOf("day").locale("en-gb"))
     );
-    if(!(
-      date
+    if (
+      !date
         .startOf("day")
         .isSame(dayjs(new Date()).startOf("day").locale("en-gb"))
-    )) {
+    ) {
       setOpenJoinableTasks(false);
       setDisableJoin(true);
     } else {
@@ -70,7 +68,15 @@ const DailyLog = () => {
   return (
     <div className={classes.dailyLogPage}>
       <Grid container spacing={2} sx={{ height: "100%" }}>
-        <Grid item xs={openJoinableTasks?1:122} sm={openJoinableTasks?1:122} mg={6} lg={openJoinableTasks?7:12} sx={{ height: "100%" }}>
+        <Grid
+          item
+          className={classes.fade}
+          xs={openJoinableTasks ? 1 : 122}
+          sm={openJoinableTasks ? 1 : 122}
+          mg={6}
+          lg={openJoinableTasks ? 7 : 12}
+          sx={{ height: "100%" }}
+        >
           <div className={classes.usersTasks}>
             {!loadingTasks ? (
               <TasksList
@@ -86,7 +92,15 @@ const DailyLog = () => {
             )}
           </div>
         </Grid>
-        <Grid item xs={openJoinableTasks?12:0} sm={openJoinableTasks?12:0} mg={openJoinableTasks?6:0} lg={openJoinableTasks?5:0} sx={{ height: "100%" }}>
+        <Grid
+          item
+          className={classes.fade}
+          xs={openJoinableTasks ? 12 : 0}
+          sm={openJoinableTasks ? 12 : 0}
+          mg={openJoinableTasks ? 6 : 0}
+          lg={openJoinableTasks ? 5 : 0}
+          sx={{ height: "100%" }}
+        >
           <div
             className={`${classes.card} taskList ${
               openJoinableTasks ? "collapsed" : "hidden"

@@ -6,6 +6,9 @@ export const dailyLogStyle = createUseStyles({
     width: "100%",
     height: "100%"
   },
+  fade:{
+    transition: "all 0.3s ease-in-out",
+  },
   card: {
     overflow:'hidden',
     height:'auto',
@@ -54,7 +57,7 @@ export const dailyLogStyle = createUseStyles({
   taskItem: {
     display: "flex",
     alignItems: "center",
-    padding: "15px 30px",
+    padding: "10px 30px",
     justifyContent: "space-between",
     border: "1px solid var(--app-bg-color)",
     transition: "all 0.3s ease-in-out",
@@ -65,15 +68,19 @@ export const dailyLogStyle = createUseStyles({
     },
     borderRadius: 20,
     "& .slider": {
+      '& .MuiSlider-markLabel':{
+        color:'grey',
+        fontSize:9,
+      },
       width: "30%"
     },
     '& .project-name, .task-name':{
         minWidth:180,
-        fontSize:14,
+        fontSize:13,
         // background:'red'
       },
       '& .tache-state':{
-      fontSize:14,
+      fontSize:13,
 
     },
     '&.danger':{
@@ -121,5 +128,6 @@ export const dailyLogStyle = createUseStyles({
     fontWeight:600,
     fontSize:14,
     marginLeft:5
-  }
+  },
+
 });

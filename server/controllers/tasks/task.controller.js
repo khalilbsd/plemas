@@ -302,7 +302,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   const project = await Project.findByPk(projectID);
   if (!project) return next(new ElementNotFound("let projet est introuvable"));
   const { taskID, hours ,date } = req.body;
-  if (!taskID || !hours || !date)
+  if (!taskID || hours === undefined || !date)
     return next(new MissingParameter("la tache et les heurs sont requis"));
 
   const task = await Task.findByPk(taskID);

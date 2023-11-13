@@ -14,7 +14,14 @@ import TaskItem from "./TaskItem";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TextField } from "@mui/material";
-const TasksList = ({ handleJoinable, joinable, tasks,handleDateChange,historyDate,joinDisabled }) => {
+const TasksList = ({
+  handleJoinable,
+  joinable,
+  tasks,
+  handleDateChange,
+  historyDate,
+  joinDisabled
+}) => {
   const classes = dailyLogStyle();
   const classesDetails = projectDetails();
 
@@ -25,7 +32,7 @@ const TasksList = ({ handleJoinable, joinable, tasks,handleDateChange,historyDat
     hours,
     projectID,
     taskID,
-    interventionID,
+    interventionID
   ) => {
     console.log(hours, projectID, taskID);
     console.log("changing hours ");
@@ -37,7 +44,7 @@ const TasksList = ({ handleJoinable, joinable, tasks,handleDateChange,historyDat
         body: {
           taskID,
           hours: parseInt(hours),
-          date:historyDate
+          date: historyDate
         },
         projectID
       }).unwrap();
@@ -47,37 +54,39 @@ const TasksList = ({ handleJoinable, joinable, tasks,handleDateChange,historyDat
     }
   };
 
-
   return (
     <div className={`${classes.card} collapsed`}>
-     {!joinDisabled&& <div className={`${classesDetails.actions} top`}>
-        <button onClick={handleJoinable}>
-          {!joinable ? <ReactSVG src={faAdd} /> : <ReactSVG src={faClose} />}
-          <span className="text">{!joinable ? "Ajouter" : "Fermer"}</span>
-        </button>
-      </div>}
+      {!joinDisabled && (
+        <div className={`${classesDetails.actions} top`}>
+          <button onClick={handleJoinable}>
+            {!joinable ? <ReactSVG src={faAdd} /> : <ReactSVG src={faClose} />}
+            <span className="text">{!joinable ? "Ajouter" : "Fermer"}</span>
+          </button>
+        </div>
+      )}
       <div className={classes.sectionHeader}>
         <h2 className={classes.sectionTitle}>vos tâches</h2>
-        <LocalizationProvider  dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
           <DatePicker
             className={classes.datePicker}
             label="Date"
             defaultValue={historyDate}
-            minDate={dayjs().subtract(7,'day')}
+            minDate={dayjs().subtract(7, "day")}
             maxDate={dayjs()}
             size="small"
-            onChange={(newValue)=>handleDateChange(newValue)}
+            onChange={(newValue) => handleDateChange(newValue)}
             renderInput={(params) => <TextField {...params} />}
           />
         </LocalizationProvider>
       </div>
       <div className={classes.warning}>
-      Veuillez noter que les tâches colorées en rouge sont à effectuer aujourd'hui.
+        Veuillez noter que les tâches colorées en rouge sont à effectuer
+        aujourd'hui.
       </div>
       <div className={classes.taskList}>
         {tasks.map((daily, idx) => (
           <TaskItem
-          joinDisabled={joinDisabled}
+            joinDisabled={joinDisabled}
             id={daily.id}
             key={idx}
             hours={daily.nbHours}
