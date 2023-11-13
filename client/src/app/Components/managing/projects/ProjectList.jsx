@@ -152,7 +152,7 @@ const ProjectList = ({ addForm, handleForm }) => {
       {
         headerName: "Status",
         field: "phaseStatus",
-        width: 110,
+        width: 120,
         renderCell: (params) => {
           return (
             <div>
