@@ -48,3 +48,4 @@ export const REQUEST_STATE_TRANSLATION =[
   label:REQUEST_STATES_TREATED,
 },
 ]
+

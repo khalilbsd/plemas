@@ -91,7 +91,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
         model: Phase
       },
       {
-        model:Request
+        model: Request
       }
     ]
   });
@@ -104,10 +104,11 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   let tasks = [];
   const today = new Date();
+
   for (const projIdx in projectsList) {
     let projectTasks = await Task.findAll({
       attributes: ["id", "name", "name", "startDate", "dueDate", "state"],
-      order: [["dueDate", "ASC"]],
+      order: [["dueDate", "DESC"]],
       where: {
         "dueDate": {
           [Op.gte]: today
@@ -123,7 +124,10 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
         }
       ]
     });
-
+    projectTasks.sort(
+      (a, b) =>
+        moment(b.dueDate, "DD/MM/YYYY") - moment(a.dueDate, "DD/MM/YYYY")
+    );
     if (projectTasks) {
       tasks.push({
         projectID: projectsList[projIdx].id,
@@ -131,6 +135,24 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
       });
     }
   }
+
+  tasks.sort((a, b) => b.tasks.length - a.tasks.length);
+
+  const indexMap = {};
+  tasks.forEach((task, index) => {
+    indexMap[task.projectID] = index;
+  });
+
+  // Custom sorting function based on the tasks array index
+  const customSort = (a, b) => {
+    const indexA = indexMap[a.id];
+    const indexB = indexMap[b.id];
+    // Compare the indices
+    return indexA - indexB;
+  };
+
+  // Sort the projectsList using the custom sorting function
+  projectsList.sort(customSort);
 
   res.status(200).json({
     status: "success",

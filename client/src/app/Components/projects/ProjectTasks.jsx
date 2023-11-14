@@ -31,6 +31,7 @@ import { CustomCancelIcon, CustomEditIcon, CustomJoinIcon, CustomSaveIcon } from
 import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import { projectDetails, projectTaskDetails } from "./style";
+import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 
 
 
@@ -150,7 +151,8 @@ const ProjectTasks = ({ openAddTask }) => {
         (isManager && user?.email === project?.managerDetails?.email),
 
       valueGetter: (params) => {
-        return dayjs(params.row.startDate).toDate();
+
+        return dayjs(params.row.startDate).locale("en-gb").toDate();
       }
     },
     {
@@ -161,9 +163,10 @@ const ProjectTasks = ({ openAddTask }) => {
       editable:
         isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email),
-      valueGetter: (params) => dayjs(params.row.dueDate).toDate()
+      valueGetter: (params) => dayjs(params.row.dueDate).locale("en-gb").toDate()
     },
     {
+      filterable:false,
       field: "name",
       headerName: "Taches",
       editable:
@@ -173,6 +176,8 @@ const ProjectTasks = ({ openAddTask }) => {
       width: 600
     },
     {
+      filterable:false,
+      sortable:false,
       field: "intervenants",
       headerName: "Intervenants",
       width: 300,
@@ -188,6 +193,7 @@ const ProjectTasks = ({ openAddTask }) => {
       }
     },
     {
+      filterable:false,
       field: "state",
       headerName: "État",
       width: 150,
@@ -305,6 +311,7 @@ const ProjectTasks = ({ openAddTask }) => {
             }
           }
         }}
+        slots={{ columnMenu: CustomDataGridHeaderColumnMenu }}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
