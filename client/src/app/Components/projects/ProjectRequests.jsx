@@ -39,6 +39,7 @@ import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGr
 import { CustomCancelIcon, CustomDeleteIcon, CustomEditIcon, CustomSaveIcon } from "../icons";
 import { notify } from "../notification/notification";
 import { projectDetails, projectTaskDetails } from "./style";
+import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
 
 
 
@@ -346,7 +347,9 @@ useDeleteProjectRequestMutation()
       </PopUp>
       <DataGrid
         loading={loadingRequests || updatingRequest || creatingRequest || deletingRequest}
-        slots={{ columnMenu: CustomDataGridHeaderColumnMenu }}
+        slots={{ columnMenu: CustomDataGridHeaderColumnMenu,
+          noRowsOverlay: CustomNoRowsOverlay
+        }}
         rows={requests}
         columns={columns}
         editMode="row"
@@ -364,6 +367,9 @@ useDeleteProjectRequestMutation()
         pageSizeOptions={[3]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
+        autoHeight
+        sx={{ "--DataGrid-overlayHeight": "200px" }}
+
       />
     </div>
   );

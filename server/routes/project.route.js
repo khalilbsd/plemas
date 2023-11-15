@@ -5,7 +5,9 @@ import {
   SUPERUSER_ROLE
 } from "../constants/constants.js";
 import {
+  abandonOrResumeProject,
   addProject,
+  assignManagerHours,
   checkProjectCode,
   checkProjectLinking,
   generateProjectCode,
@@ -13,8 +15,7 @@ import {
   getProjectById,
   //   changeProjectPhase,
   getProjectsInPhase,
-  updateProjectDetails,
-  assignManagerHours
+  updateProjectDetails
 } from "../controllers/projects/project.controller.js";
 import {
   addIntervenantToProject,
@@ -102,6 +103,12 @@ router
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
     assignManagerHours
+  )
+  .patch(
+    "/abandon/project/:projectID",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
+    abandonOrResumeProject
   );
 
 export default router;

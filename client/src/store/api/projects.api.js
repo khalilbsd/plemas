@@ -97,8 +97,14 @@ export const projectApi = api.injectEndpoints({
         method: "PATCH",
         data: body
       })
+    }),
+    abandonProject: builder.mutation({
+      query: ({body, projectID }) => ({
+        url: `projects/abandon/project/${projectID}`,
+        method: "PATCH",
+        data: body
+      })
     })
-
   })
 });
 
@@ -117,5 +123,7 @@ export const {
   useGetPotentielIntervenantsMutation,
   useGetProjectIntervenantsMutation,
   useRemoveIntervenantFromProjectMutation,
-  useAssignManagerHoursMutation
+  useAssignManagerHoursMutation,
+  useAbandonProjectMutation
+
 } = projectApi;

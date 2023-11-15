@@ -12,7 +12,11 @@ import { catchAsync } from "../../Utils/catchAsync.js";
 import {
   PROJECT_MANAGER_ROLE,
   PROJECT_PHASE_STATUS_IN_PROGRESS,
-  SUPERUSER_ROLE
+  SUPERUSER_ROLE,
+  TASK_STATE_ABANDONED,
+  TASK_STATE_BLOCKED,
+  TASK_STATE_DOING,
+  TASK_STATE_DONE
 } from "../../constants/constants.js";
 import {
   Lot,
@@ -34,6 +38,7 @@ import {
 } from "./lib.js";
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
+import sequelize from "../../db/db.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -305,40 +310,65 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   if (details.startDate)
     details.startDate = moment(details.startDate, "DD/MM/YYYY");
 
-  await project.update({ ...details });
+  //flag the project as done
 
-  const queryObjectPL = {};
-  queryObjectPL.projectID = req.params.projectID;
-
-  // creation of new projects lots
-  for (const lotIdx in details.lots) {
-    const lt = await Lot.findOne({ where: { name: details.lots[lotIdx] } });
-    queryObjectPL.lotID = lt.id;
-
-    const [lot, created] = await ProjectLots.findOrCreate({
-      // where:  { lotID: lt.id, projectID: req.params.projectID }})
-      where: queryObjectPL
+  // console.log("------------------------------------------------------------------------------",details,details.startDate, details.dueDate,moment(details.dueDate, "DD/MM/YYYY"))
+  if (details.dueDate) {
+    let taskIds = await Intervenant.findAll({
+      where: { projectID: req.params.projectID },
+      attributes: ["taskID"]
     });
+    let ids = [];
+    taskIds.forEach(({ taskID }) =>
+      !ids.includes(taskID) ? ids.push(taskID) : null
+    );
+    if (details.clearDueDate) {
+      details.dueDate = null;
+      details.state = TASK_STATE_DOING;
+    } else {
+      details.state = TASK_STATE_DONE;
+      await Task.update({ state: TASK_STATE_DONE }, { where: { id: ids } });
+    }
+
+    details.dueDate = moment(details.dueDate, "DD/MM/YYYY");
   }
 
-  // destruction of existing  projects lots
-  // if (!phase) {
-  const projectLots = await ProjectLots.findAll({
-    where: { projectID: req.params.projectID },
-    attributes: ["lotID", "projectID"],
-    include: [
-      {
-        model: Lot,
-        attributes: ["name"]
-      }
-    ]
-  });
-  projectLots.forEach(async (pl) => {
-    if (!details.lots.includes(pl.lot.name)) {
-      await pl.destroy();
+  await project.update({ ...details });
+
+  if (Object.keys(details).includes("lots")) {
+    const queryObjectPL = {};
+    queryObjectPL.projectID = req.params.projectID;
+
+    // creation of new projects lots
+    for (const lotIdx in details.lots) {
+      const lt = await Lot.findOne({ where: { name: details.lots[lotIdx] } });
+      queryObjectPL.lotID = lt.id;
+
+      const [lot, created] = await ProjectLots.findOrCreate({
+        // where:  { lotID: lt.id, projectID: req.params.projectID }})
+        where: queryObjectPL
+      });
     }
-  });
-  // }
+
+    // destruction of existing  projects lots
+    // if (!phase) {
+    const projectLots = await ProjectLots.findAll({
+      where: { projectID: req.params.projectID },
+      attributes: ["lotID", "projectID"],
+      include: [
+        {
+          model: Lot,
+          attributes: ["name"]
+        }
+      ]
+    });
+    projectLots.forEach(async (pl) => {
+      if (!details.lots?.includes(pl.lot.name)) {
+        await pl.destroy();
+      }
+    });
+    // }
+  }
 
   return res.status(200).json({
     status: "success",
@@ -493,10 +523,68 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   const projectHours = await Intervenant.sum("nbHours", {
     where: { projectID: project.id }
   });
-  const result = project.toJSON();
-  result.projectNbHours = projectHours;
 
-  res.status(200).json({ status: "success", project: result });
+  const result = project.toJSON();
+
+  let taskIds = await Intervenant.findAll({
+    where: {
+      projectID: project.id
+    },
+    attributes: ["taskID"]
+  });
+  let ids = [];
+
+  taskIds.forEach(({ taskID }) => {
+    if (!ids.includes(taskID)) ids.push(taskID);
+  });
+
+  result.projectNbHours = projectHours;
+  const taskStates = await Task.findAll({
+    where: {
+      id: ids,
+      state: [
+        TASK_STATE_BLOCKED,
+        TASK_STATE_DOING,
+        TASK_STATE_DONE,
+        TASK_STATE_ABANDONED
+      ]
+      //check if
+    },
+    attributes: ["state", [sequelize.fn("COUNT", sequelize.col("*")), "nb"]],
+    group: "state"
+  });
+
+  const taskStatus = taskStates.map((item) => item.toJSON());
+  if (taskStatus.length) {
+    let blockedNbr = taskStatus.filter(
+      ({ state }) => state === TASK_STATE_BLOCKED
+    )[0]?.nb;
+    if (blockedNbr) {
+      result.state = TASK_STATE_BLOCKED;
+    }
+    // } else {
+    //   let doneNbr = taskStatus.filter(
+    //     ({ state }) => state === TASK_STATE_DONE
+    //   )[0]?.nb;
+    //   console.log(
+    //     "------------------------------------------------------------------",
+    //     doneNbr,
+    //     ids.length,
+    //     doneNbr && doneNbr === taskIds.length
+    //   );
+    //   if (doneNbr && doneNbr === ids.length) {
+    //     result.state = TASK_STATE_DONE;
+    //   } else {
+    //     result.state = TASK_STATE_DOING;
+    //   }
+    // }
+  } else {
+    result.state = TASK_STATE_DOING;
+  }
+
+  return res
+    .status(200)
+    .json({ status: "success", project: result, taskStatus });
 });
 
 export const assignManagerHours = catchAsync(async (req, res, next) => {
@@ -536,4 +624,47 @@ export const assignManagerHours = catchAsync(async (req, res, next) => {
   return res
     .status(200)
     .json({ status: "success", message: "heurs renseigner avec succès" });
+});
+
+export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
+  const { projectID } = req.params;
+
+  if (!projectID) return next(new MissingParameter("Missing project id"));
+  const project = await Project.findByPk(projectID);
+
+  if (!project) return next(new ElementNotFound(`Project was not found`));
+  let actionState = req.body.action === TASK_STATE_ABANDONED ?TASK_STATE_ABANDONED:TASK_STATE_DOING
+  console.log("---------------------------------------------------------------------------------------",actionState,req.body)
+
+  let taskIds = await Intervenant.findAll({
+    where: {
+      projectID: project.id
+    },
+    attributes: ["taskID"]
+  });
+  if (taskIds.length) {
+    let ids = [];
+    taskIds.forEach(({ taskID }) => {
+      if (!ids.includes(taskID)) ids.push(taskID);
+    });
+    await Task.update(
+      {
+        state: actionState
+      },
+      {
+        where: {
+          id: ids
+          //check if
+        }
+      }
+    );
+  }
+
+  project.state = actionState
+   await project.save();
+
+  return res.status(200).json({
+    message: actionState === TASK_STATE_ABANDONED? "projet abandonné avec ses tâches" : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".'
+
+  });
 });

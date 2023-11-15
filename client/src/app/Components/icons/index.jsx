@@ -6,6 +6,7 @@ import { ReactComponent as FaEdit } from "../../public/svgs/light/pen.svg";
 import { ReactComponent as FaJoin } from "../../public/svgs/light/user-plus.svg";
 import { ReactComponent as FaCancel } from "../../public/svgs/light/xmark.svg";
 import { ReactComponent as FaDelete } from "../../public/svgs/light/trash.svg";
+import { ReactComponent as FaCheck } from "../../public/svgs/light/check.svg";
 
 
 
@@ -26,4 +27,7 @@ export const CustomEditIcon = ({ className }) => (
 );
 export const CustomDeleteIcon = ({ className }) => (
   <FaDelete className={className} /> // Customize the width and height as needed
+);
+export const CustomCheckIcon = ({ className }) => (
+  <FaCheck className={className} /> // Customize the width and height as needed
 );

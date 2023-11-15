@@ -1,6 +1,7 @@
 import {
   Chip,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   Skeleton,
@@ -13,11 +14,18 @@ import "dayjs/locale/en-gb";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
-import { NOTIFY_ERROR, NOTIFY_INFO, NOTIFY_SUCCESS } from "../../../constants/constants";
+import {
+  NOTIFY_ERROR,
+  NOTIFY_INFO,
+  NOTIFY_SUCCESS,
+  TASK_STATE_ABANDONED,
+  TASK_STATE_TRANSLATION
+} from "../../../constants/constants";
 import { SUPERUSER_ROLE } from "../../../constants/roles";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
+  useAbandonProjectMutation,
   useAssignManagerHoursMutation,
   useGetLotsMutation,
   useGetPhasesMutation,
@@ -32,6 +40,7 @@ import {
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faEdit from "../../public/svgs/light/pen.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
+import faDelete from "../../public/svgs/light/trash.svg";
 import SelectLot from "../managing/projects/SelectLot";
 import { notify } from "../notification/notification";
 import { projectDetails } from "./style";
@@ -43,6 +52,7 @@ import { projectsStyles } from "../managing/style";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
 import HoursPopUp from "./HoursPopUp";
+import PopUp from "../PopUp.jsx/PopUp";
 
 const initialState = {
   code: "",
@@ -63,6 +73,7 @@ const ProjectInfo = ({ loading, open }) => {
   const { user, isAuthenticated } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [edit, setEdit] = useState(false);
+  const [alertAbandon, setAlertAbandon] = useState(false);
   const [managerPopUP, setManagerPopUP] = useState({ open: false, hours: 0 });
   const classes = projectDetails();
   const externalProjectClasses = projectsStyles();
@@ -72,7 +83,10 @@ const ProjectInfo = ({ loading, open }) => {
   const dispatch = useDispatch();
   const [editedProject, setEditedProject] = useState(initialState);
   const [updateProject] = useUpdateProjectMutation();
-  const [assignManagerHours,{isLoading:loadMangerHours}] = useAssignManagerHoursMutation();
+  const [assignManagerHours, { isLoading: loadMangerHours }] =
+    useAssignManagerHoursMutation();
+  const [abandonProject, { isLoading: abandoningShip }] =
+    useAbandonProjectMutation();
 
   useEffect(() => {
     async function loadPhasesAndLots() {
@@ -98,8 +112,10 @@ const ProjectInfo = ({ loading, open }) => {
         name: project.name,
         phase: project?.phase?.name,
         lots: getProjectsLots(),
-        startDate: dayjs(project.startDate),
-        dueDate: project.dueDate,
+        startDate: dayjs(project.startDate).locale("en-gb"),
+        dueDate: project.dueDate
+          ? dayjs(project.dueDate).locale("en-gb")
+          : null,
         manager: project.manager,
         priority: project.priority
       });
@@ -122,6 +138,7 @@ const ProjectInfo = ({ loading, open }) => {
         if (data.code === project.code) delete data.code;
       }
       data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
+      if (data.dueDate) data.dueDate = dayjs(data.dueDate).format("DD/MM/YYYY");
       // }
 
       const res = await updateProject({
@@ -132,9 +149,9 @@ const ProjectInfo = ({ loading, open }) => {
       setEdit(false);
       setTimeout(() => {
         window.location.reload(false);
-      }, 1000);
+      }, 300);
     } catch (error) {
-      notify(NOTIFY_ERROR, error?.data.message);
+      notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
 
@@ -167,43 +184,100 @@ const ProjectInfo = ({ loading, open }) => {
   };
 
   const handleManagerHours = (e) => {
-    // if (e.target.value < project.manager){
-    //   notify(NOTIFY_INFO,"vous")
-    //   return
-    // }
     setManagerPopUP({ ...managerPopUP, hours: e.target.value });
-    return
+    return;
   };
 
   const handleSubmitManagerHours = async () => {
     try {
-      if (managerPopUP.hours === 0){
-
-        notify(NOTIFY_INFO,"rien ne changera le nombre d'heures restera le même")
-        return
+      if (managerPopUP.hours === 0) {
+        notify(
+          NOTIFY_INFO,
+          "rien ne changera le nombre d'heures restera le même"
+        );
+        return;
       }
-        let obj={}
-        if (isSuperUser) {
-          obj.user=project.manager
-        }
-        obj.hours = managerPopUP.hours;
-        const res = await assignManagerHours({body:obj,projectID:project.id}).unwrap();
-        console.log(res)
-        notify(NOTIFY_SUCCESS,res?.message)
-        handleManagerHoursPopUP()
+      let obj = {};
+      if (isSuperUser) {
+        obj.user = project.manager;
+      }
+      obj.hours = managerPopUP.hours;
+      const res = await assignManagerHours({
+        body: obj,
+        projectID: project.id
+      }).unwrap();
+      notify(NOTIFY_SUCCESS, res?.message);
+      handleManagerHoursPopUP();
     } catch (error) {
-
-      if (error.status === 400){
-        notify(NOTIFY_INFO,error?.data?.message);
-        return
+      if (error.status === 400) {
+        notify(NOTIFY_INFO, error?.data?.message);
+        return;
       }
-      notify(NOTIFY_ERROR,error?.data?.message);
-
+      notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
 
+  const isProjectAbandoned =
+    TASK_STATE_TRANSLATION.filter((state) => state.label === project.state)[0]
+      ?.value === TASK_STATE_ABANDONED;
+
   if (loading || !project)
     return <Skeleton className={classes.mainInfoSkeleton} />;
+
+  const removeProjectDueDate = async () => {
+    try {
+      const data = { dueDate: editedProject.dueDate, clearDueDate: true };
+      const res = await updateProject({
+        body: data,
+        projectID: project.id
+      }).unwrap();
+      notify(NOTIFY_SUCCESS, res?.message);
+      setEdit(false);
+      setTimeout(() => {
+        window.location.reload(false);
+      }, 300);
+    } catch (error) {
+      notify(NOTIFY_ERROR, error?.data?.message);
+    }
+  };
+
+  const abandonShip = async () => {
+    try {
+      console.log(TASK_STATE_TRANSLATION.filter(
+        (state) => state.value === TASK_STATE_ABANDONED
+      )[0].label);
+     const res =  await abandonProject({
+        projectID: project.id,
+        body:{
+          action: TASK_STATE_TRANSLATION.filter(
+            (state) => state.value === TASK_STATE_ABANDONED
+          )[0].label
+        }
+      }).unwrap();
+      setAlertAbandon(false)
+      notify(NOTIFY_SUCCESS, res?.message);
+      setTimeout(() => {
+        window.location.reload(false);
+      }, 300);
+
+    } catch (error) {
+      notify(NOTIFY_ERROR, error?.data?.message);
+    }
+  };
+  const resumeShip = async () => {
+    try {
+      const  res = await abandonProject({
+        projectID: project.id,
+        action: "Resume"
+      }).unwrap();
+      notify(NOTIFY_SUCCESS, res?.message);
+      setTimeout(() => {
+        window.location.reload(false);
+      }, 300);
+    } catch (error) {
+      notify(NOTIFY_ERROR, error?.data?.message);
+    }
+  };
 
   return (
     <div className={`${classes.mainInfo} ${open ? "collapsed" : "hidden"}`}>
@@ -310,9 +384,44 @@ const ProjectInfo = ({ loading, open }) => {
 
               {/* project state  */}
               <Grid item xs={12} sm={3} md={3} lg={3}>
-                <div className={classes.data}>
-                  <p className="label">l'Etat du projet</p>
-                  <div className="value">not implemented</div>
+                <div className={`${classes.data} w-actions`}>
+                  <div>
+                    <p className="label">l'Etat du projet</p>
+                    <div className={`value ${project.state}`}>
+                      {
+                        TASK_STATE_TRANSLATION.filter(
+                          (state) => state.label === project.state
+                        )[0]?.value
+                      }
+                    </div>
+                  </div>
+                  <PopUp
+                    loading={abandoningShip}
+                    open={alertAbandon}
+                    handleClose={() => setAlertAbandon(false)}
+                    handleSubmit={abandonShip}
+                    title="Êtes-vous sûr de vouloir abandonner le projet ? "
+                    text="si vous abandonnez le projet, toutes les tâches seront marquées comme abandonnées. les intervenants du projet perdront l'accès à leurs tâches et ne pourront plus les mettre à jour."
+                    icon={faDelete}
+                    btnText={"Abandonner"}
+                    btnLevel="danger"
+                  />
+                  {
+                    (isSuperUser ||
+                      (isManager && user?.email === project?.managerDetails?.email))&&
+                  <button
+                  className={classes.projectQuite}
+                  onClick={
+                    !isProjectAbandoned
+                    ? () => setAlertAbandon(true)
+                    : resumeShip
+                  }
+                  >
+                    {!isProjectAbandoned
+                      ?TASK_STATE_ABANDONED
+                      : "poursuivre le projet"}
+                  </button>
+              }
                 </div>
               </Grid>
 
@@ -343,6 +452,9 @@ const ProjectInfo = ({ loading, open }) => {
                               startDate: newValue
                             })
                           }
+                          slotProps={{
+                            textField: { variant: "outlined", size: "small" }
+                          }}
                         />
                       </LocalizationProvider>
                     )
@@ -350,18 +462,67 @@ const ProjectInfo = ({ loading, open }) => {
                 </div>
               </Grid>
               {/* date fin */}
-              <Grid item xs={12} sm={3} md={3} lg={3}>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
                 <div className={classes.data}>
                   <p className="label">Date Fin</p>
-                  <div className="value">
-                    {project.dueDate ? (
-                      project.dueDate
-                    ) : (
-                      <span className="outline warning">
-                        le project est cours
-                      </span>
-                    )}
-                  </div>
+                  {!edit ? (
+                    <div className="value">
+                      {project.dueDate ? (
+                        formattedDate(project.dueDate)
+                      ) : (
+                        <span className="outline warning">
+                          le project est cours
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    (
+                    editedProject.dueDate !== undefined &&
+                      editedProject.dueDate !== "" && (
+                        <div className={classes.dueDate}>
+                          <LocalizationProvider
+                            size="small"
+                            dateAdapter={AdapterDayjs}
+                            adapterLocale="en-gb"
+                          >
+                            <DatePicker
+                              size="small"
+                              defaultValue={editedProject.dueDate}
+                              minDate={editedProject.startDate}
+                              format="DD/MM/YYYY"
+                              onChange={(newValue) =>
+                                setEditedProject({
+                                  ...editedProject,
+                                  dueDate: newValue
+                                })
+                              }
+                              slotProps={{
+                                textField: {
+                                  variant: "outlined",
+                                  size: "small"
+                                }
+                              }}
+                            />
+                          </LocalizationProvider>
+                          {project.dueDate && (
+                            <div className={classes.actions}>
+                              <button
+                                onClick={removeProjectDueDate}
+                                className={classes.clearDueDate}
+                              >
+                                <ReactSVG
+                                  className="icon-container"
+                                  src={faCancel}
+                                />
+                                <span className="text">
+                                  Effacer la date d'échéance
+                                </span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                  )}
                 </div>
               </Grid>
             </Grid>
