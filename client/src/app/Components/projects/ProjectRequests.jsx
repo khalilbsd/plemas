@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -16,6 +17,9 @@ import {
   REQUEST_STATES_NOT_TREATED,
   REQUEST_STATE_TRANSLATION
 } from "../../../constants/constants";
+import useIsUserCanAccess from "../../../hooks/access";
+import useGetAuthenticatedUser from "../../../hooks/authenticated";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useCreateProjectRequestMutation,
   useDeleteProjectRequestMutation,
@@ -27,20 +31,17 @@ import {
   setProjectRequests,
   updateRequestList
 } from "../../../store/reducers/project.reducer";
+import { formattedDate } from "../../../store/utils";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faAdd from "../../public/svgs/light/plus.svg";
 import PopUp from "../PopUp.jsx/PopUp";
+import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
+import { CustomCancelIcon, CustomDeleteIcon, CustomEditIcon, CustomSaveIcon } from "../icons";
 import { notify } from "../notification/notification";
 import { projectDetails, projectTaskDetails } from "./style";
-import { TextField } from "@mui/material";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import dayjs from "dayjs";
-import useGetAuthenticatedUser from "../../../hooks/authenticated";
-import useIsUserCanAccess from "../../../hooks/access";
-import { CustomCancelIcon, CustomDeleteIcon, CustomEditIcon, CustomSaveIcon } from "../icons";
-import { formattedDate } from "../../../store/utils";
+import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
 
-const rows = [];
+
 
 const ProjectRequests = () => {
   const dispatch = useDispatch();
@@ -129,6 +130,18 @@ useDeleteProjectRequestMutation()
     setRowModesModel(newRowModesModel);
   };
 
+  const requestCreatorsNames=()=>{
+    let names =[]
+    requests.forEach(item=>{
+      if (!names.includes(`${item?.requestCreator?.UserProfile.name} ${item?.requestCreator?.UserProfile.lastName}`)){
+        names.push(`${item?.requestCreator?.UserProfile.name} ${item?.requestCreator?.UserProfile.lastName}`)
+      }
+    })
+
+    return names
+  }
+
+
   const columns = [
     {
       field: "createdAt",
@@ -143,12 +156,15 @@ useDeleteProjectRequestMutation()
       field: "description",
       headerName: "Information",
       width: 500,
-      editable: true
+      editable: true,
+      filterable:false
     },
     {
       field: "creatorID",
       headerName: "Émetteur",
       // type: "number",
+      valueOptions:requestCreatorsNames,
+      type:"singleSelect",
       width: 200,
       renderCell: ({ row }) => {
         return (
@@ -268,7 +284,7 @@ useDeleteProjectRequestMutation()
       }
     }
     loadRequests();
-  }, [dispatch, projectID]);
+  }, [dispatch, projectID,getProjectRequest]);
 
   const openAddRequest = () => {
     setAddRequest(true);
@@ -331,7 +347,9 @@ useDeleteProjectRequestMutation()
       </PopUp>
       <DataGrid
         loading={loadingRequests || updatingRequest || creatingRequest || deletingRequest}
-
+        slots={{ columnMenu: CustomDataGridHeaderColumnMenu,
+          noRowsOverlay: CustomNoRowsOverlay
+        }}
         rows={requests}
         columns={columns}
         editMode="row"
@@ -349,6 +367,9 @@ useDeleteProjectRequestMutation()
         pageSizeOptions={[3]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
+        autoHeight
+        sx={{ "--DataGrid-overlayHeight": "200px" }}
+
       />
     </div>
   );

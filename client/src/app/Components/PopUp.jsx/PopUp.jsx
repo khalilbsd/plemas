@@ -25,7 +25,8 @@ const PopUp = ({
   btnText,
   icon,
   children,
-  loading
+  loading,
+  btnLevel
 }) => {
   return (
     <Dialog
@@ -44,6 +45,7 @@ const PopUp = ({
 
       <DialogActions>
         <AddBtn
+        level={btnLevel}
           handleAdd={handleSubmit}
           title={btnText}
           // large="large"

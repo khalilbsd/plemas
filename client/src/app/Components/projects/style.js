@@ -86,22 +86,22 @@ export const projectDetails = createUseStyles({
     margin: 0,
     fontSiz: 24
   },
-  searchProjectByTitle:{
-    display:'flex',
-    alignItems:'center',
-    gap:10,
-    '& .search':{
-      background:'none',
-      border:'none',
-      '& svg':{
-        width:22,
-        height:22,
-        fill:'var(--white)'
+  searchProjectByTitle: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    "& .search": {
+      background: "none",
+      border: "none",
+      "& svg": {
+        width: 22,
+        height: 22,
+        fill: "var(--white)"
       }
     }
   },
-  search:{
-    width:'40%'
+  search: {
+    width: "40%"
   },
   mainInfo: {
     backgroundColor: "var(--app-bg-color)",
@@ -139,7 +139,7 @@ export const projectDetails = createUseStyles({
   data: {
     marginTop: 10,
     "& .label": {
-      fontSize: 14,
+      fontSize: 12,
       fontStyle: "italic",
       fontWeight: 600,
       margin: 0
@@ -147,46 +147,60 @@ export const projectDetails = createUseStyles({
     "& .value": {
       fontWeight: 700,
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
+      "&.blocked": {
+        color: "var(--toastify-color-error)"
+      },
+      "&.doing": {
+        color: "var(--orange)"
+      },
+      "&.done": {
+        color: "var(--light-green)"
+      },
+      "&.abandoned": {
+        color: "var(--black)"
+      }
     },
     "& .position": {
       fontWeight: 500,
-      width:150,
+      width: 150,
       color: "var(--orange)",
       border: "2px solid var(--orange)",
       padding: 15,
       borderRadius: 5,
       marginLeft: "5%",
-      background:'none',
-      transition:'all 0.3s ease-in-out',
-      '& .init':{
-        height:14,
-        display:'block',
-        width:'100%',
+      background: "none",
+      transition: "all 0.3s ease-in-out",
+      "& .init": {
+        height: 14,
+        display: "block",
+        width: "100%",
         overflow: "block"
       },
-      '& .changed':{
-        height:0,
-        display:'block',
-        width:0,
+      "& .changed": {
+        height: 0,
+        display: "block",
+        width: 0,
         overflow: "hidden"
       },
-      '&:hover':{
-
-      backgroundColor: "var(--orange)",
-      color:'var(--white)',
-      '& .changed':{
-        height:14,
-        width:'100%',
-        overflow: "visible"
-      },
-      '& .init':{
-        height:0,
-        width:0,
-        overflow: "hidden"
-      },
-
+      "&:hover": {
+        backgroundColor: "var(--orange)",
+        color: "var(--white)",
+        "& .changed": {
+          height: 14,
+          width: "100%",
+          overflow: "visible"
+        },
+        "& .init": {
+          height: 0,
+          width: 0,
+          overflow: "hidden"
+        }
       }
+    },
+    '&.w-actions':{
+      display:'flex',
+      gap:10
     }
   },
   manager: {
@@ -320,6 +334,51 @@ export const projectDetails = createUseStyles({
         backgroundColor: "var(--toastify-color-error)"
       }
     }
+  },
+  dueDate: {
+    display: "flex",
+    "& $actions": {
+      position: "unset",
+      margin: 0,
+      justifyContent: "flex-start",
+      gap:15,
+      "& button": {
+        background: "none",
+        minWidth: "100%",
+        width: "fit-content",
+        justifyContent: "flex-start",
+        display:'flex',
+        '& .icon-container':{
+          backgroundColor:'var(--light-green)',
+          minWidth:24,
+          width:24,
+          height:24,
+          borderRadius:'100%',
+          display:'flex',
+          justifyContent:'center',
+          alignItems:'center'
+        },
+        "& svg": {
+          width: 11,
+          height: 11
+        },
+        '& .text':{
+            color:'var(--light-green)',
+            whiteSpace:'nowrap',
+            textWrap:'nowrap'
+        }
+      }
+    }
+  },
+  projectQuite:{
+    borderRadius:5,
+    padding:5,
+    backgroundColor:'var(--black)',
+    fontWeight:600,
+    color:'var(--white)',
+    textTransform:'capitalize',
+    border:'none',
+    fontSize:13
   },
   intervenantsContainer: {
     display: "flex",
@@ -456,25 +515,25 @@ export const projectTaskDetails = createUseStyles({
     "&:hover": {
       backgroundColor: "var(--pastel-orange)"
     },
-    display:'flex',
-    alignItems:'center',
-    justifyContent: 'center',
-    gap:10
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10
   },
-  btnLoader:{
-    width:'20%',
-    '& span':{
-      height:'28px !important',
-      width:'28px !important'
+  btnLoader: {
+    width: "20%",
+    "& span": {
+      height: "28px !important",
+      width: "28px !important"
     }
   },
-  btnSaveIcon:{
-    height:22,
-    width:22,
-    '& svg':{
-      height:22,
-      width:22,
-      fill:'var(--white)'
+  btnSaveIcon: {
+    height: 22,
+    width: 22,
+    "& svg": {
+      height: 22,
+      width: 22,
+      fill: "var(--white)"
     }
   },
 
@@ -489,8 +548,8 @@ export const projectTaskDetails = createUseStyles({
     padding: 8,
     border: "2px solid",
     flex: 1,
-    display:'block',
-    width:'100%',
+    display: "block",
+    width: "100%",
     textAlign: "center",
     "&.doing": {
       color: "var(--orange)",
@@ -507,6 +566,26 @@ export const projectTaskDetails = createUseStyles({
     "&.blocked": {
       color: "var(--toastify-icon-color-error)",
       borderColor: "var(--toastify-icon-color-error)"
+    }
+  },
+  list: {
+    "& .blocked": {
+      opacity: 0.5,
+      backgroundColor: "var(--app-bg-color)"
+    }
+  },
+  tacheVerification:{
+    padding:'3px 10px',
+    width:'100%',
+    textAlign:'center',
+    borderRadius:5,
+    border:'1px solid var(--black)',
+    color:'var(--black)',
+    fontWeight:600,
+    '&.verified':{
+      color:'white',
+      border:'none',
+      backgroundColor:'var(--light-green)'
     }
   }
 });

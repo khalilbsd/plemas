@@ -16,11 +16,26 @@ export const btnStyle = createUseStyles({
     gap: 10,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "var(--dark-green)",
+
     transition: "0.3s all ease-in-out",
 
-    "&:hover": {
-      backgroundColor: "var(--light-green)"
+    "&.danger": {
+      backgroundColor: "var(--toastify-color-progress-error)",
+      "&:hover": {
+        opacity: 0.8
+      }
+    },
+    "&.warning": {
+      backgroundColor: "var(--orange)",
+      "&:hover": {
+        opacity: 0.8
+      }
+    },
+    "&.normal": {
+      backgroundColor: "var(--dark-green)",
+      "&:hover": {
+        backgroundColor: "var(--light-green)"
+      }
     }
   },
   icon: {
@@ -583,13 +598,13 @@ export const projectsStyles = createUseStyles({
     margin: 0,
     paddingLeft: 5,
     position: "relative",
-    display:'flex',
+    display: "flex",
     "& .priority": {
       display: "block",
       marginRight: 5,
       width: 18,
       height: 18,
-      borderRadius:'100%'
+      borderRadius: "100%"
     }
   },
 

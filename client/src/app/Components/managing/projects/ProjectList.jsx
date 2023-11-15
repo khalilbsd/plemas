@@ -13,6 +13,7 @@ import { TASK_STATE_TRANSLATION } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
 import faAdd from "../../../public/svgs/solid/plus.svg";
+import CustomDataGridHeaderColumnMenu from "../../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 import { projectTaskDetails } from "../../projects/style";
 import LinkProject from "./addProject/LinkProject";
 import { priorityColors } from "./addProject/PriorityField";
@@ -39,12 +40,28 @@ const ProjectList = ({ addForm, handleForm }) => {
     return { code: priority.code, value: priority.value };
   };
 
+  const projectManagerNamesOption = () => {
+    let names = [];
+    projectList().forEach((item) => {
+      if (!names.includes(item?.manager?.fullName)) {
+        names.push(item?.manager?.fullName);
+      }
 
+    });
+    return names;
+  };
+  const phaseOptionValues = () => {
+    let phases = [];
+    projectList().forEach((item) => {
+      if (!phases.includes(item?.activePhase)) {
+        phases.push(item?.activePhase);
+      }
 
+    });
+    return phases;
+  };
 
   function projectTasks(projectID) {
-
-
     const projectTasksList = tasks?.filter(
       (item) => item.projectID === projectID
     );
@@ -55,7 +72,7 @@ const ProjectList = ({ addForm, handleForm }) => {
 
   function convertTwoWeeksDates() {
     return twoWeeksDates?.map(({ date }) => {
-      return  date.split(" ")[1]
+      return date.split(" ")[1];
     });
   }
 
@@ -65,36 +82,41 @@ const ProjectList = ({ addForm, handleForm }) => {
         headerName: "Nom du projet",
         field: "projectCustomId",
         width: 200,
-        renderCell:(params)=>{
+        renderCell: (params) => {
           return (
-            <p
-
-            className={classes.projectName}>
-              <span className="priority"
+            <p className={classes.projectName}>
+              <span
+                className="priority"
                 style={{
-                   backgroundColor: getPriorityColor(params.row.priority).code
+                  backgroundColor: getPriorityColor(params.row.priority).code
                 }}
               ></span>
-              {params.row?.projectCustomId}</p>
-          )
+              {params.row?.projectCustomId}
+            </p>
+          );
         }
       },
       {
         headerName: "Chef de projet",
         field: "manager",
+        filterable: true,
         width: 200,
+        type: "singleSelect",
+        valueOptions: projectManagerNamesOption(),
+        valueGetter: (params) => params.row?.manager?.fullName,
+        // filterValueGetter: (params) => params.row?.manager?.fullName,
         renderCell: (params) => {
-
           if (params.row.manager.image) {
             return (
               <div className={classes.managerContainer}>
-
                 <img
                   className={classes.avatar}
                   src={`${process.env.REACT_APP_SERVER_URL}${params.row.manager.image}`}
                   alt={`manager ${params.row.manager.fullName} avatar`}
                 />
-                <p className={classes.managerFullName}>{params.row.manager.fullName}</p>
+                <p className={classes.managerFullName}>
+                  {params.row.manager.fullName}
+                </p>
               </div>
             );
           }
@@ -108,7 +130,9 @@ const ProjectList = ({ addForm, handleForm }) => {
                 {params.row.manager?.fullName[0]?.toUpperCase()}
                 {params.row.manager?.fullName.split(" ")[1][0].toUpperCase()}
               </span>
-              <p className={classes.managerFullName}>{params.row.manager.fullName}</p>
+              <p className={classes.managerFullName}>
+                {params.row.manager.fullName}
+              </p>
             </div>
           );
         }
@@ -126,25 +150,34 @@ const ProjectList = ({ addForm, handleForm }) => {
       {
         headerName: "Phase",
         field: "activePhase",
+        type: "singleSelect",
+        filterable: true,
+        valueOptions: phaseOptionValues(),
+        valueGetter: (params) => params.row?.activePhase,
         width: 80
       },
       {
         headerName: "Taches",
         field: "tasks",
+        filterable: false,
         width: 200,
+        columnMenu: false,
+        sortable: false,
+        menu: false,
         renderCell: (params) => {
-          return (
-
-              projectTasks(params.row.id)?.length?
-              <div className={classes.task}>
-                {projectTasks(params.row.id)?.length &&
-                  projectTasks(params.row.id)?.map((task,idx) => (
-                    <div  key={idx} className={classes.taskStates}>{task?.name}</div>
-                  ))}
-              </div> :
-              <p className={classes.emptyTasks}>il n'y a pas de tâches planifiées</p>
-
-
+          return projectTasks(params.row.id)?.length ? (
+            <div className={classes.task}>
+              {projectTasks(params.row.id)?.length &&
+                projectTasks(params.row.id)?.map((task, idx) => (
+                  <div key={idx} className={classes.taskStates}>
+                    {task?.name}
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className={classes.emptyTasks}>
+              il n'y a pas de tâches planifiées
+            </p>
           );
         }
       },
@@ -153,23 +186,28 @@ const ProjectList = ({ addForm, handleForm }) => {
         headerName: "Status",
         field: "phaseStatus",
         width: 120,
+        filterable: false,
+        columnMenu: false,
+        sortable: false,
+        menu: false,
         renderCell: (params) => {
           return (
             <div>
-              {projectTasks(params.row.id)?.length ?
-                projectTasks(params.row.id)?.map((task,idx) => (
-
+              {projectTasks(params.row.id)?.length ? (
+                projectTasks(params.row.id)?.map((task, idx) => (
                   <div key={idx} className={classes.taskStates}>
                     <span className={`${tasksStyles.task} ${task.state}`}>
-                    {
-                    TASK_STATE_TRANSLATION.filter(state=>state.label === task.state)[0]?.value
-                  }
-                      </span>
-                   </div>
+                      {
+                        TASK_STATE_TRANSLATION.filter(
+                          (state) => state.label === task.state
+                        )[0]?.value
+                      }
+                    </span>
+                  </div>
                 ))
-              :
-              <span></span>
-              }
+              ) : (
+                <span></span>
+              )}
             </div>
           );
         }
@@ -178,6 +216,10 @@ const ProjectList = ({ addForm, handleForm }) => {
         headerName: "dates",
         field: "dates",
         width: 750,
+        filterable: false,
+        columnMenu: false,
+        sortable: false,
+        menu: false,
         renderHeader: () => {
           return (
             <div className={classes.datesData}>
@@ -205,35 +247,45 @@ const ProjectList = ({ addForm, handleForm }) => {
           const convertedDates = convertTwoWeeksDates();
 
           // console.log(convertedDates);
-          const taskElements = projectTasks(params.row.id)?.map((task,idx) => {
+          const taskElements = projectTasks(params.row.id)?.map((task, idx) => {
             // Perform calculations here
             let { startDate, dueDate } = task;
             //converting dates
-            let start = formattedDate(startDate,true);
-            let due =formattedDate(dueDate,true);
+            let start = formattedDate(startDate, true);
+            let due = formattedDate(dueDate, true);
 
-            let startIdx = convertedDates.findIndex((date)=>date === start)
-            let dueIdx = convertedDates.findIndex((date)=>date === due)
+            let startIdx = convertedDates.findIndex((date) => date === start);
+            let dueIdx = convertedDates.findIndex((date) => date === due);
             // console.log("start date ",start," postion ", startIdx," end date ",due," position",dueIdx);
-            let width = 0
-            let position = 0
-            if (startIdx === -1 && dueIdx === -1 ){
+            let width = 0;
+            let position = 0;
+            if (startIdx === -1 && dueIdx === -1) {
+              let startConverted = dayjs(start, "DD/MM/YYYY");
+              let dueConverted = dayjs(due, "DD/MM/YYYY");
 
-              let startConverted = dayjs(start, 'DD/MM/YYYY');
-              let dueConverted = dayjs(due, 'DD/MM/YYYY');
-
-              if ((startConverted < dayjs(new Date()))&&(dueConverted > dayjs(new Date()))) {
-                  width = 15 * 50
-                  position=0
+              if (
+                startConverted < dayjs(new Date()) &&
+                dueConverted > dayjs(new Date())
+              ) {
+                width = 15 * 50;
+                position = 0;
               }
-
-            }else{
-              position = startIdx !== -1 ? (startIdx  ) *50 : 0
-              width = dueIdx !== -1 ? dueIdx?dueIdx*50:1*50  : (convertedDates.length - startIdx)  * 50
+            } else {
+              position = startIdx !== -1 ? startIdx * 50 : 0;
+              width =
+                dueIdx !== -1
+                  ? dueIdx
+                    ? dueIdx * 50
+                    : 1 * 50
+                  : (convertedDates.length - startIdx) * 50;
             }
 
             return (
-              <div  key={idx} style={{width:width,transform: `translateX(${position}px)` }}  className={classes.progressBarContainer}>
+              <div
+                key={idx}
+                style={{ width: width, transform: `translateX(${position}px)` }}
+                className={classes.progressBarContainer}
+              >
                 <span className={classes.progressBar}> </span>
               </div>
             );
@@ -245,7 +297,6 @@ const ProjectList = ({ addForm, handleForm }) => {
     ];
     return columns;
   };
-
 
   const handleNavigation = (rowID) => {
     navigate(`/projects/${rowID}`);
@@ -275,7 +326,6 @@ const ProjectList = ({ addForm, handleForm }) => {
     });
   };
 
-
   const getRowClassName = (params) => {
     return params.row.requestsTreated === false ? "notTreatedRequest" : "";
   };
@@ -304,7 +354,7 @@ const ProjectList = ({ addForm, handleForm }) => {
         )}
       </div>
       <DataGrid
-        loading={!projectList()?.length  }
+        loading={!projectList()?.length}
         className={`${listClasses.list} integrated`}
         rows={projectList()}
         columns={getColumns()}
@@ -321,6 +371,7 @@ const ProjectList = ({ addForm, handleForm }) => {
             }
           }
         }}
+        slots={{ columnMenu: CustomDataGridHeaderColumnMenu }}
         pageSizeOptions={[9]}
         // disableRowSelectionOnClick
       />

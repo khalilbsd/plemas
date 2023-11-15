@@ -59,7 +59,6 @@ export const projectIntervenantList = async (projectID) => {
   const formattedIntervenants = intervenants.map(item=>item.toJSON())
   formattedIntervenants.map(interv=>{
   let lineIdx = grouped.map(item=>item.intervenantID).indexOf(interv.intervenantID)
-  console.log(lineIdx)
   if (lineIdx > -1) {
     formattedIntervenants[lineIdx].nbHours +=interv.nbHours
   }else{

@@ -68,14 +68,14 @@ const TasksList = ({
         <h2 className={classes.sectionTitle}>vos tâches</h2>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
           <DatePicker
-            className={classes.datePicker}
+            // className={classes.datePicker}
             label="Date"
             defaultValue={historyDate}
             minDate={dayjs().subtract(7, "day")}
             maxDate={dayjs()}
-            size="small"
+            slotProps={{ textField: { variant: 'standard',size:"small" } }}
             onChange={(newValue) => handleDateChange(newValue)}
-            renderInput={(params) => <TextField {...params} />}
+
           />
         </LocalizationProvider>
       </div>

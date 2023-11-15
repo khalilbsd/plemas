@@ -30,23 +30,30 @@ const taskSlice = createSlice({
 
       state.userPotentialTasks = action.payload.joinableTasks;
     },
-    updateUserPotentialTasks:(state,action)=>{
+    updateUserPotentialTasks: (state, action) => {
+      const task = state.userPotentialTasks.filter(
+        (t) => t.taskID === action.payload
+      );
 
-      const task = state.userPotentialTasks.filter(t=>t.taskID === action.payload)
-
-
-      state.userGeneralTasks.push(task[0])
-      state.userPotentialTasks= state.userPotentialTasks.filter(t=>t.taskID !== action.payload)
+      state.userGeneralTasks.push(task[0]);
+      state.userPotentialTasks = state.userPotentialTasks.filter(
+        (t) => t.taskID !== action.payload
+      );
     },
     updateUserGeneralTasksHours: (state, action) => {
-      state.userGeneralTasks = state.userGeneralTasks.map(task=>{
-          if (task.id === action.payload.id) {
-            task.nbHours = action.payload.hours
-          }
-        return task
-      })
-
+      state.userGeneralTasks = state.userGeneralTasks.map((task) => {
+        if (task.id === action.payload.id) {
+          task.nbHours = action.payload.hours;
+        }
+        return task;
+      });
     },
+    updateSpecificTaskAttribute:(state,action)=>{
+
+      const taskIdx = state.projectTasks.map(task=>task.id).indexOf(parseInt(action.payload.taskID))
+      console.log(action.payload,taskIdx)
+      state.projectTasks[taskIdx][action.payload.attribute] = action.payload.value
+    }
     // setUserPotentialTasks: (state, action) => {
     // }
   }
@@ -59,10 +66,10 @@ export const {
   clearProjectTasks,
   setUserDailyTasks,
   updateUserGeneralTasksHours,
-  updateUserPotentialTasks
+  updateUserPotentialTasks,
+  updateSpecificTaskAttribute
   // setUserGeneralTasks,
   // setUserPotentialTasks
-
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
