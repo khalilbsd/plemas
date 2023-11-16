@@ -30,6 +30,10 @@ import {
   setProjectTask,
   updateSpecificTaskAttribute
 } from "../../../store/reducers/task.reducer";
+import {
+  updateProjectState,
+
+} from "../../../store/reducers/project.reducer";
 
 import faAdd from "../../public/svgs/solid/plus.svg";
 import {
@@ -89,12 +93,12 @@ const ProjectTasks = ({ openAddTask }) => {
   };
 
   const handleEditClick = (id, isIntervenant) => () => {
-    if (user?.email && isIntervenant) {
+    if (user?.email && isIntervenant || isSuperUser ||  (isManager && user?.email === project?.managerDetails?.email)) {
+
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
       return;
     }
-    if (isSuperUser) {
-    }
+
   };
 
   const handleSaveClick = (id) => () => {
@@ -106,6 +110,7 @@ const ProjectTasks = ({ openAddTask }) => {
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true }
     });
+
   };
 
   const processRowUpdate = async (newRow) => {
@@ -128,7 +133,11 @@ const ProjectTasks = ({ openAddTask }) => {
       const res = await updateTask({ body: obj, taskID: newRow.id }).unwrap();
       const updatedRow = { ...newRow, isNew: false };
       notify(NOTIFY_SUCCESS, res?.message);
-
+      // check is task  status change
+      if (newRow.state){
+          let task = tasks.filter(item=>item.id === parseInt(newRow.id))[0]
+          if ((task.state !== newRow.state) && (newRow.state === TASK_STATE_BLOCKED || task.state === TASK_STATE_BLOCKED )) dispatch(updateProjectState(TASK_STATE_TRANSLATION.filter(state=>state.value === newRow.state)[0].label))
+      }
       return updatedRow;
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
@@ -414,7 +423,7 @@ const ProjectTasks = ({ openAddTask }) => {
         pageSizeOptions={[4]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
-        sx={{ "--DataGrid-overlayHeight": "200px" }}
+        sx={{ "--DataGrid-overlayHeight": "180px" }}
         isCellEditable={(params) =>
           isSuperUser ||
           (isManager && user?.email === project?.managerDetails?.email) ||
