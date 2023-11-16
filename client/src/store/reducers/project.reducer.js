@@ -31,6 +31,9 @@ const projectSlice = createSlice({
     },
     removeRequestFromList:(state,action)=>{
       state.projectRequest = state.projectRequest.filter(request => request.id !== action.payload)
+    },
+    updateProjectState:(state,action)=>{
+      state.projectDetails.state = action.payload
     }
   }
 });
@@ -42,7 +45,8 @@ export const {
   setTwoWeeksDatesList,
   setProjectRequests,
   updateRequestList,
-  removeRequestFromList
+  removeRequestFromList,
+  updateProjectState
 } = projectSlice.actions;
 
 export default projectSlice.reducer;
