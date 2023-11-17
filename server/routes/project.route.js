@@ -13,6 +13,7 @@ import {
   generateProjectCode,
   getAllProjects,
   getProjectById,
+  getProjectTracking,
   //   changeProjectPhase,
   getProjectsInPhase,
   updateProjectDetails
@@ -78,6 +79,12 @@ router
     isUserAuthenticated,
     checkUserRole(ALL_ROLES),
     getProjectById
+  )
+  .get(
+    "/get/project/:projectID/tracking",
+    isUserAuthenticated,
+    checkUserRole(ALL_ROLES),
+    getProjectTracking
   )
   // .patch('/change/project/:custom_name/phase',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),changeProjectPhase)
   .get(

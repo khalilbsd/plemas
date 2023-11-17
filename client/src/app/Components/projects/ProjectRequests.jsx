@@ -316,6 +316,10 @@ useDeleteProjectRequestMutation()
       }, 500);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
+      closeAddRequest();
+      setTimeout(() => {
+        setCreatingRequest(false)
+      }, 500);
     }
   };
 

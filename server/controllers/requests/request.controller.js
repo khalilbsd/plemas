@@ -1,6 +1,7 @@
 import { AppError, ElementNotFound, MissingParameter, UnAuthorized } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import { PROJECT_MANAGER_ROLE } from "../../constants/constants.js";
+import { takeNote } from "../../Utils/writer.js";
+import { ACTION_NAME_REQUEST_CREATION, PROJECT_MANAGER_ROLE } from "../../constants/constants.js";
 import { Project, Request, User, UserProfile } from "../../db/relations.js";
 import logger from "../../log/config.js";
 import { serializeRequest, serializeRequestList } from "./lib.js";
@@ -53,6 +54,8 @@ export const createRequest = catchAsync(async (req, res, next) => {
         }]
       }
     ]});
+  await takeNote(ACTION_NAME_REQUEST_CREATION,req.user.email,project.id,{requestID:request.id})
+
     return res
     //formatting the request obj
     .status(200)

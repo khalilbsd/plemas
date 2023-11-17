@@ -10,6 +10,7 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
+  ACTION_NAME_PROJECT_CREATION,
   PROJECT_MANAGER_ROLE,
   PROJECT_PHASE_STATUS_IN_PROGRESS,
   SUPERUSER_ROLE,
@@ -39,6 +40,7 @@ import {
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
 import sequelize from "../../db/db.js";
+import { getTracking, takeNote } from "../../Utils/writer.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -191,12 +193,7 @@ export const addProject = catchAsync(async (req, res, next) => {
       )
     );
 
-  // const projectNameValid = await Project.findOne({
-  //   where: { name: data.name }
-  // });
-  // console.log("SEARCHED PROJECT WITH SIM NAME ", projectNameValid);
-  // if (projectNameValid)
-  //   return next(new MalformedObjectId("Project already exists with that name"));
+
 
   if (!data.phase || !data.lot.length)
     return next(new MalformedObjectId("lots and phase are mandatory"));
@@ -249,6 +246,8 @@ export const addProject = catchAsync(async (req, res, next) => {
         });
       }
     }
+    //saving tracking
+    await takeNote(ACTION_NAME_PROJECT_CREATION,req.user.email,newProject.id)
     return res.status(200).json({
       status: "success",
       message: "project created successfully",
@@ -668,3 +667,16 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
 
   });
 });
+
+export const getProjectTracking = catchAsync(async(req,res,next)=>{
+  const { projectID } = req.params;
+
+  if (!projectID) return next(new MissingParameter("Missing project id"));
+  const project = await Project.findByPk(projectID);
+
+  if (!project) return next(new ElementNotFound(`Project was not found`));
+  const tracking = await getTracking(projectID)
+
+  return res.status(200).json({tracking})
+})
+

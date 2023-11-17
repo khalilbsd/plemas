@@ -11,6 +11,7 @@ import Task from "../../models/tasks/tasks.model.js";
 import moment from "moment";
 import logger from "../../log/config.js";
 import {
+  ACTION_NAME_TASK_CREATION,
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
@@ -20,6 +21,7 @@ import {
 import { projectIntervenantList } from "./intervenant.controller.js";
 import { projectPotentialIntervenants } from "../users/user.controller.js";
 import InterventionHour from "../../models/tasks/interventionHours.model.js";
+import { takeNote } from "../../Utils/writer.js";
 
 /*
  * params [projectID] REQUIRED
@@ -155,6 +157,7 @@ export const createTask = catchAsync(async (req, res, next) => {
   task.state = TASK_STATE_TRANSLATION.filter(
     (state) => state.value === task.state
   )[0].label;
+  await takeNote(ACTION_NAME_TASK_CREATION,req.user.email,project.id,{taskID:task.id})
   return res.status(200).json({ status: "success", message, task });
 });
 

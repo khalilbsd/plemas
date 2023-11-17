@@ -7,6 +7,7 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
+  ACTION_NAME_ADD_INTERVENANT,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../../constants/constants.js";
@@ -15,6 +16,7 @@ import { ForbiddenError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import Intervenant from "../../models/tasks/Intervenant.model.js";
 import { getUserByEmail } from "../users/lib.js";
+import { takeNote } from "../../Utils/writer.js";
 
 export const getAllIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
@@ -113,6 +115,8 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
         new AppError("La création a échoué, veuillez réessayer plus tard ")
       );
     }
+  await takeNote(ACTION_NAME_ADD_INTERVENANT,req.user.email,project.id)
+
   }
   res.status(200).json({
     state: "success",
