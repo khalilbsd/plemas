@@ -56,7 +56,7 @@ router
     getTaskPotentialIntervenants
   )
   .patch(
-    "/update_details/task/:taskID",
+    "/update_details/project/:projectID/task/:taskID",
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
     updateTaskInfo

@@ -7,7 +7,7 @@ import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
 import { listStyle, projectsStyles } from "../style";
 // import { projectTestList } from "./test/projectList.test";
 import { Chip } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, frFR } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { TASK_STATE_TRANSLATION } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
@@ -17,8 +17,10 @@ import CustomDataGridHeaderColumnMenu from "../../customDataGridHeader/CustomDat
 import { projectTaskDetails } from "../../projects/style";
 import LinkProject from "./addProject/LinkProject";
 import { priorityColors } from "./addProject/PriorityField";
+import CustomNoRowsOverlay from "../../NoRowOverlay/CustomNoRowsOverlay";
+import CustomDataGridToolbar from "../../customDataGridToolbar/CustomDataGridToolbar";
 
-const ProjectList = ({ addForm, handleForm }) => {
+const ProjectList = ({ addForm, handleForm,loadingProjectList }) => {
   const classes = projectsStyles();
   const tasksStyles = projectTaskDetails();
 
@@ -354,7 +356,8 @@ const ProjectList = ({ addForm, handleForm }) => {
         )}
       </div>
       <DataGrid
-        loading={!projectList()?.length}
+        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+        loading={loadingProjectList}
         className={`${listClasses.list} integrated`}
         rows={projectList()}
         columns={getColumns()}
@@ -364,6 +367,7 @@ const ProjectList = ({ addForm, handleForm }) => {
             ? handleClickProject
             : handleNavigation
         }
+        sx={{ "--DataGrid-overlayHeight": "180px !important" }}
         initialState={{
           pagination: {
             paginationModel: {
@@ -371,7 +375,14 @@ const ProjectList = ({ addForm, handleForm }) => {
             }
           }
         }}
-        slots={{ columnMenu: CustomDataGridHeaderColumnMenu }}
+        // localeText={{
+        //   toolbarExportCSV: "kharej o CSV",
+        // }}
+
+        slots={{ columnMenu: CustomDataGridHeaderColumnMenu,
+          noRowsOverlay: CustomNoRowsOverlay,
+          toolbar:CustomDataGridToolbar
+        }}
         pageSizeOptions={[9]}
         // disableRowSelectionOnClick
       />

@@ -11,7 +11,14 @@ import Task from "../../models/tasks/tasks.model.js";
 import moment from "moment";
 import logger from "../../log/config.js";
 import {
+  ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,
+  ACTION_NAME_ADD_INTERVENANT_TASK,
+  ACTION_NAME_ASSIGN_INTERVENANT_HOURS,
+  ACTION_NAME_INTERVENANT_JOINED_TASK,
   ACTION_NAME_TASK_CREATION,
+  ACTION_NAME_TASK_STATE_CHANGED,
+  ACTION_NAME_TASK_UPDATE,
+  ACTION_NAME_VERIFY_TASK,
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
@@ -116,6 +123,7 @@ export const createTask = catchAsync(async (req, res, next) => {
 
   const task = await Task.create({ ...data });
   let message = "la tâche a été créée avec succès";
+  await takeNote(ACTION_NAME_TASK_CREATION,req.user.email,project.id,{taskID:task.id})
   if (req.body.intervenants) {
     for (const idx in req.body.intervenants) {
       const user = await User.findOne({
@@ -126,8 +134,17 @@ export const createTask = catchAsync(async (req, res, next) => {
         projectID: projectID,
         taskID: task.id
       });
+
     }
     message += " et les intervenants sont associé";
+
+    if (req.body.intervenants.length > 1 ){
+      await takeNote(ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,req.user.email,project.id,{taskID:task.id})
+    }else if (req.body.intervenants){
+      await takeNote(ACTION_NAME_ADD_INTERVENANT_TASK,req.user.email,project.id,{taskID:task.id})
+
+    }
+
   } else {
     await Intervenant.create({
       projectID: projectID,
@@ -157,7 +174,7 @@ export const createTask = catchAsync(async (req, res, next) => {
   task.state = TASK_STATE_TRANSLATION.filter(
     (state) => state.value === task.state
   )[0].label;
-  await takeNote(ACTION_NAME_TASK_CREATION,req.user.email,project.id,{taskID:task.id})
+
   return res.status(200).json({ status: "success", message, task });
 });
 
@@ -195,6 +212,9 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       logger.info(
         `intervenant has been associated to task ${taskID} in the project ${projectID}`
       );
+
+    await takeNote(ACTION_NAME_INTERVENANT_JOINED_TASK,req.user.email,project.id,{taskID})
+
       return res.status(200).json({
         status: "success",
         message: "vous avez été assigné à la tâche"
@@ -224,7 +244,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       logger.info(
         `intervenant has been associated to task ${taskID} in the project ${projectID}`
       );
-
+      await takeNote(ACTION_NAME_INTERVENANT_JOINED_TASK,req.user.email,project.id,{taskID})
       return res.status(200).json({
         status: "success",
         message: "vous avez été assigné à la tâche"
@@ -284,6 +304,13 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
     logger.info(
       `intervenant has been associated to task ${taskID} in the project ${projectID}`
     );
+  }
+
+  if (emails.length > 1 ){
+    await takeNote(ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,req.user.email,project.id,{taskID})
+  }else if (emails.length){
+    await takeNote(ACTION_NAME_ADD_INTERVENANT_TASK,req.user.email,project.id,{taskID})
+
   }
 
   return res
@@ -370,6 +397,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       date: moment(date)
     });
   }
+  await takeNote(ACTION_NAME_ASSIGN_INTERVENANT_HOURS,req.user.email,project.id,{taskID:task.id})
 
   res.status(200).json({
     status: "success",
@@ -566,7 +594,7 @@ export const getTaskPotentialIntervenants = catchAsync(
 );
 
 export const updateTaskInfo = catchAsync(async (req, res, next) => {
-  const { taskID } = req.params;
+  const { taskID,projectID } = req.params;
   if (!taskID) return next(new MissingParameter("la tache est requise"));
   const task = await Task.findByPk(taskID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
@@ -580,7 +608,20 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
       (state) => state.label === req.body.state
     )[0].value;
   }
+  const oldState = task.state
+  const isAlreadyVerified = task.isVerified
   await task.update({ ...data });
+
+  if (!isAlreadyVerified && data.isVerified ){
+    await takeNote(ACTION_NAME_VERIFY_TASK,req.user.email,projectID,{taskID:task.id})
+  }else if ((data.state)&& (data.state !== oldState)){
+    await takeNote(ACTION_NAME_TASK_STATE_CHANGED,req.user.email,projectID,{taskID:task.id})
+  }else{
+    await takeNote(ACTION_NAME_TASK_UPDATE,req.user.email,projectID,{taskID:task.id})
+
+  }
+  // console.log("---------------*--------------------",data.state ,oldState , (data.state)&& (data.state !== oldState))
+
 
   logger.info(`updating the task ${task.id}`);
   return res

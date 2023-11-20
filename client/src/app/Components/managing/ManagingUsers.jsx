@@ -4,7 +4,6 @@ import {
   Select,
   Switch
 } from "@mui/material";
-import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -24,7 +23,6 @@ import {
 import AddBtn from "./AddBtn";
 //modal
 
-import { ToastContainer } from "react-toastify";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import {
   CLIENT_ROLE,
@@ -133,7 +131,7 @@ const ManagingUsers = () => {
   const handleBanUser = async (e) => {
     try {
       let resp;
-      console.log(!e.target.checked);
+
       dispatch(
         updateUserInList({ ban: !e.target.checked, email: e.target.id })
       );

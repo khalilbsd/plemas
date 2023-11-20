@@ -104,7 +104,14 @@ export const projectApi = api.injectEndpoints({
         method: "PATCH",
         data: body
       })
-    })
+    }),
+    projectGetLog: builder.mutation({
+      query: (projectID) => ({
+        url: `projects/get/project/${projectID}/tracking`,
+        method: "GET",
+
+      })
+    }),
   })
 });
 
@@ -124,6 +131,7 @@ export const {
   useGetProjectIntervenantsMutation,
   useRemoveIntervenantFromProjectMutation,
   useAssignManagerHoursMutation,
-  useAbandonProjectMutation
+  useAbandonProjectMutation,
+  useProjectGetLogMutation
 
 } = projectApi;

@@ -1,7 +1,7 @@
 import { AppError, ElementNotFound, MissingParameter, UnAuthorized } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { takeNote } from "../../Utils/writer.js";
-import { ACTION_NAME_REQUEST_CREATION, PROJECT_MANAGER_ROLE } from "../../constants/constants.js";
+import { ACTION_NAME_ADMIN_REQUEST_DELETE, ACTION_NAME_REQUEST_CREATION, ACTION_NAME_REQUEST_STATE_CHANGED, ACTION_NAME_REQUEST_UPDATE, PROJECT_MANAGER_ROLE } from "../../constants/constants.js";
 import { Project, Request, User, UserProfile } from "../../db/relations.js";
 import logger from "../../log/config.js";
 import { serializeRequest, serializeRequestList } from "./lib.js";
@@ -69,6 +69,8 @@ export const updateRequest = catchAsync(async (req, res, next) => {
   const { projectID, requestID } = req.params;
   if (!projectID) return next(new MissingParameter("Missing project id"));
   const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("Projet introuvable"));
+
   const request = await Request.findByPk(requestID, { where: { projectID } });
   if (!request) return next(new ElementNotFound("Requête introuvable"));
   if (!req.user.isSuperUser && req.user.role !== PROJECT_MANAGER_ROLE) {
@@ -81,8 +83,16 @@ export const updateRequest = catchAsync(async (req, res, next) => {
   if (req.user.role === PROJECT_MANAGER_ROLE && project.manager !== req.user.id)
     return next(new UnAuthorized("Vous n’êtes pas le  chef de ce projet"));
   console.log(req.body);
-
+  const oldState = request.state
   await request.update({ ...req.body });
+  if (req.body.state !== oldState){
+    await takeNote(ACTION_NAME_REQUEST_STATE_CHANGED,req.user.email,project.id,{requestID:request.id})
+
+  }else{
+    await takeNote(ACTION_NAME_REQUEST_UPDATE,req.user.email,project.id,{requestID:request.id})
+
+  }
+
   return res.status(200).json({ message: "requête mis à jour" });
 });
 
@@ -90,9 +100,12 @@ export const deleteRequest =catchAsync(async (req,res,next)=>{
     const { projectID, requestID } = req.params;
   if (!projectID) return next(new MissingParameter("Missing project id"));
   const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("Projet introuvable"));
+
   const request = await Request.findByPk(requestID, { where: { projectID } });
   if (!request) return next(new ElementNotFound("Requête introuvable"));
     await request.destroy();
+    await takeNote(ACTION_NAME_ADMIN_REQUEST_DELETE,req.user.email,project.id,{requestID:request.id})
 
     return res.status(200).json({status:"success",message:"Requête supprimé"})
 

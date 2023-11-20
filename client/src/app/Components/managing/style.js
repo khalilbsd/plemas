@@ -145,6 +145,9 @@ export const listStyle = createUseStyles({
         border: "none !important",
         alignItems: "flex-start",
         padding: "7px 0"
+      },
+      '& .MuiDataGrid-overlayWrapperInner':{
+        height:'600px !important'
       }
     },
     "& .notTreatedRequest": {

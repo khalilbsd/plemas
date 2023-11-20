@@ -48,6 +48,7 @@ import ProjectIntervenant from "./ProjectIntervenant";
 import { projectDetails, projectTaskDetails } from "./style";
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
+import { frFR } from "@mui/x-data-grid";
 
 const ProjectTasks = ({ openAddTask }) => {
   const { projectID } = useParams();
@@ -93,7 +94,7 @@ const ProjectTasks = ({ openAddTask }) => {
   };
 
   const handleEditClick = (id, isIntervenant) => () => {
-    if (user?.email && isIntervenant || isSuperUser ||  (isManager && user?.email === project?.managerDetails?.email)) {
+    if ((user?.email && isIntervenant) || isSuperUser ||  (isManager && user?.email === project?.managerDetails?.email)) {
 
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
       return;
@@ -130,7 +131,7 @@ const ProjectTasks = ({ openAddTask }) => {
         obj = { ...newRow };
       }
       obj.state = newRow.state;
-      const res = await updateTask({ body: obj, taskID: newRow.id }).unwrap();
+      const res = await updateTask({ body: obj, taskID: newRow.id,projectID:projectID }).unwrap();
       const updatedRow = { ...newRow, isNew: false };
       notify(NOTIFY_SUCCESS, res?.message);
       // check is task  status change
@@ -148,11 +149,11 @@ const ProjectTasks = ({ openAddTask }) => {
     setRowModesModel(newRowModesModel);
   };
 
-  // Define custom date formatting function
-  const customDateFormat = (date) => {
-    // Customize the date formatting according to your locale
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  };
+  // // Define custom date formatting function
+  // const customDateFormat = (date) => {
+  //   // Customize the date formatting according to your locale
+  //   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  // };
 
   const handleVerifyClick = async (e) => {
     try {
@@ -175,7 +176,8 @@ const ProjectTasks = ({ openAddTask }) => {
     {
       field: "startDate",
       headerName: "Debut",
-      type: "date",
+      format:"DD/MM/YYYY",
+            type: "date",
       width: 150,
       editable:
         isSuperUser ||
@@ -357,16 +359,25 @@ const ProjectTasks = ({ openAddTask }) => {
               )}
               color="inherit"
             />,
-            <GridActionsCellItem
-              data-task-id={row.id}
-              icon={<CustomJoinIcon className={classes.icon} />}
-              label="Joindre tache"
-              className="textPrimary"
-              onClick={joinTask}
-              color="inherit"
-            />
+
           );
+
+
+
         }
+        if ((!emailsList.includes(user?.email))&& ( TASK_STATE_ABANDONED !== row.state)){
+          renderActions.push(
+            <GridActionsCellItem
+            data-task-id={row.id}
+            icon={<CustomJoinIcon className={classes.icon} />}
+            label="Joindre tache"
+            className="textPrimary"
+            onClick={joinTask}
+            color="inherit"
+          />
+          )
+        }
+
         return renderActions;
       }
     }
@@ -382,9 +393,9 @@ const ProjectTasks = ({ openAddTask }) => {
       : "";
   };
 
-  const localeText = {
-    dateFormat: customDateFormat
-  };
+  // const localeText = {
+  //   dateFormat: customDateFormat
+  // };
 
   return (
     <div className={classesDetails.card}>
@@ -398,10 +409,11 @@ const ProjectTasks = ({ openAddTask }) => {
         </div>
       )}
       <DataGrid
+      localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         autoHeight
         rows={tasks || []}
         columns={columns}
-        localeText={localeText}
+        // localeText={localeText}
         initialState={{
           pagination: {
             paginationModel: {

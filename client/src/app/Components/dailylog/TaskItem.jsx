@@ -18,7 +18,7 @@ const TaskItem = ({
   joinDisabled
 }) => {
   const dispatch= useDispatch()
-  console.log();
+
   const classes = dailyLogStyle();
   const marks = [
     {

@@ -27,7 +27,7 @@ import { NOTIFY_ERROR } from "../../../constants/constants";
 import { notify } from "../notification/notification";
 import { setProjectTask } from "../../../store/reducers/task.reducer";
 import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
-const ProjectHeader = ({ loading }) => {
+const ProjectHeader = ({ loading ,openLogTab}) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
   const edit = useGetStateFromStore("project", "edit");
@@ -124,7 +124,7 @@ const ProjectHeader = ({ loading }) => {
           alignItems="center"
           sx={{ padding: "15px 20px" }}
         >
-          <Grid item xs={6} sm={6} md={5} lg={7} xl={9}>
+          <Grid item xs={6} sm={6} md={5} lg={7} xl={7}>
             <div className={classes.searchProjectByTitle}>
               {!toggleSearch ? (
                 <h1 className={classes.projectTitle}>{project.customId}</h1>
@@ -194,6 +194,14 @@ const ProjectHeader = ({ loading }) => {
                 </div>
               )}
             </div>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+
+              <button onClick={openLogTab} className={classes.seeMoreProject}>
+               historique du projet
+              </button>
+
           </Grid>
           <Grid item xs={12} sm={12} md={2} lg={2} xl={1}>
             {!details ? (

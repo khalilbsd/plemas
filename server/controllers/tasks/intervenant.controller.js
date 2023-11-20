@@ -7,7 +7,9 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
-  ACTION_NAME_ADD_INTERVENANT,
+  ACTION_NAME_ADD_INTERVENANT_PROJECT,
+  ACTION_NAME_ADD_INTERVENANTS_BULK_PROJECT,
+  ACTION_NAME_DELETE_INTERVENANT,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../../constants/constants.js";
@@ -95,6 +97,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
 
   const { emails } = req.body;
   if (!emails) return next(new MissingParameter("Emails est requis"));
+
   for (const email in emails) {
     const user = await getUserByEmail(emails[email]);
 
@@ -115,9 +118,17 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
         new AppError("La création a échoué, veuillez réessayer plus tard ")
       );
     }
-  await takeNote(ACTION_NAME_ADD_INTERVENANT,req.user.email,project.id)
+
 
   }
+
+  if (emails.length > 1 ){
+    await takeNote(ACTION_NAME_ADD_INTERVENANTS_BULK_PROJECT,req.user.email,project.id,{})
+  }else if (emails.length){
+    await takeNote(ACTION_NAME_ADD_INTERVENANT_PROJECT,req.user.email,project.id,{})
+
+  }
+
   res.status(200).json({
     state: "success",
     message: "l'utilisateur est devenu un intervenant"
@@ -168,6 +179,8 @@ export const removeIntervenantFromProject = catchAsync(
         new AppError("Vous ne pouvez pas retirer cet intervenant", 304)
       );
     }
+  await takeNote(ACTION_NAME_DELETE_INTERVENANT,req.user.email,project.id,{})
+
     //TODO:: add task check rules
     await intervenant.destroy();
     res

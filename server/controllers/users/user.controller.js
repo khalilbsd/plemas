@@ -126,9 +126,10 @@ export const projectPotentialIntervenants = async (projectID) => {
     role: { [Op.ne]: CLIENT_ROLE }
   };
   const existingIntervenants = await Intervenant.findAll({
-    where: { projectID: projectID, intervenantID: { [Op.nq]: null } },
+    where: { projectID: projectID, intervenantID: { [Op.not]: null } },
     attributes: ["intervenantID"]
   });
+
 
 
 
@@ -141,6 +142,7 @@ export const projectPotentialIntervenants = async (projectID) => {
       [Op.notIn]: list
     };
   }
+
 
   const users = await User.findAll({
     where: objectQuery,

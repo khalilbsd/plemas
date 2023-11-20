@@ -4,7 +4,8 @@ const initialState = {
   projectDetails: {},
   projectRequest: [],
   edit: false,
-  twoWeeksList: []
+  twoWeeksList: [],
+  projectLog:[],
 };
 
 const projectSlice = createSlice({
@@ -34,6 +35,9 @@ const projectSlice = createSlice({
     },
     updateProjectState:(state,action)=>{
       state.projectDetails.state = action.payload
+    },
+    setProjectLog:(state,action)=>{
+      state.projectLog = action.payload
     }
   }
 });
@@ -46,7 +50,8 @@ export const {
   setProjectRequests,
   updateRequestList,
   removeRequestFromList,
-  updateProjectState
+  updateProjectState,
+  setProjectLog
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

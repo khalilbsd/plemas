@@ -74,6 +74,7 @@ export const projectDetails = createUseStyles({
     borderRadius: 30,
     padding: 10,
     marginLeft: "auto",
+    width:'fit-content',
     "&:hover": {
       background: "var(--pastel-green)"
     },
@@ -198,9 +199,9 @@ export const projectDetails = createUseStyles({
         }
       }
     },
-    '&.w-actions':{
-      display:'flex',
-      gap:10
+    "&.w-actions": {
+      display: "flex",
+      gap: 10
     }
   },
   manager: {
@@ -341,44 +342,44 @@ export const projectDetails = createUseStyles({
       position: "unset",
       margin: 0,
       justifyContent: "flex-start",
-      gap:15,
+      gap: 15,
       "& button": {
         background: "none",
         minWidth: "100%",
         width: "fit-content",
         justifyContent: "flex-start",
-        display:'flex',
-        '& .icon-container':{
-          backgroundColor:'var(--light-green)',
-          minWidth:24,
-          width:24,
-          height:24,
-          borderRadius:'100%',
-          display:'flex',
-          justifyContent:'center',
-          alignItems:'center'
+        display: "flex",
+        "& .icon-container": {
+          backgroundColor: "var(--light-green)",
+          minWidth: 24,
+          width: 24,
+          height: 24,
+          borderRadius: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
         },
         "& svg": {
           width: 11,
           height: 11
         },
-        '& .text':{
-            color:'var(--light-green)',
-            whiteSpace:'nowrap',
-            textWrap:'nowrap'
+        "& .text": {
+          color: "var(--light-green)",
+          whiteSpace: "nowrap",
+          textWrap: "nowrap"
         }
       }
     }
   },
-  projectQuite:{
-    borderRadius:5,
-    padding:5,
-    backgroundColor:'var(--black)',
-    fontWeight:600,
-    color:'var(--white)',
-    textTransform:'capitalize',
-    border:'none',
-    fontSize:13
+  projectQuite: {
+    borderRadius: 5,
+    padding: 5,
+    backgroundColor: "var(--black)",
+    fontWeight: 600,
+    color: "var(--white)",
+    textTransform: "capitalize",
+    border: "none",
+    fontSize: 13
   },
   intervenantsContainer: {
     display: "flex",
@@ -444,16 +445,20 @@ export const projectDetails = createUseStyles({
       }
     },
     "& button": {
+      transition:'all 0.3s ease-in-out',
       "&[disabled]": {
         opacity: 0.5
       },
       marginTop: 15,
-      background: "var(--toastify-color-progress-error)",
+      backgroundColor: "var(--toastify-color-progress-error)",
       color: "var(--white)",
       height: 40,
       borderRadius: 10,
       border: "none",
-      width: "100%"
+      width: "100%",
+      "&:hover": {
+        backgroundColor: "var(--orange)"
+      }
     }
   }
 });
@@ -574,18 +579,105 @@ export const projectTaskDetails = createUseStyles({
       backgroundColor: "var(--app-bg-color)"
     }
   },
-  tacheVerification:{
-    padding:'3px 10px',
-    width:'100%',
-    textAlign:'center',
-    borderRadius:5,
-    border:'1px solid var(--black)',
-    color:'var(--black)',
-    fontWeight:600,
-    '&.verified':{
-      color:'white',
-      border:'none',
-      backgroundColor:'var(--light-green)'
+  tacheVerification: {
+    padding: "3px 10px",
+    width: "100%",
+    textAlign: "center",
+    borderRadius: 5,
+    border: "1px solid var(--black)",
+    color: "var(--black)",
+    fontWeight: 600,
+    "&.verified": {
+      color: "white",
+      border: "none",
+      backgroundColor: "var(--light-green)"
     }
   }
 });
+
+
+export const logStyle=createUseStyles({
+  logTab:{
+      width:0,
+      overflow:'hidden',
+      height:'100%',
+      position:'absolute',
+      top:0,
+      maxHeight:'calc(100vh - 40px)',
+      right:0,
+      // bottom:0,
+      background:'var(--white)',
+      borderTopLeftRadius:30,
+      borderBottomLeftRadius:30,
+      transition:'all 0.3s ease-in-out',
+      opacity:0,
+      '&.open':{
+        opacity:1,
+      padding:20,
+      width:'40%',
+      zIndex:999,
+      borderLeft:'5px solid var(--orange)'
+    },
+    // '&.closed':{
+    //   overflow:
+    // },
+    height:'100%',
+    overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "8px"
+    },
+
+    "&::-webkit-scrollbar-track": {
+      WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+      borderRadius: "10px"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      borderRadius: "10px",
+      // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+      background: "var(--pastel-green)"
+    },
+  }
+  ,
+  logContainer:{
+    '& .header':{
+      display:'flex',
+      gap:20,
+      '& button':{
+        border:'none',
+        backgroundColor:'var(--light-green)',
+        borderRadius:'100%',
+        width:32,
+        height:32,
+        '&:hover':{
+          opacity:0.8
+        },
+        '& svg':{
+          height:18,
+          width:18,
+          fill:'var(--white)'
+        }
+      }
+    },
+
+  },
+  logList:{
+    marginTop:20,
+  },
+  logLine:{
+    display:'flex',
+    justifyContent:'space-between',
+    alignItems:'center',
+    fontSize:14,
+    '& p':{
+
+    },
+    '& .text':{
+      fontSize:13,
+    },
+    '& .date':{
+      fontStyle:'italic',
+      fontWeight:'600',
+      color:'grey'
+    }
+  }
+})

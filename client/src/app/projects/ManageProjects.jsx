@@ -224,6 +224,7 @@ const [creatingProject, setCreatingProject] = useState(false)
         )}
         <Grid item xs={12} lg={12} sx={{height:'100%'}}>
           <ProjectList
+            loadingProjectList= {isLoading}
             addForm={addProjectForm}
             handleForm={handleOpenAddForm}
           />

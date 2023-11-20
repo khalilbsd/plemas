@@ -10,7 +10,10 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
+  ACTION_NAME_ADD_PROJECT_MANAGER,
+  ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
   ACTION_NAME_PROJECT_CREATION,
+  ACTION_NAME_PROJECT_UPDATE,
   PROJECT_MANAGER_ROLE,
   PROJECT_PHASE_STATUS_IN_PROGRESS,
   SUPERUSER_ROLE,
@@ -247,7 +250,9 @@ export const addProject = catchAsync(async (req, res, next) => {
       }
     }
     //saving tracking
-    await takeNote(ACTION_NAME_PROJECT_CREATION,req.user.email,newProject.id)
+    await takeNote(ACTION_NAME_PROJECT_CREATION,req.user.email,newProject.id,{})
+    await takeNote(ACTION_NAME_ADD_PROJECT_MANAGER,req.user.email,newProject.id,{})
+
     return res.status(200).json({
       status: "success",
       message: "project created successfully",
@@ -368,6 +373,9 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     });
     // }
   }
+
+
+  await takeNote(ACTION_NAME_PROJECT_UPDATE,req.user.email,project.id,{})
 
   return res.status(200).json({
     status: "success",
@@ -619,6 +627,7 @@ export const assignManagerHours = catchAsync(async (req, res, next) => {
   project.managerHours = hours;
 
   await project.save();
+  await takeNote(ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,req.user.email,project.id,{})
 
   return res
     .status(200)

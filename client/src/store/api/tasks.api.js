@@ -50,8 +50,8 @@ export const taskApi = api.injectEndpoints({
       })
     }),
     updateTask: builder.mutation({
-      query: ({ body, taskID }) => ({
-        url: `tasks/update_details/task/${taskID}`,
+      query: ({ body, taskID,projectID }) => ({
+        url: `tasks/update_details/project/${projectID}/task/${taskID}`,
         method: "PATCH",
         data: body
       })

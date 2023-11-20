@@ -564,7 +564,7 @@ const ProjectInfo = ({ loading, open }) => {
               {/* manager */}
               <Grid item xs={12}>
                 <div className={classes.data}>
-                  {!edit ? (
+                  {!edit || project.managerHours > 0 ? (
                     <div className="value">
                       <div className={classes.manager}>
                         {project.managerDetails?.UserProfile?.image ? (

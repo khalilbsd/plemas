@@ -72,7 +72,11 @@ export const getTracking = async (projectID) => {
       const data = JSON.parse(line);
       if (data.projectID !== parseInt(projectID)) continue;
       const text = action_phrases[data.code](data);
-      projectTracking.push(text);
+      projectTracking.push({
+        date :data.action_date,
+        text
+
+      });
     }
 
     return projectTracking;
