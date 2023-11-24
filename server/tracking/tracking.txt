@@ -153,3 +153,6 @@
 {"projectID":16,"taskID":null,"requestID":66,"email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"24/11/2023"}
 {"projectID":16,"taskID":null,"requestID":67,"email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"24/11/2023"}
 {"projectID":16,"taskID":null,"requestID":68,"email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"24/11/2023"}
+{"projectID":18,"taskID":49,"requestID":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"24/11/2023"}
+{"projectID":18,"taskID":49,"requestID":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANTS_BULK_TASK","code":117,"action_date":"24/11/2023"}
+{"projectID":18,"taskID":"49","requestID":null,"email":"houssem.badr@gmail.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"24/11/2023"}

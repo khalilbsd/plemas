@@ -416,7 +416,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   } else {
     history = moment(req.query.history, "DD/MM/YYYY");
   }
-  console.log("-------------------------------", history, req.query.history);
+
   const allTasksRaw = await Intervenant.findAll({
     where: { intervenantID: req.user.id },
     include: [
@@ -429,9 +429,9 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
 
         where: {
           state: TASK_STATE_DOING,
-          startDate: {
-            [Op.lte]: history
-          }
+          // startDate: {
+          //   [Op.lte]: history
+          // }
         },
         as: "task"
       }
@@ -495,12 +495,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   joinableTasks = joinableTasks.concat(tmp);
   //  joinableTasks = joinableTasks.concat(otherTasks)
 
-  // // ili  todays tasks (dueDate === Date.now() and taskID !== null)
-  // const today = moment(new Date(), "DD/MM/YYYY").startOf("day");
-  // const todaysTasks = allTasks.filter(
-  //   ({ task, taskID }) =>
-  //     taskID && today.isSame(moment(task.dueDate, "DD/MM/YYYY").startOf("day"))
-  // );
+
 
   for (const index in allTasks) {
     let interventionHours = await InterventionHour.findOne({
