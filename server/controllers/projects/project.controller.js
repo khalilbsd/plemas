@@ -110,7 +110,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
   const projectsList = serializeProject(projects);
   projectsList.sort((a, b) => b.code - a.code);
 
-  const dates = calculateDates(2);
+  const dates = calculateDates(3);
 
   let tasks = [];
   const today = new Date();
@@ -316,7 +316,6 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
   //flag the project as done
 
-  // console.log("------------------------------------------------------------------------------",details,details.startDate, details.dueDate,moment(details.dueDate, "DD/MM/YYYY"))
   if (details.dueDate) {
     let taskIds = await Intervenant.findAll({
       where: { projectID: req.params.projectID },
@@ -336,6 +335,15 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
     details.dueDate = moment(details.dueDate, "DD/MM/YYYY");
   }
+
+  if ([TASK_STATE_ABANDONED,TASK_STATE_DONE].includes(details.state)) {
+    details.dueDate = moment(new Date(),"DD/MM/YYYY")
+    if (TASK_STATE_ABANDONED === details.state){
+      abandonProject(TASK_STATE_ABANDONED,project.id)
+    }
+  }
+
+  console.log(details)
 
   await project.update({ ...details });
 
@@ -562,32 +570,17 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   });
 
   const taskStatus = taskStates.map((item) => item.toJSON());
-  if (taskStatus.length) {
-    let blockedNbr = taskStatus.filter(
-      ({ state }) => state === TASK_STATE_BLOCKED
-    )[0]?.nb;
-    if (blockedNbr) {
-      result.state = TASK_STATE_BLOCKED;
-    }
-    // } else {
-    //   let doneNbr = taskStatus.filter(
-    //     ({ state }) => state === TASK_STATE_DONE
-    //   )[0]?.nb;
-    //   console.log(
-    //     "------------------------------------------------------------------",
-    //     doneNbr,
-    //     ids.length,
-    //     doneNbr && doneNbr === taskIds.length
-    //   );
-    //   if (doneNbr && doneNbr === ids.length) {
-    //     result.state = TASK_STATE_DONE;
-    //   } else {
-    //     result.state = TASK_STATE_DOING;
-    //   }
-    // }
-  } else {
-    result.state = TASK_STATE_DOING;
-  }
+  // if (taskStatus.length) {
+  //   let blockedNbr = taskStatus.filter(
+  //     ({ state }) => state === TASK_STATE_BLOCKED
+  //   )[0]?.nb;
+  //   if (blockedNbr) {
+  //     result.state = TASK_STATE_BLOCKED;
+  //   }
+
+  // } else {
+  //   result.state = TASK_STATE_DOING;
+  // }
 
   return res
     .status(200)
@@ -642,11 +635,23 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
   let actionState = req.body.action === TASK_STATE_ABANDONED ?TASK_STATE_ABANDONED:TASK_STATE_DOING
-  console.log("---------------------------------------------------------------------------------------",actionState,req.body)
+  abandonProject(actionState,project.id)
+  project.state = actionState
+   await project.save();
+
+  return res.status(200).json({
+    message: actionState === TASK_STATE_ABANDONED? "projet abandonné avec ses tâches" : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".'
+
+  });
+});
+
+
+const abandonProject = async(action,projectID)=>{
+try {
 
   let taskIds = await Intervenant.findAll({
     where: {
-      projectID: project.id
+      projectID:projectID
     },
     attributes: ["taskID"]
   });
@@ -657,7 +662,7 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
     });
     await Task.update(
       {
-        state: actionState
+        state: action
       },
       {
         where: {
@@ -667,15 +672,10 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
       }
     );
   }
-
-  project.state = actionState
-   await project.save();
-
-  return res.status(200).json({
-    message: actionState === TASK_STATE_ABANDONED? "projet abandonné avec ses tâches" : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".'
-
-  });
-});
+} catch (error) {
+  logger.error(error)
+}
+}
 
 export const getProjectTracking = catchAsync(async(req,res,next)=>{
   const { projectID } = req.params;

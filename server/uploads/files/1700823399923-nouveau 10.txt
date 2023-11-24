@@ -1,0 +1,4 @@
+missed during compilation 
+	favicon 
+	test.csv and buld permsions 666
+	

@@ -38,6 +38,10 @@ const projectSlice = createSlice({
     },
     setProjectLog:(state,action)=>{
       state.projectLog = action.payload
+    },
+    updateFileRequestList:(state,action)=>{
+      const requestIdx = state.projectRequest.map(request=>request.id).indexOf(parseInt(action.payload.requestID))
+      state.projectRequest[requestIdx].file  = action.payload.urls
     }
   }
 });
@@ -51,7 +55,8 @@ export const {
   updateRequestList,
   removeRequestFromList,
   updateProjectState,
-  setProjectLog
+  setProjectLog,
+  updateFileRequestList
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

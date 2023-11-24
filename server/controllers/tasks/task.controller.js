@@ -22,6 +22,8 @@ import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
+  TASK_STATE_ABANDONED,
+  TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
@@ -530,9 +532,9 @@ export const getTaskPotentialIntervenants = catchAsync(
         return {
           id: worker.intervenantID,
           email: worker?.user?.email,
-          name: worker?.user?.UserProfile.name,
-          lastName: worker?.user?.UserProfile.lastName,
-          image: worker?.user?.UserProfile.image
+          name: worker?.user?.UserProfile?.name,
+          lastName: worker?.user?.UserProfile?.lastName,
+          image: worker?.user?.UserProfile?.image
         };
       });
     }
@@ -596,6 +598,10 @@ export const getTaskPotentialIntervenants = catchAsync(
 export const updateTaskInfo = catchAsync(async (req, res, next) => {
   const { taskID,projectID } = req.params;
   if (!taskID) return next(new MissingParameter("la tache est requise"));
+  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+
   const task = await Task.findByPk(taskID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
   let data = {};
@@ -607,6 +613,10 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
     data.state = TASK_STATE_TRANSLATION.filter(
       (state) => state.label === req.body.state
     )[0].value;
+  }
+  if (data.state === TASK_STATE_BLOCKED) {
+    project.state = TASK_STATE_BLOCKED
+    await project.save()
   }
   const oldState = task.state
   const isAlreadyVerified = task.isVerified

@@ -7,17 +7,20 @@ import { FILE_TYPE_PATH, IMAGE_TYPE_PATH } from "../constants/constants.js";
 const createMulterMiddleware = (fieldName) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+      console.log("_________________INSODE MIDDLE",file)
       let uploadDir = "../uploads";
 
       // Determine the upload directory based on the fieldName parameter
       if (fieldName === "profileImage") {
         uploadDir = IMAGE_TYPE_PATH;
-      } else if (fieldName === "pdf") {
+      // } else if (fieldName === "pdf") {
+      } else  {
         uploadDir = FILE_TYPE_PATH;
       }
       cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
+      console.log("_________________INSODE MIDDLE",file)
       cb(null, Date.now() + "-" + file.originalname); // Generate unique file names
     }
   });
@@ -26,7 +29,8 @@ const createMulterMiddleware = (fieldName) => {
     limits: {
       fileSize: 5 * 1024 * 1024, // 5MB in bytes (5 * 1024 * 1024 bytes)
     },
-  }).single(fieldName);
+  // }).single(fieldName);
+  }).array(fieldName,10);
 };
 
 // Export the createMulterMiddleware function

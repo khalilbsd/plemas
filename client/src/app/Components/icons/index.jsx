@@ -7,6 +7,7 @@ import { ReactComponent as FaJoin } from "../../public/svgs/light/user-plus.svg"
 import { ReactComponent as FaCancel } from "../../public/svgs/light/xmark.svg";
 import { ReactComponent as FaDelete } from "../../public/svgs/light/trash.svg";
 import { ReactComponent as FaCheck } from "../../public/svgs/light/check.svg";
+import { ReactComponent as FaPlus } from "../../public/svgs/light/plus.svg";
 
 
 
@@ -30,4 +31,7 @@ export const CustomDeleteIcon = ({ className }) => (
 );
 export const CustomCheckIcon = ({ className }) => (
   <FaCheck className={className} /> // Customize the width and height as needed
+);
+export const CustomPlusIcon = ({ className }) => (
+  <FaPlus className={className} /> // Customize the width and height as needed
 );

@@ -13,7 +13,7 @@ export const projectDetails = createUseStyles({
     position: "relative",
     backgroundColor: "var(--white)",
     borderRadius: 30,
-    overflow: "hidden",
+    // overflow: "hidden",
     transition: "all 0.2s ease-in-out",
     "&.colored": {
       backgroundColor: "var(--light-green)"
@@ -38,12 +38,13 @@ export const projectDetails = createUseStyles({
     padding: 20
   },
   projectHeader: {
-    minHeight: 40,
+    minHeight: 20,
+    height: 60,
     background: "var(--light-green)",
     color: "var(--white)",
     width: "100%",
     maxWidth: "100%",
-    height: "100%",
+
     borderRadius: 30,
     display: "flex",
     alignItems: "center",
@@ -62,6 +63,7 @@ export const projectDetails = createUseStyles({
       }
     }
   },
+
   seeMoreProject: {
     background: "none",
     border: "none",
@@ -69,14 +71,22 @@ export const projectDetails = createUseStyles({
     display: "flex",
     alignItems: "center",
     fontWeight: 600,
+    fontSize: 14,
     gap: 10,
     transition: "all 0.2s ease-in-out",
     borderRadius: 30,
     padding: 10,
     marginLeft: "auto",
-    width:'fit-content',
+    width: "fit-content",
     "&:hover": {
       background: "var(--pastel-green)"
+    },
+    "&.close": {
+      backgroundColor: "var(--orange)",
+      color: "var(--white)",
+      "&:hover": {
+        background: "var(--bright-orange)"
+      }
     },
     "& svg": {
       width: 18,
@@ -85,7 +95,7 @@ export const projectDetails = createUseStyles({
   },
   projectTitle: {
     margin: 0,
-    fontSiz: 24
+    fontSize: 18
   },
   searchProjectByTitle: {
     display: "flex",
@@ -132,7 +142,7 @@ export const projectDetails = createUseStyles({
     padding: 20
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 600,
     margin: 0,
     textTransform: "capitalize"
@@ -208,7 +218,9 @@ export const projectDetails = createUseStyles({
     display: "flex",
     gap: 10,
     alignItems: "center",
-
+    "&.left": {
+      marginLeft: "auto"
+    },
     "& img": {
       height: 52,
       width: 52,
@@ -231,6 +243,7 @@ export const projectDetails = createUseStyles({
       height: "32px !important",
       width: "32px !important",
       fontSize: 18,
+      transition: "all 0.3s ease-in-out",
       "& img": {
         height: 32,
         width: 32
@@ -240,12 +253,24 @@ export const projectDetails = createUseStyles({
         height: 32,
         width: 32,
         fontSize: 18
+      },
+      "& .manager-name": {
+        width: 0
+      },
+      "&:hover": {
+        marginLeft: 0,
+        "& .manager-name": {
+          width: 300,
+          overflow: "visible"
+        }
       }
     },
 
     "& .manager-name": {
       fontWeight: 600,
       fontSize: 16,
+      overflow: "hidden",
+      transition: "all 0.3s ease-in-out",
       "& .email": {
         fontWeight: 500,
         color: "grey"
@@ -259,8 +284,8 @@ export const projectDetails = createUseStyles({
     justifyContent: "center",
 
     "& .circle": {
-      width: 52,
-      height: 52,
+      width: 32,
+      height: 32,
       borderRadius: "100%"
     }
   },
@@ -286,6 +311,7 @@ export const projectDetails = createUseStyles({
     alignItems: "center",
     gap: 20,
     minWidth: 100,
+
     "&.pr ": {
       position: "unset",
       marginTop: 20,
@@ -334,6 +360,14 @@ export const projectDetails = createUseStyles({
       "&.cancel": {
         backgroundColor: "var(--toastify-color-error)"
       }
+    },
+    "&.fw button": {
+      width: "100%",
+      borderRadius: 30
+    },
+    "&.ttb": {
+      flexDirection: "column",
+      alignItems: "flex-end"
     }
   },
   dueDate: {
@@ -418,7 +452,12 @@ export const projectDetails = createUseStyles({
           width: 22,
           height: 22
         }
-      }
+      },
+      "& .MuiAvatar-root.MuiAvatar-circular.MuiAvatar-colorDefault.MuiAvatarGroup-avatar.css-sxh3gq-MuiAvatar-root-MuiAvatarGroup-avatar":
+        {
+          width: 32,
+          height: 32
+        }
     }
   },
   detailIntervenant: {
@@ -445,7 +484,7 @@ export const projectDetails = createUseStyles({
       }
     },
     "& button": {
-      transition:'all 0.3s ease-in-out',
+      transition: "all 0.3s ease-in-out",
       "&[disabled]": {
         opacity: 0.5
       },
@@ -458,6 +497,65 @@ export const projectDetails = createUseStyles({
       width: "100%",
       "&:hover": {
         backgroundColor: "var(--orange)"
+      }
+    }
+  },
+  projectTitleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10
+  },
+  unfinished: {
+    fontSize: 14,
+    fontWeight: 600,
+    margin: "5px 0",
+    "&.doing": {
+      color: "var(--orange)"
+    },
+
+    "&.requests": {
+      color: "var(--toastify-color-progress-error)"
+    }
+  },
+  headerLots: {
+    margin: 0,
+    textAlign: "right",
+    "& .singleLot": {
+      fontWeight: 600,
+      padding: 5
+    }
+  },
+  cardTitle: {
+    position: "absolute",
+    left: 20,
+    zIndex: 999,
+    top: -10,
+    "& button": {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      color: "var(--white)",
+
+      border: "none",
+      fontSize: 14,
+      fontWeight: 600,
+      backgroundColor: "var(--orange)",
+      marginBottom: 15,
+      borderRadius: 10,
+      height: 30,
+      "& .icon-container div": {
+        backgroundColor: "var(--white)",
+        borderRadius: "100%",
+        width: 20,
+        height: 20,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      },
+      "& svg": {
+        fill: "var(--orange)",
+        width: 15,
+        height: 15
       }
     }
   }
@@ -547,36 +645,82 @@ export const projectTaskDetails = createUseStyles({
     height: 18
   },
   task: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 600,
-    borderRadius: 5,
-    padding: 8,
-    border: "2px solid",
+    // borderRadius: 5,
+    padding: 5,
+    // border: "2px solid",
+    background: "none",
     flex: 1,
     display: "block",
     width: "100%",
-    textAlign: "center",
+    textAlign: "left",
+    "&.wb": {
+      border: "none",
+      textAlign: "left",
+      padding: 0
+    },
     "&.doing": {
       color: "var(--orange)",
-      borderColor: "var(--orange)"
+      "&:not(.wb)": {
+        borderColor: "var(--orange)"
+      }
     },
     "&.done": {
       color: "var(--dark-green)",
-      borderColor: "var(--dark-green)"
+      "&:not(.wb)": {
+        borderColor: "var(--dark-green)"
+      }
     },
     "&.abandoned": {
       color: "var(--black)",
-      borderColor: "var(--black)"
+      "&:not(.wb)": {
+        borderColor: "var(--black)"
+      }
     },
     "&.blocked": {
       color: "var(--toastify-icon-color-error)",
-      borderColor: "var(--toastify-icon-color-error)"
+      "&:not(.wb)": {
+        borderColor: "var(--toastify-icon-color-error)"
+      }
     }
   },
   list: {
+    paddingTop: 10,
     "& .blocked": {
-      opacity: 0.5,
-      backgroundColor: "var(--app-bg-color)"
+      opacity: 0.5
+      // backgroundColor: "var(--app-bg-color)"
+    },
+    "& .MuiDataGrid-footerContainer": {
+      display: "none !important"
+    },
+    "& .MuiDataGrid-virtualScroller": {
+      width: "100%",
+      margin: "auto",
+      /* z-index: 999999999999999999999999999999999999999999999999999999999999999999999999; */
+      position: "relative",
+      borderRadius: 15,
+      // border: '1px solid var(--app-bg-color)',
+
+      marginBottom: 20,
+      maxHeight: "315px !important",
+      height: "100% !important",
+      overflow: "visible !important",
+      overflowX: "hidden !important",
+      overflowY: "auto !important",
+      "&::-webkit-scrollbar": {
+        width: "8px"
+      },
+
+      "&::-webkit-scrollbar-track": {
+        WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+        borderRadius: "10px"
+      },
+      "&::-webkit-scrollbar-thumb": {
+        borderRadius: "10px",
+        // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+        background: "var(--pastel-green)"
+      }
     }
   },
   tacheVerification: {
@@ -592,36 +736,198 @@ export const projectTaskDetails = createUseStyles({
       border: "none",
       backgroundColor: "var(--light-green)"
     }
-  }
+  },
+  tacheDescription: {
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    width: "100%"
+  },
+  taskFileBtn: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 5,
+    fontSize: 12,
+    color: "var(--orange)",
+    background: "none",
+    border: "none",
+    borderRadius: 5,
+    padding: 4,
+    transition: "all 0.3s ease-in-out",
+    "& div": {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    },
+    "& svg": {
+      width: 18,
+      height: 18,
+      fill: "var(--orange)"
+    },
+    "&:hover": {
+      backgroundColor: "var(--orange)",
+      color: "var(--white)",
+      "& svg": {
+        fill: "var(--white)"
+      }
+    }
+  },
+  filesList: {
+    width: "100%"
+  },
+  fileListPreview:{
+    listStyle:'none',
+    padding:0,
+    display:'flex',
+    flexWrap:'wrap',
+    '& li':{
+      border:'1px solid var(--app-bg-color)',
+      padding:8,
+      margin:'5px 0',
+      fontSize:12,
+      borderRadius:5,
+      color:'var(--orange)',
+
+    }
+  },
+  fileItem: {
+    display: "flex",
+    margin: "10px 0",
+    padding: 10,
+    height: 30,
+    alignItems: "center",
+    background: "var(--white)",
+    justifyContent: "space-between",
+    borderRadius: 10,
+    border: "1px solid var(--app-bg-color)",
+    transition: "all 0.3s ease-in-out",
+    fontSize: 12,
+    position: "relative",
+    overflow: "hidden",
+
+    "& span": {
+      position: "relative",
+      zIndex: 5
+    },
+    "& button": {
+      background: "none",
+      color: "var(--light-green)",
+      border: "none",
+      fontWeight: 600,
+      fontSize: 12
+    },
+    "&:hover": {
+      color: "var(--white)",
+      backgroundColor: "var(--light-green)",
+      "& button": {
+        color: "var(--white)"
+      }
+    },
+    "&.add": {
+      backgroundColor: "var(--light-green)",
+      justifyContent: "unset",
+      color: "var(--white)",
+      '&.requests':{
+        width:'50%',
+        height:40
+      },
+      gap: 10,
+      fontWeight: 600,
+      "& div": {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: 22,
+        width: 22,
+        background: "var(--white)",
+        borderRadius: "100%"
+      },
+      "& svg": {
+        width: 15,
+        height: 15,
+        fill: "var(--light-green)"
+      },
+
+      "&:hover": {
+        borderColor: "var(--light-green)",
+        color: "var(--light-green)",
+        backgroundColor: "var(--white)"
+      }
+    },
+    "&:before": {
+      width: 0,
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      height: "100%",
+      background: " linear-gradient(#ffa700, #ffa700)",
+      transition: "all 0.2s ease-in",
+      opacity: 1
+    },
+    '&.downloaded':{
+      background:'linear-gradient(#ffa700, #ffa700)',
+      // transition: "all 0.1s ease-in-out
+       animation: '$zoomIn 0.3s ease forwards',
+       color:'var(--white)'
+
+      // anim
+    },
+    "&.downloading,": {
+
+      "&:before": {
+        width: "100%"
+      }
+    }
+    // },
+  },
+ '@keyframes zoomIn': {
+   ' 0%':{
+       transform:'scale(1)',
+    },
+    '50%': {
+      transform:'scale(1.1)',
+    },
+    '80%': {
+      transform:'scale(1)',
+    },
+
+    '100%': {
+      transform:'scale(1)',
+      background:'none',
+      color:'var(--black)'
+
+    }
+
+}
 });
 
-
-export const logStyle=createUseStyles({
-  logTab:{
-      width:0,
-      overflow:'hidden',
-      height:'100%',
-      position:'absolute',
-      top:0,
-      maxHeight:'calc(100vh - 40px)',
-      right:0,
-      // bottom:0,
-      background:'var(--white)',
-      borderTopLeftRadius:30,
-      borderBottomLeftRadius:30,
-      transition:'all 0.3s ease-in-out',
-      opacity:0,
-      '&.open':{
-        opacity:1,
-      padding:20,
-      width:'40%',
-      zIndex:999,
-      borderLeft:'5px solid var(--orange)'
+export const logStyle = createUseStyles({
+  logTab: {
+    width: 0,
+    overflow: "hidden",
+    position: "absolute",
+    top: 0,
+    maxHeight: "calc(100vh - 40px)",
+    right: 0,
+    // bottom:0,
+    background: "var(--white)",
+    borderTopLeftRadius: 30,
+    borderBottomLeftRadius: 30,
+    transition: "all 0.3s ease-in-out",
+    opacity: 0,
+    "&.open": {
+      opacity: 1,
+      padding: 20,
+      width: "40%",
+      zIndex: 999,
+      borderLeft: "5px solid var(--orange)"
     },
     // '&.closed':{
     //   overflow:
     // },
-    height:'100%',
+    height: "100%",
     overflowY: "auto",
     "&::-webkit-scrollbar": {
       width: "8px"
@@ -635,49 +941,45 @@ export const logStyle=createUseStyles({
       borderRadius: "10px",
       // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
       background: "var(--pastel-green)"
-    },
-  }
-  ,
-  logContainer:{
-    '& .header':{
-      display:'flex',
-      gap:20,
-      '& button':{
-        border:'none',
-        backgroundColor:'var(--light-green)',
-        borderRadius:'100%',
-        width:32,
-        height:32,
-        '&:hover':{
-          opacity:0.8
+    }
+  },
+  logContainer: {
+    "& .header": {
+      display: "flex",
+      gap: 20,
+      "& button": {
+        border: "none",
+        backgroundColor: "var(--light-green)",
+        borderRadius: "100%",
+        width: 32,
+        height: 32,
+        "&:hover": {
+          opacity: 0.8
         },
-        '& svg':{
-          height:18,
-          width:18,
-          fill:'var(--white)'
+        "& svg": {
+          height: 18,
+          width: 18,
+          fill: "var(--white)"
         }
       }
-    },
-
+    }
   },
-  logList:{
-    marginTop:20,
+  logList: {
+    marginTop: 20
   },
-  logLine:{
-    display:'flex',
-    justifyContent:'space-between',
-    alignItems:'center',
-    fontSize:14,
-    '& p':{
-
+  logLine: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: 14,
+    "& p": {},
+    "& .text": {
+      fontSize: 13
     },
-    '& .text':{
-      fontSize:13,
-    },
-    '& .date':{
-      fontStyle:'italic',
-      fontWeight:'600',
-      color:'grey'
+    "& .date": {
+      fontStyle: "italic",
+      fontWeight: "600",
+      color: "grey"
     }
   }
-})
+});

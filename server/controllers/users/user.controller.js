@@ -110,7 +110,7 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
     };
   });
 
-  res.json({ users: simplifiedUsers });
+  return res.json({ users: simplifiedUsers });
 });
 
 export const getPotentielIntervenants = catchAsync(async (req, res, next) => {
@@ -176,7 +176,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   if (!data || !data.account) {
     logger.error("there is no data in the request: ADMIN REQUESTED");
-    return res.status(500).json({ message: "something went wrong" });
+    return res.status(500).json({ message: "quelque chose n'a pas fonctionné" });
   }
 
   const newUser = data.account;
@@ -200,7 +200,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   const isUserCreated = await User.create({ ...newUser });
   if (!isUserCreated)
-    return next(new AppError("something went wrong when creation", 500));
+    return next(new AppError("quelque chose n'a pas fonctionné when creation", 500));
 
   const { dataValues: user } = isUserCreated;
 
@@ -210,7 +210,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   let userProfile;
   if (Object.keys(data?.profile).length) {
-    userProfile = await createUserProfile(data.profile, user.id);
+    userProfile = await createUserProfile(data.profile, user.id, next);
     if (!userProfile)
       return next(
         new AppError("Something wrong with the profile creation", 500)
@@ -241,13 +241,15 @@ export const addUser = catchAsync(async (req, res, next) => {
     createdUSer.lastName = userProfile.lastName;
   }
 
-  res.status(200).json({ message: "user created successfully", createdUSer });
+  return res.status(200).json({ message: "utilisateur créé avec succès", createdUSer });
 });
 
-export const createUserProfile = async (info, userId) => {
+export const createUserProfile = async (info, userId,next) => {
   if (!userId || !info) return null;
   const profile = serializeProfile(info, userId);
-
+//  check if name and lastName exists together
+const isNameLastNameExists = await UserProfile.findOne({where:{name:info.name,lastName:info.lastName}})
+if (isNameLastNameExists) return next(new AppError("un utilisateur existe déjà avec le même nom et prénom"))
   if (!profile) return null;
   const newProfile = await UserProfile.create({ ...profile });
 
@@ -258,11 +260,11 @@ export const createUserProfile = async (info, userId) => {
 
 export const getUserInfo = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  if (!email) return next(new AppError("an email must be provided", 500));
+  if (!email) return next(new AppError("un email doit être fourni", 500));
 
   const user = await getUserByEmail(email);
   if (!user) {
-    const msg = `there is no such user holding this email : ${email} `;
+    const msg = `il n'y a pas d'utilisateur détenant cet email : ${email} `;
     logger.error(msg);
     return next(new ElementNotFound(msg));
   }
@@ -312,9 +314,9 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   }
   await userProfile.update({ ...newProfile });
   await userProfile.save();
-  res
+  return res
     .status(200)
-    .json({ status: "success", message: "user profile updated successfully" });
+    .json({ status: "success", message: "le profil de l'utilisateur a été mis à jour avec succès" });
 });
 /**
  update user image  : this is a standalone api  to lighten up the request
@@ -337,22 +339,22 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
     return next(new ElementNotFound(errorMsg));
   }
   let url;
-  if (!req.file) return next(new AppError("no file has been provided", 500));
+  if (!req.file) return next(new AppError("aucun fichier n'a été fourni", 500));
 
   // console.log("request file size",req.file.size,"is above 5mo",req.file.size > 5 * 1024 * 1024);
 
   if (req.file.size > 5 * 1024 * 1024)
-    return next(new AppError("file exceeds the limit of 5MB", 500));
+    return next(new AppError("le fichier dépasse la limite de 5MB", 400));
   if (req.file.mimetype !== "image/jpeg" && req.file.mimetype !== "image/png") {
     removeTmp(req.file.tempFilePath);
-    return res.status(400).json({ msg: "File format is incorrect." });
+    return res.status(400).json({ msg: "Le format du fichier est incorrect." });
   }
   url = createMediaUrl(req.file);
   userProfile.image = url;
   userProfile.save();
   return res.status(200).json({
     status: "success",
-    message: "profile image updated successfully",
+    message: "l'image de profil a été mise à jour avec succès",
     url
   });
 });
@@ -360,12 +362,12 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
 export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
   const { token } = req.params;
 
-  if (!token) return next(new ElementNotFound("Token was not supplied"));
+  if (!token) return next(new ElementNotFound("Le jeton n'a pas été fo"));
   //check if  token is valid : 16 bytes and HEX format
   const isValidToken = /^[a-zA-Z0-9+/]+={0,2}$/.test(token);
 
   if (!isValidToken)
-    return next(new MalformedObjectId("token maybe malformed "));
+    return next(new MalformedObjectId("le jeton est peut-être mal formé "));
 
   //we need to decrypt the public token to match the private token
 
@@ -378,11 +380,11 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
     }
   });
 
-  if (!user) return next(new ElementNotFound("no such user"));
+  if (!user) return next(new ElementNotFound("aucun utilisateur de ce type"));
   //validate the token and erase it
   res
     .status(200)
-    .json({ message: "token validated: Welcome", email: user.email });
+    .json({ message: "jeton validé : Bienvenue", email: user.email });
 });
 
 /**
@@ -392,7 +394,7 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
 export const changeUserRole = catchAsync(async (req, res, next) => {
   const { email, role } = req.body;
   if ((!email, !role))
-    return next(new MissingParameter("the email and role are mandatory"));
+    return next(new MissingParameter("l'adresse électronique et le rôle sont obligatoires"));
   //check if role exists : for now the list of roles is hardcode in server/constant
   if (
     ![
@@ -402,10 +404,10 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
       CLIENT_ROLE
     ].includes(role)
   )
-    return next(new ElementNotFound("roles doesn't exist"));
+    return next(new ElementNotFound("le rôle n'existent pas"));
 
   const user = await getUserByEmail(email);
-  if (!user) return next(new ElementNotFound("User not found"));
+  if (!user) return next(new ElementNotFound("Utilisateur non trouvé"));
 
   if (role === SUPERUSER_ROLE) {
     user.isSuperUser = true;
@@ -428,7 +430,7 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
  */
 export const banUser = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  if (!email) return next(new MissingParameter("Email is mandatory"));
+  if (!email) return next(new MissingParameter("L'e-mail est obligatoire"));
 
   const user = await getUserByEmail(email, false, false);
   if (!user) return next(new ElementNotFound("User not found"));
@@ -437,7 +439,7 @@ export const banUser = catchAsync(async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ state: "success", message: `user ${email} has been banned` });
+    .json({ state: "success", message: `l'utilisateur ${email} a été banni` });
 });
 
 /**
@@ -446,15 +448,15 @@ export const banUser = catchAsync(async (req, res, next) => {
  */
 export const unBanUser = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  if (!email) return next(new MissingParameter("Email is mandatory"));
+  if (!email) return next(new MissingParameter("L'e-mail est obligatoire"));
 
   const user = await getUserByEmail(email, false, true);
   if (!user)
-    return next(new ElementNotFound("User not found or is already unbanned"));
+    return next(new ElementNotFound("Utilisateur introuvable ou déjà banni"));
   user.isBanned = false;
   user.save();
 
   return res
     .status(200)
-    .json({ state: "success", message: `user ${email} has been unbanned` });
+    .json({ state: "success", message: `l'utilisateur ${email} a été débanni` });
 });

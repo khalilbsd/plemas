@@ -30,12 +30,12 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
 
 
     if (!file?.type.includes('image')) {
-      notify(NOTIFY_ERROR, "The file must be an image");
+      notify(NOTIFY_ERROR, "Le fichier doit être une image");
       return
     }
 
     if (file?.size > 5 * 1024 * 1024) {
-      notify(NOTIFY_ERROR, "File is too big");
+      notify(NOTIFY_ERROR, "L'image est trop grande");
       return
     }
     await getBase64(file);
@@ -68,7 +68,7 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
 
       const newImg =await updateUserProfilePicture(formData).unwrap();
 
-      notify(NOTIFY_SUCCESS, "profile picture updated successfully");
+      notify(NOTIFY_SUCCESS, "Mise à jour réussie de la photo de profil");
       setLoading(false)
       setHideBtn(true)
       dispatch(updateUserInfoProfile({image:newImg.url}))
@@ -99,14 +99,17 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
                   previewImage
                     ? previewImage
                     : `${process.env.REACT_APP_SERVER_URL}${userImage}`
+
                 }
                 className={
                   classes.profileImage + " " + (isLoading || loading ? classes.blur : "")
                 }
-                title="profile Picture"
+
+                alt="profile avatar"
+                title="profile avatar"
               />
               <span className={`${classes.helpText} helpText`}>
-                Click to change the image
+              Cliquez pour modifier l'image
               </span>
               <div className={classes.ctaBtn}>
                 {previewImage &&!hideBtn && (

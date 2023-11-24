@@ -25,6 +25,7 @@ import Loading from "../loading/Loading";
 import { projectsStyles } from "../managing/style";
 import { notify } from "../notification/notification";
 import ProjectUserLists from "./ProjectUserLists";
+import { containsOnlySpaces } from "../../../store/utils";
 
 const ProjectTaskAdd = ({ closeAddTask }) => {
   const classes = projectTaskDetails();
@@ -36,6 +37,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
   const project = useGetStateFromStore("project","projectDetails")
   const { projectID } = useParams();
   const dispatch = useDispatch();
+  const [error, setError] = useState(false)
   const [task, setTask] = useState({
     name: "",
     startDate: dayjs(new Date()),
@@ -89,8 +91,13 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
   // dayjs(data.startDate).format("DD/MM/YYYY");
   const handleCreateTask = async (e) => {
     e.preventDefault();
+
     try {
       const data = { ...task };
+      if (!data.name || containsOnlySpaces(data.name)){
+        setError(true)
+        return
+      }
       data.startDate = dayjs(data.startDate);
       data.dueDate = dayjs(data.dueDate);
       if (data.dueDate < data.startDate) {
@@ -142,6 +149,8 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
               onChange={handleChange}
               label="Tache"
               required
+              error={error}
+              helperText={error?"le nom de la tâche est obligatoire":""}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={2}>

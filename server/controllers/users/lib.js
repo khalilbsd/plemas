@@ -34,10 +34,10 @@ export const serializeProfile = (userInfo, userId) => {
     poste: userInfo.poste,
     phone: userInfo.phone,
     image: userInfo.image,
-
-    city: userInfo.city ? userInfo.city : "",
-    street: userInfo.street ? userInfo.street : "",
-    region: userInfo.region ? userInfo.region : "",
+    address:userInfo.address?userInfo.address:"",
+    // city: userInfo.city ? userInfo.city : "",
+    // street: userInfo.street ? userInfo.street : "",
+    // region: userInfo.region ? userInfo.region : "",
 
     hireDate: userInfo.hireDate,
     userID: userId

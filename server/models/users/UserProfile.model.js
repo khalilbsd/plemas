@@ -27,13 +27,16 @@ const UserProfile = database.define("UserProfile", {
         type:DataTypes.INTEGER,
         allowNull:false
     },
-   street:{
-        type:DataTypes.STRING,
-   },
-   city:{
-    type:DataTypes.STRING,
-   },
-   region:{
+//    street:{
+//         type:DataTypes.STRING,
+//    },
+//    city:{
+//     type:DataTypes.STRING,
+//    },
+//    region:{
+//     type:DataTypes.STRING,
+//    },
+   address:{
     type:DataTypes.STRING,
    },
    hireDate:{

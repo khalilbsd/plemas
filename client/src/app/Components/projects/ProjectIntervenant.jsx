@@ -9,34 +9,34 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import { ReactSVG } from "react-svg";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import faAdd from "../../public/svgs/light/plus.svg";
-import AddBtn from "../managing/AddBtn";
-import { projectsStyles } from "../managing/style";
-import ProjectUserLists from "./ProjectUserLists";
-import { projectDetails } from "./style";
 import { useParams } from "react-router";
+import { ReactSVG } from "react-svg";
+import {
+  NOTIFY_ERROR,
+  NOTIFY_INFO,
+  NOTIFY_SUCCESS
+} from "../../../constants/constants";
+import useIsUserCanAccess from "../../../hooks/access";
+import useGetAuthenticatedUser from "../../../hooks/authenticated";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useAddIntervenantsMutation,
   useGetPotentielIntervenantsMutation,
   useGetProjectIntervenantsMutation,
   useRemoveIntervenantFromProjectMutation
 } from "../../../store/api/projects.api";
-import Loading from "../loading/Loading";
-import { notify } from "../notification/notification";
-import {
-  NOTIFY_ERROR,
-  NOTIFY_INFO,
-  NOTIFY_SUCCESS
-} from "../../../constants/constants";
-import { useDispatch } from "react-redux";
-import useIsUserCanAccess from "../../../hooks/access";
-import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import {
   useAddIntervenantToTaskMutation,
   useGetTaskPotentialIntervenantsMutation
 } from "../../../store/api/tasks.api";
+import faAdd from "../../public/svgs/light/plus.svg";
+import Loading from "../loading/Loading";
+import AddBtn from "../managing/AddBtn";
+import { projectsStyles } from "../managing/style";
+import { notify } from "../notification/notification";
+import ProjectUserLists from "./ProjectUserLists";
+import { projectDetails } from "./style";
+import Tooltip from "@mui/material/Tooltip";
 
 function AddIntervenant(props) {
   const { onClose, open, potentialIntervenants, taskId } = props;
@@ -145,7 +145,7 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
   const { user } = useGetAuthenticatedUser();
   const project = useGetStateFromStore("project", "projectDetails");
   const { projectID } = useParams();
-  const dispatch = useDispatch();
+
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const [potentielIntervenants, setPotentielIntervenants] = useState([]);
   const [taskPotentielIntervenants, setTaskPotentielIntervenants] = useState(
@@ -198,7 +198,6 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
         notify(NOTIFY_ERROR, error?.data.message);
       }
     }
-
 
     if (!taskIntervenants && !taskId) {
       loadIntervenants();
@@ -266,40 +265,51 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
       >
         {!isLoading ? (
           <>
-            <AvatarGroup max={8} spacing={10}>
-              {intervenants.map((intervenant, idx) =>
-                intervenant?.user?.UserProfile?.image ? (
-                  <Avatar
-                    onClick={
-                      !taskId
-                        ? () => showIntervenantDetails(intervenant)
-                        : undefined
-                    }
-                    key={idx}
-                    className={`${classes.manager} ${
-                      colors[idx % colors.length]
-                    } ${taskId ? "small" : ""}`}
-                    alt={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
-                    src={`${process.env.REACT_APP_SERVER_URL}${intervenant?.user?.UserProfile.image}`}
-                  />
-                ) : (
-                  <Avatar
-                    onClick={
-                      !taskId
-                        ? () => showIntervenantDetails(intervenant)
-                        : undefined
-                    }
-                    key={idx}
-                    className={`${classes.manager} ${
-                      colors[idx % colors.length]
-                    } ${taskId ? "small" : ""}
+            <AvatarGroup max={4} spacing={10}>
+              {intervenants.map((intervenant, idx) => (
+                <Tooltip
+                key={idx}
+                placement="top"
+                  title={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
+                  arrow
+                >
+                  {intervenant?.user?.UserProfile?.image ? (
+                    <Avatar
+                      onClick={
+                        !taskId
+                          ? () => showIntervenantDetails(intervenant)
+                          : undefined
+                      }
+                      key={idx}
+                      className={`${classes.manager} ${
+                        colors[idx % colors.length]
+                      } ${taskId ? "small" : ""}`}
+                      alt={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
+                      src={`${process.env.REACT_APP_SERVER_URL}${intervenant?.user?.UserProfile.image}`}
+                    />
+                  ) : (
+                    <Avatar
+                      onClick={
+                        !taskId
+                          ? () => showIntervenantDetails(intervenant)
+                          : undefined
+                      }
+                      key={idx}
+                      className={`${classes.manager} ${
+                        colors[idx % colors.length]
+                      } ${taskId ? "small" : ""}
                     `}
-                  >
-                    {intervenant?.user?.UserProfile?.name[0]?.toUpperCase()}
-                    {intervenant?.user?.UserProfile?.lastName[0]?.toUpperCase()}
-                  </Avatar>
-                )
-              )}
+                    >
+                      {intervenant?.user?.UserProfile?.name
+                        ? intervenant?.user?.UserProfile?.name[0]?.toUpperCase()
+                        : ""}
+                      {intervenant?.user?.UserProfile?.lastName
+                        ? intervenant?.user?.UserProfile?.lastName[0]?.toUpperCase()
+                        : ""}
+                    </Avatar>
+                  )}
+                </Tooltip>
+              ))}
             </AvatarGroup>
             {((isManager && project?.managerDetails?.email === user?.email) ||
               isSuperUser) && (
@@ -329,12 +339,18 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
         <div className={classes.detailIntervenant}>
           <p className="email">{detailIntervenant.details.user.email}</p>
           <p className="name">
-            {detailIntervenant.details.user.UserProfile.name}{" "}
-            {detailIntervenant.details.user.UserProfile.lastName}
+            {detailIntervenant.details.user.UserProfile?.name
+              ? detailIntervenant.details.user.UserProfile?.name
+              : ""}{" "}
+            {detailIntervenant.details.user.UserProfile?.lastName
+              ? detailIntervenant.details.user.UserProfile?.lastName
+              : ""}
           </p>
-          <p className="hours">nb d'heures: {detailIntervenant?.details?.nbHours}h</p>
+          <p className="hours">
+            nb d'heures: {detailIntervenant?.details?.nbHours}h
+          </p>
           <button
-          disabled={detailIntervenant?.details?.nbHours> 0 }
+            disabled={detailIntervenant?.details?.nbHours > 0}
             onClick={() =>
               removeIntervenant(detailIntervenant.details.user.email)
             }
