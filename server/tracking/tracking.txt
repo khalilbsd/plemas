@@ -184,6 +184,7 @@
 {"projectID":19,"taskID":52,"requestID":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"27/11/2023"}
 {"projectID":19,"taskID":53,"requestID":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"27/11/2023"}
 {"projectID":19,"taskID":"53","requestID":null,"email":"hb@concerto-pr.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"27/11/2023"}
+<<<<<<< Updated upstream
 {"projectID":1,"taskID":14,"requestID":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"27/11/2023"}
 {"projectID":1,"taskID":14,"requestID":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"27/11/2023"}
 {"projectID":1,"taskID":15,"requestID":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"27/11/2023"}
@@ -210,3 +211,6 @@
 {"projectID":27,"taskID":null,"requestID":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"27/11/2023"}
 {"projectID":1,"taskID":14,"requestID":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"27/11/2023"}
 {"projectID":1,"taskID":null,"requestID":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"27/11/2023"}
+=======
+{"projectID":17,"taskID":null,"requestID":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"27/11/2023"}
+>>>>>>> Stashed changes

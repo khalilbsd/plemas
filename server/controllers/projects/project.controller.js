@@ -139,14 +139,12 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
       (a, b) =>
         moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
     );
-    if (projectTasks) {
-      tasks.push({
-        projectID: projectsList[projIdx].id,
-        tasks: projectTasks
-      });
-    }
-  }
 
+    tasks.push({
+      projectID: projectsList[projIdx].id,
+      tasks: projectTasks ? projectTasks : []
+    });
+  }
   tasks.sort((a, b) => a.tasks[0]?.dueDate - b.tasks[0]?.dueDate);
 
   const indexMap = {};
@@ -154,14 +152,31 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     indexMap[task.projectID] = index;
   });
 
-
-
   // Custom sorting function based on the tasks array index
   const customSort = (a, b) => {
     const indexA = indexMap[a.id];
     const indexB = indexMap[b.id];
-    // Compare the indices
-    return indexA - indexB;
+
+    // Check if project A has tasks
+    const hasTasksA = tasks[indexA].tasks.length > 0;
+
+    // Check if project B has tasks
+    const hasTasksB = tasks[indexB].tasks.length > 0;
+
+    // Compare based on whether they have tasks or not
+    if (hasTasksA && hasTasksB) {
+      // Both have tasks, compare based on the dueDate of the first task
+      return tasks[indexA].tasks[0].dueDate - tasks[indexB].tasks[0].dueDate;
+    } else if (hasTasksA) {
+      // Only project A has tasks, it should come first
+      return -1;
+    } else if (hasTasksB) {
+      // Only project B has tasks, it should come first
+      return 1;
+    } else {
+      // Both have no tasks, keep their original order
+      return indexA - indexB;
+    }
   };
 
   // Sort the projectsList using the custom sorting function
@@ -202,18 +217,15 @@ export const addProject = catchAsync(async (req, res, next) => {
   if (!data.phase || !data.lot.length)
     return next(new MalformedObjectId("lots and phase are mandatory"));
 
-
-    const regexPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-if (data.startDate){
-  if (!regexPattern.test(data.startDate)) {
-    if (data.startDate) data.startDate = moment(data.startDate, "DD/MM/YYYY");
-}
-}
-
-
+  const regexPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+  if (data.startDate) {
+    if (!regexPattern.test(data.startDate)) {
+      if (data.startDate) data.startDate = moment(data.startDate, "DD/MM/YYYY");
+    }
+  }
 
   // create pure project instance to use
-  console.log(data)
+  console.log(data);
   let project = { ...data };
 
   project.createdBy = req.user.id;

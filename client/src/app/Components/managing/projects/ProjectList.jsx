@@ -9,7 +9,7 @@ import { listStyle, projectsStyles } from "../style";
 import { DataGrid, GridActionsCellItem, frFR } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
-import { TASK_STATE_TRANSLATION } from "../../../../constants/constants";
+import { TASK_STATE_ABANDONED, TASK_STATE_DOING, TASK_STATE_TRANSLATION } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
 import faAdd from "../../../public/svgs/solid/plus.svg";
@@ -174,6 +174,10 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         menu: false,
         renderCell: (params) => {
           const tasksNb = projectTasks(params.row.id)?.length;
+          if (!tasksNb) return  <p className={classes.emptyTasks}>
+          {" "}
+          il n'y a pas de tâches planifiées{" "}
+        </p>
           const taskInfoElement = tasksNb ? (
             projectTasks(params.row.id)?.map((task, idx) => {
               return (
@@ -207,6 +211,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         menu: false,
         renderCell: (params) => {
           let tasksNb = projectTasks(params.row.id)?.length;
+        if (!tasksNb) return null
           const taskStateElement = tasksNb ? (
             projectTasks(params.row.id)?.map((task, idx) => {
               return (
@@ -377,7 +382,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     if (addForm || addProjectState.isFiltering) {
       return addProjectState.projectsListFiltered;
     }
-    return projects;
+    return projects.filter(project=>[TASK_STATE_DOING,TASK_STATE_ABANDONED].includes(project.state));
   };
 
   const handleClickProject = (rowID) => {

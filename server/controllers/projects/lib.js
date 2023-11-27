@@ -1,3 +1,4 @@
+import { TASK_STATE_TRANSLATION } from "../../constants/constants.js";
 import { Phase, Project } from "../../db/relations.js";
 import logger from "../../log/config.js";
 
@@ -123,6 +124,7 @@ export const serializeProject = (projects) => {
       id: element.id,
       code: element.code,
       activePhase: element.phase.name,
+      state:TASK_STATE_TRANSLATION.filter(state=>state.value === element.state)[0].label,
       manager: {
         image: element.managerDetails.UserProfile.image,
         fullName: `${element.managerDetails.UserProfile.name} ${element.managerDetails.UserProfile.lastName}`
