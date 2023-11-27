@@ -89,7 +89,7 @@ const handleChange = (hours,interventionID)=>{
       <div className="tache-state">
         {
           TASK_STATE_TRANSLATION.filter(
-            (trans) => trans.label === task.state
+            (trans) => trans.label === task?.state
           )[0]?.value
         }
       </div>
@@ -102,7 +102,7 @@ const handleChange = (hours,interventionID)=>{
           size="small"
           valueLabelDisplay="auto"
           data-project-id={project.id}
-          data-task-id={task.id}
+          data-task-id={task?.id}
           className="slider"
           aria-label="nombre des heurs"
           min={0}
@@ -111,14 +111,14 @@ const handleChange = (hours,interventionID)=>{
           value={hours}
           onChange={(event,value)=>handleChange(value,id)}
           onChangeCommitted={(event, value) =>
-            handleChangeSubmit(value, project.id, task.id, id)
+            handleChangeSubmit(value, project?.id, task?.id, id)
           }
         />
       ) : (
         !joinDisabled && (
           <button
-            data-task-id={task.id}
-            data-project-id={project.id}
+            data-task-id={task?.id}
+            data-project-id={project?.id}
             onClick={joinTask}
             className={classes.joinBtn}
           >

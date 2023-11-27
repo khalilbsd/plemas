@@ -558,6 +558,85 @@ export const projectDetails = createUseStyles({
         height: 15
       }
     }
+  },
+  seeAllIntervenants:{
+    '& .MuiPaper-root':{
+      width:'600px',
+    },
+    '& .MuiDialogContent-root':{
+      maxHeight: "500px !important",
+      height: "100% !important",
+      overflow: "visible !important",
+      overflowX: "hidden !important",
+      overflowY: "auto !important",
+      "&::-webkit-scrollbar": {
+        width: "8px"
+      },
+      "&::-webkit-scrollbar-track": {
+        WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+        borderRadius: "10px"
+      },
+      "&::-webkit-scrollbar-thumb": {
+        borderRadius: "10px",
+        // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+        background: "var(--pastel-green)"
+      }
+    }
+
+  },
+  intervenantItem:{
+    border:'1px solid var(--app-bg-color)',
+    padding:5,
+    borderRadius:5,
+    display:'grid',
+    margin:'5px 0',
+    gridTemplateColumns:'10% 48% 10% auto',
+    alignItems:'center',
+    gap:10,
+    '& .info':{
+
+      flexDirection:'column',
+      display:'flex',
+      fontSize:13,
+      '& .name':{
+        fontWeight:600
+      },
+      '& .email':{
+        color:'grey'
+      },
+
+    },
+    "& button": {
+      transition: "all 0.3s ease-in-out",
+      "&[disabled]": {
+        opacity: 0.5
+      },
+      backgroundColor: "var(--toastify-color-progress-error)",
+      color: "var(--white)",
+      height: 40,
+      borderRadius: 10,
+      border: "none",
+      width: '100%',
+      "&:hover": {
+        backgroundColor: "var(--orange)"
+      }
+    },
+    '& .hours':{
+      fontWeight:600,
+      display:'flex',
+      alignItems:'center',
+      gap:10,
+      '& svg':{
+        fill:'var(--orange)'
+      }
+    }
+  },
+  standAloneIcon:{
+    width:22,
+    height:22,
+    '& svg':{
+      width:'100%'
+    }
   }
 });
 
@@ -774,38 +853,47 @@ export const projectTaskDetails = createUseStyles({
     }
   },
   filesList: {
-    width: "100%"
+    width: "100%",
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent:' space-between',
   },
-  fileListPreview:{
-    listStyle:'none',
-    padding:0,
-    display:'flex',
-    flexWrap:'wrap',
-    '& li':{
-      border:'1px solid var(--app-bg-color)',
-      padding:8,
-      margin:'5px 0',
-      fontSize:12,
-      borderRadius:5,
-      color:'var(--orange)',
-
+  fileListPreview: {
+    listStyle: "none",
+    padding: 0,
+    display: "flex",
+    flexWrap: "wrap",
+    "& li": {
+      border: "1px solid var(--app-bg-color)",
+      padding: 8,
+      margin: "5px 0",
+      fontSize: 12,
+      borderRadius: 5,
+      color: "var(--orange)"
     }
   },
   fileItem: {
     display: "flex",
     margin: "10px 0",
     padding: 10,
-    height: 30,
+    height: 100,
+    width:100,
     alignItems: "center",
+    flexDirection:'column',
     background: "var(--white)",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     borderRadius: 10,
     border: "1px solid var(--app-bg-color)",
     transition: "all 0.3s ease-in-out",
     fontSize: 12,
     position: "relative",
     overflow: "hidden",
-
+    "& .file-name": {
+      width: 90,
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      overflow: "hidden"
+    },
     "& span": {
       position: "relative",
       zIndex: 5
@@ -820,17 +908,24 @@ export const projectTaskDetails = createUseStyles({
     "&:hover": {
       color: "var(--white)",
       backgroundColor: "var(--light-green)",
+      '& $fileIcon':{
+        '& svg':{
+          fill:'var(--white)'
+        }
+      },
       "& button": {
         color: "var(--white)"
       }
     },
     "&.add": {
+      height:40,
+      width:'100%',
       backgroundColor: "var(--light-green)",
       justifyContent: "unset",
       color: "var(--white)",
-      '&.requests':{
-        width:'50%',
-        height:40
+      "&.requests": {
+        width: "50%",
+        height: 40
       },
       gap: 10,
       fontWeight: 600,
@@ -866,41 +961,57 @@ export const projectTaskDetails = createUseStyles({
       transition: "all 0.2s ease-in",
       opacity: 1
     },
-    '&.downloaded':{
-      background:'linear-gradient(#ffa700, #ffa700)',
+    "&.downloaded": {
+      background: "linear-gradient(#ffa700, #ffa700)",
       // transition: "all 0.1s ease-in-out
-       animation: '$zoomIn 0.3s ease forwards',
-       color:'var(--white)'
+      animation: "$zoomIn 0.3s ease forwards",
+      color: "var(--white)"
 
       // anim
     },
     "&.downloading,": {
-
       "&:before": {
         width: "100%"
       }
     }
     // },
   },
- '@keyframes zoomIn': {
-   ' 0%':{
-       transform:'scale(1)',
+  "@keyframes zoomIn": {
+    " 0%": {
+      transform: "scale(1)"
     },
-    '50%': {
-      transform:'scale(1.1)',
+    "50%": {
+      transform: "scale(1.1)"
     },
-    '80%': {
-      transform:'scale(1)',
+    "80%": {
+      transform: "scale(1)"
     },
 
-    '100%': {
-      transform:'scale(1)',
-      background:'none',
-      color:'var(--black)'
-
+    "100%": {
+      transform: "scale(1)",
+      background: "none",
+      color: "var(--black)"
     }
+  },
+  fileIcon:{
+    position:'relative',
+    '& div':{
+      width:60,
+      height:60,
+      display:'flex',
+      alignItems:'center',
+      justifyContent:'center'
+    },
 
-}
+    width:60,
+    height:60,
+    '& svg':{
+      fill:'var(--orange)',
+      width:40,
+      height:40,
+      margin:'auto',
+    }
+  }
 });
 
 export const logStyle = createUseStyles({

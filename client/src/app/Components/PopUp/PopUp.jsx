@@ -26,10 +26,12 @@ const PopUp = ({
   icon,
   children,
   loading,
-  btnLevel
+  btnLevel,
+  className
 }) => {
   return (
     <Dialog
+      className={className?className:""}
       open={open}
       onClose={handleClose}
       aria-labelledby="dialog-title"

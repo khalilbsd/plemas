@@ -52,7 +52,7 @@ import faChevronUp from "../../public/svgs/light/chevron-up.svg";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faEdit from "../../public/svgs/light/pen.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
-import PopUp from "../PopUp.jsx/PopUp";
+import PopUp from "../PopUp/PopUp";
 import SelectLot from "../managing/projects/SelectLot";
 import PriorityField, {
   priorityColors

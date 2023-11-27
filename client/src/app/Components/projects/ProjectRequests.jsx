@@ -35,7 +35,9 @@ import { containsOnlySpaces, formattedDate } from "../../../store/utils";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faAdd from "../../public/svgs/solid/plus.svg";
 import faTrash from "../../public/svgs/light/trash.svg";
-import PopUp from "../PopUp.jsx/PopUp";
+
+import PopUp from "../PopUp/PopUp.jsx";
+
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 import {
   CustomCancelIcon,
@@ -175,7 +177,7 @@ const ProjectRequests = () => {
     {
       field: "description",
       headerName: "Information",
-      width: 1100,
+      width: 1000,
       editable: true,
       filterable: false
     },
@@ -186,8 +188,9 @@ const ProjectRequests = () => {
       editable: false,
       width: 200,
       renderCell: ({ row }) => {
+
         return (
-          <RequestFiles  files={row.file} requestID={row.id} />
+          <RequestFiles  files={row.file} isCreator={row.requestCreator.email === user?.email} requestID={row.id} />
         );
       }
     },

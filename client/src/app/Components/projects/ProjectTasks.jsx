@@ -258,10 +258,14 @@ const ProjectTasks = ({ openAddTask }) => {
       headerName: "Attachements",
       width: 150,
       renderCell: (params) => {
+        const emailsList = params?.row.intervenants?.map(
+          (worker) => worker?.user?.email
+        );
         return (
           <TaskFiles
             taskID={params.row.id}
             interventions={params.row.intervenants}
+            intervenantList = {emailsList}
           />
         );
       }
@@ -271,7 +275,7 @@ const ProjectTasks = ({ openAddTask }) => {
       sortable: false,
       field: "intervenants",
       headerName: "Intervenants",
-      width: 200,
+      width: 230,
       renderCell: (params) => {
         if (reloadingIntervenants)
           return <Skeleton className={classes.intervenantsSkeleton} />;

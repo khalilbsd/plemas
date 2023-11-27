@@ -108,7 +108,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
-  projectsList.sort((a, b) => b.code - a.code);
+  // projectsList.sort((a, b) => b.code - a.code);
 
   const dates = calculateDates(3);
 
@@ -118,7 +118,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
   for (const projIdx in projectsList) {
     let projectTasks = await Task.findAll({
       attributes: ["id", "name", "name", "startDate", "dueDate", "state"],
-      order: [["dueDate", "DESC"]],
+      // order: [["dueDate", "DESC"]],
       where: {
         "dueDate": {
           [Op.gte]: today
@@ -134,9 +134,10 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
         }
       ]
     });
+
     projectTasks.sort(
       (a, b) =>
-        moment(b.dueDate, "DD/MM/YYYY") - moment(a.dueDate, "DD/MM/YYYY")
+        moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
     );
     if (projectTasks) {
       tasks.push({
@@ -146,12 +147,18 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     }
   }
 
-  tasks.sort((a, b) => b.tasks.length - a.tasks.length);
+
+
+
+  tasks.sort((a, b) => a.tasks[0].dueDate - b.tasks[0].dueDate);
+
 
   const indexMap = {};
   tasks.forEach((task, index) => {
     indexMap[task.projectID] = index;
   });
+
+
 
   // Custom sorting function based on the tasks array index
   const customSort = (a, b) => {
@@ -195,8 +202,6 @@ export const addProject = catchAsync(async (req, res, next) => {
         "Project already exists with that code: did you mean to create a phase?"
       )
     );
-
-
 
   if (!data.phase || !data.lot.length)
     return next(new MalformedObjectId("lots and phase are mandatory"));
@@ -250,8 +255,18 @@ export const addProject = catchAsync(async (req, res, next) => {
       }
     }
     //saving tracking
-    await takeNote(ACTION_NAME_PROJECT_CREATION,req.user.email,newProject.id,{})
-    await takeNote(ACTION_NAME_ADD_PROJECT_MANAGER,req.user.email,newProject.id,{})
+    await takeNote(
+      ACTION_NAME_PROJECT_CREATION,
+      req.user.email,
+      newProject.id,
+      {}
+    );
+    await takeNote(
+      ACTION_NAME_ADD_PROJECT_MANAGER,
+      req.user.email,
+      newProject.id,
+      {}
+    );
 
     return res.status(200).json({
       status: "success",
@@ -336,14 +351,14 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     details.dueDate = moment(details.dueDate, "DD/MM/YYYY");
   }
 
-  if ([TASK_STATE_ABANDONED,TASK_STATE_DONE].includes(details.state)) {
-    details.dueDate = moment(new Date(),"DD/MM/YYYY")
-    if (TASK_STATE_ABANDONED === details.state){
-      abandonProject(TASK_STATE_ABANDONED,project.id)
+  if ([TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)) {
+    details.dueDate = moment(new Date(), "DD/MM/YYYY");
+    if (TASK_STATE_ABANDONED === details.state) {
+      abandonProject(TASK_STATE_ABANDONED, project.id);
     }
   }
 
-  console.log(details)
+  console.log(details);
 
   await project.update({ ...details });
 
@@ -382,8 +397,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     // }
   }
 
-
-  await takeNote(ACTION_NAME_PROJECT_UPDATE,req.user.email,project.id,{})
+  await takeNote(ACTION_NAME_PROJECT_UPDATE, req.user.email, project.id, {});
 
   return res.status(200).json({
     status: "success",
@@ -620,7 +634,12 @@ export const assignManagerHours = catchAsync(async (req, res, next) => {
   project.managerHours = hours;
 
   await project.save();
-  await takeNote(ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,req.user.email,project.id,{})
+  await takeNote(
+    ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
+    req.user.email,
+    project.id,
+    {}
+  );
 
   return res
     .status(200)
@@ -634,58 +653,60 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
   const project = await Project.findByPk(projectID);
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
-  let actionState = req.body.action === TASK_STATE_ABANDONED ?TASK_STATE_ABANDONED:TASK_STATE_DOING
-  abandonProject(actionState,project.id)
-  project.state = actionState
-   await project.save();
+  let actionState =
+    req.body.action === TASK_STATE_ABANDONED
+      ? TASK_STATE_ABANDONED
+      : TASK_STATE_DOING;
+  abandonProject(actionState, project.id);
+  project.state = actionState;
+  await project.save();
 
   return res.status(200).json({
-    message: actionState === TASK_STATE_ABANDONED? "projet abandonné avec ses tâches" : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".'
-
+    message:
+      actionState === TASK_STATE_ABANDONED
+        ? "projet abandonné avec ses tâches"
+        : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".'
   });
 });
 
-
-const abandonProject = async(action,projectID)=>{
-try {
-
-  let taskIds = await Intervenant.findAll({
-    where: {
-      projectID:projectID
-    },
-    attributes: ["taskID"]
-  });
-  if (taskIds.length) {
-    let ids = [];
-    taskIds.forEach(({ taskID }) => {
-      if (!ids.includes(taskID)) ids.push(taskID);
-    });
-    await Task.update(
-      {
-        state: action
+const abandonProject = async (action, projectID) => {
+  try {
+    let taskIds = await Intervenant.findAll({
+      where: {
+        projectID: projectID
       },
-      {
-        where: {
-          id: ids
-          //check if
+      attributes: ["taskID"]
+    });
+    if (taskIds.length) {
+      let ids = [];
+      taskIds.forEach(({ taskID }) => {
+        if (!ids.includes(taskID)) ids.push(taskID);
+      });
+      await Task.update(
+        {
+          state: action
+        },
+        {
+          where: {
+            id: ids
+            //check if
+          }
         }
-      }
-    );
+      );
+    }
+  } catch (error) {
+    logger.error(error);
   }
-} catch (error) {
-  logger.error(error)
-}
-}
+};
 
-export const getProjectTracking = catchAsync(async(req,res,next)=>{
+export const getProjectTracking = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
 
   if (!projectID) return next(new MissingParameter("Missing project id"));
   const project = await Project.findByPk(projectID);
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
-  const tracking = await getTracking(projectID)
+  const tracking = await getTracking(projectID);
 
-  return res.status(200).json({tracking})
-})
-
+  return res.status(200).json({ tracking });
+});

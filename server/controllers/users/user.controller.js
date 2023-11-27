@@ -339,17 +339,18 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
     return next(new ElementNotFound(errorMsg));
   }
   let url;
-  if (!req.file) return next(new AppError("aucun fichier n'a été fourni", 500));
+  // console.log(req.file,req.files);
+  if (!req.files[0]) return next(new AppError("aucun fichier n'a été fourni", 500));
 
   // console.log("request file size",req.file.size,"is above 5mo",req.file.size > 5 * 1024 * 1024);
 
-  if (req.file.size > 5 * 1024 * 1024)
+  if (req.files[0].size > 5 * 1024 * 1024)
     return next(new AppError("le fichier dépasse la limite de 5MB", 400));
-  if (req.file.mimetype !== "image/jpeg" && req.file.mimetype !== "image/png") {
+  if (req.files[0].mimetype !== "image/jpeg" && req.files[0].mimetype !== "image/png") {
     removeTmp(req.file.tempFilePath);
     return res.status(400).json({ msg: "Le format du fichier est incorrect." });
   }
-  url = createMediaUrl(req.file);
+  url = createMediaUrl(req.files[0]);
   userProfile.image = url;
   userProfile.save();
   return res.status(200).json({

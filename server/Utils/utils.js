@@ -37,3 +37,9 @@ export const getRSAPublicKey = async () => {
     logger.error(error);
   }
 };
+
+
+
+export function removeDuplicates(arr) {
+  return [...new Set(arr)];
+}

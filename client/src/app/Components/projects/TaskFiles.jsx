@@ -1,26 +1,31 @@
+import Tooltip from "@mui/material/Tooltip";
 import fileDownload from "js-file-download";
 import React, { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
 import axios from "../../../store/api/base.js";
 import {
-  useDownloadTaskFileMutation,
   useUploadFileToTaskMutation
 } from "../../../store/api/tasks.api.js";
+import { updateInterventionUploadedFile } from "../../../store/reducers/task.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
 import faFolders from "../../public/svgs/light/folders.svg";
+import faFile from "../../public/svgs/solid/file.svg";
 import faPlus from "../../public/svgs/solid/plus.svg";
-import PopUp from "../PopUp.jsx/PopUp.jsx";
+
+import PopUp from "../PopUp/PopUp.jsx";
+
 import { notify } from "../notification/notification.js";
 import { projectTaskDetails } from "./style.js";
-import { useDispatch } from "react-redux";
-import { updateSpecificTaskAttribute,updateInterventionUploadedFile } from "../../../store/reducers/task.reducer.js";
+import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
 
 
-const TaskFiles = ({ interventions, taskID  }) => {
+const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
   const [openFolder, setOpenFolder] = useState(false);
   const isDownloadingRef = useRef(false);
+  const { user } = useGetAuthenticatedUser();
 
   const { projectID } = useParams();
   const classes = projectTaskDetails();
@@ -39,12 +44,13 @@ const TaskFiles = ({ interventions, taskID  }) => {
   const handleDownload = async (e, url, name) => {
     try {
       // Check if the download is already in progress
+
       if (isDownloadingRef.current) {
         return;
       }
       // Set the download in progress
       isDownloadingRef.current = true;
-      e.target.classList.add("downloading");
+
 
       // const fileName = `${name}.${url.split(".")[2]}`;
       const fileName = url.substr(url.indexOf('-')+1);
@@ -52,12 +58,6 @@ const TaskFiles = ({ interventions, taskID  }) => {
       const res = await axios.get(url, {
         responseType: "blob"
       });
-      // const res = await downloadTaskFile({url}).unwrap()
-      setTimeout(() => {
-        e.target.classList.remove("downloading");
-        e.target.classList.add("downloaded");
-      }, 500);
-      // console.log(res)
       fileDownload(res.data, fileName);
       isDownloadingRef.current = false;
     } catch (error) {
@@ -121,8 +121,13 @@ const TaskFiles = ({ interventions, taskID  }) => {
           key={key}
           className={`file ${classes.fileItem}`}
         >
+            <ReactSVG className={classes.fileIcon} src={faFile} />
+      <Tooltip title={file.substr(file.indexOf("-") + 1)} arrow placement="top">
+        <span className="file-name"> {file.substr(file.indexOf("-") + 1)}</span>
+      </Tooltip>
+
           {/* <Link to={`${process.env.REACT_APP_SERVER_URL}${item.file}`}  rel="noopener noreferrer"target="_blank"   download="Example-PDF-document"> */}
-          <span> {file.split('-')[1]}</span>
+          {/* <span> {file.split('-')[1]}</span> */}
           {/* </Link> */}
         </div>
       );
@@ -140,6 +145,8 @@ const TaskFiles = ({ interventions, taskID  }) => {
       >
         <div className={classes.filesList}>
           {filesList}
+        {
+        intervenantList.includes(user?.email) &&
 
           <div className={`${classes.fileItem} add`} onClick={handleUpload}>
             <ReactSVG src={faPlus} /> <span>Ajouter un fichier</span>
@@ -149,8 +156,9 @@ const TaskFiles = ({ interventions, taskID  }) => {
               type="file"
               onChange={onChange}
               name="file"
-            />
+              />
           </div>
+            }
         </div>
       </PopUp>
       <button className={classes.taskFileBtn} onClick={handleOpen}>

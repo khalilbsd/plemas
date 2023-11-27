@@ -32,7 +32,7 @@ import {
 } from "../../../constants/roles";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faAddUser from "../../public/svgs/light/user-plus.svg";
-import PopUp from "../PopUp.jsx/PopUp";
+import PopUp from "../PopUp/PopUp.jsx";
 import { notify } from "../notification/notification";
 import AddUserForm from "./AddUserForm";
 import { listStyle } from "./style";

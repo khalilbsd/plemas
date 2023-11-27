@@ -31,6 +31,7 @@ import { projectIntervenantList } from "./intervenant.controller.js";
 import { projectPotentialIntervenants } from "../users/user.controller.js";
 import InterventionHour from "../../models/tasks/interventionHours.model.js";
 import { takeNote } from "../../Utils/writer.js";
+import { removeDuplicates } from "../../Utils/utils.js";
 
 /*
  * params [projectID] REQUIRED
@@ -426,39 +427,67 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
       },
       {
         model: Task,
-
-        where: {
-          state: TASK_STATE_DOING,
-          // startDate: {
-          //   [Op.lte]: history
-          // }
+        where:{
+          state:TASK_STATE_DOING
         },
         as: "task"
       }
     ]
   });
   //convert tasks data to json
-  let allTasks = allTasksRaw.map((t) => t.toJSON());
+  let myTasks = allTasksRaw.map((t) => t.toJSON()); // this includes all the tasks that i'm in intervenant which have taskID (means all  the tasks that i'm active in and are in progress)
 
-  // projects tasks that i can join  : divided from all tasks (taskID === null)
-  let joinableTasks = allTasks.filter((t) => !t.taskID);
-  let otherTasks = [];
-  for (const idx in allTasks) {
-    let projectExist = otherTasks.filter(
-      (item) => item.projectID === allTasks[idx].projectID
-    );
-    if (projectExist.length) continue;
-    let taskTreeRaw = await Intervenant.findAll({
-      where: {
-        projectID: allTasks[idx].projectID,
-        taskId: {
-          [Op.ne]: allTasks[idx].taskID
-        }
-        // intervenantID:{
-        //   [Op.ne]:req.user.id
-        // }
+
+  // tasks than i can join
+  let joinableTasks = [];
+
+  let similarTasks = [];
+
+  // list of the the  project distinct
+  const projectIds =removeDuplicates( myTasks.map(task=>task.projectID))
+  const myTaskIds =  myTasks.map(task=>task.taskID)
+
+
+  for (const idx in projectIds  ){
+    const otherTasks = await Intervenant.findAll(({
+      where:{
+        projectID :{
+          [Op.eq]:projectIds[idx],
+        },
       },
-      group: "taskID",
+          include: [
+          {
+            model: Project,
+            attributes: ["id", "customId", "name"]
+          },
+          {
+            model: Task,
+            where: { state: TASK_STATE_DOING },
+            as: "task"
+          }
+        ]
+    }))
+
+    // console.log("--------------------------- parallelTasks",otherTasks.length,otherTasks)
+    joinableTasks = joinableTasks.concat(otherTasks.filter(pt=>!myTaskIds.includes(pt.taskID)))
+  }
+
+  // just the interventions that i'm in  (means only the project  that i'm part of but i don't have any tasks)
+  const watcherOnProjects = await Intervenant.findAll({where:{
+    intervenantID:req.user.id,
+    taskID:null
+  },
+
+
+
+})
+  const watchingIds= watcherOnProjects.map(wp=>wp.projectID).filter(elem=>!projectIds.includes(elem))
+
+  // for (const pIdx in watchingIds ){
+    const possibleTasksRaw = await Intervenant.findAll({
+      where:{
+        projectID :watchingIds,
+      },
       include: [
         {
           model: Project,
@@ -466,49 +495,36 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
         },
         {
           model: Task,
-
           where: { state: TASK_STATE_DOING },
           as: "task"
         }
       ]
-    });
-
-    let tasksTree = taskTreeRaw.map((t) => t.toJSON());
-    // console.log("TASKS TREEEEEE" ,tasksTree.length)
-
-    otherTasks = otherTasks.concat(tasksTree);
-  }
-
-  //  console.log(otherTasks)
-  let tmp = [];
-  otherTasks.map((t) => {
-    let clear = true;
-    for (const i in allTasks) {
-      if (allTasks[i].taskID === t.taskID) {
-        clear = false;
-        return;
-      }
+    })
+  // }
+    // now we need to filter the tasks cause of the redundancy
+    let  possibleTasks  = []
+    for (const pIdx in  possibleTasksRaw) {
+      // check  if tasks already exist
+      let alreadyExist  =possibleTasks.filter(el=>el.taskID === possibleTasksRaw[pIdx].taskID)
+      if (alreadyExist.length) continue
+      possibleTasks.push(possibleTasksRaw[pIdx])
     }
-    if (clear) tmp.push(t);
-  });
 
-  joinableTasks = joinableTasks.concat(tmp);
-  //  joinableTasks = joinableTasks.concat(otherTasks)
+    joinableTasks= joinableTasks.concat(possibleTasks)
+    console.log("i'm watching -------------------------",joinableTasks.length,joinableTasks);
 
-
-
-  for (const index in allTasks) {
+  for (const index in myTasks) {
     let interventionHours = await InterventionHour.findOne({
-      where: { interventionID: allTasks[index].id, date: history }
+      where: { interventionID: myTasks[index].id, date: history }
     });
     if (interventionHours) {
-      allTasks[index].nbHours = interventionHours.hours;
+      myTasks[index].nbHours = interventionHours.hours;
     } else {
-      allTasks[index].nbHours = 0;
+      myTasks[index].nbHours = 0;
     }
   }
 
-  return res.status(200).json({ joinableTasks, allTasks });
+  return res.status(200).json({ joinableTasks, allTasks:myTasks });
 });
 
 export const getTaskPotentialIntervenants = catchAsync(
