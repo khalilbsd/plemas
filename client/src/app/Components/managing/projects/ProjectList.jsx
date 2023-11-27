@@ -174,6 +174,10 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         menu: false,
         renderCell: (params) => {
           const tasksNb = projectTasks(params.row.id)?.length;
+          if (!tasksNb) return  <p className={classes.emptyTasks}>
+          {" "}
+          il n'y a pas de tâches planifiées{" "}
+        </p>
           const taskInfoElement = tasksNb ? (
             projectTasks(params.row.id)?.map((task, idx) => {
               return (
@@ -207,6 +211,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         menu: false,
         renderCell: (params) => {
           let tasksNb = projectTasks(params.row.id)?.length;
+        if (!tasksNb) return null
           const taskStateElement = tasksNb ? (
             projectTasks(params.row.id)?.map((task, idx) => {
               return (
