@@ -21,6 +21,7 @@ import ProjectCreationForm from "../Components/managing/projects/addProject/Proj
 import { projectsStyles } from "../Components/managing/style";
 import { notify } from "../Components/notification/notification";
 import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
+import { containsOnlySpaces } from "../../store/utils";
 
 const initialError = {
   filedName: undefined,
@@ -141,7 +142,7 @@ const [creatingProject, setCreatingProject] = useState(false)
         newProject[Object.keys(newProject)[index]].required
       ) {
         if (
-          !newProject[Object.keys(newProject)[index]].value ||
+          !newProject[Object.keys(newProject)[index]].value || containsOnlySpaces(newProject[Object.keys(newProject)[index]].value ) ||
           (Array.isArray(newProject[Object.keys(newProject)[index]].value) &&
             !newProject[Object.keys(newProject)[index]].value.length)
         ) {
@@ -200,6 +201,7 @@ const [creatingProject, setCreatingProject] = useState(false)
 
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
+      setCreatingProject(false)
     }
   };
 
@@ -224,6 +226,7 @@ const [creatingProject, setCreatingProject] = useState(false)
         )}
         <Grid item xs={12} lg={12} sx={{height:'100%'}}>
           <ProjectList
+            loadingProjectList= {isLoading}
             addForm={addProjectForm}
             handleForm={handleOpenAddForm}
           />

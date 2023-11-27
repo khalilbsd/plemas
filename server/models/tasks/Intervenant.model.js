@@ -6,6 +6,10 @@ const Intervenant = database.define("intervenant", {
         type:DataTypes.INTEGER,
         allowNull:false,
         defaultValue:0
+    },
+    file:{
+        type:DataTypes.TEXT('medium'),
+        allowNull:true
     }
 }, { timestamps: true });
 

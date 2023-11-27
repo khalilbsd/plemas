@@ -49,9 +49,8 @@ function App() {
     if (userObject?.isAuthenticated && (!userAccount || !profile)) {
       loadUserInfo();
     }
-    if (location !== displayLocation) setTransistionStage("fadeOut");
+    // if (location !== displayLocation) setTransistionStage("fadeOut");
   }, [location, displayLocation, userObject.loading]);
-
   const renderRoutes = (urls) => {
     return urls.map(({ path, Component, nested }, key) => (
       <Route key={key} path={path} element={Component}>

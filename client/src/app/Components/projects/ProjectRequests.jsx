@@ -31,17 +31,26 @@ import {
   setProjectRequests,
   updateRequestList
 } from "../../../store/reducers/project.reducer";
-import { formattedDate } from "../../../store/utils";
+import { containsOnlySpaces, formattedDate } from "../../../store/utils";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
-import faAdd from "../../public/svgs/light/plus.svg";
-import PopUp from "../PopUp.jsx/PopUp";
+import faAdd from "../../public/svgs/solid/plus.svg";
+import faTrash from "../../public/svgs/light/trash.svg";
+
+import PopUp from "../PopUp/PopUp.jsx";
+
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
-import { CustomCancelIcon, CustomDeleteIcon, CustomEditIcon, CustomSaveIcon } from "../icons";
+import {
+  CustomCancelIcon,
+  CustomDeleteIcon,
+  CustomEditIcon,
+  CustomSaveIcon
+} from "../icons";
 import { notify } from "../notification/notification";
 import { projectDetails, projectTaskDetails } from "./style";
 import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
-
-
+import dayjs from "dayjs";
+import faUpload from "../../public/svgs/light/upload.svg";
+import RequestFiles from "./RequestFiles";
 
 const ProjectRequests = () => {
   const dispatch = useDispatch();
@@ -49,21 +58,24 @@ const ProjectRequests = () => {
   const project = useGetProjectRequestMutation("project", "projectDetails");
   const classesDetails = projectDetails();
   const taskStyles = projectTaskDetails();
+  const fileInputRef = useRef(null);
+
   const [addRequest, setAddRequest] = useState(false);
+  const [files, setFiles] = useState([]);
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
-  const [creatingRequest, setCreatingRequest] = useState(false)
+  const [creatingRequest, setCreatingRequest] = useState(false);
+  // const [error, setError] = useState(false)
+  const [requestToDelete, setRequestToDelete] = useState(undefined);
+  const [checkDelete, setCheckDelete] = useState(false);
   const requests = useGetStateFromStore("project", "projectRequest");
   const [getProjectRequest, { isLoading: loadingRequests }] =
     useGetProjectRequestMutation();
   const [updateProjectRequest, { isLoading: updatingRequest }] =
     useUpdateProjectRequestMutation();
-  const [createProjectRequest] =
-    useCreateProjectRequestMutation();
-    const [deleteProjectRequest,{isLoading:deletingRequest}]=
-useDeleteProjectRequestMutation()
-
-
+  const [createProjectRequest] = useCreateProjectRequestMutation();
+  const [deleteProjectRequest, { isLoading: deletingRequest }] =
+    useDeleteProjectRequestMutation();
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -83,16 +95,20 @@ useDeleteProjectRequestMutation()
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const handleDeleteClick =  (id) => async () => {
+  const handleDeleteClick = async () => {
+    console.log("dellting", requestToDelete);
     // setRows(rows.filter((row) => row.id !== id));
     try {
-      const res = await deleteProjectRequest({projectID,requestID:id}).unwrap()
-      dispatch(removeRequestFromList(id))
-      notify(NOTIFY_SUCCESS,res.message)
+      const res = await deleteProjectRequest({
+        projectID,
+        requestID: requestToDelete
+      }).unwrap();
+      dispatch(removeRequestFromList(requestToDelete));
+      notify(NOTIFY_SUCCESS, res.message);
+      closeCheckDelete();
     } catch (error) {
-        notify(NOTIFY_ERROR, error?.data?.message);
+      notify(NOTIFY_ERROR, error?.data?.message);
     }
-
   };
 
   const handleCancelClick = (id) => () => {
@@ -104,7 +120,6 @@ useDeleteProjectRequestMutation()
 
   const processRowUpdate = async (newRow) => {
     try {
-
       let body = {
         state: REQUEST_STATE_TRANSLATION.filter(
           (state) => state.label === newRow.state
@@ -117,7 +132,7 @@ useDeleteProjectRequestMutation()
         body
       }).unwrap();
 
-      const updatedRow = { ...newRow, isNew: false };
+      const updatedRow = { ...res.request, isNew: false };
       notify(NOTIFY_SUCCESS, res?.message);
       return updatedRow;
     } catch (error) {
@@ -130,17 +145,22 @@ useDeleteProjectRequestMutation()
     setRowModesModel(newRowModesModel);
   };
 
-  const requestCreatorsNames=()=>{
-    let names =[]
-    requests.forEach(item=>{
-      if (!names.includes(`${item?.requestCreator?.UserProfile.name} ${item?.requestCreator?.UserProfile.lastName}`)){
-        names.push(`${item?.requestCreator?.UserProfile.name} ${item?.requestCreator?.UserProfile.lastName}`)
+  const requestCreatorsNames = () => {
+    let names = [];
+    requests.forEach((item) => {
+      if (
+        !names.includes(
+          `${item?.requestCreator?.UserProfile.name} ${item?.requestCreator?.UserProfile.lastName}`
+        )
+      ) {
+        names.push(
+          `${item?.requestCreator?.UserProfile.name} ${item?.requestCreator?.UserProfile.lastName}`
+        );
       }
-    })
+    });
 
-    return names
-  }
-
+    return names;
+  };
 
   const columns = [
     {
@@ -149,22 +169,37 @@ useDeleteProjectRequestMutation()
       width: 150,
       editable: true,
       valueGetter: (params) => {
-        return `${formattedDate(params.row.createdAt)}`;
+        return `${dayjs(params.row.createdAt)
+          .locale("en-gb")
+          .format("DD/MM/YYYY")}`;
       }
     },
     {
       field: "description",
       headerName: "Information",
-      width: 500,
+      width: 1000,
       editable: true,
-      filterable:false
+      filterable: false
+    },
+    {
+      field: "file",
+      headerName: "Attachements",
+      // type: "number",
+      editable: false,
+      width: 200,
+      renderCell: ({ row }) => {
+
+        return (
+          <RequestFiles  files={row.file} isCreator={row.requestCreator.email === user?.email} requestID={row.id} />
+        );
+      }
     },
     {
       field: "creatorID",
       headerName: "Émetteur",
       // type: "number",
-      valueOptions:requestCreatorsNames,
-      type:"singleSelect",
+      valueOptions: requestCreatorsNames,
+      type: "singleSelect",
       width: 200,
       renderCell: ({ row }) => {
         return (
@@ -192,6 +227,7 @@ useDeleteProjectRequestMutation()
         );
       }
     },
+
     {
       field: "state",
       headerName: "État",
@@ -241,7 +277,8 @@ useDeleteProjectRequestMutation()
         } else {
           if (
             isSuperUser ||
-            (isManager && user.email === project?.managerDetails?.email ) || user?.email === row.requestCreator?.email
+            (isManager && user.email === project?.managerDetails?.email) ||
+            user?.email === row.requestCreator?.email
           ) {
             renderActions.push(
               <GridActionsCellItem
@@ -253,21 +290,18 @@ useDeleteProjectRequestMutation()
               />
             );
           }
-          if (isSuperUser){
+          if (isSuperUser) {
             renderActions.push(
               <GridActionsCellItem
-              icon={<CustomDeleteIcon className={taskStyles.icon} />}
-              label="Supprimer"
-              className="textPrimary"
-              onClick={handleDeleteClick(row.id)}
-              color="inherit"
-            />
-
-            )
+                icon={<CustomDeleteIcon className={taskStyles.icon} />}
+                label="Supprimer"
+                className="textPrimary"
+                onClick={() => openCheckDelete(row.id)}
+                color="inherit"
+              />
+            );
           }
         }
-
-
 
         return renderActions;
       }
@@ -284,47 +318,90 @@ useDeleteProjectRequestMutation()
       }
     }
     loadRequests();
-  }, [dispatch, projectID,getProjectRequest]);
+  }, [dispatch, projectID, getProjectRequest]);
 
   const openAddRequest = () => {
     setAddRequest(true);
   };
   const closeAddRequest = () => {
     setAddRequest(false);
+    setFiles([])
   };
 
   const handleSubmitRequest = async () => {
     const description = descriptionRef.current.value;
-    if (!description || description.length === 0) {
+    if (
+      !description ||
+      description.length === 0 ||
+      containsOnlySpaces(description)
+    ) {
       notify(
         NOTIFY_INFO,
         "la requête ne sera pas créée parce que la description était vide "
       );
       closeAddRequest();
+      return;
     }
     try {
-      setCreatingRequest(true)
-      const res = await createProjectRequest({
-        description,
-        projectID
-      }).unwrap();
+      setCreatingRequest(true);
+      var formData = new FormData();
+
+      Array.from(files).forEach((file) => {
+        formData.append("files", file);
+      });
+      formData.append("description", description);
+      formData.append("projectID", projectID);
+
+      const res = await createProjectRequest(formData).unwrap();
       closeAddRequest();
       dispatch(updateRequestList(res.newRequest));
       notify(NOTIFY_SUCCESS, res?.message);
       setTimeout(() => {
-        setCreatingRequest(false)
+        setCreatingRequest(false);
       }, 500);
+
     } catch (error) {
+      console.log(error);
       notify(NOTIFY_ERROR, error?.data?.message);
+      closeAddRequest();
+      setTimeout(() => {
+        setCreatingRequest(false);
+      }, 500);
     }
   };
 
+  const closeCheckDelete = () => {
+    setRequestToDelete(undefined);
+    setCheckDelete(false);
+  };
+  const openCheckDelete = (id) => {
+    setRequestToDelete(id);
+    setCheckDelete(true);
+  };
+
+  const selectFiles = () => {
+    fileInputRef.current.click();
+  };
+  const onChange = async (e) => {
+    const files = Array.from(e.target.files);
+    // const file = files[0];
+    for (const file in files) {
+      if (file[file]?.size > 10 * 1024 * 1024) {
+        notify(NOTIFY_ERROR, "Le fichier est trop grande");
+        return;
+      }
+    }
+    setFiles(files);
+
+  };
+
+
   return (
     <div className={classesDetails.card}>
-      <div className={`${classesDetails.actions} pr`}>
+      <div className={`${classesDetails.cardTitle}`}>
         <button onClick={openAddRequest}>
-          <ReactSVG src={faAdd} />
-          <span className="text">Ajouter</span>
+          <span className="text">Requetes et informations</span>
+          <ReactSVG className="icon-container" src={faAdd} />
         </button>
       </div>
       <PopUp
@@ -344,10 +421,48 @@ useDeleteProjectRequestMutation()
           multiline
           fullWidth
         />
+        <ul className={taskStyles.fileListPreview}>
+          {Array.from(files)?.map((file, idx) => (
+            <li key={idx}>{file.name}</li>
+          ))}
+        </ul>
+        <button
+          onClick={selectFiles}
+          className={`${taskStyles.fileItem} add requests`}
+        >
+          <ReactSVG src={faUpload} /> Choisir des fichiers
+          <input
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            type="file"
+            onChange={onChange}
+            name="file"
+            multiple
+          />
+        </button>
       </PopUp>
+      <PopUp
+        open={checkDelete}
+        handleClose={closeCheckDelete}
+        handleSubmit={handleDeleteClick}
+        title="Supprimer une requête"
+        text="Êtes-vous sûr de vouloir supprimer cette réserve ? Vous ne pourrez plus la récupérer. "
+        icon={faTrash}
+        btnText="Supprimer"
+        loading={deletingRequest}
+        btnLevel="danger"
+      />
+
       <DataGrid
-        loading={loadingRequests || updatingRequest || creatingRequest || deletingRequest}
-        slots={{ columnMenu: CustomDataGridHeaderColumnMenu,
+        className={taskStyles.list}
+        loading={
+          loadingRequests ||
+          updatingRequest ||
+          creatingRequest ||
+          deletingRequest
+        }
+        slots={{
+          columnMenu: CustomDataGridHeaderColumnMenu,
           noRowsOverlay: CustomNoRowsOverlay
         }}
         rows={requests}
@@ -360,16 +475,15 @@ useDeleteProjectRequestMutation()
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 3
+              pageSize: 100
             }
           }
         }}
-        pageSizeOptions={[3]}
+        pageSizeOptions={[100]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
         autoHeight
         sx={{ "--DataGrid-overlayHeight": "200px" }}
-
       />
     </div>
   );

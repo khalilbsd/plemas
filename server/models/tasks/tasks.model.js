@@ -29,7 +29,8 @@ const Task = database.define("task", {
         type:DataTypes.STRING,
         allowNull:false,
         defaultValue:TASK_STATE_DOING,
-    }
+    },
+
 
 }, { timestamps: true });
 

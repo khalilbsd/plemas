@@ -1,6 +1,10 @@
+import { frFR as coreFrFR } from '@mui/material/locale';
 import { createTheme } from '@mui/material/styles';
+import { frFR } from '@mui/x-data-grid';
+import { frFR as pickersFrFR } from '@mui/x-date-pickers/locales';
 
-export const Theme = createTheme({
+export const Theme = createTheme(
+    {
     typography: {
         h1: {
             fontFamily: 'MyriadPro,sans-serif'
@@ -58,4 +62,8 @@ export const Theme = createTheme({
         }
 
     }
-})
+},
+frFR, // x-data-grid translations
+pickersFrFR, // x-date-pickers translations
+coreFrFR, // core translations
+)

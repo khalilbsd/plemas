@@ -1,27 +1,33 @@
 import {
   Chip,
   Grid,
-  IconButton,
   MenuItem,
   Select,
   Skeleton,
   TextField
 } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import {
   NOTIFY_ERROR,
   NOTIFY_INFO,
   NOTIFY_SUCCESS,
+  REQUEST_STATES_TREATED,
   TASK_STATE_ABANDONED,
+  TASK_STATE_DONE,
   TASK_STATE_TRANSLATION
 } from "../../../constants/constants";
 import { SUPERUSER_ROLE } from "../../../constants/roles";
+import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
@@ -37,22 +43,26 @@ import {
   setPhases,
   setPotentielManagers
 } from "../../../store/reducers/manage.reducer";
+import {
+  setEditProject,
+  setProjectPriority
+} from "../../../store/reducers/project.reducer";
+import { formattedDate } from "../../../store/utils";
+import faChevronUp from "../../public/svgs/light/chevron-up.svg";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faEdit from "../../public/svgs/light/pen.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
-import faDelete from "../../public/svgs/light/trash.svg";
+import PopUp from "../PopUp/PopUp";
 import SelectLot from "../managing/projects/SelectLot";
-import { notify } from "../notification/notification";
-import { projectDetails } from "./style";
-
-import useIsUserCanAccess from "../../../hooks/access";
-import { setEditProject } from "../../../store/reducers/project.reducer";
-import { formattedDate } from "../../../store/utils";
+import PriorityField, {
+  priorityColors
+} from "../managing/projects/addProject/PriorityField";
 import { projectsStyles } from "../managing/style";
+import { notify } from "../notification/notification";
+import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
-import HoursPopUp from "./HoursPopUp";
-import PopUp from "../PopUp.jsx/PopUp";
+import { projectDetails } from "./style";
 
 const initialState = {
   code: "",
@@ -63,30 +73,43 @@ const initialState = {
   startDate: "",
   dueDate: "",
   manager: "",
-  priority: ""
+  priority: "",
+  state: ""
 };
 
-const ProjectInfo = ({ loading, open }) => {
+const ProjectInfo = ({ loading, open, handleClose }) => {
+  //hooks
+  const classes = projectDetails();
+  const externalProjectClasses = projectsStyles();
   const project = useGetStateFromStore("project", "projectDetails");
   const editData = useGetStateFromStore("manage", "addProject");
-
+  const tasks = useGetStateFromStore("task", "projectTasks");
+  const requests = useGetStateFromStore("project", "projectRequest");
+  const abandonRef = useRef();
+  const dispatch = useDispatch();
   const { user, isAuthenticated } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [edit, setEdit] = useState(false);
-  const [alertAbandon, setAlertAbandon] = useState(false);
+  // const [alertAbandon, setAlertAbandon] = useState(false);
   const [managerPopUP, setManagerPopUP] = useState({ open: false, hours: 0 });
-  const classes = projectDetails();
-  const externalProjectClasses = projectsStyles();
+  const [priorityChange, setPriorityChange] = useState(false);
+  const [checkProjectIntegrity, setCheckProjectIntegrity] = useState(false);
+  const [editedProject, setEditedProject] = useState(initialState);
+  //apis
   const [getLots] = useGetLotsMutation();
   const [getPhases] = useGetPhasesMutation();
   const [getPotentielManagers] = useGetPotentielManagersMutation();
-  const dispatch = useDispatch();
-  const [editedProject, setEditedProject] = useState(initialState);
-  const [updateProject] = useUpdateProjectMutation();
+  const [updateProject, { isLoading: updatingProject }] =
+    useUpdateProjectMutation();
   const [assignManagerHours, { isLoading: loadMangerHours }] =
     useAssignManagerHoursMutation();
-  const [abandonProject, { isLoading: abandoningShip }] =
+
+  const [abandonProject] =
     useAbandonProjectMutation();
+
+  const changePriority = (e) => {
+    setPriorityChange((prevPrio) => !prevPrio);
+  };
 
   useEffect(() => {
     async function loadPhasesAndLots() {
@@ -117,7 +140,8 @@ const ProjectInfo = ({ loading, open }) => {
           ? dayjs(project.dueDate).locale("en-gb")
           : null,
         manager: project.manager,
-        priority: project.priority
+        priority: project.priority,
+        state: project.state
       });
     }
   }, [edit, project]);
@@ -128,31 +152,54 @@ const ProjectInfo = ({ loading, open }) => {
 
   useEffect(() => {
     dispatch(setEditProject(edit));
-  }, [edit]);
+  }, [edit,dispatch]);
 
   const handleUpdate = async () => {
     try {
       const data = { ...editedProject };
+      if (data.dueDate) data.dueDate = dayjs(data.dueDate).format("DD/MM/YYYY");
       if (data.phase === project.phase.name) {
         delete data.phase;
         if (data.code === project.code) delete data.code;
       }
       data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
-      if (data.dueDate) data.dueDate = dayjs(data.dueDate).format("DD/MM/YYYY");
       // }
+      if (data.state && data.state === project.state) {
+        delete data.state;
+      }
 
       const res = await updateProject({
         body: data,
         projectID: project.id
       }).unwrap();
+      if (abandonRef?.current?.checked) {
+        await abandonProject({
+          projectID: project.id,
+          body: {
+            action: TASK_STATE_TRANSLATION.filter(
+              (state) => state.value === TASK_STATE_ABANDONED
+            )[0].label
+          }
+        }).unwrap();
+      }
       notify(NOTIFY_SUCCESS, res?.message);
       setEdit(false);
       setTimeout(() => {
         window.location.reload(false);
       }, 300);
     } catch (error) {
+      console.log(error)
       notify(NOTIFY_ERROR, error?.data?.message);
     }
+  };
+
+  const handleCheckForProjectState = () => {
+    if (editedProject.dueDate && dayjs(project.dueDate).format("DD/MM/YYYY") !== (editedProject.dueDate).format('DD/MM/YYYY')) {
+      setCheckProjectIntegrity(true);
+      return;
+    }
+    handleUpdate();
+    return;
   };
 
   const getProjectsLots = () => {
@@ -217,9 +264,9 @@ const ProjectInfo = ({ loading, open }) => {
     }
   };
 
-  const isProjectAbandoned =
-    TASK_STATE_TRANSLATION.filter((state) => state.label === project.state)[0]
-      ?.value === TASK_STATE_ABANDONED;
+  // const isProjectAbandoned =
+  //   TASK_STATE_TRANSLATION.filter((state) => state.label === project.state)[0]
+  //     ?.value === TASK_STATE_ABANDONED;
 
   if (loading || !project)
     return <Skeleton className={classes.mainInfoSkeleton} />;
@@ -241,42 +288,53 @@ const ProjectInfo = ({ loading, open }) => {
     }
   };
 
-  const abandonShip = async () => {
-    try {
-      console.log(TASK_STATE_TRANSLATION.filter(
-        (state) => state.value === TASK_STATE_ABANDONED
-      )[0].label);
-     const res =  await abandonProject({
-        projectID: project.id,
-        body:{
-          action: TASK_STATE_TRANSLATION.filter(
-            (state) => state.value === TASK_STATE_ABANDONED
-          )[0].label
-        }
-      }).unwrap();
-      setAlertAbandon(false)
-      notify(NOTIFY_SUCCESS, res?.message);
-      setTimeout(() => {
-        window.location.reload(false);
-      }, 300);
+  const getPriorityColor = (id) => {
+    const priority = priorityColors.filter((color) => color.value === id)[0];
+    if (!priority) return { code: "var(--bright-orange)", value: -1 };
 
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
+    return { code: priority.code, value: priority.value };
   };
-  const resumeShip = async () => {
-    try {
-      const  res = await abandonProject({
-        projectID: project.id,
-        action: "Resume"
-      }).unwrap();
-      notify(NOTIFY_SUCCESS, res?.message);
-      setTimeout(() => {
-        window.location.reload(false);
-      }, 300);
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
+
+  // const abandonShip = async () => {
+  //   try {
+  //     console.log(TASK_STATE_TRANSLATION.filter(
+  //       (state) => state.value === TASK_STATE_ABANDONED
+  //     )[0].label);
+  //    const res =  await abandonProject({
+  //       projectID: project.id,
+  //       body:{
+  //         action: TASK_STATE_TRANSLATION.filter(
+  //           (state) => state.value === TASK_STATE_ABANDONED
+  //         )[0].label
+  //       }
+  //     }).unwrap();
+  //     setAlertAbandon(false)
+  //     notify(NOTIFY_SUCCESS, res?.message);
+  //     setTimeout(() => {
+  //       window.location.reload(false);
+  //     }, 300);
+
+  //   } catch (error) {
+  //     notify(NOTIFY_ERROR, error?.data?.message);
+  //   }
+  // };
+  // const resumeShip = async () => {
+  //   try {
+  //     const  res = await abandonProject({
+  //       projectID: project.id,
+  //       action: "Resume"
+  //     }).unwrap();
+  //     notify(NOTIFY_SUCCESS, res?.message);
+  //     setTimeout(() => {
+  //       window.location.reload(false);
+  //     }, 300);
+  //   } catch (error) {
+  //     notify(NOTIFY_ERROR, error?.data?.message);
+  //   }
+  // };
+
+  const handleUpdatePriority = (priority) => {
+    dispatch(setProjectPriority(parseInt(priority)));
   };
 
   return (
@@ -293,13 +351,98 @@ const ProjectInfo = ({ loading, open }) => {
         btnText="Confirmer"
         loading={loadMangerHours}
       />
+
+      <PopUp
+        open={checkProjectIntegrity}
+        handleClose={() => setCheckProjectIntegrity(false)}
+        handleSubmit={handleUpdate}
+        title="Confirmation"
+        text="Êtes-vous sûr de vouloir remplir la date d'échéance du projet ?
+     gardez à l'esprit que le fait de remplir la date d'échéance du projet entraînera l'achèvement du projet ou l'abandon du projet si vous le souhaitez en sélectionnant l'option ci-dessous.."
+        icon={faSave}
+        btnText="Confirmer"
+        loading={updatingProject}
+      >
+        <FormGroup>
+          <FormControlLabel
+            control={<Checkbox inputRef={abandonRef} />}
+            label="Abandoner le projet"
+          />
+          <div className={classes.warning}>
+            {tasks.filter((task) => task.state !== TASK_STATE_DONE).length >
+              0 && (
+              <p>
+                Veuillez noter que certaines tâches n'ont pas encore été
+                accomplies.
+              </p>
+            )}
+            {tasks.map(
+              (task, idx) =>
+                task.state !== TASK_STATE_DONE && (
+                  <p
+                    key={idx}
+                    className={`${classes.unfinished} ${
+                      TASK_STATE_TRANSLATION.filter(
+                        (level) => level.value === task.state
+                      )[0]?.label
+                    }`}
+                  >
+                    {task.name} ({task.state})
+                  </p>
+                )
+            )}
+            {requests.filter((req) => req.state !== REQUEST_STATES_TREATED)
+              .length > 0 && (
+              <p>
+                Veuillez noter que certaines requêtes ne sont pas encore traité.
+              </p>
+            )}
+            {requests.map(
+              (request, idx) =>
+                request.state !== REQUEST_STATES_TREATED && (
+                  <p key={idx} className={`${classes.unfinished} requests`}>
+                    {request.description}
+                  </p>
+                )
+            )}
+          </div>
+        </FormGroup>
+      </PopUp>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <h3 className={classes.sectionTitle}>Information générale</h3>
-        </Grid>
         <Grid item xs={12} sm={12} md={6} lg={8}>
           <div className={`${classes.card} internal`}>
             <Grid container spacing={2}>
+              {/*  project name  */}
+              <Grid item xs={12}>
+                <div className={classes.projectTitleContainer}>
+                  {project?.priority !== undefined && (
+                    <div
+                      onClick={edit ? changePriority : undefined}
+                      data-priority={getPriorityColor(project.priority)?.value}
+                      className={classes.priority}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: getPriorityColor(project.priority)
+                            .code
+                        }}
+                        className="circle"
+                      ></div>
+
+                      {priorityChange && (
+                        <div className={classes.priorityUpdateContainer}>
+                          <PriorityField
+                            onChange={handleUpdatePriority}
+                            priority={getPriorityColor(project.priority).value}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <h3 className={classes.sectionTitle}>{project.customId}</h3>
+                </div>
+              </Grid>
+
               {/* project code  */}
               <Grid item xs={12} sm={3} md={3} lg={3}>
                 <div className={classes.data}>
@@ -337,7 +480,7 @@ const ProjectInfo = ({ loading, open }) => {
               {/* project phase */}
               <Grid item xs={12} sm={3} md={3} lg={3}>
                 <div className={classes.data}>
-                  <p className="label">la Phase</p>
+                  <p className="label">Phase</p>
                   {!edit ? (
                     <div className="value">{project.phase?.name}</div>
                   ) : !editData.phases.length ? (
@@ -364,7 +507,7 @@ const ProjectInfo = ({ loading, open }) => {
               {/* projects lot  */}
               <Grid item xs={12} sm={3} md={3} lg={3}>
                 <div className={classes.data}>
-                  <p className="label">les Lots</p>
+                  <p className="label">Lôts</p>
                   {!edit ? (
                     <div className="value">
                       {project.projectLots?.map(({ lot }) => (
@@ -384,9 +527,9 @@ const ProjectInfo = ({ loading, open }) => {
 
               {/* project state  */}
               <Grid item xs={12} sm={3} md={3} lg={3}>
-                <div className={`${classes.data} w-actions`}>
-                  <div>
-                    <p className="label">l'Etat du projet</p>
+                <div className={`${classes.data} `}>
+                  <p className="label">l'Etat du projet</p>
+                  {!edit ? (
                     <div className={`value ${project.state}`}>
                       {
                         TASK_STATE_TRANSLATION.filter(
@@ -394,8 +537,28 @@ const ProjectInfo = ({ loading, open }) => {
                         )[0]?.value
                       }
                     </div>
-                  </div>
-                  <PopUp
+                  ) : !editedProject.state ? (
+                    <Skeleton variant="rectangular" width={100} height={50} />
+                  ) : (
+                    <Select
+                      labelId="project-state-select-label"
+                      id="project-state-simple-select"
+                      size="small"
+                      fullWidth
+                      value={editedProject.state ? editedProject.state : ""}
+                      label="Etat du  project"
+                      name="state"
+                      onChange={handleChange}
+                    >
+                      {TASK_STATE_TRANSLATION.map((trans, idx) => (
+                        <MenuItem key={idx} value={trans.label}>
+                          {trans.value}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+
+                  {/* <PopUp
                     loading={abandoningShip}
                     open={alertAbandon}
                     handleClose={() => setAlertAbandon(false)}
@@ -421,7 +584,7 @@ const ProjectInfo = ({ loading, open }) => {
                       ?TASK_STATE_ABANDONED
                       : "poursuivre le projet"}
                   </button>
-              }
+              } */}
                 </div>
               </Grid>
 
@@ -464,7 +627,7 @@ const ProjectInfo = ({ loading, open }) => {
               {/* date fin */}
               <Grid item xs={12} sm={6} md={6} lg={6}>
                 <div className={classes.data}>
-                  <p className="label">Date Fin</p>
+                  <p className="label">Date fin</p>
                   {!edit ? (
                     <div className="value">
                       {project.dueDate ? (
@@ -476,54 +639,67 @@ const ProjectInfo = ({ loading, open }) => {
                       )}
                     </div>
                   ) : (
-                    (
                     editedProject.dueDate !== undefined &&
-                      editedProject.dueDate !== "" && (
-                        <div className={classes.dueDate}>
-                          <LocalizationProvider
+                    editedProject.dueDate !== "" && (
+                      <div className={classes.dueDate}>
+                        <LocalizationProvider
+                          size="small"
+                          dateAdapter={AdapterDayjs}
+                          adapterLocale="en-gb"
+                        >
+                          <DatePicker
                             size="small"
-                            dateAdapter={AdapterDayjs}
-                            adapterLocale="en-gb"
-                          >
-                            <DatePicker
-                              size="small"
-                              defaultValue={editedProject.dueDate}
-                              minDate={editedProject.startDate}
-                              format="DD/MM/YYYY"
-                              onChange={(newValue) =>
-                                setEditedProject({
-                                  ...editedProject,
-                                  dueDate: newValue
-                                })
+                            defaultValue={editedProject.dueDate}
+                            minDate={editedProject.startDate}
+                            format="DD/MM/YYYY"
+                            onChange={(newValue) =>
+                              setEditedProject({
+                                ...editedProject,
+                                dueDate: newValue
+                              })
+                            }
+                            slotProps={{
+                              textField: {
+                                variant: "outlined",
+                                size: "small"
                               }
-                              slotProps={{
-                                textField: {
-                                  variant: "outlined",
-                                  size: "small"
-                                }
-                              }}
-                            />
-                          </LocalizationProvider>
-                          {project.dueDate && (
-                            <div className={classes.actions}>
-                              <button
-                                onClick={removeProjectDueDate}
-                                className={classes.clearDueDate}
-                              >
-                                <ReactSVG
-                                  className="icon-container"
-                                  src={faCancel}
-                                />
-                                <span className="text">
-                                  Effacer la date d'échéance
-                                </span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ))
+                            }}
+                          />
+                        </LocalizationProvider>
+                        {project.dueDate && (
+                          <div className={classes.actions}>
+                            <button
+                              onClick={removeProjectDueDate}
+                              className={classes.clearDueDate}
+                            >
+                              <ReactSVG
+                                className="icon-container"
+                                src={faCancel}
+                              />
+                              <span className="text">
+                                Effacer la date d'échéance
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )
                   )}
                 </div>
+              </Grid>
+              {/* prev phase */}
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                {project.prevPhase && (
+                  <>
+                    Phase lié <br />
+                    <Link
+                      to={`/projects/${project?.prevPhase}`}
+                      target="_blank"
+                    >
+                      {project?.project.name} {project?.project?.phase?.name}
+                    </Link>
+                  </>
+                )}
               </Grid>
             </Grid>
           </div>
@@ -532,6 +708,16 @@ const ProjectInfo = ({ loading, open }) => {
         <Grid item xs={12} sm={12} md={6} lg={4}>
           <div className={`${classes.card} internal`}>
             <Grid container spacing={2}>
+              {open && (
+                <div className={`${classes.actions} top fw`}>
+                  <button
+                    onClick={handleClose}
+                    className={`${classes.seeMoreProject} close`}
+                  >
+                    Voir moin <ReactSVG src={faChevronUp} />
+                  </button>
+                </div>
+              )}
               {/* creator */}
               {/* <Grid item xs={12}>
               <div className={classes.data}>
@@ -564,7 +750,7 @@ const ProjectInfo = ({ loading, open }) => {
               {/* manager */}
               <Grid item xs={12}>
                 <div className={classes.data}>
-                  {!edit ? (
+                  {!edit || project.managerHours > 0 ? (
                     <div className="value">
                       <div className={classes.manager}>
                         {project.managerDetails?.UserProfile?.image ? (
@@ -627,14 +813,22 @@ const ProjectInfo = ({ loading, open }) => {
       </Grid>
       {(isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email)) && (
-        <div className={classes.actions}>
+        <div className={`${classes.actions} ttb`}>
           {edit && (
             <button onClick={handleEdit} className="cancel">
               <ReactSVG src={faCancel} />
               <span className="text">Annuler</span>
             </button>
           )}
-          <button onClick={!edit ? handleEdit : handleUpdate}>
+          <button
+            onClick={
+              !edit
+                ? handleEdit
+                : editedProject.dueDate
+                ? handleCheckForProjectState
+                : handleUpdate
+            }
+          >
             <ReactSVG src={!edit ? faEdit : faSave} />
             <span className="text">{!edit ? "Éditer" : "Enregistrer"}</span>
           </button>

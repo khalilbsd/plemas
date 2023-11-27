@@ -11,6 +11,10 @@ const Request = database.define("requests", {
     allowNull:false,
     defaultValue:0
   },
+  file:{
+    type:DataTypes.TEXT('medium'),
+    allowNull:true
+  }
 
 }, { timestamps: true });
 

@@ -50,10 +50,29 @@ export const taskApi = api.injectEndpoints({
       })
     }),
     updateTask: builder.mutation({
-      query: ({ body, taskID }) => ({
-        url: `tasks/update_details/task/${taskID}`,
+      query: ({ body, taskID,projectID }) => ({
+        url: `tasks/update_details/project/${projectID}/task/${taskID}`,
         method: "PATCH",
         data: body
+      })
+    }),
+    uploadFileToTask: builder.mutation({
+      query: ({ body, taskID,projectID }) => ({
+        url: `tasks/update/project/${projectID}/task/${taskID}/upload/file`,
+        method: "PATCH",
+        data: body
+      })
+    }),
+    downloadTaskFile: builder.mutation({
+      query: ({url}) =>
+      (console.log(url),
+        {
+        url: url,
+        method: 'GET',
+        headers:{
+          'response-type':'blob'
+
+        }
       })
     }),
   })
@@ -67,5 +86,7 @@ export const {
   useAssociateToTaskMutation,
   useAssignHoursInTaskMutation,
   useUpdateTaskMutation,
-  useGetDailyLogTasksMutation
+  useGetDailyLogTasksMutation,
+  useDownloadTaskFileMutation,
+  useUploadFileToTaskMutation
 } = taskApi;

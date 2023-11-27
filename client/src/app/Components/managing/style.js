@@ -47,13 +47,13 @@ export const listStyle = createUseStyles({
   safeLabel: {
     fontWeight: 600,
     fontSize: 14,
-    padding: "0px 20px",
+    // padding: "0px 20px",
     width: "150px",
     // margin:'auto',
     textAlign: "center",
     color: "var(--dark-green)",
     borderRadius: 4,
-    padding: "10px 00px",
+    padding: "5px 00px",
     border: "2px solid var(--dark-green)"
   },
   redLabel: {
@@ -61,7 +61,7 @@ export const listStyle = createUseStyles({
     fontSize: 14,
     color: "var(--toastify-icon-color-error)",
     borderRadius: 4,
-    padding: "10px 00px",
+    padding: "5px 00px",
     width: "150px",
     // margin:'auto',
     textAlign: "center",
@@ -76,13 +76,9 @@ export const listStyle = createUseStyles({
   },
   list: {
     height: "calc(100% - 53px) !important",
-    borderTopLeftRadius: "30px !important",
-    borderTopRightRadius: "30px !important",
-
+    borderRadius: "30px !important",
+    overflow: "hidden !important",
     background: "var(--white)",
-    "& .MuiDataGrid-virtualScrollerContent": {
-      // height: "360px !important"
-    },
 
     "& .MuiDataGrid-columnHeaders": {
       backgroundColor: "var(--light-green)",
@@ -93,12 +89,12 @@ export const listStyle = createUseStyles({
       height: "90px !important",
       maxHeight: "90px !important",
       "& .MuiDataGrid-columnHeadersInner": {
-        width: "95%",
+        width: "98%",
         margin: "auto"
       }
     },
     "& .MuiDataGrid-virtualScroller": {
-      width: "95%",
+      width: "98%",
       margin: "auto",
       marginTop: -20,
       /* z-index: 999999999999999999999999999999999999999999999999999999999999999999999999; */
@@ -107,15 +103,34 @@ export const listStyle = createUseStyles({
       borderRadius: 15,
       // border: '1px solid var(--app-bg-color)',
       boxShadow: "0px 7px 33px 0px rgba(0,0,0,0.3)",
-      marginBottom: 20
+      marginBottom: 20,
+      maxHeight: "100% !important",
+      height: "100% !important",
+      overflow: "visible !important",
+      overflowX: "hidden !important",
+      overflowY: "auto !important",
+      "&::-webkit-scrollbar": {
+        width: "8px"
+      },
+
+      "&::-webkit-scrollbar-track": {
+        WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+        borderRadius: "10px"
+      },
+      "&::-webkit-scrollbar-thumb": {
+        borderRadius: "10px",
+        // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+        background: "var(--pastel-green)"
+      }
     },
     "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
-      minHeight: "72px !important",
-      maxHeight: "72px !important",
+      minHeight: "42px !important",
+      maxHeight: "42px !important",
       border: "none !important"
     },
     "&.integrated": {
-      overflow: "visible",
+
+      overflow: "visible !important",
       "& .MuiDataGrid-main": {
         overflow: "visible"
       },
@@ -140,15 +155,21 @@ export const listStyle = createUseStyles({
         }
       },
       "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
-        minHeight: "52px !important",
+        minHeight: "42px !important",
         maxHeight: "unset !important",
         border: "none !important",
         alignItems: "flex-start",
         padding: "7px 0"
+      },
+      "& .MuiDataGrid-overlayWrapperInner": {
+        height: "600px !important"
       }
     },
     "& .notTreatedRequest": {
       backgroundColor: "#e74c3c2e !important"
+    },
+    "& .MuiDataGrid-footerContainer": {
+      display: "none !important"
     }
   }
 });
@@ -217,8 +238,8 @@ export const projectsStyles = createUseStyles({
   },
   header: {
     backgroundColor: "var(--light-green)",
-    padding: "20px 40px",
-    width: "calc(100% - 80px)"
+    padding: "20px 20px",
+    width: "calc(100% - 40px)"
   },
   headersItem: {
     display: "flex",
@@ -239,9 +260,9 @@ export const projectsStyles = createUseStyles({
   datesData: {
     color: "var(--white)",
     display: "flex",
-    alignItems: "flex-start",
+    alignItems: "flex-center",
     width: "calc(100% - 40px)",
-    minHeight: 90,
+    minHeight: 60,
     fontWeight: 600,
     fontSize: 14
   },
@@ -256,20 +277,17 @@ export const projectsStyles = createUseStyles({
     whiteSpace: "nowrap",
     position: "relative",
     width: 50,
-    height: 50
+    height: 50,
+    display:'flex',
+    alignItems:'flex-end'
   },
   dateTitle: {
-    position: "absolute",
-
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    transform: "rotate(45deg) translate(0px, 0px)",
+   lineHeight:'40px',
+   margin:0,
     fontSize: 12,
     textWrap: "nowrap",
     whiteSpace: "nowrap",
-    margin: "0 -100%",
+    // margin: "0 -100%",
     "&.disabled": { opacity: 0.5 }
   },
   content: {
@@ -315,10 +333,12 @@ export const projectsStyles = createUseStyles({
     }
   },
   progressBarContainer: {
-    height: 52,
+    height: 32,
     display: "flex"
   },
   progressBar: {
+    paddingLeft:10,
+    fontWeight:600,
     height: 20,
     borderRadius: 5,
     backgroundColor: "var(--bright-orange)",
@@ -592,7 +612,11 @@ export const projectsStyles = createUseStyles({
     width: "100%"
   },
   taskStates: {
-    height: 52
+    height: 32,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    fontWeight:600
   },
   projectName: {
     margin: 0,
@@ -610,11 +634,16 @@ export const projectsStyles = createUseStyles({
 
   task: {
     borderLeft: "1px solid var(--app-bg-color)",
-    paddingLeft: 5
+    paddingLeft: 5 ,
+    width:'90%'
   },
   emptyTasks: {
     margin: 0,
     color: "var(--bright-orange)",
     whiteSpace: "normal"
+  },
+  lot:{
+    margin:0,
+    marginRight:5
   }
 });

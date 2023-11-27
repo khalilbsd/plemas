@@ -6,10 +6,9 @@ import {
   OutlinedInput,
   Select
 } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import React from "react";
-import { useTheme } from "@mui/material/styles";
 import Avatar from "@mui/material/Avatar";
+import { Box } from "@mui/system";
+import React from "react";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 
 const ITEM_HEIGHT = 48;
@@ -33,8 +32,7 @@ const ProjectUserLists = ({
   label,
   multipleValue
 }) => {
-    const colors = useGetStateFromStore("userInfo","avatarColors")
-
+  const colors = useGetStateFromStore("userInfo", "avatarColors");
 
   if (multiple)
     return (
@@ -46,20 +44,28 @@ const ProjectUserLists = ({
           multiple
           value={multipleValue}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-${label}" label={label} />}
+          input={
+            <OutlinedInput id={`select-multiple-${label}`} label={label} />
+          }
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {selected.map((value,idx) => (
+              {selected.map((value, idx) => (
                 <Chip
                   avatar={
                     value.image ? (
                       <Avatar
-                        alt={value.name}
+                        alt={value.name ? value.name : ""}
                         src={`${process.env.REACT_APP_SERVER_URL}${value.image}`}
                       />
                     ) : (
-                      <Avatar className={`${externalClass.avatar} ${colors[idx % colors.length]} chip`} >
-                        {value?.name[0].toUpperCase()}{value?.lastName[0].toUpperCase()}
+                      <Avatar
+                        className={`${externalClass.avatar} ${
+                          colors[idx % colors.length]
+                        } chip`}
+                      >
+                        {value?.name && value?.lastName
+                          ? `${value?.name[0].toUpperCase()} ${value?.lastName[0].toUpperCase()}`
+                          : ""}
                       </Avatar>
                     )
                   }
@@ -71,22 +77,30 @@ const ProjectUserLists = ({
           )}
           MenuProps={MenuProps}
         >
-          {list.map((user,idx) => (
+          {list.map((user, idx) => (
             <MenuItem key={idx} value={user}>
               <div className={externalClass.manager}>
                 {user?.image ? (
                   <img
                     src={`${process.env.REACT_APP_SERVER_URL}${user.image}`}
                     className={externalClass.avatar}
+                    alt={`${user?.name}_${user?.lastName}-avatar`}
                   />
                 ) : (
-                  <span className={`${externalClass.avatar} ${colors[idx % colors.length]}`}>
-                    {user?.name[0].toUpperCase()}
-                    {user?.lastName[0].toUpperCase()}
+                  <span
+                    className={`${externalClass.avatar} ${
+                      colors[idx % colors.length]
+                    }`}
+                  >
+                    {user?.name && user?.lastName
+                      ? `${user?.name[0].toUpperCase()} ${user?.lastName[0].toUpperCase()}`
+                      : `${user.email[0]}`}
                   </span>
                 )}
                 <div className="info">
-                  <span className="name">{`${user.name} ${user.lastName}`}</span>
+                  <span className="name">{`${user.name ? user.name : ""}  ${
+                    user.lastName ? user.lastName : ""
+                  }`}</span>
                   <span className="email">{user.email}</span>
                   <span className="poste">{user.poste}</span>
                 </div>
@@ -109,22 +123,24 @@ const ProjectUserLists = ({
       onChange={handleChange}
     >
       {/* {editData.managers.map((manager, managerIdx) => ( */}
-      {list.map((user,idx) => (
-        <MenuItem
-          className={externalClass.MenuItem}
-          key={idx}
-          value={user.id}
-        >
+      {list.map((user, idx) => (
+        <MenuItem className={externalClass.MenuItem} key={idx} value={user.id}>
           <div className={externalClass.manager}>
             {user.image ? (
               <img
+                alt={`${user?.name}_${user?.lastName}-avatar`}
                 src={`${process.env.REACT_APP_SERVER_URL}${user.image}`}
                 className={externalClass.avatar}
               />
             ) : (
-              <span className={`${externalClass.avatar} ${colors[idx % colors.length]}`}>
-                {user.name[0].toUpperCase()}
-                {user.lastName[0].toUpperCase()}
+              <span
+                className={`${externalClass.avatar} ${
+                  colors[idx % colors.length]
+                }`}
+              >
+                {user?.name &&
+                  user?.lastName &&
+                  `${user?.name[0].toUpperCase()} ${user?.lastName[0].toUpperCase()}`}
               </span>
             )}
             <div className="info">

@@ -26,10 +26,12 @@ const PopUp = ({
   icon,
   children,
   loading,
-  btnLevel
+  btnLevel,
+  className
 }) => {
   return (
     <Dialog
+      className={className?className:""}
       open={open}
       onClose={handleClose}
       aria-labelledby="dialog-title"
@@ -43,16 +45,19 @@ const PopUp = ({
         {children}
       </DialogContent>
 
+
+      {handleSubmit&&
       <DialogActions>
         <AddBtn
         level={btnLevel}
-          handleAdd={handleSubmit}
-          title={btnText}
-          // large="large"
-          icon={icon}
-          loading={loading}
+        handleAdd={handleSubmit}
+        title={btnText}
+        // large="large"
+        icon={icon}
+        loading={loading}
         />
       </DialogActions>
+      }
     </Dialog>
   );
 };

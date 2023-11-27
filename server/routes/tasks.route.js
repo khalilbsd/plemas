@@ -15,8 +15,11 @@ import {
     updateTaskInfo
 } from "../controllers/tasks/task.controller.js";
 import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
+import createMulterMiddleware from "../middleware/uploader.js";
+import { uploadFileToTask } from "../controllers/tasks/intervenant.controller.js";
 
 const router = Router();
+const  fileUploader = createMulterMiddleware('file')
 
 router
   .get(
@@ -56,10 +59,18 @@ router
     getTaskPotentialIntervenants
   )
   .patch(
-    "/update_details/task/:taskID",
+    "/update_details/project/:projectID/task/:taskID",
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
     updateTaskInfo
+  )
+  .patch(
+    "/update/project/:projectID/task/:taskID/upload/file",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
+    fileUploader,
+    uploadFileToTask
   );
+
 
 export default router;

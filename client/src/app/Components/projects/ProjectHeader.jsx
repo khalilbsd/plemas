@@ -8,33 +8,34 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import { ReactSVG } from "react-svg";
+import { NOTIFY_ERROR } from "../../../constants/constants";
+import useIsUserCanAccess from "../../../hooks/access";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import { setProject, setProjectPriority } from "../../../store/reducers/project.reducer";
+import {
+  useGetProjectByIDMutation,
+  useGetProjectListMutation
+} from "../../../store/api/projects.api";
+import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
+import { setProjectList } from "../../../store/reducers/manage.reducer";
+import { setProject } from "../../../store/reducers/project.reducer";
+import { setProjectTask } from "../../../store/reducers/task.reducer";
 import faChevronDown from "../../public/svgs/light/chevron-down.svg";
-import faChevronUp from "../../public/svgs/light/chevron-up.svg";
-import PriorityField, {
-  priorityColors
-} from "../managing/projects/addProject/PriorityField";
-import ProjectInfo from "./ProjectInfo";
-import { projectDetails } from "./style";
 import faSearch from "../../public/svgs/light/magnifying-glass.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
-import { useGetProjectByIDMutation, useGetProjectListMutation } from "../../../store/api/projects.api";
-import { setProjectList } from "../../../store/reducers/manage.reducer";
-import { NOTIFY_ERROR } from "../../../constants/constants";
 import { notify } from "../notification/notification";
-import { setProjectTask } from "../../../store/reducers/task.reducer";
-import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
-const ProjectHeader = ({ loading }) => {
+import ProjectInfo from "./ProjectInfo";
+import { projectDetails } from "./style";
+import Autocomplete from "@mui/material/Autocomplete";
+import { TextField } from "@mui/material";
+const ProjectHeader = ({ loading, openLogTab }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
-  const edit = useGetStateFromStore("project", "edit");
+  const { isSuperUser } = useIsUserCanAccess();
+
   const classes = projectDetails();
   const [details, setDetails] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
-  const [priorityChange, setPriorityChange] = useState(false);
   const [getProjectList] = useGetProjectListMutation();
   const [getProjectByID] = useGetProjectByIDMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
@@ -55,17 +56,7 @@ const ProjectHeader = ({ loading }) => {
     if (toggleSearch && !projectList.length) {
       loadProjects();
     }
-  }, [toggleSearch]);
-
-
-
-
-  const getPriorityColor = (id) => {
-    const priority = priorityColors.filter((color) => color.value === id)[0];
-    if (!priority) return { code: "var(--bright-orange)", value: -1 };
-
-    return { code: priority.code, value: priority.value };
-  };
+  }, [toggleSearch, getProjectList, projectList.length, dispatch]);
 
   const openDetails = () => {
     setDetails(true);
@@ -77,14 +68,6 @@ const ProjectHeader = ({ loading }) => {
   if (loading || !project)
     return <Skeleton className={classes.headerSkeleton} />;
 
-  const changePriority = (e) => {
-    setPriorityChange((prevPrio) => !prevPrio);
-  };
-
-  const handleUpdatePriority = (priority) => {
-    dispatch(setProjectPriority(parseInt(priority)));
-  };
-
   const enableSearch = () => {
     setToggleSearch(true);
   };
@@ -92,28 +75,37 @@ const ProjectHeader = ({ loading }) => {
     setToggleSearch(false);
   };
 
-  const handleChangeSearch = (e) => {
+  const handleChangeSearch = (value) => {
     async function loadProjectTasks() {
       try {
-        const res = await getProjectTasks(e.target.value).unwrap();
+        const res = await getProjectTasks(value.id).unwrap();
         dispatch(setProjectTask(res?.intervenants));
       } catch (error) {
+        console.log(error);
         notify(NOTIFY_ERROR, error?.data?.message);
       }
     }
 
     async function loadProjects() {
       try {
-        const data = await getProjectByID(e.target.value).unwrap();
+        const data = await getProjectByID(value.id).unwrap();
         dispatch(setProject(data?.project));
       } catch (error) {
-        notify(NOTIFY_ERROR, error?.data.message);
+        console.log(error);
+        notify(NOTIFY_ERROR, error?.data?.message);
       }
     }
-    loadProjects()
-    loadProjectTasks()
+
+    loadProjects();
+    loadProjectTasks();
   };
 
+  const getSearchProjectList = () => {
+    const list = projectList.map((project) => {
+      return { label: project.projectCustomId, id: project.id };
+    });
+    return list;
+  };
 
   return (
     <div className={`${classes.card} transparent`}>
@@ -124,29 +116,52 @@ const ProjectHeader = ({ loading }) => {
           alignItems="center"
           sx={{ padding: "15px 20px" }}
         >
-          <Grid item xs={6} sm={6} md={5} lg={7} xl={9}>
+          <Grid
+            item
+            xs={6}
+            sm={6}
+            md={6}
+            lg={!details ? 8 : 10}
+            xl={!details ? 8 : 10}
+          >
             <div className={classes.searchProjectByTitle}>
               {!toggleSearch ? (
                 <h1 className={classes.projectTitle}>{project.customId}</h1>
+              ) : !projectList.length ? (
+                <Skeleton />
               ) : (
-                !projectList.length?
-                  <Skeleton />
-                :
-                <FormControl className={classes.search}>
-                  <InputLabel id="Recherche-label">Recherche</InputLabel>
-                  <Select
-                    labelId="dRecherche-label"
-                    id="recherche"
-                    value={project.id}
-                    label="Recherche"
-                    name="search"
-                    onChange={handleChangeSearch}
-                  >
-                    {projectList.map(projectName=>(
-                      <MenuItem value={projectName.id}>{projectName.projectCustomId}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                // <FormControl className={classes.search}>
+                //   <InputLabel id="Recherche-label">Recherche</InputLabel>
+                //   <Select
+                //     labelId="dRecherche-label"
+                //     id="recherche"
+                //     value={project.id}
+                //     label="Recherche"
+                //     name="search"
+                //     onChange={handleChangeSearch}
+                //   >
+                //     {projectList.map(projectName=>(
+                //       <MenuItem value={projectName.id}>{projectName.projectCustomId}</MenuItem>
+                //     ))}
+                //   </Select>
+                // </FormControl>
+                <Autocomplete
+                  freeSolo
+                  size="small"
+                  // disablePortal
+                  id="project-search"
+                  isOptionEqualToValue={(opt, val) => opt.label === val.label}
+                  onChange={(event, value) => handleChangeSearch(value)}
+                  options={getSearchProjectList()}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Recherche"
+                      color="secondary"
+                    />
+                  )}
+                />
               )}
               <button
                 onClick={!toggleSearch ? enableSearch : disableSearch}
@@ -156,6 +171,8 @@ const ProjectHeader = ({ loading }) => {
               </button>
             </div>
           </Grid>
+          <>
+            {/*
           <Grid item xs={3} sm={3} md={3} lg={2} xl={1}>
             <div className={`headerInfo ${!details ? "hidden" : "collapsed"}`}>
               {project.prevPhase && (
@@ -168,7 +185,8 @@ const ProjectHeader = ({ loading }) => {
               )}
             </div>
           </Grid>
-          <Grid item xs={3} sm={3} md={2} lg={1} xl={1}>
+          */}
+            {/* <Grid item xs={3} sm={3} md={2} lg={1} xl={1}>
             <div className={`headerInfo ${!details ? "hidden" : "collapsed"}`}>
               {project?.priority !== undefined && (
                 <div
@@ -194,18 +212,64 @@ const ProjectHeader = ({ loading }) => {
                 </div>
               )}
             </div>
-          </Grid>
-          <Grid item xs={12} sm={12} md={2} lg={2} xl={1}>
-            {!details ? (
-              <button onClick={openDetails} className={classes.seeMoreProject}>
-                Voir plus <ReactSVG src={faChevronDown} />
-              </button>
-            ) : (
-              <button onClick={closeDetails} className={classes.seeMoreProject}>
-                Voir moin <ReactSVG src={faChevronUp} />
+          </Grid> */}
+          </>
+          {!details && (
+            <>
+              <Grid item xs={12} sm={12} md={2} lg={1} xl={1}>
+                <div className={`${classes.manager} small left`}>
+                  {project.managerDetails?.UserProfile?.image ? (
+                    <img
+                      src={`${process.env.REACT_APP_SERVER_URL}${project.managerDetails?.UserProfile?.image}`}
+                      alt={`avatar for user ${project.managerDetails?.UserProfile?.name}`}
+                    />
+                  ) : (
+                    <span className="initials">
+                      {project.managerDetails?.UserProfile?.name[0]}
+                      {project.managerDetails?.UserProfile?.lastName[0]}
+                    </span>
+                  )}
+                  <p className="manager-name">
+                    {project.managerDetails?.UserProfile?.name}
+                    {project.managerDetails?.UserProfile?.lastName}
+                    <br />
+                  </p>
+                </div>
+              </Grid>
+              {/* // lots */}
+              <Grid item xs={12} sm={12} md={2} lg={1} xl={1}>
+                <p className={classes.headerLots}>
+                  {project.projectLots?.map(({ lot }, idx) => (
+                    <span className="singleLot" key={idx}>
+                      {lot.name}{" "}
+                      {idx + 1 !== project.projectLots.length && "\\"}
+                    </span>
+                  ))}
+                </p>
+              </Grid>
+            </>
+          )}
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={2}
+            lg={details ? 2 : 1}
+            xl={details ? 2 : 1}
+          >
+            {isSuperUser && (
+              <button onClick={openLogTab} className={classes.seeMoreProject}>
+                Historique
               </button>
             )}
           </Grid>
+          {!details && (
+            <Grid item xs={12} sm={12} md={2} lg={2} xl={1}>
+              <button onClick={openDetails} className={classes.seeMoreProject}>
+                Voir plus <ReactSVG src={faChevronDown} />
+              </button>
+            </Grid>
+          )}
         </Grid>
       </div>
 

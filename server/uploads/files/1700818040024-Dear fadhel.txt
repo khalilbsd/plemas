@@ -1,0 +1,18 @@
+Dear fadhel,
+thank you for contacting us regarding some unclear points in our proposal, which we are more than happy to clarify and elaborate further.
+option 1: Odoo ERP integration
+If you choose the Odoo installation option, we will install the Odoo community edition and therefore lose some of the functionality that exists in the enterprise edition, notably the integrated version update management functionality, as we will be installing this solution on a private server. Therefore the manual option for the version migration is provided either buy another open source project is related to odoo or with our team by migrating the data from old version to the new.
+As for your concerns  about the users limitation
+,we'de like to point out that this will be one of the features that we'll be enjoying due to the fact that in the enterprise edition is based on price per user. unlike the community edition is user limitless.
+option 2 :
+for compatibility purposes we'll developing a web application that we'll only be accessible from the inside of your company with a full security.
+for the technologies we're be opting for the most secure, stable and relabel technologies:
+pour le backend et la logique : nous utiliserons node.js avec mysql ou mongodb comme base de données pour plus de sécurité et d'extensibilité pour les fonctionnalités futures. ces technologies ont également une large communauté, elles sont bien maintenues et sont des standards modernes.
+pour le frontend : nous utiliserons reactjs avec typescript et html pour plus de flexibilité et d'extensibilité et aussi pour la facilité d'ajouter de futures fonctionnalités.
+Les technologies choisies font partie des standards actuels en matière de technologies modernes. Par conséquent, la liste des packages nécessaires et fournis est bien maintenue par la communauté et par des entreprises telles que Facebook et Google.
+for the maintenance part. we'll scheduling maintenance in case of something goes wrong post implementation. thus we'll be testing the solution long before and we'll be guarantying the final product.
+for the update, This we'll not be necessary. the list of packages to use will be carefully selected in certain version based on reliability, security and maintainability. we'll be upgrading the system only if some new features are presented.
+
+Nb: le système d'exploitation sera basé sur Linux dans les deux options.
+
+En outre, nous aimerions souligner que l'hébergement fait partie de l'application. Comme nous avons compris que cette application est destinée à un usage interne, nous aimerions savoir si vous disposez d'un serveur privé utilisé par votre entreprise pour effectuer la mise en œuvre ou si vous souhaitez acheter un plan d'hébergement auprès d'un fournisseur de services, car notre entreprise ne fournit pas de plans d'hébergement. Cependant, nous serons heureux de vous donner des conseils sur le choix du fournisseur à utiliser, sur la base de notre expérience avec certains d'entre eux.

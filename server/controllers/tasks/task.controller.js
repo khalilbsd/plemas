@@ -11,15 +11,27 @@ import Task from "../../models/tasks/tasks.model.js";
 import moment from "moment";
 import logger from "../../log/config.js";
 import {
+  ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,
+  ACTION_NAME_ADD_INTERVENANT_TASK,
+  ACTION_NAME_ASSIGN_INTERVENANT_HOURS,
+  ACTION_NAME_INTERVENANT_JOINED_TASK,
+  ACTION_NAME_TASK_CREATION,
+  ACTION_NAME_TASK_STATE_CHANGED,
+  ACTION_NAME_TASK_UPDATE,
+  ACTION_NAME_VERIFY_TASK,
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
+  TASK_STATE_ABANDONED,
+  TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
 import { projectPotentialIntervenants } from "../users/user.controller.js";
 import InterventionHour from "../../models/tasks/interventionHours.model.js";
+import { takeNote } from "../../Utils/writer.js";
+import { removeDuplicates } from "../../Utils/utils.js";
 
 /*
  * params [projectID] REQUIRED
@@ -114,6 +126,7 @@ export const createTask = catchAsync(async (req, res, next) => {
 
   const task = await Task.create({ ...data });
   let message = "la tâche a été créée avec succès";
+  await takeNote(ACTION_NAME_TASK_CREATION,req.user.email,project.id,{taskID:task.id})
   if (req.body.intervenants) {
     for (const idx in req.body.intervenants) {
       const user = await User.findOne({
@@ -124,8 +137,17 @@ export const createTask = catchAsync(async (req, res, next) => {
         projectID: projectID,
         taskID: task.id
       });
+
     }
     message += " et les intervenants sont associé";
+
+    if (req.body.intervenants.length > 1 ){
+      await takeNote(ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,req.user.email,project.id,{taskID:task.id})
+    }else if (req.body.intervenants){
+      await takeNote(ACTION_NAME_ADD_INTERVENANT_TASK,req.user.email,project.id,{taskID:task.id})
+
+    }
+
   } else {
     await Intervenant.create({
       projectID: projectID,
@@ -155,6 +177,7 @@ export const createTask = catchAsync(async (req, res, next) => {
   task.state = TASK_STATE_TRANSLATION.filter(
     (state) => state.value === task.state
   )[0].label;
+
   return res.status(200).json({ status: "success", message, task });
 });
 
@@ -192,6 +215,9 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       logger.info(
         `intervenant has been associated to task ${taskID} in the project ${projectID}`
       );
+
+    await takeNote(ACTION_NAME_INTERVENANT_JOINED_TASK,req.user.email,project.id,{taskID})
+
       return res.status(200).json({
         status: "success",
         message: "vous avez été assigné à la tâche"
@@ -221,7 +247,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       logger.info(
         `intervenant has been associated to task ${taskID} in the project ${projectID}`
       );
-
+      await takeNote(ACTION_NAME_INTERVENANT_JOINED_TASK,req.user.email,project.id,{taskID})
       return res.status(200).json({
         status: "success",
         message: "vous avez été assigné à la tâche"
@@ -281,6 +307,13 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
     logger.info(
       `intervenant has been associated to task ${taskID} in the project ${projectID}`
     );
+  }
+
+  if (emails.length > 1 ){
+    await takeNote(ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,req.user.email,project.id,{taskID})
+  }else if (emails.length){
+    await takeNote(ACTION_NAME_ADD_INTERVENANT_TASK,req.user.email,project.id,{taskID})
+
   }
 
   return res
@@ -367,6 +400,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       date: moment(date)
     });
   }
+  await takeNote(ACTION_NAME_ASSIGN_INTERVENANT_HOURS,req.user.email,project.id,{taskID:task.id})
 
   res.status(200).json({
     status: "success",
@@ -383,7 +417,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   } else {
     history = moment(req.query.history, "DD/MM/YYYY");
   }
-  console.log("-------------------------------", history, req.query.history);
+
   const allTasksRaw = await Intervenant.findAll({
     where: { intervenantID: req.user.id },
     include: [
@@ -393,39 +427,67 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
       },
       {
         model: Task,
-
-        where: {
-          state: TASK_STATE_DOING,
-          startDate: {
-            [Op.lte]: history
-          }
+        where:{
+          state:TASK_STATE_DOING
         },
         as: "task"
       }
     ]
   });
   //convert tasks data to json
-  let allTasks = allTasksRaw.map((t) => t.toJSON());
+  let myTasks = allTasksRaw.map((t) => t.toJSON()); // this includes all the tasks that i'm in intervenant which have taskID (means all  the tasks that i'm active in and are in progress)
 
-  // projects tasks that i can join  : divided from all tasks (taskID === null)
-  let joinableTasks = allTasks.filter((t) => !t.taskID);
-  let otherTasks = [];
-  for (const idx in allTasks) {
-    let projectExist = otherTasks.filter(
-      (item) => item.projectID === allTasks[idx].projectID
-    );
-    if (projectExist.length) continue;
-    let taskTreeRaw = await Intervenant.findAll({
-      where: {
-        projectID: allTasks[idx].projectID,
-        taskId: {
-          [Op.ne]: allTasks[idx].taskID
-        }
-        // intervenantID:{
-        //   [Op.ne]:req.user.id
-        // }
+
+  // tasks than i can join
+  let joinableTasks = [];
+
+  let similarTasks = [];
+
+  // list of the the  project distinct
+  const projectIds =removeDuplicates( myTasks.map(task=>task.projectID))
+  const myTaskIds =  myTasks.map(task=>task.taskID)
+
+
+  for (const idx in projectIds  ){
+    const otherTasks = await Intervenant.findAll(({
+      where:{
+        projectID :{
+          [Op.eq]:projectIds[idx],
+        },
       },
-      group: "taskID",
+          include: [
+          {
+            model: Project,
+            attributes: ["id", "customId", "name"]
+          },
+          {
+            model: Task,
+            where: { state: TASK_STATE_DOING },
+            as: "task"
+          }
+        ]
+    }))
+
+    // console.log("--------------------------- parallelTasks",otherTasks.length,otherTasks)
+    joinableTasks = joinableTasks.concat(otherTasks.filter(pt=>!myTaskIds.includes(pt.taskID)))
+  }
+
+  // just the interventions that i'm in  (means only the project  that i'm part of but i don't have any tasks)
+  const watcherOnProjects = await Intervenant.findAll({where:{
+    intervenantID:req.user.id,
+    taskID:null
+  },
+
+
+
+})
+  const watchingIds= watcherOnProjects.map(wp=>wp.projectID).filter(elem=>!projectIds.includes(elem))
+
+  // for (const pIdx in watchingIds ){
+    const possibleTasksRaw = await Intervenant.findAll({
+      where:{
+        projectID :watchingIds,
+      },
       include: [
         {
           model: Project,
@@ -433,54 +495,36 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
         },
         {
           model: Task,
-
           where: { state: TASK_STATE_DOING },
           as: "task"
         }
       ]
-    });
-
-    let tasksTree = taskTreeRaw.map((t) => t.toJSON());
-    // console.log("TASKS TREEEEEE" ,tasksTree.length)
-
-    otherTasks = otherTasks.concat(tasksTree);
-  }
-
-  //  console.log(otherTasks)
-  let tmp = [];
-  otherTasks.map((t) => {
-    let clear = true;
-    for (const i in allTasks) {
-      if (allTasks[i].taskID === t.taskID) {
-        clear = false;
-        return;
-      }
+    })
+  // }
+    // now we need to filter the tasks cause of the redundancy
+    let  possibleTasks  = []
+    for (const pIdx in  possibleTasksRaw) {
+      // check  if tasks already exist
+      let alreadyExist  =possibleTasks.filter(el=>el.taskID === possibleTasksRaw[pIdx].taskID)
+      if (alreadyExist.length) continue
+      possibleTasks.push(possibleTasksRaw[pIdx])
     }
-    if (clear) tmp.push(t);
-  });
 
-  joinableTasks = joinableTasks.concat(tmp);
-  //  joinableTasks = joinableTasks.concat(otherTasks)
+    joinableTasks= joinableTasks.concat(possibleTasks)
+    console.log("i'm watching -------------------------",joinableTasks.length,joinableTasks);
 
-  // // ili  todays tasks (dueDate === Date.now() and taskID !== null)
-  // const today = moment(new Date(), "DD/MM/YYYY").startOf("day");
-  // const todaysTasks = allTasks.filter(
-  //   ({ task, taskID }) =>
-  //     taskID && today.isSame(moment(task.dueDate, "DD/MM/YYYY").startOf("day"))
-  // );
-
-  for (const index in allTasks) {
+  for (const index in myTasks) {
     let interventionHours = await InterventionHour.findOne({
-      where: { interventionID: allTasks[index].id, date: history }
+      where: { interventionID: myTasks[index].id, date: history }
     });
     if (interventionHours) {
-      allTasks[index].nbHours = interventionHours.hours;
+      myTasks[index].nbHours = interventionHours.hours;
     } else {
-      allTasks[index].nbHours = 0;
+      myTasks[index].nbHours = 0;
     }
   }
 
-  return res.status(200).json({ joinableTasks, allTasks });
+  return res.status(200).json({ joinableTasks, allTasks:myTasks });
 });
 
 export const getTaskPotentialIntervenants = catchAsync(
@@ -499,9 +543,9 @@ export const getTaskPotentialIntervenants = catchAsync(
         return {
           id: worker.intervenantID,
           email: worker?.user?.email,
-          name: worker?.user?.UserProfile.name,
-          lastName: worker?.user?.UserProfile.lastName,
-          image: worker?.user?.UserProfile.image
+          name: worker?.user?.UserProfile?.name,
+          lastName: worker?.user?.UserProfile?.lastName,
+          image: worker?.user?.UserProfile?.image
         };
       });
     }
@@ -563,8 +607,12 @@ export const getTaskPotentialIntervenants = catchAsync(
 );
 
 export const updateTaskInfo = catchAsync(async (req, res, next) => {
-  const { taskID } = req.params;
+  const { taskID,projectID } = req.params;
   if (!taskID) return next(new MissingParameter("la tache est requise"));
+  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+
   const task = await Task.findByPk(taskID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
   let data = {};
@@ -577,7 +625,24 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
       (state) => state.label === req.body.state
     )[0].value;
   }
+  if (data.state === TASK_STATE_BLOCKED) {
+    project.state = TASK_STATE_BLOCKED
+    await project.save()
+  }
+  const oldState = task.state
+  const isAlreadyVerified = task.isVerified
   await task.update({ ...data });
+
+  if (!isAlreadyVerified && data.isVerified ){
+    await takeNote(ACTION_NAME_VERIFY_TASK,req.user.email,projectID,{taskID:task.id})
+  }else if ((data.state)&& (data.state !== oldState)){
+    await takeNote(ACTION_NAME_TASK_STATE_CHANGED,req.user.email,projectID,{taskID:task.id})
+  }else{
+    await takeNote(ACTION_NAME_TASK_UPDATE,req.user.email,projectID,{taskID:task.id})
+
+  }
+  // console.log("---------------*--------------------",data.state ,oldState , (data.state)&& (data.state !== oldState))
+
 
   logger.info(`updating the task ${task.id}`);
   return res

@@ -7,14 +7,20 @@ import {
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
+  ACTION_NAME_ADD_INTERVENANT_PROJECT,
+  ACTION_NAME_ADD_INTERVENANTS_BULK_PROJECT,
+  ACTION_NAME_DELETE_INTERVENANT,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../../constants/constants.js";
-import { Project, User, UserProfile } from "../../db/relations.js";
+import { Project, Task, User, UserProfile } from "../../db/relations.js";
 import { ForbiddenError } from "../../errors/http.js";
 import logger from "../../log/config.js";
 import Intervenant from "../../models/tasks/Intervenant.model.js";
 import { getUserByEmail } from "../users/lib.js";
+import { takeNote } from "../../Utils/writer.js";
+import { config } from "../../environment.config.js";
+import { createMediaUrl } from "../../Utils/FileManager.js";
 
 export const getAllIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
@@ -33,14 +39,12 @@ export const getAllIntervenants = catchAsync(async (req, res, next) => {
 });
 
 export const projectIntervenantList = async (projectID) => {
-  let grouped= []
+  let grouped = [];
   const intervenants = await Intervenant.findAll({
-
     where: {
       projectID: projectID,
       intervenantID: { [Op.ne]: null }
     },
-
 
     include: [
       {
@@ -53,19 +57,20 @@ export const projectIntervenantList = async (projectID) => {
           }
         ]
       }
-    ],
+    ]
     // group: "intervenantID",
   });
-  const formattedIntervenants = intervenants.map(item=>item.toJSON())
-  formattedIntervenants.map(interv=>{
-  let lineIdx = grouped.map(item=>item.intervenantID).indexOf(interv.intervenantID)
-  if (lineIdx > -1) {
-    formattedIntervenants[lineIdx].nbHours +=interv.nbHours
-  }else{
-    grouped.push(interv)
-  }
-
-  })
+  const formattedIntervenants = intervenants.map((item) => item.toJSON());
+  formattedIntervenants.map((interv) => {
+    let lineIdx = grouped
+      .map((item) => item.intervenantID)
+      .indexOf(interv.intervenantID);
+    if (lineIdx > -1) {
+      formattedIntervenants[lineIdx].nbHours += interv.nbHours;
+    } else {
+      grouped.push(interv);
+    }
+  });
 
   return grouped;
 };
@@ -93,6 +98,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
 
   const { emails } = req.body;
   if (!emails) return next(new MissingParameter("Emails est requis"));
+
   for (const email in emails) {
     const user = await getUserByEmail(emails[email]);
 
@@ -114,6 +120,23 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
       );
     }
   }
+
+  if (emails.length > 1) {
+    await takeNote(
+      ACTION_NAME_ADD_INTERVENANTS_BULK_PROJECT,
+      req.user.email,
+      project.id,
+      {}
+    );
+  } else if (emails.length) {
+    await takeNote(
+      ACTION_NAME_ADD_INTERVENANT_PROJECT,
+      req.user.email,
+      project.id,
+      {}
+    );
+  }
+
   res.status(200).json({
     state: "success",
     message: "l'utilisateur est devenu un intervenant"
@@ -164,6 +187,13 @@ export const removeIntervenantFromProject = catchAsync(
         new AppError("Vous ne pouvez pas retirer cet intervenant", 304)
       );
     }
+    await takeNote(
+      ACTION_NAME_DELETE_INTERVENANT,
+      req.user.email,
+      project.id,
+      {}
+    );
+
     //TODO:: add task check rules
     await intervenant.destroy();
     res
@@ -171,3 +201,47 @@ export const removeIntervenantFromProject = catchAsync(
       .json({ status: "success", message: "intervenant retirer de projet" });
   }
 );
+
+export const uploadFileToTask = catchAsync(async (req, res, next) => {
+  const { projectID, taskID } = req.params;
+  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+
+  if (!taskID) return next(new MissingParameter("la tache est requis"));
+  const task = await Task.findByPk(taskID);
+  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+
+  const intervention = await Intervenant.findOne({
+    where: { projectID, taskID, intervenantID: req.user.id }
+  });
+  if (!intervention) return next("vous ne faites pas partie de cette tâche ");
+  let url;
+
+  if (!req.files)
+    return next(new AppError("aucun fichier n'a été fourni", 422));
+  //limit file  size    : 10 mo
+  // for (const file in req.files)
+  if (req.files[0].size > config.file_limit_size * 1024 * 1024)
+    return next(new AppError("le fichier dépasse la limite de 5MB", 400));
+
+  url = createMediaUrl(req.files[0]);
+
+  //['item']
+  let obj;
+  if (intervention.file) {
+    obj = JSON.parse(intervention.file);
+    obj.push(url);
+    intervention.file = JSON.stringify(obj);
+  } else {
+    obj = [url];
+    intervention.file = JSON.stringify(obj);
+  }
+  await intervention.save();
+  return res.status(200).json({
+    status: "success",
+    interventionID:intervention.id,
+    message: "fichier attaché au tâche",
+    file:JSON.stringify(obj)
+  });
+});

@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { NOTIFY_ERROR } from "../../constants/constants";
-import { useGetProjectByIDMutation } from "../../store/api/projects.api";
-import { setProject } from "../../store/reducers/project.reducer";
+import { useGetProjectByIDMutation, useProjectGetLogMutation } from "../../store/api/projects.api";
+import { setProject, setProjectLog } from "../../store/reducers/project.reducer";
 import { clearProjectTasks, setProjectTask } from "../../store/reducers/task.reducer";
 import Loading from "../Components/loading/Loading";
 import { notify } from "../Components/notification/notification";
@@ -14,13 +14,15 @@ import ProjectTaskAdd from "../Components/projects/ProjectTaskAdd";
 import ProjectTasks from "../Components/projects/ProjectTasks";
 import { projectDetails } from "../Components/projects/style";
 import { useGetProjectTasksMutation } from "../../store/api/tasks.api";
+import ProjectLog from "../Components/projects/ProjectLog";
 
 const ProjectDetails = () => {
   const classes = projectDetails();
   const { projectID } = useParams();
   const [getProjectByID, { isLoading }] = useGetProjectByIDMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
-
+  const [projectGetLog,{isLoading:loadingLog}]= useProjectGetLogMutation()
+  const [openLog, setOpenLog] = useState(false)
   const [loadingPage, setLoadingPage] = useState(false);
   const dispatch = useDispatch();
   const [openAddTask, setOpenAddTask] = useState(false);
@@ -61,6 +63,23 @@ const ProjectDetails = () => {
     setOpenAddTask(false);
   };
 
+
+useEffect(() => {
+  async function  loadProjectLog(){
+    try {
+      const log = await  projectGetLog(projectID).unwrap()
+      dispatch(setProjectLog(log?.tracking))
+    } catch (error) {
+      notify(NOTIFY_ERROR,error?.data.message)
+    }
+  }
+  if (openLog){
+    loadProjectLog()
+
+  }
+}, [openLog,projectID,projectGetLog])
+
+
   if (isLoading || loadingPage)
     return (
       <div className={classes.projectDetailsPage}>
@@ -68,12 +87,23 @@ const ProjectDetails = () => {
       </div>
     );
 
+
+
+    const handleOpenLogTab=()=>{
+      setOpenLog(true)
+    }
+    const handleCloseLogTab=()=>{
+      setOpenLog(false)
+    }
+
+
   return (
     <div className={classes.projectDetailsPage}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={12} lg={12}>
-          <ProjectHeader loading={isLoading} />
+          <ProjectHeader loading={isLoading} openLogTab={handleOpenLogTab} />
         </Grid>
+          <ProjectLog open={openLog} closeLogTab={handleCloseLogTab} loadingLog={loadingLog} />
         {openAddTask && (
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <ProjectTaskAdd

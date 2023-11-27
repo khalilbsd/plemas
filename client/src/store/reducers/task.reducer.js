@@ -51,8 +51,18 @@ const taskSlice = createSlice({
     updateSpecificTaskAttribute:(state,action)=>{
 
       const taskIdx = state.projectTasks.map(task=>task.id).indexOf(parseInt(action.payload.taskID))
-      console.log(action.payload,taskIdx)
+
       state.projectTasks[taskIdx][action.payload.attribute] = action.payload.value
+    },
+    updateInterventionUploadedFile:(state,action)=>{
+
+      const taskIdx = state.projectTasks.map(task=>task.id).indexOf(parseInt(action.payload.taskID))
+
+      const intervIdx = state.projectTasks[taskIdx].intervenants.map(interv=>interv.id).indexOf(action.payload.intervenantID)
+      console.log(taskIdx,
+        intervIdx)
+      state.projectTasks[taskIdx].intervenants[intervIdx].file = action.payload.file
+
     }
     // setUserPotentialTasks: (state, action) => {
     // }
@@ -67,7 +77,8 @@ export const {
   setUserDailyTasks,
   updateUserGeneralTasksHours,
   updateUserPotentialTasks,
-  updateSpecificTaskAttribute
+  updateSpecificTaskAttribute,
+  updateInterventionUploadedFile
   // setUserGeneralTasks,
   // setUserPotentialTasks
 } = taskSlice.actions;

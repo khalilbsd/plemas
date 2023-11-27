@@ -1,19 +1,18 @@
-import { Grid, MenuItem, Select, TextField } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Grid, TextField } from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import useGetUserInfo from "../../../hooks/user";
 import { useUpdateUserProfileMutation } from "../../../store/api/users.api";
+import { updateUserInfoProfile } from "../../../store/reducers/user.reducer";
 import { styles } from "../../profile/style";
 import Loading from "../loading/Loading";
-import UploadImage from "../upload/UploadImage";
-import { useDispatch } from "react-redux";
-import { updateUserInfoProfile } from "../../../store/reducers/user.reducer";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { notify } from "../notification/notification";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { cities } from "../../../store/tn_countries";
-import dayjs from "dayjs";
+import UploadImage from "../upload/UploadImage";
 const initialErrorState = {
   state: false,
   message: ""
@@ -33,18 +32,19 @@ const SideLayoutInfo = () => {
 
   const { user, profile } = useGetUserInfo();
 
-  const [updateUserProfile, {}] = useUpdateUserProfileMutation();
+  const [updateUserProfile] = useUpdateUserProfileMutation();
   const [error, setError] = useState(resetError);
-  const [region, setRegion] = useState(null);
-  const [city, setCity] = useState(profile?.city?profile.city:"");
+  // const [region, setRegion] = useState(null);
+  // const [city, setCity] = useState(profile?.city?profile.city:"");
   //profile Ref attributes
   const nameRef = useRef();
   const lastNameRef = useRef();
   const postRef = useRef();
   const phoneRef = useRef();
   const hireDateRef = useRef();
-  const streetRef = useRef();
-  const cityRef = useRef();
+  // const streetRef = useRef();
+  // const cityRef = useRef();
+  const addressRef = useRef();
 
 
 
@@ -57,19 +57,19 @@ const SideLayoutInfo = () => {
   const [edit, setEdit] = useState(false);
   if (!user || !profile) return <Loading />;
 
-  const selectRegion = (e) => {
+  // const selectRegion = (e) => {
 
-    setRegion(e.target?.value);
-    setCity("")
-  };
-  const selectCity = (e) => {
-    setCity(e.target?.value);
-  };
+  //   setRegion(e.target?.value);
+  //   setCity("")
+  // };
+  // const selectCity = (e) => {
+  //   setCity(e.target?.value);
+  // };
 
   const handleEdit = () => {
     setError(resetError);
-    setRegion(null);
-    setCity(null);
+    // setRegion(null);
+    // setCity(null);
     setEdit(!edit);
   };
   const saveProfile = async () => {
@@ -88,9 +88,10 @@ const SideLayoutInfo = () => {
         poste: postRef.current.value,
         phone: phoneRef.current.value,
         hireDate: hireDateRef.current.value,
-        city: city?city:profile.city,
-        region:region?region: profile.region,
-        street:streetRef.current.value
+        address:addressRef.current.value
+        // city: city?city:profile.city,
+        // region:region?region: profile.region,
+        // street:streetRef.current.value
       };
       console.log(updatedProfile);
       // setCity(updatedProfile.city)
@@ -132,7 +133,7 @@ const SideLayoutInfo = () => {
         [attribute]: {
           state: true,
           message: `${
-            attribute == "name" ? "Nom" : "Prénom"
+            attribute === "name" ? "Nom" : "Prénom"
           } invalide : doit minimum contenir 2 characters et au maximum 20`
         }
       });
@@ -154,17 +155,17 @@ const SideLayoutInfo = () => {
     return;
   };
 
-  const getRegions = () => {
-    let regions = cities.map((city) => city.region);
-    return regions.filter((item, index) => regions.indexOf(item) === index);
-  };
-  const getCities = () => {
-    if (profile.region && !region){
-      return cities.filter((item) => item.region === profile.region);
+  // const getRegions = () => {
+  //   let regions = cities.map((city) => city.region);
+  //   return regions.filter((item, index) => regions.indexOf(item) === index);
+  // };
+  // const getCities = () => {
+  //   if (profile.region && !region){
+  //     return cities.filter((item) => item.region === profile.region);
 
-    }
-    return cities.filter((item) => item.region === region);
-  };
+  //   }
+  //   return cities.filter((item) => item.region === region);
+  // };
 
   return (
     <>
@@ -343,22 +344,22 @@ const SideLayoutInfo = () => {
             <Grid className={classes.formItem} item xs={12} lg={12}>
               {!edit ? (
                 <h2 className={classes.profileInfo}>
-                  {profile.city || profile.street || profile.region
-                    ? `${profile.street} ${profile.city} ${profile.region}`
+                  {profile.address
+                    ? `${profile.address}`
                     : "Veuillez saisir votre adresse"}
                 </h2>
               ) : (
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={12} md={3} lg={3}>
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
                     <TextField
-                      className={classes.street}
+                      className={classes.input}
                       type="text"
-                      inputRef={streetRef}
+                      inputRef={addressRef}
                       size="small"
-                      defaultValue={profile.street}
+                      defaultValue={profile?.address}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={12} md={3} lg={3}>
+                  {/* <Grid item xs={12} sm={12} md={3} lg={3}>
                     <Select
                       className={classes.input}
                       value={!region?profile.region?profile.region:"":region}
@@ -387,7 +388,7 @@ const SideLayoutInfo = () => {
                         </MenuItem>
                       ))}
                     </Select>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               )}
               <span className={classes.labels}>Adresse</span>

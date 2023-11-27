@@ -16,6 +16,7 @@ import {
   TASK_STATES,
   TASK_STATE_ABANDONED,
   TASK_STATE_BLOCKED,
+  TASK_STATE_DONE,
   TASK_STATE_TRANSLATION
 } from "../../../constants/constants";
 import useIsUserCanAccess from "../../../hooks/access";
@@ -26,16 +27,17 @@ import {
   useGetProjectTasksMutation,
   useUpdateTaskMutation
 } from "../../../store/api/tasks.api";
+import { updateProjectState } from "../../../store/reducers/project.reducer";
 import {
   setProjectTask,
   updateSpecificTaskAttribute
 } from "../../../store/reducers/task.reducer";
-import {
-  updateProjectState,
 
-} from "../../../store/reducers/project.reducer";
-
+import Tooltip from "@mui/material/Tooltip";
+import { frFR } from "@mui/x-data-grid";
 import faAdd from "../../public/svgs/solid/plus.svg";
+import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
+import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 import {
   CustomCancelIcon,
   CustomCheckIcon,
@@ -45,10 +47,8 @@ import {
 } from "../icons";
 import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
+import TaskFiles from "./TaskFiles";
 import { projectDetails, projectTaskDetails } from "./style";
-import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
-import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
-
 const ProjectTasks = ({ openAddTask }) => {
   const { projectID } = useParams();
   const dispatch = useDispatch();
@@ -58,6 +58,7 @@ const ProjectTasks = ({ openAddTask }) => {
   const [getProjectTasks] = useGetProjectTasksMutation();
   const [updateTask] = useUpdateTaskMutation();
 
+  // const [uploadFileToTask] = useUploadFileToTaskMutation();
   const classes = projectTaskDetails();
   const classesDetails = projectDetails();
   const { user } = useGetAuthenticatedUser();
@@ -93,12 +94,14 @@ const ProjectTasks = ({ openAddTask }) => {
   };
 
   const handleEditClick = (id, isIntervenant) => () => {
-    if (user?.email && isIntervenant || isSuperUser ||  (isManager && user?.email === project?.managerDetails?.email)) {
-
+    if (
+      (user?.email && isIntervenant) ||
+      isSuperUser ||
+      (isManager && user?.email === project?.managerDetails?.email)
+    ) {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
       return;
     }
-
   };
 
   const handleSaveClick = (id) => () => {
@@ -110,7 +113,6 @@ const ProjectTasks = ({ openAddTask }) => {
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true }
     });
-
   };
 
   const processRowUpdate = async (newRow) => {
@@ -130,13 +132,28 @@ const ProjectTasks = ({ openAddTask }) => {
         obj = { ...newRow };
       }
       obj.state = newRow.state;
-      const res = await updateTask({ body: obj, taskID: newRow.id }).unwrap();
+      const res = await updateTask({
+        body: obj,
+        taskID: newRow.id,
+        projectID: projectID
+      }).unwrap();
       const updatedRow = { ...newRow, isNew: false };
       notify(NOTIFY_SUCCESS, res?.message);
       // check is task  status change
-      if (newRow.state){
-          let task = tasks.filter(item=>item.id === parseInt(newRow.id))[0]
-          if ((task.state !== newRow.state) && (newRow.state === TASK_STATE_BLOCKED || task.state === TASK_STATE_BLOCKED )) dispatch(updateProjectState(TASK_STATE_TRANSLATION.filter(state=>state.value === newRow.state)[0].label))
+      if (newRow.state) {
+        let task = tasks.filter((item) => item.id === parseInt(newRow.id))[0];
+        if (
+          task.state !== newRow.state &&
+          (newRow.state === TASK_STATE_BLOCKED ||
+            task.state === TASK_STATE_BLOCKED)
+        )
+          dispatch(
+            updateProjectState(
+              TASK_STATE_TRANSLATION.filter(
+                (state) => state.value === newRow.state
+              )[0].label
+            )
+          );
       }
       return updatedRow;
     } catch (error) {
@@ -148,16 +165,20 @@ const ProjectTasks = ({ openAddTask }) => {
     setRowModesModel(newRowModesModel);
   };
 
-  // Define custom date formatting function
-  const customDateFormat = (date) => {
-    // Customize the date formatting according to your locale
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  };
+  // // Define custom date formatting function
+  // const customDateFormat = (date) => {
+  //   // Customize the date formatting according to your locale
+  //   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  // };
 
   const handleVerifyClick = async (e) => {
     try {
       const taskID = e.currentTarget.getAttribute("data-task-id");
-      await updateTask({ body: { isVerified: true }, taskID }).unwrap();
+      await updateTask({
+        body: { isVerified: true },
+        taskID,
+        projectID
+      }).unwrap();
 
       notify(NOTIFY_SUCCESS, "Tache verifier");
       dispatch(
@@ -173,10 +194,22 @@ const ProjectTasks = ({ openAddTask }) => {
   };
   const columns = [
     {
+      field: "dueDate",
+      headerName: "Échéance",
+      type: "date",
+      width: 120,
+      editable:
+        isSuperUser ||
+        (isManager && user?.email === project?.managerDetails?.email),
+      valueGetter: (params) =>
+        dayjs(params.row.dueDate).locale("en-gb").toDate()
+    },
+    {
       field: "startDate",
       headerName: "Debut",
+      format: "DD/MM/YYYY",
       type: "date",
-      width: 150,
+      width: 120,
       editable:
         isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email),
@@ -186,41 +219,54 @@ const ProjectTasks = ({ openAddTask }) => {
       }
     },
     {
-      field: "dueDate",
-      headerName: "Échéance",
-      type: "date",
-      width: 150,
-      editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
-      valueGetter: (params) =>
-        dayjs(params.row.dueDate).locale("en-gb").toDate()
-    },
-    {
       filterable: false,
+      width: 850,
       field: "name",
       headerName: "Taches",
       editable:
         isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email),
-
-      width: 600
+      renderCell: ({ row }) => (
+        <Tooltip title={row.name} arrow placement="top">
+          <span className={classes.tacheDescription}>{row.name}</span>
+        </Tooltip>
+      )
     },
+    // {
+    //   filterable: false,
+    //   field: "isVerified",
+    //   headerName: "Tache Vérifié",
+    //   editable: false,
+    //   width: 130,
+    //   renderCell: ({ row }) => {
+    //     return (
+    //       <span
+    //         className={`${classes.tacheVerification} ${
+    //           row.isVerified ? "verified" : ""
+    //         }`}
+    //       >
+    //         {row.isVerified ? "Vérifié" : "Non Vérifié"}
+    //       </span>
+    //     );
+    //   }
+    // },
     {
       filterable: false,
-      field: "isVerified",
-      headerName: "Tache Vérifié",
-      editable: false,
-      width: 130,
-      renderCell: ({ row }) => {
+      editable:false,
+      sortable: false,
+      field: "",
+      headerName: "Attachements",
+      width: 150,
+      renderCell: (params) => {
+        const emailsList = params?.row.intervenants?.map(
+          (worker) => worker?.user?.email
+        );
         return (
-          <span
-            className={`${classes.tacheVerification} ${
-              row.isVerified ? "verified" : ""
-            }`}
-          >
-            {row.isVerified ? "Vérifié" : "Non Vérifié"}
-          </span>
+          <TaskFiles
+            taskID={params.row.id}
+            interventions={params.row.intervenants}
+            intervenantList = {emailsList}
+          />
         );
       }
     },
@@ -229,12 +275,14 @@ const ProjectTasks = ({ openAddTask }) => {
       sortable: false,
       field: "intervenants",
       headerName: "Intervenants",
-      width: 300,
+      width: 230,
       renderCell: (params) => {
         if (reloadingIntervenants)
           return <Skeleton className={classes.intervenantsSkeleton} />;
         return (
           <ProjectIntervenant
+            // downloadTaskFile={downloadTaskFile}
+            // uploadFileToTask={uploadFileToTask}
             taskId={params.row.id}
             taskIntervenants={params.row.intervenants}
           />
@@ -245,7 +293,7 @@ const ProjectTasks = ({ openAddTask }) => {
       filterable: false,
       field: "state",
       headerName: "État",
-      width: 150,
+      width: 100,
       editable: true,
       type: "singleSelect",
       valueOptions: ({ row }) => {
@@ -272,7 +320,7 @@ const ProjectTasks = ({ openAddTask }) => {
     {
       field: "totalHours",
       headerName: "Heures",
-      width: 100,
+      width: 70,
       valueGetter: (params) => `${params.row.totalHours || 0}`
     },
 
@@ -280,7 +328,7 @@ const ProjectTasks = ({ openAddTask }) => {
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      width: 150,
+      width: 100,
       cellClassName: "actions",
       getActions: ({ id, row }) => {
         const renderActions = [];
@@ -306,7 +354,8 @@ const ProjectTasks = ({ openAddTask }) => {
         if (
           (isSuperUser ||
             (isManager && user?.email === project?.managerDetails?.email)) &&
-          !row.isVerified
+          !row.isVerified &&
+          project.state === TASK_STATE_DONE
         ) {
           renderActions.push(
             <GridActionsCellItem
@@ -356,7 +405,14 @@ const ProjectTasks = ({ openAddTask }) => {
                 emailsList?.includes(user?.email)
               )}
               color="inherit"
-            />,
+            />
+          );
+        }
+        if (
+          !emailsList.includes(user?.email) &&
+          TASK_STATE_ABANDONED !== row.state
+        ) {
+          renderActions.push(
             <GridActionsCellItem
               data-task-id={row.id}
               icon={<CustomJoinIcon className={classes.icon} />}
@@ -367,6 +423,7 @@ const ProjectTasks = ({ openAddTask }) => {
             />
           );
         }
+
         return renderActions;
       }
     }
@@ -382,30 +439,32 @@ const ProjectTasks = ({ openAddTask }) => {
       : "";
   };
 
-  const localeText = {
-    dateFormat: customDateFormat
-  };
+  // const localeText = {
+  //   dateFormat: customDateFormat
+  // };
 
   return (
     <div className={classesDetails.card}>
       {(isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email)) && (
-        <div className={`${classesDetails.actions} pr`}>
+        <div className={`${classesDetails.cardTitle}`}>
           <button onClick={openAddTask}>
-            <ReactSVG src={faAdd} />
-            <span className="text">Ajouter</span>
+            <span className="text">Tache</span>
+            <ReactSVG className="icon-container" src={faAdd} />
           </button>
         </div>
       )}
+
       <DataGrid
+        localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         autoHeight
         rows={tasks || []}
         columns={columns}
-        localeText={localeText}
+        // localeText={localeText}
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 4
+              pageSize: 100
             }
           }
         }}
@@ -420,7 +479,7 @@ const ProjectTasks = ({ openAddTask }) => {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
-        pageSizeOptions={[4]}
+        pageSizeOptions={[100]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
         sx={{ "--DataGrid-overlayHeight": "180px" }}

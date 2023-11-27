@@ -19,6 +19,7 @@ export const formatDateToCompare =(date) =>{
 // return frmD
 // }
 export const formattedDate = (date,double=false) => {
+
     const convertedDate = formatDateToCompare(date);
 
     const day = convertedDate.getDate();
@@ -31,4 +32,15 @@ export const formattedDate = (date,double=false) => {
     const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
 
     return formattedDate;
+  }
+
+
+
+  export const  containsOnlySpaces = (obj)=> {
+
+    if (typeof obj === 'string'){
+
+        return obj.trim().length === 0;
+    }
+    return false
   }

@@ -1,3 +1,5 @@
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -11,9 +13,6 @@ import faClose from "../../public/svgs/light/xmark.svg";
 import { notify } from "../notification/notification";
 import { projectDetails } from "../projects/style";
 import TaskItem from "./TaskItem";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TextField } from "@mui/material";
 const TasksList = ({
   handleJoinable,
   joinable,
@@ -34,8 +33,7 @@ const TasksList = ({
     taskID,
     interventionID
   ) => {
-    console.log(hours, projectID, taskID);
-    console.log("changing hours ");
+
     try {
       dispatch(
         updateUserGeneralTasksHours({ id: interventionID, hours: hours })

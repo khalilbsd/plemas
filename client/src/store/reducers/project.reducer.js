@@ -4,7 +4,8 @@ const initialState = {
   projectDetails: {},
   projectRequest: [],
   edit: false,
-  twoWeeksList: []
+  twoWeeksList: [],
+  projectLog:[],
 };
 
 const projectSlice = createSlice({
@@ -34,6 +35,13 @@ const projectSlice = createSlice({
     },
     updateProjectState:(state,action)=>{
       state.projectDetails.state = action.payload
+    },
+    setProjectLog:(state,action)=>{
+      state.projectLog = action.payload
+    },
+    updateFileRequestList:(state,action)=>{
+      const requestIdx = state.projectRequest.map(request=>request.id).indexOf(parseInt(action.payload.requestID))
+      state.projectRequest[requestIdx].file  = action.payload.urls
     }
   }
 });
@@ -46,7 +54,9 @@ export const {
   setProjectRequests,
   updateRequestList,
   removeRequestFromList,
-  updateProjectState
+  updateProjectState,
+  setProjectLog,
+  updateFileRequestList
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

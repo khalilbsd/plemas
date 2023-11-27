@@ -13,7 +13,10 @@ export const requestApi = api.injectEndpoints({
       query: (data) => ({
         url: `/requests/project/request/create`,
         method: "POST",
-        data: data
+        data: data,
+        headers:{
+          'Content-Type': 'multipart/form-data',
+        }
 
       })
     }),
@@ -33,6 +36,15 @@ export const requestApi = api.injectEndpoints({
 
       })
     }),
+    uploadFileToProjectRequest: builder.mutation({
+      query: ({projectID,requestID,body}) => ({
+        url: `/requests/update/project/${projectID}/task/${requestID}/upload/file`,
+        method: "PATCH",
+        // data: body
+        data: body
+
+      })
+    }),
 
   })
 });
@@ -41,5 +53,6 @@ export const {
  useGetProjectRequestMutation,
  useCreateProjectRequestMutation,
  useUpdateProjectRequestMutation,
- useDeleteProjectRequestMutation
+ useDeleteProjectRequestMutation,
+ useUploadFileToProjectRequestMutation
 } = requestApi;

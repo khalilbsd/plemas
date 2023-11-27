@@ -4,7 +4,6 @@ import {
   Select,
   Switch
 } from "@mui/material";
-import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -24,7 +23,6 @@ import {
 import AddBtn from "./AddBtn";
 //modal
 
-import { ToastContainer } from "react-toastify";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import {
   CLIENT_ROLE,
@@ -32,7 +30,9 @@ import {
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../../../constants/roles";
+import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faAddUser from "../../public/svgs/light/user-plus.svg";
+import PopUp from "../PopUp/PopUp.jsx";
 import { notify } from "../notification/notification";
 import AddUserForm from "./AddUserForm";
 import { listStyle } from "./style";
@@ -52,20 +52,23 @@ const newUserInitialState = {
 const label = { inputProps: { "aria-label": "bannir l'utilisateur" } };
 
 const ManagingUsers = () => {
-  const [getUserList, {}] = useGetUserListMutation();
+  const [getUserList] = useGetUserListMutation();
   const usersList = useGetUsersList();
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [newUser, setNewUser] = useState(newUserInitialState);
-  const [addNewUser, {}] = useAddNewUserMutation();
-  const [banUser, {}] = useBanUserMutation();
-  const [unBanUser, {}] = useUnBanUserMutation();
-  const [changeRole, {}] = useChangeRoleMutation();
+  const [addNewUser] = useAddNewUserMutation();
+  const [banUser,{isLoading:banningUser}] = useBanUserMutation();
+  const [unBanUser] = useUnBanUserMutation();
+  const [changeRole,{isLoading:changingUserRole}] = useChangeRoleMutation();
   const dispatch = useDispatch();
   const [roleChange, setRoleChange] = useState({ email: "", state: false });
   const classes = listStyle();
-
+  const [confirmRoleChange, setConfirmRoleChange] = useState(false)
+  const [confirmBanUser, setConfirmBanUser] = useState(false)
+  const [userRole, setUserRole] = useState({role:undefined,email:undefined})
+  const [userToBan, setUserToBan] = useState({ban:undefined,email:undefined})
 
   useEffect(() => {
     async function userList() {
@@ -78,7 +81,7 @@ const ManagingUsers = () => {
     }
 
     userList();
-  }, []);
+  }, [getUserList,dispatch]);
 
   useEffect(() => {
     if (usersList.length) {
@@ -95,6 +98,10 @@ const ManagingUsers = () => {
   const handleModelClose = () => {
     setNewUser(newUserInitialState);
     setOpenModal(false);
+    setTimeout(() => {
+      setLoadingSubmit(false);
+
+    }, 300);
   };
 
   const handleChangeAccount = (e) => {
@@ -119,13 +126,12 @@ const ManagingUsers = () => {
       if (res?.createdUSer) {
         const { createdUSer, message } = res;
         if (createdUSer) dispatch(addNewUSerToList(createdUSer));
-        notify(NOTIFY_SUCCESS, message);
         setNewUser(newUserInitialState);
-        setLoadingSubmit(false);
-
         handleModelClose();
+        notify(NOTIFY_SUCCESS, message);
       }
     } catch (error) {
+      handleModelClose();
       notify(NOTIFY_ERROR, error.data?.message);
     }
   };
@@ -133,16 +139,18 @@ const ManagingUsers = () => {
   const handleBanUser = async (e) => {
     try {
       let resp;
-      console.log(!e.target.checked);
+
       dispatch(
-        updateUserInList({ ban: !e.target.checked, email: e.target.id })
+        updateUserInList(userToBan)
       );
       if (!e.target.checked) {
-        resp = await banUser({ email: e.target.id }).unwrap();
+        resp = await banUser({ email:userToBan.email}).unwrap();
       } else {
-        resp = await unBanUser({ email: e.target.id }).unwrap();
+        resp = await unBanUser({ email:userToBan.email }).unwrap();
       }
+      closeConfirmBanUser()
       notify(NOTIFY_SUCCESS, resp?.message);
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
@@ -153,6 +161,9 @@ const ManagingUsers = () => {
     return false;
   };
 
+
+
+
   const loadRoleChangeInput = (email) => {
     setRoleChange({
       email: email.currentTarget.getAttribute("data-email"),
@@ -162,21 +173,41 @@ const ManagingUsers = () => {
 
 
 
-  const handleRoleChange = async (e) => {
+  const handleRoleChange = async () => {
     try {
-      // console.log(e.target.value);
-      // console.log(e);
-      const resp = await changeRole({email:e.target.name,role:e.target.value}).unwrap()
-      dispatch(updateUserInList({email:e.target.name,role:e.target.value}))
+
+      const resp = await changeRole(userRole).unwrap()
+      dispatch(updateUserInList(userRole))
       notify(NOTIFY_SUCCESS,resp?.message)
       setRoleChange({
         email: "",
         state: false
       });
+      setConfirmRoleChange(false)
+      setUserRole({email:undefined,role:undefined})
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
+
+  const handleConfirmBanUser=(ban,email)=>{
+    setUserToBan({email,ban})
+    setConfirmBanUser(true)
+  }
+  const closeConfirmBanUser=()=>{
+    setConfirmBanUser(false)
+    setUserToBan({email:undefined,ban:undefined})
+  }
+  const handleConfirmRoleChange =(newRole,email)=>{
+    setUserRole({email:email,role:newRole})
+    setConfirmRoleChange(true)
+  }
+
+const closeConfirmRoleChange=()=>{
+  setConfirmRoleChange(false)
+  setUserRole({email:undefined,role:undefined})
+}
 
   //column for the header of the list
   const columns = [
@@ -206,16 +237,28 @@ const ManagingUsers = () => {
       editable: false,
       renderCell: (params) => {
         const { email, role } = params.row;
-        const ch = role === SUPERUSER_ROLE ? "admin" : role;
+        const ch = role === SUPERUSER_ROLE ? "admin" : role.replace('_',' ').toLowerCase();
 
         return (
           <>
+          <PopUp
+            loading={changingUserRole}
+            open={confirmRoleChange}
+            handleClose={closeConfirmRoleChange}
+            handleSubmit={handleRoleChange}
+            title={"Confirmation"}
+            icon={faSave}
+            text={`Êtes-vous sûr de vouloir changer l'utilisateur du rôle ${role === SUPERUSER_ROLE ? "admin" : role.replace('_',' ').toLowerCase()} au role de ${userRole?.role?.replace('_',' ')}?
+            Gardez à l'esprit que changer le rôle d'un utilisateur aura pour conséquence de lui ajouter/supprimer certains privilèges. `}
+            btnText={"Confirmer"}
+            btnLevel="danger"
+          />
             {getSelectRoleForUser(email) ? (
               <Select
                 labelId="demo-controlled-open-select-label"
                 id="demo-controlled-open-select"
                 value={role}
-                onChange={handleRoleChange}
+                onChange={(e)=>handleConfirmRoleChange(e.target.value,email)}
                 name={email}
                 inputProps={{"data-id":email}}
                 size="small"
@@ -268,15 +311,29 @@ const ManagingUsers = () => {
         const isBanned = params.row?.isBanned;
         const email = params.row?.email;
         return (
+          <>
+            <PopUp
+            loading={banningUser}
+            open={confirmBanUser}
+            handleClose={closeConfirmBanUser}
+            handleSubmit={handleBanUser}
+            title={"Confirmation"}
+            icon={faSave}
+            text={`êtes-vous sûr de vouloir bannir l'utilisateur ${userToBan.email} du système ?
+            Gardez à l'esprit que le bannissement de l'utilisateur entraînera la suppression de tout accès au système. Cependant, les données antérieures de l'utilisateur resteront intactes.`}
+            btnText={"Confirmer"}
+            btnLevel="danger"
+          />
           <Switch
             {...label}
             value={isBanned}
             checked={!isBanned}
             id={email}
-            onChange={handleBanUser}
+            onChange={(e)=>handleConfirmBanUser(!e.target.checked,email)}
 
             // defaultValue={isBanned?true:false}
-          />
+            />
+            </>
         );
       }
     }
@@ -311,6 +368,12 @@ const ManagingUsers = () => {
     //   }
     // }
   ];
+
+
+
+
+
+
   return (
     <Grid container spacing={2} sx={{height:'100%'}}>
       <AddUserForm
@@ -333,17 +396,18 @@ const ManagingUsers = () => {
           <DataGrid
           className={classes.list}
             rows={usersList}
+            // rows={testGridSupport()}
             columns={columns}
             loading={loading}
             autoHeight={true}
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 8
+                  pageSize: 100
                 }
               }
             }}
-            pageSizeOptions={[8]}
+            pageSizeOptions={[100]}
             disableRowSelectionOnClick
           />
 
