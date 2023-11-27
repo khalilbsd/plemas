@@ -1,12 +1,13 @@
 import { Skeleton } from "@mui/material";
+
 import {
   DataGrid,
   GridActionsCellItem,
   GridRowEditStopReasons,
-  GridRowModes
+  GridRowModes,useGridApiRef
 } from "@mui/x-data-grid";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
@@ -49,6 +50,9 @@ import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import TaskFiles from "./TaskFiles";
 import { projectDetails, projectTaskDetails } from "./style";
+import { useWindowSize } from "@uidotdev/usehooks";
+
+
 const ProjectTasks = ({ openAddTask }) => {
   const { projectID } = useParams();
   const dispatch = useDispatch();
@@ -57,13 +61,17 @@ const ProjectTasks = ({ openAddTask }) => {
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
   const [updateTask] = useUpdateTaskMutation();
-
+  const size = useWindowSize();
   // const [uploadFileToTask] = useUploadFileToTaskMutation();
   const classes = projectTaskDetails();
   const classesDetails = projectDetails();
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
+  // const dataGridRef=useGridApiRef()
+  const dataGridRef=useRef()
+
+console.log(size)
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -165,6 +173,9 @@ const ProjectTasks = ({ openAddTask }) => {
     setRowModesModel(newRowModesModel);
   };
 
+
+
+
   // // Define custom date formatting function
   // const customDateFormat = (date) => {
   //   // Customize the date formatting according to your locale
@@ -211,8 +222,8 @@ const ProjectTasks = ({ openAddTask }) => {
       type: "date",
       width: 120,
       editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
+      isSuperUser ||
+      (isManager && user?.email === project?.managerDetails?.email),
 
       valueGetter: (params) => {
         return dayjs(params.row.startDate).locale("en-gb").toDate();
@@ -220,7 +231,9 @@ const ProjectTasks = ({ openAddTask }) => {
     },
     {
       filterable: false,
-      width: 850,
+      width: dataGridRef.current.clientWidth - 900,
+      // width:size.width -  ,
+
       field: "name",
       headerName: "Taches",
       editable:
@@ -232,24 +245,6 @@ const ProjectTasks = ({ openAddTask }) => {
         </Tooltip>
       )
     },
-    // {
-    //   filterable: false,
-    //   field: "isVerified",
-    //   headerName: "Tache Vérifié",
-    //   editable: false,
-    //   width: 130,
-    //   renderCell: ({ row }) => {
-    //     return (
-    //       <span
-    //         className={`${classes.tacheVerification} ${
-    //           row.isVerified ? "verified" : ""
-    //         }`}
-    //       >
-    //         {row.isVerified ? "Vérifié" : "Non Vérifié"}
-    //       </span>
-    //     );
-    //   }
-    // },
     {
       filterable: false,
       editable:false,
@@ -442,7 +437,7 @@ const ProjectTasks = ({ openAddTask }) => {
   // const localeText = {
   //   dateFormat: customDateFormat
   // };
-
+  console.log(dataGridRef.current.clientWidth);
   return (
     <div className={classesDetails.card}>
       {(isSuperUser ||
@@ -456,6 +451,8 @@ const ProjectTasks = ({ openAddTask }) => {
       )}
 
       <DataGrid
+      // apiRef={dataGridRef}
+      ref={dataGridRef}
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         autoHeight
         rows={tasks || []}
