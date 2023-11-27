@@ -147,11 +147,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     }
   }
 
-
-
-
-  tasks.sort((a, b) => a.tasks[0].dueDate - b.tasks[0].dueDate);
-
+  tasks.sort((a, b) => a.tasks[0]?.dueDate - b.tasks[0]?.dueDate);
 
   const indexMap = {};
   tasks.forEach((task, index) => {
@@ -206,9 +202,18 @@ export const addProject = catchAsync(async (req, res, next) => {
   if (!data.phase || !data.lot.length)
     return next(new MalformedObjectId("lots and phase are mandatory"));
 
-  // create pure project instance to use
-  if (data.startDate) data.startDate = moment(data.startDate, "DD/MM/YYYY");
 
+    const regexPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+if (data.startDate){
+  if (!regexPattern.test(data.startDate)) {
+    if (data.startDate) data.startDate = moment(data.startDate, "DD/MM/YYYY");
+}
+}
+
+
+
+  // create pure project instance to use
+  console.log(data)
   let project = { ...data };
 
   project.createdBy = req.user.id;

@@ -121,6 +121,9 @@ export const listStyle = createUseStyles({
         borderRadius: "10px",
         // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
         background: "var(--pastel-green)"
+      },
+      "& .MuiDataGrid-virtualScrollerContent":{
+        height:'100% !important'
       }
     },
     "& .MuiDataGrid-row, .MuiDataGrid-cell ": {

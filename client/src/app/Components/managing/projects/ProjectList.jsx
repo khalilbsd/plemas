@@ -431,7 +431,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 9
+              pageSize: 100
             }
           }
         }}
@@ -444,7 +444,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
           noRowsOverlay: CustomNoRowsOverlay,
           toolbar: CustomDataGridToolbar
         }}
-        pageSizeOptions={[9]}
+        pageSizeOptions={[100]}
         // disableRowSelectionOnClick
       />
     </div>
