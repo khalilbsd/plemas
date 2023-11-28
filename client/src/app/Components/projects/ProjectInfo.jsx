@@ -63,7 +63,7 @@ import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
 import { projectDetails } from "./style";
-
+import faClock from '../../public/svgs/light/clock.svg'
 const initialState = {
   code: "",
   name: "",
@@ -778,8 +778,9 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                         className="position"
                         onClick={handleManagerHoursPopUP}
                       >
-                        <span className="init">Chef de projet</span>
-                        <span className="changed">renseigner heurs</span>
+                        {/* <span className="init">Chef de projet</span>
+                        <span className="changed">renseigner heurs</span> */}
+                        <ReactSVG className="clock"  src={faClock}/>
                       </button>
                     </div>
                   ) : !editData.managers.length ? (
