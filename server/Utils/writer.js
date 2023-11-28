@@ -12,7 +12,8 @@ export const takeNote = async (
   actionName,
   email,
   projectID,
-  { taskID = null, requestID = null }
+  { taskName = null, requestName = null ,extraProps =null },
+
 ) => {
   if (!actions_list.includes(actionName)) {
     logger.error("action name unknown");
@@ -33,12 +34,13 @@ export const takeNote = async (
   try {
     let note = {
       projectID,
-      taskID,
-      requestID,
+      taskName,
+      requestName,
       email: email,
       action: actionName,
       code,
-      action_date: moment().format("DD/MM/YYYY")
+      action_date: moment().format("DD/MM/YYYY"),
+      ...extraProps
     };
     const existingContent = await fs.readFile(
       "../server/tracking/tracking.txt",
@@ -65,8 +67,7 @@ export const getTracking = async (projectID) => {
       input: fileStream,
       crlfDelay: Infinity
     });
-    // Note: we use the crlfDelay option to recognize all instances of CR LF
-    // ('\r\n') in input.txt as a single line break.
+
     let projectTracking = [];
     for await (const line of rl) {
       const data = JSON.parse(line);
