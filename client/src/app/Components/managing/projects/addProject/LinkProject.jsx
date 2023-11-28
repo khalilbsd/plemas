@@ -13,7 +13,12 @@ const LinkProject = ({label,className,color,size}) => {
     const filterProjects =(e)=>{
 
         setPhase(e.target.value)
-        dispatch(filterProjectsList({flag:true,value:e.target.value}))
+        if (e.target.value){
+          dispatch(filterProjectsList({flag:true,value:e.target.value}))
+        }else{
+          dispatch(filterProjectsList({flag:false,value:""}))
+
+        }
       }
 
 
