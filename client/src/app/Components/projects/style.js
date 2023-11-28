@@ -173,15 +173,8 @@ export const projectDetails = createUseStyles({
       }
     },
     "& .position": {
-      fontWeight: 500,
-      width: 150,
-      color: "var(--orange)",
-      border: "2px solid var(--orange)",
-      padding: 15,
-      borderRadius: 5,
-      marginLeft: "5%",
-      background: "none",
-      transition: "all 0.3s ease-in-out",
+
+
       "& .init": {
         height: 14,
         display: "block",
@@ -194,24 +187,37 @@ export const projectDetails = createUseStyles({
         width: 0,
         overflow: "hidden"
       },
-      "&:hover": {
-        backgroundColor: "var(--orange)",
-        color: "var(--white)",
-        "& .changed": {
-          height: 14,
-          width: "100%",
-          overflow: "visible"
-        },
-        "& .init": {
-          height: 0,
-          width: 0,
-          overflow: "hidden"
-        }
-      }
+
     },
     "&.w-actions": {
       display: "flex",
       gap: 10
+    },
+    '& button':{
+      background:'none',
+      border:'none',
+      width:36,
+      height:36,
+      marginLeft:'1%',
+      backgroundColor:'var(--app-bg-color)',
+      borderRadius:'100%',
+      padding:0,
+      '&:hover':{
+        backgroundColor:'var(--orange)',
+        '& svg':{
+          fill:'var(--white)',
+        }
+      },
+      '& div':{
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center'
+      }
+    },
+    '& svg':{
+      width:18,
+      height:18,
+      fill:'var(--orange)'
     }
   },
   manager: {

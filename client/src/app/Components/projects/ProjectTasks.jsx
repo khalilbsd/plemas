@@ -4,10 +4,10 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridRowEditStopReasons,
-  GridRowModes,useGridApiRef
+  GridRowModes
 } from "@mui/x-data-grid";
 import dayjs from "dayjs";
-import React, { useState,useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
@@ -36,6 +36,7 @@ import {
 
 import Tooltip from "@mui/material/Tooltip";
 import { frFR } from "@mui/x-data-grid";
+import { useWindowSize } from "@uidotdev/usehooks";
 import faAdd from "../../public/svgs/solid/plus.svg";
 import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
@@ -50,7 +51,6 @@ import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import TaskFiles from "./TaskFiles";
 import { projectDetails, projectTaskDetails } from "./style";
-import { useWindowSize } from "@uidotdev/usehooks";
 
 
 const ProjectTasks = ({ openAddTask }) => {
@@ -68,10 +68,9 @@ const ProjectTasks = ({ openAddTask }) => {
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
-  // const dataGridRef=useGridApiRef()
+
   const dataGridRef=useRef()
 
-console.log(size)
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -231,7 +230,7 @@ console.log(size)
     },
     {
       filterable: false,
-      width: dataGridRef.current.clientWidth - 900,
+      width: dataGridRef.current?.clientWidth - 900,
       // width:size.width -  ,
 
       field: "name",
@@ -437,7 +436,7 @@ console.log(size)
   // const localeText = {
   //   dateFormat: customDateFormat
   // };
-  console.log(dataGridRef.current.clientWidth);
+
   return (
     <div className={classesDetails.card}>
       {(isSuperUser ||
