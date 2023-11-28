@@ -9,7 +9,7 @@ import { listStyle, projectsStyles } from "../style";
 import { DataGrid, GridActionsCellItem, frFR } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
-import { TASK_STATE_ABANDONED, TASK_STATE_DOING, TASK_STATE_TRANSLATION } from "../../../../constants/constants";
+import { TASK_STATE_ABANDONED, TASK_STATE_BLOCKED, TASK_STATE_DOING, TASK_STATE_TRANSLATION } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
 import faAdd from "../../../public/svgs/solid/plus.svg";
@@ -379,10 +379,11 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   };
 
   const projectList = () => {
+    console.log(addForm || addProjectState.isFiltering)
     if (addForm || addProjectState.isFiltering) {
       return addProjectState.projectsListFiltered;
     }
-    return projects.filter(project=>[TASK_STATE_DOING,TASK_STATE_ABANDONED].includes(project.state));
+    return projects.filter(project=>[TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state));
   };
 
   const handleClickProject = (rowID) => {
