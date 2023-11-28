@@ -15,8 +15,15 @@ const Request = database.define("requests", {
     type:DataTypes.TEXT('medium'),
     allowNull:true
   }
-
-}, { timestamps: true });
+,
+ },{
+  hooks: {
+    beforeUpdate: (instance, options) => {
+      // Capture the old values before the update
+      instance.oldValues = { ...instance._previousDataValues };
+    }
+  }
+ });
 
 
 

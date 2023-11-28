@@ -43,3 +43,35 @@ export const getRSAPublicKey = async () => {
 export function removeDuplicates(arr) {
   return [...new Set(arr)];
 }
+
+export const findObjectDifferences = (oldObject, newObject) => {
+  const differences = {};
+
+  // Helper function to recursively compare nested objects
+  const compareObjects = (obj1, obj2, prefix = '') => {
+    if (!obj1 || !obj2) {
+      return;
+    }
+    Object.keys(obj1).forEach((key) => {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+
+      if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+        compareObjects(obj1[key], obj2[key], fullKey);
+      } else if (obj1[key] && obj2[key] &&obj1[key] !== obj2[key]) {
+        differences[fullKey] = {
+          oldValue: obj1[key],
+          newValue: obj2[key],
+        };
+      }
+    });
+  };
+
+
+  // console.log("old ggggggggggg-------------------------",oldObject,oldObject);
+  compareObjects(oldObject, newObject);
+
+  return differences;
+};
+
+
+

@@ -6,13 +6,16 @@ import {
   UnAuthorized
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
+import { findObjectDifferences } from "../../Utils/utils.js";
 import { takeNote } from "../../Utils/writer.js";
 import {
   ACTION_NAME_ADMIN_REQUEST_DELETE,
   ACTION_NAME_REQUEST_CREATION,
   ACTION_NAME_REQUEST_STATE_CHANGED,
   ACTION_NAME_REQUEST_UPDATE,
-  PROJECT_MANAGER_ROLE
+  PROJECT_MANAGER_ROLE,
+  REQUEST_STATES_NOT_TREATED,
+  REQUEST_STATES_TREATED
 } from "../../constants/constants.js";
 import { Project, Request, User, UserProfile } from "../../db/relations.js";
 import { config } from "../../environment.config.js";
@@ -94,7 +97,7 @@ export const createRequest = catchAsync(async (req, res, next) => {
     ]
   });
   await takeNote(ACTION_NAME_REQUEST_CREATION, req.user.email, project.id, {
-    requestID: request.id
+    requestName: request.description
   });
 
   return (
@@ -125,19 +128,40 @@ export const updateRequest = catchAsync(async (req, res, next) => {
   }
   if (req.user.role === PROJECT_MANAGER_ROLE && project.manager !== req.user.id)
     return next(new UnAuthorized("Vous n’êtes pas le  chef de ce projet"));
-  console.log(req.body);
+
   const oldState = request.state;
   await request.update({ ...req.body });
+  await request.reload();
   if (req.body.state !== oldState) {
     await takeNote(
       ACTION_NAME_REQUEST_STATE_CHANGED,
       req.user.email,
       project.id,
-      { requestID: request.id }
+      { requestName: request.name ,
+        extraProps:{
+          state: req.body.state  ?  REQUEST_STATES_TREATED : REQUEST_STATES_NOT_TREATED
+        }
+        }
     );
   } else {
+    const differences = findObjectDifferences(
+      { ...request.oldValues },
+      request.toJSON()
+    );
+    let oldValuesString = "";
+    let newValuesString = "";
+
+    Object.keys(differences).forEach((key) => {
+      oldValuesString = oldValuesString.concat(differences[key].oldValue, ", ");
+      newValuesString = newValuesString.concat(differences[key].newValue, ", ");
+    });
+
     await takeNote(ACTION_NAME_REQUEST_UPDATE, req.user.email, project.id, {
-      requestID: request.id
+      requestName: request.description,
+      extraProps: {
+        oldValues: oldValuesString,
+        newValues: newValuesString
+      }
     });
   }
 
@@ -157,7 +181,7 @@ export const deleteRequest = catchAsync(async (req, res, next) => {
   if (!request) return next(new ElementNotFound("Requête introuvable"));
   await request.destroy();
   await takeNote(ACTION_NAME_ADMIN_REQUEST_DELETE, req.user.email, project.id, {
-    requestID: request.id
+    requestID: request.description
   });
 
   return res
@@ -201,6 +225,6 @@ export const uploadFileToRequest = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     message: "fichiers attaché au requete",
-    files:urls,
+    files: urls
   });
 });
