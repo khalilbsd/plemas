@@ -747,7 +747,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
               </div>
             </Grid> */}
 
-              {/* manager */}
+              {/* project manager */}
               <Grid item xs={12}>
                 <div className={classes.data}>
                   {!edit || project.managerHours > 0 ? (
@@ -767,6 +767,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                         <p className="manager-name">
                           {project.managerDetails?.UserProfile?.name}
                           {project.managerDetails?.UserProfile?.lastName}
+                           &nbsp; {project.managerHours}H
                           <br />
                           <span className="email">
                             {project.managerDetails?.email}

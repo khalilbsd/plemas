@@ -87,9 +87,10 @@ const [creatingProject, setCreatingProject] = useState(false)
     }
   }
   useEffect(() => {
-    if (!projectList.length){
+    // if (!projectList.length){
+      dispatch(filterProjectsList({ flag: false, value: "" }));
       loadProjects();
-    }
+    // }
   }, []);
 
   const handleOpenAddForm = () => {

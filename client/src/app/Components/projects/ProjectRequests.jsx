@@ -5,10 +5,12 @@ import {
   GridRowEditStopReasons,
   GridRowModes
 } from "@mui/x-data-grid";
+import { useWindowSize } from "@uidotdev/usehooks";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
+
 import {
   NOTIFY_ERROR,
   NOTIFY_INFO,
@@ -31,13 +33,16 @@ import {
   setProjectRequests,
   updateRequestList
 } from "../../../store/reducers/project.reducer";
-import { containsOnlySpaces, formattedDate } from "../../../store/utils";
+import { containsOnlySpaces } from "../../../store/utils";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
-import faAdd from "../../public/svgs/solid/plus.svg";
 import faTrash from "../../public/svgs/light/trash.svg";
+import faAdd from "../../public/svgs/solid/plus.svg";
 
 import PopUp from "../PopUp/PopUp.jsx";
 
+import dayjs from "dayjs";
+import faUpload from "../../public/svgs/light/upload.svg";
+import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 import {
   CustomCancelIcon,
@@ -46,11 +51,8 @@ import {
   CustomSaveIcon
 } from "../icons";
 import { notify } from "../notification/notification";
-import { projectDetails, projectTaskDetails } from "./style";
-import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
-import dayjs from "dayjs";
-import faUpload from "../../public/svgs/light/upload.svg";
 import RequestFiles from "./RequestFiles";
+import { projectDetails, projectTaskDetails } from "./style";
 
 const ProjectRequests = () => {
   const dispatch = useDispatch();
@@ -58,8 +60,10 @@ const ProjectRequests = () => {
   const project = useGetProjectRequestMutation("project", "projectDetails");
   const classesDetails = projectDetails();
   const taskStyles = projectTaskDetails();
-  const fileInputRef = useRef(null);
+  const size = useWindowSize();
 
+  const fileInputRef = useRef(null);
+  const [descriptionWidth, setDescriptionWidth] = useState(0)
   const [addRequest, setAddRequest] = useState(false);
   const [files, setFiles] = useState([]);
   const { user } = useGetAuthenticatedUser();
@@ -69,6 +73,8 @@ const ProjectRequests = () => {
   const [requestToDelete, setRequestToDelete] = useState(undefined);
   const [checkDelete, setCheckDelete] = useState(false);
   const requests = useGetStateFromStore("project", "projectRequest");
+  const dataGridRef=useRef()
+
   const [getProjectRequest, { isLoading: loadingRequests }] =
     useGetProjectRequestMutation();
   const [updateProjectRequest, { isLoading: updatingRequest }] =
@@ -76,6 +82,11 @@ const ProjectRequests = () => {
   const [createProjectRequest] = useCreateProjectRequestMutation();
   const [deleteProjectRequest, { isLoading: deletingRequest }] =
     useDeleteProjectRequestMutation();
+
+
+
+
+
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -95,9 +106,11 @@ const ProjectRequests = () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
+
+
   const handleDeleteClick = async () => {
-    console.log("dellting", requestToDelete);
-    // setRows(rows.filter((row) => row.id !== id));
+
+
     try {
       const res = await deleteProjectRequest({
         projectID,
@@ -177,7 +190,8 @@ const ProjectRequests = () => {
     {
       field: "description",
       headerName: "Information",
-      width: 1000,
+      // width: 1000,
+      width: descriptionWidth,
       editable: true,
       filterable: false
     },
@@ -307,6 +321,13 @@ const ProjectRequests = () => {
       }
     }
   ];
+
+  useEffect(() => {
+    setDescriptionWidth(dataGridRef.current?.clientWidth - 900)
+  }, [size])
+
+
+  console.log(descriptionWidth);
 
   useEffect(() => {
     async function loadRequests() {
@@ -454,6 +475,7 @@ const ProjectRequests = () => {
       />
 
       <DataGrid
+      ref={dataGridRef}
         className={taskStyles.list}
         loading={
           loadingRequests ||
