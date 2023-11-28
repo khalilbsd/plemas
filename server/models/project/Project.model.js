@@ -40,10 +40,10 @@ const Project = database.define(
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    managerHours:{
+    managerHours: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue:0
+      defaultValue: 0
     },
     isCodeCustomized: {
       type: DataTypes.BOOLEAN,
@@ -55,15 +55,21 @@ const Project = database.define(
       allowNull: false,
       defaultValue: true
     },
-    state:{
-      type:DataTypes.STRING,
-      allowNull:false,
-      defaultValue:TASK_STATE_DOING
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: TASK_STATE_DOING
     }
-
-
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    hooks: {
+      beforeUpdate: (instance, options) => {
+        // Capture the old values before the update
+        instance.oldValues = { ...instance._previousDataValues };
+      }
+    }
+  }
 );
 
 export default Project;

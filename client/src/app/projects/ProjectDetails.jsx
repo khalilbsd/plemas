@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { NOTIFY_ERROR } from "../../constants/constants";
 import { useGetProjectByIDMutation, useProjectGetLogMutation } from "../../store/api/projects.api";
 import { setProject, setProjectLog } from "../../store/reducers/project.reducer";
@@ -26,34 +26,32 @@ const ProjectDetails = () => {
   const [loadingPage, setLoadingPage] = useState(false);
   const dispatch = useDispatch();
   const [openAddTask, setOpenAddTask] = useState(false);
+  const redirect = useNavigate()
   useEffect(() => {
-    async function loadProjectTasks() {
-      try {
-        const res = await getProjectTasks(projectID).unwrap();
-        dispatch(setProjectTask(res?.intervenants));
-      } catch (error) {
-        notify(NOTIFY_ERROR, error?.data?.message);
-      }
-    }
 
 
     async function loadProject() {
       try {
         const data = await getProjectByID(projectID).unwrap();
         dispatch(setProject(data?.project));
+        const res = await getProjectTasks(projectID).unwrap();
+        dispatch(setProjectTask(res?.intervenants));
       } catch (error) {
         notify(NOTIFY_ERROR, error?.data.message);
+        redirect('/projects')
+        return false
       }
     }
+
     setLoadingPage(true);
     dispatch(clearProjectTasks());
     loadProject();
-    loadProjectTasks();
+
     setTimeout(() => {
       setLoadingPage(false);
     }, 500);
 
-  }, [projectID,getProjectByID,dispatch]);
+  }, []);
 
   const handleOpenTaskAdd = () => {
     setOpenAddTask(true);

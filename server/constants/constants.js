@@ -99,6 +99,8 @@ export const ACTION_NAME_ADMIN_REQUEST_DELETE  ="ADMIN_REQUEST_DELETE"
 export const ACTION_NAME_ADD_INTERVENANTS_BULK_TASK  ="ADD_INTERVENANTS_BULK_TASK"
 export const ACTION_NAME_ADD_INTERVENANT_TASK  ="ADD_INTERVENANT_TASK"
 export const ACTION_NAME_INTERVENANT_JOINED_TASK  ="INTERVENANT_JOINED_TASK"
+export const ACTION_NAME_PROJECT_UPDATE_MANAGER  ="PROJECT_UPDATE_MANAGER"
+
 
 
 
@@ -123,31 +125,33 @@ export const action_codes =[
   { code:117,action:ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,},
   { code:118,action:ACTION_NAME_ADD_INTERVENANT_TASK,},
   { code:119,action:ACTION_NAME_INTERVENANT_JOINED_TASK,},
+  { code:120,action:ACTION_NAME_PROJECT_UPDATE_MANAGER,},
 
 ]
 
 
 export const action_phrases = {
-  100: (attributes) => `L'utilisateur ${attributes.email} a créé le projet.`,
-  101: (attributes) => `L'utilisateur ${attributes.email} a créé une tâche avec l'ID ${attributes.taskID}.`,
-  102: (attributes) => `L'utilisateur ${attributes.email} a créé une requete avec l'ID ${attributes.requestID}.`,
-  103: (attributes) => `L'utilisateur ${attributes.email} a ajouté des intervenants en masse au projet.`,
-  104: (attributes) => `L'utilisateur ${attributes.email} a ajouté un intervenant au projet.`,
-  105: (attributes) => `L'utilisateur ${attributes.email} a supprimé un intervenant.`,
-  106: (attributes) => `L'utilisateur ${attributes.email} a ajouté un chef de projet.`,
-  107: (attributes) => `L'utilisateur ${attributes.email} a changé le chef de projet.`,
-  108: (attributes) => `chef de projet ${attributes.email} a remplis des heures.`,
-  109: (attributes) => `L'utilisateur ${attributes.email} a attribué des heures à un intervenant.`,
-  110: (attributes) => `L'utilisateur ${attributes.email} a mis à jour un projet.`,
-  111: (attributes) => `L'utilisateur ${attributes.email} a mis à jour une tâche avec l'ID ${attributes.taskID}.`,
-  112: (attributes) => `L'utilisateur ${attributes.email} a mis à jour une requete avec l'ID ${attributes.requestID}.`,
-  113: (attributes) => `L'utilisateur ${attributes.email} a vérifié une tâche avec l'ID ${attributes.taskID}.`,
-  114: (attributes) => `L'utilisateur ${attributes.email} a changé l'état d'une tâche avec l'ID ${attributes.taskID}.`,
-  115: (attributes) => `L'utilisateur ${attributes.email} a changé l'état d'une requete avec l'ID ${attributes.requestID}.`,
-  116: (attributes) => `l'administrateur a supprimé la requête avec l'ID ${attributes.requestID}.`,
-  117: (attributes) => `L'utilisateur ${attributes.email} a ajouté des intervenants en masse au tache ${attributes.taskID}.`,
-  118: (attributes) => `L'utilisateur ${attributes.email} a ajouté un intervenant au tache ${attributes.taskID}.`,
-  119: (attributes) => `L'utilisateur ${attributes.email} a rejoint la tache ${attributes.taskID}.`,
+  100: (attributes) => ` ${attributes.email} a créé le projet.`,
+  101: (attributes) => ` ${attributes.email} a créé la tâche: ${attributes.taskName}.`,
+  102: (attributes) => ` ${attributes.email} a créé une requete: ${attributes.requestName}.`,
+  103: (attributes) => ` ${attributes.email} a ajouté ${attributes.intervenantsNames} comme des intervenants au projet`,
+  104: (attributes) => ` ${attributes.email} a ajouté ${attributes.intervenantsNames} comme un intervenant au projet.`,
+  105: (attributes) => ` ${attributes.email} a supprimé l'intervenant ${attributes.deletedIntervenant} du projet.`,
+  106: (attributes) => ` ${attributes.email} a ajouté  ${attributes.managerEmail} comme un chef de projet.`,
+  107: (attributes) => ` ${attributes.email} a changé le chef de projet.`,
+  108: (attributes) => `chef de projet ${attributes.email} a remplis ${attributes.hours} heures.`,
+  109: (attributes) => ` ${attributes.email}  a renseigner ${attributes.hours} heurs de travail le ${attributes.date} dans la tache ${attributes.taskName}`,
+  110: (attributes) => ` ${attributes.email} a changé les details du projet de ${attributes.oldValues} vers ${attributes.newValues}`,
+  111: (attributes) => ` ${attributes.email} a mis à jour la tache ${attributes.taskName} de ${attributes.oldValues} vers ${attributes.newValues}. `,
+  112: (attributes) => ` ${attributes.email} a mis à jour la requete  ${attributes.requestName} de ${attributes.oldValues} vers ${attributes.newValues}.`,
+  113: (attributes) => ` ${attributes.email} a vérifié une tâche avec l'ID ${attributes.taskName}.`,
+  114: (attributes) => ` ${attributes.email} a changé l'état du tache tâche ${attributes.taskName} de ${attributes.oldState} vers ${attributes.newState}.`,
+  115: (attributes) => ` ${attributes.email} a marqué la requete ${attributes.requestName} comme ${attributes.state}.`,
+  116: (attributes) => `l'administrateur a supprimé la requête  ${attributes.requestName}.`,
+  117: (attributes) => ` ${attributes.email} a ajouté ${attributes.intervenantsNames} comme des intervenants au tache ${attributes.taskName}.`,
+  118: (attributes) => ` ${attributes.email} a ajouté ${attributes.intervenantsNames} comme un intervenant au tache ${attributes.taskName}.`,
+  119: (attributes) => ` ${attributes.email} a rejoint la tache ${attributes.taskName}.`,
+  120: (attributes) => ` ${attributes.email} a changer le chef de projet de ${attributes.oldManager} vers ${attributes.newManager} `,
 };
 
 
@@ -181,7 +185,8 @@ export const actions_list =[
 ACTION_NAME_ADD_INTERVENANT_PROJECT,
 ACTION_NAME_ADD_INTERVENANTS_BULK_TASK,
 ACTION_NAME_ADD_INTERVENANT_TASK,
-ACTION_NAME_INTERVENANT_JOINED_TASK
+ACTION_NAME_INTERVENANT_JOINED_TASK,
+ACTION_NAME_PROJECT_UPDATE_MANAGER
 ]
 
 

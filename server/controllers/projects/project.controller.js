@@ -14,6 +14,7 @@ import {
   ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
   ACTION_NAME_PROJECT_CREATION,
   ACTION_NAME_PROJECT_UPDATE,
+  ACTION_NAME_PROJECT_UPDATE_MANAGER,
   PROJECT_MANAGER_ROLE,
   PROJECT_PHASE_STATUS_IN_PROGRESS,
   SUPERUSER_ROLE,
@@ -44,6 +45,7 @@ import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
 import sequelize from "../../db/db.js";
 import { getTracking, takeNote } from "../../Utils/writer.js";
+import { findObjectDifferences } from "../../Utils/utils.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -225,7 +227,7 @@ export const addProject = catchAsync(async (req, res, next) => {
   }
 
   // create pure project instance to use
-  console.log(data);
+
   let project = { ...data };
 
   project.createdBy = req.user.id;
@@ -271,6 +273,16 @@ export const addProject = catchAsync(async (req, res, next) => {
         });
       }
     }
+
+    await newProject.reload({
+      include: [
+        {
+          model: User,
+          as: "managerDetails",
+          attributes: ["email"]
+        }
+      ]
+    });
     //saving tracking
     await takeNote(
       ACTION_NAME_PROJECT_CREATION,
@@ -282,7 +294,11 @@ export const addProject = catchAsync(async (req, res, next) => {
       ACTION_NAME_ADD_PROJECT_MANAGER,
       req.user.email,
       newProject.id,
-      {}
+      {
+        extraProps: {
+          managerEmail: newProject.managerDetails.email
+        }
+      }
     );
 
     return res.status(200).json({
@@ -323,11 +339,23 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   }
 
   const project = await Project.findByPk(req.params.projectID, {
-    include: [Phase]
+    include: [
+      Phase,
+      {
+        model: User,
+        as: "managerDetails",
+        attributes: ["email"]
+      }
+    ]
   });
 
   if (!project) return next(new ElementNotFound("Projet introuvable"));
   logger.info("attempting to update the project info");
+  let oldManager = "";
+  if (details.manager) {
+    oldManager = project.managerDetails.email;
+  }
+
   if (details.code && details.code.toString()?.length !== 5)
     return next(
       new AppError("le code du projet doit contenir 5 caractères", 401)
@@ -375,8 +403,6 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     }
   }
 
-  console.log(details);
-
   await project.update({ ...details });
 
   if (Object.keys(details).includes("lots")) {
@@ -414,8 +440,47 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     // }
   }
 
-  await takeNote(ACTION_NAME_PROJECT_UPDATE, req.user.email, project.id, {});
+  await project.reload({
+    include: [
+      {
+        model: User,
+        as: "managerDetails",
+        attributes: ["email"]
+      }
+    ]
+  });
 
+  const differences = findObjectDifferences(
+    { ...project.oldValues },
+    project.toJSON()
+  );
+  let oldValuesString = "";
+  let newValuesString = "";
+
+  Object.keys(differences).forEach((key) => {
+    oldValuesString = oldValuesString.concat(differences[key].oldValue,", ");
+    newValuesString = newValuesString.concat(differences[key].newValue,", ");
+  });
+
+  await takeNote(ACTION_NAME_PROJECT_UPDATE, req.user.email, project.id, {
+    extraProps: {
+      oldValues: oldValuesString,
+      newValues: newValuesString
+    }
+  });
+  if (details.manager && details.manager !==project.oldValues.manager) {
+    await takeNote(
+      ACTION_NAME_PROJECT_UPDATE_MANAGER,
+      req.user.email,
+      project.id,
+      {
+        extraProps: {
+          newManager: project.managerDetails.email,
+          oldManager: oldManager
+        }
+      }
+    );
+  }
   return res.status(200).json({
     status: "success",
     message: "Les détails des projets ont été mis à jour"
@@ -560,15 +625,28 @@ export const getProjectById = catchAsync(async (req, res, next) => {
       {
         model: Phase,
         attributes: ["name", "abbreviation"]
+      },
+      {
+        model:Intervenant
       }
     ]
   });
 
+
+
   if (!project) return next(new ElementNotFound(`Project was not found`));
+  // chekc if the user has access to the project
+  if (!req.user.isSuperUser){
+  const projectIntervenants = project.intervenants.map(entry=>entry.intervenantID)
+    if (!projectIntervenants.includes(req.user.id)) return next(new UnAuthorized("vous ne faites pas partie de ce projet"))
+  }
 
   const projectHours = await Intervenant.sum("nbHours", {
     where: { projectID: project.id }
   });
+
+
+
 
   const result = project.toJSON();
 
@@ -655,7 +733,11 @@ export const assignManagerHours = catchAsync(async (req, res, next) => {
     ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
     req.user.email,
     project.id,
-    {}
+    {
+      extraProps:{
+        hours:hours
+      }
+    }
   );
 
   return res

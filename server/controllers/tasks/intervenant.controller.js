@@ -95,6 +95,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
   ) {
     return next(new UnAuthorized("vous n'êtes pas le chef de ce projet"));
   }
+  let intervenantsNames=""
 
   const { emails } = req.body;
   if (!emails) return next(new MissingParameter("Emails est requis"));
@@ -119,6 +120,8 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
         new AppError("La création a échoué, veuillez réessayer plus tard ")
       );
     }
+    intervenantsNames = intervenantsNames.concat(user.email,", ")
+
   }
 
   if (emails.length > 1) {
@@ -126,14 +129,18 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
       ACTION_NAME_ADD_INTERVENANTS_BULK_PROJECT,
       req.user.email,
       project.id,
-      {}
+      {extraProps:{
+        intervenantsNames:intervenantsNames
+      }}
     );
   } else if (emails.length) {
     await takeNote(
       ACTION_NAME_ADD_INTERVENANT_PROJECT,
       req.user.email,
       project.id,
-      {}
+      {extraProps:{
+        intervenantsNames:emails[0]
+      }}
     );
   }
 
@@ -191,7 +198,11 @@ export const removeIntervenantFromProject = catchAsync(
       ACTION_NAME_DELETE_INTERVENANT,
       req.user.email,
       project.id,
-      {}
+      {
+        extraProps:{
+          deletedIntervenant:user.email
+        }
+      }
     );
 
     //TODO:: add task check rules
