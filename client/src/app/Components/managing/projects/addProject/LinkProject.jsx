@@ -14,9 +14,9 @@ const LinkProject = ({label,className,color,size}) => {
 
         setPhase(e.target.value)
         if (e.target.value){
-          dispatch(filterProjectsList({flag:true,value:e.target.value}))
+          dispatch(filterProjectsList({flag:true,value:e.target.value,attribute:'projectCustomId'}))
         }else{
-          dispatch(filterProjectsList({flag:false,value:""}))
+          dispatch(filterProjectsList({flag:false,value:"",attribute:'projectCustomId'}))
 
         }
       }

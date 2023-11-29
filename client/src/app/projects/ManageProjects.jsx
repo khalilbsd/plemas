@@ -88,7 +88,7 @@ const [creatingProject, setCreatingProject] = useState(false)
   }
   useEffect(() => {
     // if (!projectList.length){
-      dispatch(filterProjectsList({ flag: false, value: "" }));
+      dispatch(filterProjectsList({ flag: false, value: "" ,attribute:'projectCustomId' }));
       loadProjects();
     // }
   }, []);
@@ -96,7 +96,7 @@ const [creatingProject, setCreatingProject] = useState(false)
   const handleOpenAddForm = () => {
     if (addProjectForm) {
       setNewProject(newProjectInitialState);
-      dispatch(filterProjectsList({ flag: false, value: "" }));
+      dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
       const elements = document.querySelectorAll(".row-data");
       elements.forEach((element) => {
         element.classList.remove("active");
@@ -104,7 +104,7 @@ const [creatingProject, setCreatingProject] = useState(false)
       dispatch(setLinkedProject(null));
       dispatch(setLinkingProject(null));
     } else {
-      dispatch(filterProjectsList({ flag: true, value: "" }));
+      dispatch(filterProjectsList({ flag: false, value: "" ,attribute:'projectCustomId' }));
     }
 
     setAddProjectForm((prevState) => !prevState);

@@ -54,7 +54,7 @@ export const Theme = createTheme(
         },
         //greenish
         info: {
-            main: '#aaf3e3ad'
+            main: '#FCF7F8'
         },
         //orange xs
         warning: {

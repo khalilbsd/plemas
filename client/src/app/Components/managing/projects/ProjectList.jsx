@@ -6,20 +6,27 @@ import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
 import { listStyle, projectsStyles } from "../style";
 // import { projectTestList } from "./test/projectList.test";
+import Tooltip from "@mui/material/Tooltip";
 import { DataGrid, GridActionsCellItem, frFR } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
-import { TASK_STATE_ABANDONED, TASK_STATE_BLOCKED, TASK_STATE_DOING, TASK_STATE_TRANSLATION } from "../../../../constants/constants";
+import {
+  TASK_STATE_BLOCKED,
+  TASK_STATE_DOING,
+  TASK_STATE_TRANSLATION
+} from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import CustomNoRowsOverlay from "../../NoRowOverlay/CustomNoRowsOverlay";
 import CustomDataGridHeaderColumnMenu from "../../customDataGridHeader/CustomDataGridHeaderColumnMenu";
 import CustomDataGridToolbar from "../../customDataGridToolbar/CustomDataGridToolbar";
+import { CustomCancelIcon, CustomPlusIcon } from "../../icons";
 import { projectTaskDetails } from "../../projects/style";
 import LinkProject from "./addProject/LinkProject";
 import { priorityColors } from "./addProject/PriorityField";
-import { CustomCancelIcon, CustomPlusIcon } from "../../icons";
+import ProjectFilters from "./filter/ProjectFilters";
+
 const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const classes = projectsStyles();
   const tasksStyles = projectTaskDetails();
@@ -87,18 +94,21 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       {
         headerName: "Nom du projet",
         field: "projectCustomId",
-        width: 170,
+        width: 200,
         renderCell: (params) => {
           return (
-            <p className={classes.projectName}>
-              <span
-                className="priority"
-                style={{
-                  backgroundColor: getPriorityColor(params.row.priority).code
-                }}
-              ></span>
-              {params.row?.projectCustomId}
-            </p>
+            <Tooltip title={params.row?.projectCustomId}>
+              <p className={classes.projectName}>
+                <span
+                  className="priority"
+                  style={{
+                    backgroundColor: getPriorityColor(params.row.priority).code
+                  }}
+                ></span>
+
+                {params.row?.projectCustomId}
+              </p>
+            </Tooltip>
           );
         }
       },
@@ -168,21 +178,24 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         headerName: " ",
         field: "tasks",
         filterable: false,
-        width: 300,
+        width: 270,
         columnMenu: false,
         sortable: false,
         menu: false,
         renderCell: (params) => {
           const tasksNb = projectTasks(params.row.id)?.length;
-          if (!tasksNb) return  <p className={classes.emptyTasks}>
-          {" "}
-          il n'y a pas de tâches planifiées{" "}
-        </p>
+          if (!tasksNb)
+            return (
+              <p className={classes.emptyTasks}>
+                {" "}
+                il n'y a pas de tâches planifiées{" "}
+              </p>
+            );
           const taskInfoElement = tasksNb ? (
             projectTasks(params.row.id)?.map((task, idx) => {
               return (
                 <div key={idx} className={classes.taskStates}>
-                  {task?.name}
+                  <Tooltip title={task?.name}>{task?.name}</Tooltip>
                 </div>
               );
             })
@@ -211,7 +224,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         menu: false,
         renderCell: (params) => {
           let tasksNb = projectTasks(params.row.id)?.length;
-        if (!tasksNb) return null
+          if (!tasksNb) return null;
           const taskStateElement = tasksNb ? (
             projectTasks(params.row.id)?.map((task, idx) => {
               return (
@@ -240,7 +253,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       {
         headerName: "dates",
         field: "dates",
-        width: twoWeeksDates.length* 40,
+        width: twoWeeksDates.length * 40,
         filterable: false,
         columnMenu: false,
         sortable: false,
@@ -298,14 +311,13 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
               }
             } else {
               position = startIdx !== -1 ? startIdx * 40 : 0;
-              let diff = startIdx > -1 ? startIdx : 0
+              let diff = startIdx > -1 ? startIdx : 0;
               width =
-              dueIdx !== -1
-              ? dueIdx
-              ? (dueIdx - diff) * 40
-              : 1 * 40
-              : (convertedDates.length - startIdx) * 40;
-
+                dueIdx !== -1
+                  ? dueIdx
+                    ? (dueIdx - diff) * 40
+                    : 1 * 40
+                  : (convertedDates.length - startIdx) * 40;
             }
 
             return (
@@ -316,10 +328,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
                 className={classes.progressBarContainer}
               >
                 <span className={classes.progressBar}>
-                   {
-                    dayjs(task.dueDate)
-                        .locale("fr")
-                        .format("dddd DD/MM/YYYY ")}
+                  {dayjs(task.dueDate).locale("fr").format("dddd DD/MM/YYYY ")}
                 </span>
               </div>
             );
@@ -379,11 +388,12 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   };
 
   const projectList = () => {
-    console.log(addForm || addProjectState.isFiltering)
     if (addForm || addProjectState.isFiltering) {
       return addProjectState.projectsListFiltered;
     }
-    return projects.filter(project=>[TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state));
+    return projects.filter((project) =>
+      [TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(project.state)
+    );
   };
 
   const handleClickProject = (rowID) => {
@@ -414,9 +424,12 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             />
 
             {(isSuperUser || isManager) && (
-              <button onClick={handleForm}>
-                <ReactSVG src={faAdd} />
-              </button>
+              <>
+                <ProjectFilters />
+                <button className="add-project" onClick={handleForm}>
+                  <ReactSVG src={faAdd} />
+                </button>
+              </>
             )}
           </div>
         )}

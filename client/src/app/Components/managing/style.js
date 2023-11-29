@@ -373,7 +373,8 @@ export const projectsStyles = createUseStyles({
     display: "flex",
     gap: 10,
     alignItems: "center",
-    "& button": {
+    "& button.add-project": {
+
       backgroundColor: "unset",
       border: "none",
       borderRadius: "100%",

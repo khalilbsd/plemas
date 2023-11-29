@@ -327,8 +327,6 @@ const ProjectRequests = () => {
   }, [size])
 
 
-  console.log(descriptionWidth);
-
   useEffect(() => {
     async function loadRequests() {
       try {

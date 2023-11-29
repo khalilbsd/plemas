@@ -16,7 +16,8 @@ const initialState = {
     linkedProject: {},
     linkedProjectID: "",
     projectsListFiltered: [],
-    isFiltering: false
+    isFiltering: false,
+    filterType: []
   }
 };
 
@@ -85,20 +86,69 @@ const manageSlice = createSlice({
       state.addProject.linkedProjectID = action.payload;
       if (action.payload) {
         state.addProject.linkedProject = state.projectsList.filter(
-          (projet) => projet.id == action.payload
+          (projet) => projet.id === parseInt(action.payload)
         )[0].projectCustomId;
       }
     },
     filterProjectsList: (state, action) => {
-      state.addProject.isFiltering = action.payload.flag;
-      const regex = new RegExp(action.payload.value, "i"); // 'i' for case-insensitive search
+      // const regex = new RegExp(action.payload.value, "i"); // 'i' for case-insensitive search
 
+      // let filterItem  ={
+      //   type:action.payload.attribute ,
+      //   value :  regex,
+      // }
+      const isFilteredBy = state.addProject.filterType.filter(
+        ({ type }) => type === action.payload.attribute
+      )[0];
+        console.log(isFilteredBy);
+      if (!isFilteredBy) {
+        state.addProject.filterType.push({
+          type: action.payload.attribute,
+          value: action.payload.value
+        });
+      } else {
+        let indxOfFilter = state.addProject.filterType
+          .map(({ type }) => type)
+          .indexOf(action.payload.attribute);
+          console.log(indxOfFilter);
+        if (indxOfFilter > -1)
+
+          if (state.addProject.filterType[indxOfFilter]?.value !== action.payload.value)
+          state.addProject.filterType[indxOfFilter].value = action.payload.value;
+      }
+
+      if (!action.payload.value && isFilteredBy) {
+        state.addProject.filterType = state.addProject.filterType.filter(
+          (elem) => elem.type !== action.payload.attribute
+        );
+      }
+
+      if (!state.addProject.filterType.length) {
+        state.addProject.isFiltering = false;
+      } else {
+        state.addProject.isFiltering = action.payload.flag;
+      }
+      if (!state.addProject.isFiltering){
+        state.addProject.filterType =[]
+      }
+      // Now, filter the projects based on the filterType array
       state.addProject.projectsListFiltered = state.projectsList.filter(
         (project) => {
-          return regex.test(project.projectCustomId);
+          return state.addProject.filterType.every((filterAttribute) => {
+            const nestedProperty = filterAttribute.type.split(".");
+            const nestedValue = nestedProperty.reduce(
+              (obj, key) => (obj && obj[key] ? obj[key] : null),
+              project
+            );
+            const regex = new RegExp(filterAttribute.value, "i"); // 'i' for case-insensitive search
+
+            return regex.test(nestedValue);
+          });
         }
       );
     },
+
+
     setIsFiltering: (state, action) => {
       state.addProject.isFiltering = action.payload;
     }
@@ -119,7 +169,7 @@ export const {
   setLinkingProject,
   setLinkedProject,
   filterProjectsList,
-  updateUserInList,
+  updateUserInList
 } = manageSlice.actions;
 
 export default manageSlice.reducer;
