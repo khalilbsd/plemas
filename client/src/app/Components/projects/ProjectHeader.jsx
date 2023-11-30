@@ -117,7 +117,7 @@ const ProjectHeader = ({ loading, openLogTab }) => {
             xs={6}
             sm={6}
             md={6}
-            lg={!details ? 8 : 10}
+            lg={!details ? 7 : 10}
             xl={!details ? 8 : 10}
           >
             <div className={classes.searchProjectByTitle}>
@@ -126,21 +126,7 @@ const ProjectHeader = ({ loading, openLogTab }) => {
               ) : !projectList.length ? (
                 <Skeleton />
               ) : (
-                // <FormControl className={classes.search}>
-                //   <InputLabel id="Recherche-label">Recherche</InputLabel>
-                //   <Select
-                //     labelId="dRecherche-label"
-                //     id="recherche"
-                //     value={project.id}
-                //     label="Recherche"
-                //     name="search"
-                //     onChange={handleChangeSearch}
-                //   >
-                //     {projectList.map(projectName=>(
-                //       <MenuItem value={projectName.id}>{projectName.projectCustomId}</MenuItem>
-                //     ))}
-                //   </Select>
-                // </FormControl>
+
                 <Autocomplete
                   freeSolo
                   size="small"
@@ -168,47 +154,7 @@ const ProjectHeader = ({ loading, openLogTab }) => {
             </div>
           </Grid>
           <>
-            {/*
-          <Grid item xs={3} sm={3} md={3} lg={2} xl={1}>
-            <div className={`headerInfo ${!details ? "hidden" : "collapsed"}`}>
-              {project.prevPhase && (
-                <>
-                  Phase lié <br />
-                  <Link to={`/projects/${project?.prevPhase}`} target="_blank">
-                    {project?.project.name} {project?.project?.phase?.name}
-                  </Link>
-                </>
-              )}
-            </div>
-          </Grid>
-          */}
-            {/* <Grid item xs={3} sm={3} md={2} lg={1} xl={1}>
-            <div className={`headerInfo ${!details ? "hidden" : "collapsed"}`}>
-              {project?.priority !== undefined && (
-                <div
-                  onClick={edit ? changePriority : undefined}
-                  data-priority={getPriorityColor(project.priority)?.value}
-                  className={classes.priority}
-                >
-                  <div
-                    style={{
-                      backgroundColor: getPriorityColor(project.priority).code
-                    }}
-                    className="circle"
-                  ></div>
 
-                  {priorityChange && (
-                    <div className={classes.priorityUpdateContainer}>
-                      <PriorityField
-                        onChange={handleUpdatePriority}
-                        priority={getPriorityColor(project.priority).value}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </Grid> */}
           </>
           {!details && (
             <>
@@ -233,7 +179,7 @@ const ProjectHeader = ({ loading, openLogTab }) => {
                 </div>
               </Grid>
               {/* // lots */}
-              <Grid item xs={12} sm={12} md={2} lg={1} xl={1}>
+              <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                 <p className={classes.headerLots}>
                   {project.projectLots?.map(({ lot }, idx) => (
                     <span className="singleLot" key={idx}>
@@ -249,7 +195,7 @@ const ProjectHeader = ({ loading, openLogTab }) => {
             item
             xs={12}
             sm={12}
-            md={2}
+            md={1}
             lg={details ? 2 : 1}
             xl={details ? 2 : 1}
           >

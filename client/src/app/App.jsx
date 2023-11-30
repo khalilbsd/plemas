@@ -48,7 +48,8 @@ function App() {
       loadUserInfo();
     }
     // if (location !== displayLocation) setTransistionStage("fadeOut");
-  }, [dispatch, getAuthenticatedUserInfo, location, profile, userAccount, userObject, userObject.loading]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location, userObject.loading]);
   const renderRoutes = (urls) => {
     return urls.map(({ path, Component, nested }, key) => (
       <Route key={key} path={path} element={Component}>

@@ -10,6 +10,7 @@ export const projectDetails = createUseStyles({
     flexDirection: "column"
   },
   card: {
+    border:'none',
     position: "relative",
     backgroundColor: "var(--white)",
     borderRadius: 30,
@@ -771,6 +772,7 @@ export const projectTaskDetails = createUseStyles({
     }
   },
   list: {
+    border:'none',
     paddingTop: 10,
     "& .blocked": {
       opacity: 0.5
