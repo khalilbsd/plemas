@@ -100,7 +100,7 @@ const manageSlice = createSlice({
       const isFilteredBy = state.addProject.filterType.filter(
         ({ type }) => type === action.payload.attribute
       )[0];
-        console.log(isFilteredBy);
+
       if (!isFilteredBy) {
         state.addProject.filterType.push({
           type: action.payload.attribute,

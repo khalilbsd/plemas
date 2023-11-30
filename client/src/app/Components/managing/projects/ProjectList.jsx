@@ -143,10 +143,10 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         </p>
       );
     const taskInfoElement = tasksNb ? (
-      projectTasks(projectID)?.map((task, idx) => {
+      projectTasks(projectID)?.map(task => {
         return (
-          <div key={idx} className={classes.taskStates}>
-            <Tooltip key={idx} title={task?.name}>
+          <div key={task.id} className={classes.taskStates}>
+            <Tooltip key={task.id} title={task?.name}>
               <span>
               {task?.name}
               </span>
@@ -168,9 +168,9 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     let tasksNb = projectTasks(projectID)?.length;
     if (!tasksNb) return null;
     const taskStateElement = tasksNb ? (
-      projectTasks(projectID)?.map((task, idx) => {
+      projectTasks(projectID)?.map(task => {
         return (
-          <div key={idx} className={classes.taskStates}>
+          <div key={task.id} className={classes.taskStates}>
             <span className={`${tasksStyles.task} ${task.state} wb`}>
               {
                 TASK_STATE_TRANSLATION.filter(
@@ -195,7 +195,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     const convertedDates = convertTwoWeeksDates();
 
     // console.log(convertedDates);
-    const taskElements = projectTasks(projectID)?.map((task, idx) => {
+    const taskElements = projectTasks(projectID)?.map(task => {
       // Perform calculations here
       let { startDate, dueDate } = task;
       //converting dates
@@ -232,7 +232,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       return (
         <div
           data-date={task.dueDate}
-          key={idx}
+          key={task.id}
           style={{ width: width, transform: `translateX(${position}px)` }}
           className={classes.progressBarContainer}
         >
@@ -346,8 +346,8 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         </TableCell>
         <TableCell key={_index+2} className={classes.rowCell}>
           <div className={classes.lots}>
-            {row.lots.map((content,idx) => (
-              <p key={idx} className={classes.lot} label={content}>
+            {row.lots.map(content => (
+              <p key={content} className={classes.lot} label={content}>
                 {content}
               </p>
             ))}
@@ -372,10 +372,10 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   function fixedHeaderContent() {
     return (
       <TableRow className={classes.tableHead}>
-        {columns.map((column, idx) => (
+        {columns.map(column => (
           <TableCell
             className={classes.tableHeader}
-            key={idx}
+            key={column.headerName}
             variant="head"
             // align={column.numeric || false ? 'right' : 'left'}
             style={{ width: column.width }}
