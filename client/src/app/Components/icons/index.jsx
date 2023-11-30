@@ -8,6 +8,7 @@ import { ReactComponent as FaCancel } from "../../public/svgs/light/xmark.svg";
 import { ReactComponent as FaDelete } from "../../public/svgs/light/trash.svg";
 import { ReactComponent as FaCheck } from "../../public/svgs/light/check.svg";
 import { ReactComponent as FaPlus } from "../../public/svgs/light/plus.svg";
+import { ReactComponent as FaArrowDown } from "../../public/svgs/light/chevron-down.svg";
 
 
 
@@ -34,4 +35,7 @@ export const CustomCheckIcon = ({ className }) => (
 );
 export const CustomPlusIcon = ({ className }) => (
   <FaPlus className={className} /> // Customize the width and height as needed
+);
+export const CustomArrowDownIcon = ({ className }) => (
+  <FaArrowDown className={className} /> // Customize the width and height as needed
 );

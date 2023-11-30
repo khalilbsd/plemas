@@ -65,7 +65,7 @@ export const taskApi = api.injectEndpoints({
     }),
     downloadTaskFile: builder.mutation({
       query: ({url}) =>
-      (console.log(url),
+      (
         {
         url: url,
         method: 'GET',

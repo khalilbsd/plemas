@@ -11,7 +11,7 @@ import { Theme } from "./theme.tsx";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <React.StrictMode>
+    {/* <React.StrictMode> */}
       <ThemeProvider theme={Theme}>
 
       <BrowserRouter>
@@ -19,7 +19,7 @@ root.render(
         <App />
       </BrowserRouter>
       </ThemeProvider>
-    </React.StrictMode>
+    {/* </React.StrictMode> */}
   </Provider>
 );
 

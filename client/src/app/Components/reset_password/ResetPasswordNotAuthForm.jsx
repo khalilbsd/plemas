@@ -1,21 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { styles } from "./styles";
-import { styles as layoutStyles } from "../../reset_password/style";
 import { Grid, TextField } from "@mui/material";
 import { Box } from "@mui/system";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { ReactSVG } from "react-svg";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import {
   useResetPasswordWithTokenMutation,
   useVerifyResetPasswordTokenMutation
 } from "../../../store/api/auth/authentification";
-import { notify } from "../notification/notification";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
+import { styles as layoutStyles } from "../../reset_password/style";
 import Loading from "../loading/Loading";
-import { ToastContainer } from "react-toastify";
-import { ReactSVG } from "react-svg";
+import { notify } from "../notification/notification";
+import { styles } from "./styles";
 
-import faSadFace from '../../public/svgs/light/face-sad-tear.svg'
+import faSadFace from '../../public/svgs/light/face-sad-tear.svg';
 
 import faResetPassword from "../../public/svgs/solid/badge-check.svg";
 
@@ -49,7 +47,7 @@ const ResetPasswordNotAuthForm = () => {
       }
     }
     verifyToken();
-  }, []);
+  });
 
 //counter logic
 useEffect(() => {

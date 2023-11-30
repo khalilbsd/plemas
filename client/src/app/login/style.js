@@ -1,4 +1,3 @@
-import { textAlign } from "@mui/system";
 import { createUseStyles } from "react-jss";
 
 export const styles = createUseStyles({
@@ -55,7 +54,6 @@ export const styles = createUseStyles({
     textAlign:'left',
     width:'100%',
     marginBottom:5,
-    display:'block',
     fontSize: '0.875rem',
     lineHeight: '1.4375em',
 

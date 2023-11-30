@@ -61,6 +61,7 @@ const ProjectTasks = ({ openAddTask }) => {
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
   const [updateTask] = useUpdateTaskMutation();
+  // eslint-disable-next-line no-unused-vars
   const size = useWindowSize();
   // const [uploadFileToTask] = useUploadFileToTaskMutation();
   const classes = projectTaskDetails();

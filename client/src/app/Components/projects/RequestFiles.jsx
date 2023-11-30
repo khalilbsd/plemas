@@ -1,22 +1,21 @@
-import React, { useRef, useState } from "react";
 import fileDownload from "js-file-download";
+import React, { useRef, useState } from "react";
 
+import Tooltip from "@mui/material/Tooltip";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
-import PopUp from "../PopUp/PopUp.jsx";
-import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
-import faFolders from "../../public/svgs/light/folders.svg";
-import faPlus from "../../public/svgs/solid/plus.svg";
-import faFile from "../../public/svgs/solid/file.svg";
 import { ReactSVG } from "react-svg";
-import { projectTaskDetails } from "./style";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
-import { notify } from "../notification/notification.js";
-import { useDownloadTaskFileMutation } from "../../../store/api/tasks.api.js";
 import axios from "../../../store/api/base.js";
 import { useUploadFileToProjectRequestMutation } from "../../../store/api/requests.api.js";
-import { useDispatch } from "react-redux";
 import { updateFileRequestList } from "../../../store/reducers/project.reducer.js";
-import Tooltip from "@mui/material/Tooltip";
+import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
+import faFolders from "../../public/svgs/light/folders.svg";
+import faFile from "../../public/svgs/solid/file.svg";
+import faPlus from "../../public/svgs/solid/plus.svg";
+import PopUp from "../PopUp/PopUp.jsx";
+import { notify } from "../notification/notification.js";
+import { projectTaskDetails } from "./style";
 
 const RequestFiles = (props) => {
   const { files, requestID, isCreator } = props;

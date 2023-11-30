@@ -210,6 +210,7 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
       //to set initial intervenants list
       setIntervenants(taskIntervenants || []);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intervenantsDialog, projectID, taskId]);
 
   useEffect(() => {
@@ -235,6 +236,7 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
         loadTaskPotentialIntervenants(taskId);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intervenantsDialog]);
 
   const showIntervenantDetails = (intervenant) => {

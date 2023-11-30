@@ -16,12 +16,12 @@ import {
   setLinkingProject,
   setProjectList
 } from "../../store/reducers/manage.reducer";
+import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
+import { containsOnlySpaces } from "../../store/utils";
 import ProjectList from "../Components/managing/projects/ProjectList";
 import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import { projectsStyles } from "../Components/managing/style";
 import { notify } from "../Components/notification/notification";
-import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
-import { containsOnlySpaces } from "../../store/utils";
 
 const initialError = {
   filedName: undefined,
@@ -69,7 +69,6 @@ const ManageProjects = () => {
   const [newProject, setNewProject] = useState(newProjectInitialState);
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
-  const projectList = useGetStateFromStore("manage", "projectsList");
 const [creatingProject, setCreatingProject] = useState(false)
   //ADD hooks
   const [createProject] =
@@ -88,15 +87,16 @@ const [creatingProject, setCreatingProject] = useState(false)
   }
   useEffect(() => {
     // if (!projectList.length){
-      dispatch(filterProjectsList({ flag: false, value: "" }));
+      dispatch(filterProjectsList({ flag: false, value: "" ,attribute:'projectCustomId' }));
       loadProjects();
     // }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenAddForm = () => {
     if (addProjectForm) {
       setNewProject(newProjectInitialState);
-      dispatch(filterProjectsList({ flag: false, value: "" }));
+      dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
       const elements = document.querySelectorAll(".row-data");
       elements.forEach((element) => {
         element.classList.remove("active");
@@ -104,7 +104,7 @@ const [creatingProject, setCreatingProject] = useState(false)
       dispatch(setLinkedProject(null));
       dispatch(setLinkingProject(null));
     } else {
-      dispatch(filterProjectsList({ flag: true, value: "" }));
+      dispatch(filterProjectsList({ flag: false, value: "" ,attribute:'projectCustomId' }));
     }
 
     setAddProjectForm((prevState) => !prevState);
@@ -160,7 +160,7 @@ const [creatingProject, setCreatingProject] = useState(false)
     try {
       setCreatingProject(true)
       const {
-        code: { value: codeValue },
+        // code: { value: codeValue },
         name: { value: nameValue },
         startDate: { value: startDateValue },
         manager: { value: managerValue },

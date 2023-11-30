@@ -68,3 +68,7 @@
 {"projectID":29,"taskName":null,"requestName":"yess ","email":"houssem.badr@gmail.com","action":"REQUEST_UPDATE","code":112,"action_date":"28/11/2023","oldValues":"request  1 ahahahahah , ","newValues":"yess , "}
 {"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"REQUEST_STATE_CHANGED","code":115,"action_date":"28/11/2023"}
 {"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"REQUEST_STATE_CHANGED","code":115,"action_date":"28/11/2023","state":"non traité"}
+{"projectID":1,"taskName":"Évaluation des Normes Locales ","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"28/11/2023","date":"28/11/2023","hours":3}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"28/11/2023","oldValues":"blocked, ","newValues":"done, "}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"REQUEST_STATE_CHANGED","code":115,"action_date":"28/11/2023","state":"traité"}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"REQUEST_STATE_CHANGED","code":115,"action_date":"28/11/2023","state":"non traité"}

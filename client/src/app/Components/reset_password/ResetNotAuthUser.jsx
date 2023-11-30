@@ -1,12 +1,10 @@
-import React, { useRef, useState } from "react";
-import { styles } from "./styles";
 import { Grid, TextField } from "@mui/material";
-import ResetPassword from "../../reset_password/ResetPassword";
-import { useRequestResetPasswordMutation } from "../../../store/api/auth/authentification";
-import { notify } from "../notification/notification";
+import React, { useRef, useState } from "react";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
+import { useRequestResetPasswordMutation } from "../../../store/api/auth/authentification";
 import Loading from "../loading/Loading";
-import { ToastContainer } from "react-toastify";
+import { notify } from "../notification/notification";
+import { styles } from "./styles";
 
 const ResetNotAuthUser = ({ handleSuccess, handleFailure }) => {
   const emailRef = useRef();

@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { addUserFormStyles, projectsStyles } from '../../style'
 import { TextField } from '@mui/material'
-import { filterProjectsList } from '../../../../../store/reducers/manage.reducer'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useGetStateFromStore from '../../../../../hooks/manage/getStateFromStore'
+import { filterProjectsList } from '../../../../../store/reducers/manage.reducer'
+import { addUserFormStyles } from '../../style'
 
 const LinkProject = ({label,className,color,size}) => {
     const externalClasses = addUserFormStyles()
@@ -14,9 +14,9 @@ const LinkProject = ({label,className,color,size}) => {
 
         setPhase(e.target.value)
         if (e.target.value){
-          dispatch(filterProjectsList({flag:true,value:e.target.value}))
+          dispatch(filterProjectsList({flag:true,value:e.target.value,attribute:'projectCustomId'}))
         }else{
-          dispatch(filterProjectsList({flag:false,value:""}))
+          dispatch(filterProjectsList({flag:false,value:"",attribute:'projectCustomId'}))
 
         }
       }
