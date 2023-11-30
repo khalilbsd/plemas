@@ -1,4 +1,3 @@
-import { height, minHeight } from "@mui/system";
 import { createUseStyles } from "react-jss";
 
 export const styles = createUseStyles({
@@ -98,7 +97,7 @@ export const styles = createUseStyles({
     padding: "5px 0",
     borderRadius: 50,
     height: 30,
-    textDecoration: "none",
+
     fontWeight: 600,
     transition: "0.3s all ease-in-out",
     textDecoration:'underline',
@@ -163,7 +162,6 @@ export const styles = createUseStyles({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-    borderRadius: 10,
     overflow: "hidden",
     boxShadow: "0px 4px 31px 0px rgba(0,0,0,0.3)",
 
@@ -201,7 +199,7 @@ export const styles = createUseStyles({
     backgroundColor: "var(--orange)",
     "& svg": {
       width: 18,
-      height: 18,
+      // height: 18,
       height: "80%",
       fill: "var(--white)"
     },
