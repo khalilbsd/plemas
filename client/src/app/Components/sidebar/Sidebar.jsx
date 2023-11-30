@@ -47,6 +47,7 @@ const SidebarComponent = () => {
 
   return (
     <Sidebar
+    transitionDuration={100}
       breakPoint="md"
       className={`${classes.sidebar} ${collapse ? "collapsed" : "opened"} ${
         hovered ? "showCase" : ""
