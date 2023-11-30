@@ -114,9 +114,13 @@ const ProjectFilters = () => {
     );
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const managers = useMemo(() => selectManagers(), [projects]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const states = useMemo(() => selectStates(), [projects]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const lots = useMemo(() => selectLots(), [projects]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const phase = useMemo(() => selectPhases(), [projects]);
 
   const filters = [

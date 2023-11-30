@@ -1,13 +1,12 @@
-import React, { useRef, useState } from "react";
-import { styles } from "./styles";
 import { Grid, TextField } from "@mui/material";
+import React, { useRef, useState } from "react";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import {
   useCheckCurrentPasswordMutation,
   useResetUserPasswordMutation
 } from "../../../store/api/auth/authentification";
 import { notify } from "../notification/notification";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
-import { ToastContainer } from "react-toastify";
+import { styles } from "./styles";
 
 const ResetAuthUser = ({handleSuccess,handleFailure}) => {
   const classes = styles();
@@ -19,9 +18,9 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
     error: false,
     message: ""
   });
-  const [checkCurrentPassword, { isLoading }] =
+  const [checkCurrentPassword] =
     useCheckCurrentPasswordMutation();
-  const [resetUserPassword, {}] = useResetUserPasswordMutation();
+  const [resetUserPassword] = useResetUserPasswordMutation();
 
   const handleSubmit = async (e) => {
     try {

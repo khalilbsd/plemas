@@ -51,6 +51,7 @@ const ProjectDetails = () => {
       setLoadingPage(false);
     }, 500);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenTaskAdd = () => {
@@ -75,7 +76,7 @@ useEffect(() => {
     loadProjectLog()
 
   }
-}, [openLog,projectID,projectGetLog])
+}, [openLog, projectID, projectGetLog, dispatch])
 
 
   if (isLoading || loadingPage)

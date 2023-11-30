@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import useGetAuthenticatedUser from "../../hooks/authenticated";
-import Loading from "../Components/loading/Loading";
-import { useNavigate, useParams } from "react-router";
-import ErrorConfirmationAuthedUser from "../Components/confirmation/ErrorConfirmationAuthedUser";
-import { useVerifyTokenConfirmationMutation } from "../../store/api/users.api";
-import { useDispatch } from "react-redux";
-import { notify } from "../Components/notification/notification";
-import { NOTIFY_ERROR } from "../../constants/constants";
 import { Grid, TextField } from "@mui/material";
 import { Box } from "@mui/system";
-import { styles } from "./styles";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { NOTIFY_ERROR } from "../../constants/constants";
+import useGetAuthenticatedUser from "../../hooks/authenticated";
 import { useChangePasswordMutation } from "../../store/api/auth/authentification";
+import { useVerifyTokenConfirmationMutation } from "../../store/api/users.api";
+import ErrorConfirmationAuthedUser from "../Components/confirmation/ErrorConfirmationAuthedUser";
+import Loading from "../Components/loading/Loading";
+import { notify } from "../Components/notification/notification";
+import { styles } from "./styles";
 
 const AuthConfirmation = () => {
   const user = useGetAuthenticatedUser();
@@ -23,7 +22,7 @@ const AuthConfirmation = () => {
   const navigate = useNavigate();
   const [verifyTokenConfirmation, { isLoading }] =
     useVerifyTokenConfirmationMutation();
-  const [changePassword, {}] = useChangePasswordMutation();
+  const [changePassword] = useChangePasswordMutation();
   const params = useParams();
   useEffect(() => {
     async function verify() {
@@ -39,6 +38,7 @@ const AuthConfirmation = () => {
     setError({ state: false, message: "" });
     if (user.isAuthenticated) return setErrorAuthed(true);
     verify();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.loading]);
 
   const handleSubmit = async (e) => {

@@ -4,12 +4,18 @@ import { useNavigate } from "react-router";
 import { ReactSVG } from "react-svg";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
-import { listStyle, projectsStyles } from "../style";
+import { projectsStyles } from "../style";
 // import { projectTestList } from "./test/projectList.test";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
-import { DataGrid, GridActionsCellItem, frFR } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
+import { TableVirtuoso } from "react-virtuoso";
 import {
   TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
@@ -18,22 +24,11 @@ import {
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
 import faAdd from "../../../public/svgs/solid/plus.svg";
-import CustomNoRowsOverlay from "../../NoRowOverlay/CustomNoRowsOverlay";
-import CustomDataGridHeaderColumnMenu from "../../customDataGridHeader/CustomDataGridHeaderColumnMenu";
-import CustomDataGridToolbar from "../../customDataGridToolbar/CustomDataGridToolbar";
 import { CustomCancelIcon, CustomPlusIcon } from "../../icons";
 import { projectTaskDetails } from "../../projects/style";
 import LinkProject from "./addProject/LinkProject";
 import { priorityColors } from "./addProject/PriorityField";
 import ProjectFilters from "./filter/ProjectFilters";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { TableVirtuoso } from "react-virtuoso";
 
 const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const classes = projectsStyles();
@@ -47,7 +42,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const addProjectState = useGetStateFromStore("manage", "addProject");
   const [projectToCollapse, setProjectToCollapse] = useState(undefined);
   const navigate = useNavigate();
-  const listClasses = listStyle();
+
   // const [emptyMessage, setEmptyMessage] = useState("");
 
   const dispatch = useDispatch();

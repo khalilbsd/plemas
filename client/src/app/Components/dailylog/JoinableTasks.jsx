@@ -1,12 +1,11 @@
 import React from "react";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import { dailyLogStyle } from "../../dailylog/style";
-import TaskItem from "./TaskItem";
-import { useAssociateToTaskMutation } from "../../../store/api/tasks.api";
-import { notify } from "../notification/notification";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import { useDispatch } from "react-redux";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
+import { useAssociateToTaskMutation } from "../../../store/api/tasks.api";
 import { updateUserPotentialTasks } from "../../../store/reducers/task.reducer";
+import { notify } from "../notification/notification";
+import TaskItem from "./TaskItem";
 
 const JoinableTasks = () => {
   const dispatch = useDispatch()

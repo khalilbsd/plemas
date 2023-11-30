@@ -4,20 +4,17 @@ import { useDispatch } from "react-redux";
 
 import Loading from "../Components/loading/Loading";
 
+import useGetAuthenticatedUser from "../../hooks/authenticated";
 import { useGetAuthenticatedUserInfoMutation } from "../../store/api/users.api";
 import { setUserInfo } from "../../store/reducers/user.reducer";
-import useGetAuthenticatedUser from "../../hooks/authenticated";
-import { styles } from "./style";
-import { ToastContainer, toast } from "react-toastify";
-import BottomLayout from "../Components/profile/BottomLayout";
-import TopLayout from "../Components/profile/TopLayout";
 import SideLayoutInfo from "../Components/profile/SideLayoutInfo";
 import SideLayoutMain from "../Components/profile/SideLayoutMain";
+import { styles } from "./style";
 
 const UserProfile = () => {
   const classes = styles();
-  const { user, loading, isAuthenticated } = useGetAuthenticatedUser();
-  const [getAuthenticatedUserInfo, { isLoading }] =
+  const { user, loading } = useGetAuthenticatedUser();
+  const [getAuthenticatedUserInfo] =
     useGetAuthenticatedUserInfoMutation();
 
   const dispatch = useDispatch();
@@ -36,6 +33,7 @@ const UserProfile = () => {
       }
     }
     loadUserInfo();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   if (loading) return <Loading />;

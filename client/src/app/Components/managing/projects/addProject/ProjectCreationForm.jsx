@@ -99,6 +99,7 @@ const ProjectCreationForm = ({
       loadPhasesAndLots();
       loadPotentielManagers();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
     formOpen

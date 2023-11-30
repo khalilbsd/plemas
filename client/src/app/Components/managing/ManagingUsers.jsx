@@ -1,10 +1,9 @@
 import { Grid, MenuItem, Select, Switch } from "@mui/material";
 import {
-  GridRowModes,
   DataGrid,
-  GridToolbarContainer,
   GridActionsCellItem,
-  GridRowEditStopReasons
+  GridRowEditStopReasons,
+  GridRowModes
 } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -31,18 +30,18 @@ import {
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE
 } from "../../../constants/roles";
+import { useResetUserEmailMutation } from "../../../store/api/auth/authentification.js";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faAddUser from "../../public/svgs/light/user-plus.svg";
 import PopUp from "../PopUp/PopUp.jsx";
-import { notify } from "../notification/notification";
-import AddUserForm from "./AddUserForm";
-import { listStyle } from "./style";
 import {
   CustomCancelIcon,
   CustomEditIcon,
   CustomSaveIcon
 } from "../icons/index.jsx";
-import { useResetUserEmailMutation } from "../../../store/api/auth/authentification.js";
+import { notify } from "../notification/notification";
+import AddUserForm from "./AddUserForm";
+import { listStyle } from "./style";
 
 // ];
 

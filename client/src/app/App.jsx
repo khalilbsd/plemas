@@ -7,7 +7,7 @@ import {
   publicUrls
 } from "./routes/urls";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import useGetAuthenticatedUser from "../hooks/authenticated";
@@ -25,7 +25,7 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { user: userAccount, profile } = useGetUserInfo();
-  const [getAuthenticatedUserInfo, {}] =
+  const [getAuthenticatedUserInfo] =
     useGetAuthenticatedUserInfoMutation();
 
   useEffect(() => {
@@ -48,7 +48,7 @@ function App() {
       loadUserInfo();
     }
     // if (location !== displayLocation) setTransistionStage("fadeOut");
-  }, [location, userObject.loading]);
+  }, [dispatch, getAuthenticatedUserInfo, location, profile, userAccount, userObject, userObject.loading]);
   const renderRoutes = (urls) => {
     return urls.map(({ path, Component, nested }, key) => (
       <Route key={key} path={path} element={Component}>

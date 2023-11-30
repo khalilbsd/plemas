@@ -11,14 +11,14 @@ import { notify } from "../notification/notification";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import LatestTasksList from "./LatestTasksList";
 import { useDispatch } from "react-redux";
-import { setUserInfo, updateUserInfoProfile } from "../../../store/reducers/user.reducer";
+import { updateUserInfoProfile } from "../../../store/reducers/user.reducer";
+import LatestTasksList from "./LatestTasksList";
 const BottomLayout = () => {
   const classes = styles();
   const { user, profile } = useGetUserInfo();
 
-  const [updateUserProfile, {}] = useUpdateUserProfileMutation();
+  const [updateUserProfile] = useUpdateUserProfileMutation();
 
   //profile Ref attributes
   const nameRef = useRef();

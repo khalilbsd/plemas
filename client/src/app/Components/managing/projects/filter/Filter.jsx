@@ -1,17 +1,12 @@
+import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
 import React from "react";
 import { filterStyles } from "./style";
-import InputLabel from "@mui/material/InputLabel";
-import Box from "@mui/material/Box";
-import { CustomArrowDownIcon } from "../../../icons";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
 
 const Filter = (props) => {
-  const { items, handleChange, value, filterType, label } = props;
+  const { items, handleChange, filterType, label } = props;
   const classes = filterStyles();
 
   const getInitials = (fullName) => {

@@ -2,7 +2,7 @@ import { TextField } from "@mui/material";
 import React from "react";
 import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
 import Loading from "../../../loading/Loading";
-import { addUserFormStyles, projectsStyles } from "../../style";
+import { addUserFormStyles } from "../../style";
 
 const SearchProjectCode = ({
   codeRef,
@@ -11,7 +11,7 @@ const SearchProjectCode = ({
   getErrorMessage
 }) => {
   const projectState = useGetStateFromStore("manage", "addProject");
-  const classes = projectsStyles();
+
   const externalClasses = addUserFormStyles();
 
   return (

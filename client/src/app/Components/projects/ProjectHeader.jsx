@@ -1,11 +1,9 @@
 import {
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Skeleton
+  Skeleton,
+  TextField
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
@@ -26,8 +24,6 @@ import faCancel from "../../public/svgs/light/xmark.svg";
 import { notify } from "../notification/notification";
 import ProjectInfo from "./ProjectInfo";
 import { projectDetails } from "./style";
-import Autocomplete from "@mui/material/Autocomplete";
-import { TextField } from "@mui/material";
 const ProjectHeader = ({ loading, openLogTab }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
