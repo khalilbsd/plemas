@@ -1,17 +1,15 @@
-import React, { useState } from "react";
-import { styles } from "./style";
 import { Box } from "@mui/system";
-import { Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { ReactSVG } from "react-svg";
 import useGetAuthenticatedUser from "../../hooks/authenticated";
 import Loading from "../Components/loading/Loading";
 import ResetAuthUser from "../Components/reset_password/ResetAuthUser";
 import ResetNotAuthUser from "../Components/reset_password/ResetNotAuthUser";
-import { ReactSVG } from "react-svg";
 import faResetSuccess from "../public/svgs/light/shield-check.svg";
 import faVerified from "../public/svgs/solid/badge-check.svg";
-import { Link } from "react-router-dom";
 import faChevronLeft from "../public/svgs/solid/chevron-left.svg";
-import { ToastContainer } from "react-toastify";
+import { styles } from "./style";
 const ResetPassword = () => {
   const classes = styles();
   const user = useGetAuthenticatedUser();

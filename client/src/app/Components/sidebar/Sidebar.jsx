@@ -26,10 +26,13 @@ const SidebarComponent = () => {
     clearTimeout(hoverTimeout);
     clearTimeout(leaveTimeout);
 
-    hoverTimeout = setTimeout(() => {
-      setHovered(true);
-      handleCollapse();
-    }, removeHoverExecuted ? 500 : 0);
+    hoverTimeout = setTimeout(
+      () => {
+        setHovered(true);
+        handleCollapse();
+      },
+      removeHoverExecuted ? 500 : 0
+    );
   };
 
   const handleRemoveHover = () => {

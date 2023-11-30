@@ -50,7 +50,7 @@ function useGetAuthenticatedUser() {
     }
 
     getUser();
-  }, [refetchFlag]); // Listen for changes in refetchFlag
+  }, [refetchFlag,dispatch]); // Listen for changes in refetchFlag
 
   // Define the refetch function
   const refetch = () => {

@@ -12,7 +12,7 @@ var shouldRenderSidebar = !exceptPathSidebar.includes(location.pathname);
 if (!shouldRenderSidebar) return shouldRenderSidebar
 const similarPath=location.pathname.split('/')[1]
 
-var shouldRenderSidebar = !(exceptPathSidebar.map((path)=>path.includes(similarPath))).includes(true)
+shouldRenderSidebar = !(exceptPathSidebar.map((path)=>path.includes(similarPath))).includes(true)
 
 
 return shouldRenderSidebar

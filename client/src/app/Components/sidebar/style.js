@@ -2,28 +2,39 @@ import { createUseStyles } from "react-jss";
 
 export const styles = createUseStyles({
   sidebar: {
-    width: '20%',
-    height: "calc(100% - 40px)",
-    transition:'all 0.3s ease-in-out',
+    width: "100%",
+    height: "100%",
+    // transition: "all 0.3s ease-in-out",
 
-    '&.opened.showCase':{
+    "&.opened.showCase": {
       height: "calc(100% - 40px)",
-      position: 'absolute',
-    zIndex: 9999,
-    border: 'none',
-    width: 300
+      position: "absolute",
+      zIndex: 9999,
+      border: "none",
+      width: 300
     },
-    '&.ps-collapsed':{
-      width:60
+    "& .ps-sidebar-container": {
+
+      display: "flex",
+      padding: "10px 0",
+      flexDirection: "column",
+      borderRadius: 30,
+      height:'calc(100% - 20px)',
+      background:
+        "linear-gradient(0deg,  var(--light-green)  5%, var(--dark-green) 100%)"
+    },
+
+    "&.ps-collapsed": {
+      width: 60
     },
     "&:not(.ps-collapsed)": {
-        height:'100%',
+      height: "100%",
       "& $sidebarHeader": {
-        justifyContent:'space-between'
+        justifyContent: "space-between"
       },
       "& .ps-sidebar-container": {
         padding: 10,
-        height: 'calc(100% - 20px)',
+        height: "calc(100% - 20px)",
 
       },
       "& .bars-icon": {
@@ -33,42 +44,27 @@ export const styles = createUseStyles({
         "& .ps-menu-icon": {
           width: 52,
           height: 52,
-          marginRight:10
+          marginRight: 10
         },
         "& .ps-menu-label": {
           display: "block",
-          width :'calc(100% - 52px - 10px)'
+          width: "calc(100% - 52px - 10px)"
         }
       },
       "& $profileImageContainer": {
         width: 52,
         height: 52,
-        fontSize:24,
-
+        fontSize: 24
       }
     },
 
-    "& .ps-sidebar-container": {
-
-      transition: "0.3s all ease-in-out",
-      display: "flex",
-      padding: "20px 0",
-      flexDirection: "column",
-      // justifyContent: "space-between",
-      borderRadius: 30,
-      // background: "rgb(10,82,59)",
-      // background: 'linear-gradient(315deg, rgba(10,82,59,1) 0%, rgba(23,145,127,1) 100%)'
-      background:
-        "linear-gradient(0deg,  var(--light-green)  5%, var(--dark-green) 100%)"
-    },
 
   },
-  sideBarContent:{
-      justifyContent: "space-between",
-      display: "flex",
-      height:'calc(100% - 40px)',
-      flexDirection: "column",
-
+  sideBarContent: {
+    justifyContent: "space-between",
+    display: "flex",
+    height: "calc(100% - 40px)",
+    flexDirection: "column"
   },
 
   sidebarHeader: {
@@ -80,9 +76,8 @@ export const styles = createUseStyles({
     justifyContent: "center",
     gap: 20,
     padding: "0 10px",
-    paddingBottom:10,
+    paddingBottom: 10,
     position: "relative",
-
 
     "&:after": {
       content: '""',
@@ -95,15 +90,15 @@ export const styles = createUseStyles({
       height: 1
     }
   },
-  imageContainer:{
-    padding:5,
-    width:130,
-    background:'var(--white)',
+  imageContainer: {
+    padding: 5,
+    width: 130,
+    background: "var(--white)",
     borderRadius: 10,
     "& img": {
       width: "100%"
       // height:'100%'
-    },
+    }
   },
   bars: {
     padding: 0,
@@ -131,8 +126,8 @@ export const styles = createUseStyles({
     fontWeight: 500,
     color: "var(--white)",
     textTransform: "capitalize",
-    '&.logout':{
-      textTransform:'none'
+    "&.logout": {
+      textTransform: "none"
     },
     fontSize: 14,
     transition: "0.3s all ease-in-out",
@@ -165,12 +160,12 @@ export const styles = createUseStyles({
       fontSize: 16,
       fontWeight: 600,
       margin: 0,
-      textWrap:'wrap',
-      whiteSpace:'normal'
+      textWrap: "wrap",
+      whiteSpace: "normal"
     },
     "& .role": {
       margin: 0,
-      fontSize:14
+      fontSize: 14
     },
     "& a": {
       height: "fit-content !important",
@@ -186,17 +181,17 @@ export const styles = createUseStyles({
       // border: "3px solid var(--orange)",
       // padding: 3,
       borderRadius: "100%",
-      margin:0
+      margin: 0
     }
   },
   profileImageContainer: {
     // width:72,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    fontWeight:600,
-    fontSize:16,
-    backgroundColor:'var(--light-green)',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: 600,
+    fontSize: 16,
+    backgroundColor: "var(--light-green)",
     height: "100%",
     borderRadius: "100%",
     overflow: "hidden",

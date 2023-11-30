@@ -146,7 +146,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       projectTasks(projectID)?.map((task, idx) => {
         return (
           <div key={idx} className={classes.taskStates}>
-            <Tooltip title={task?.name}>
+            <Tooltip key={idx} title={task?.name}>
               <span>
               {task?.name}
               </span>
@@ -257,7 +257,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     // console.log(tasks);
     if (tasksNb > 1 && !isProjectCollapsed(projectID)) {
       renderActions.push(
-        <Tooltip title="voir plus tache">
+        <Tooltip key={`${projectID}-exp`} title="voir plus tache">
           <button
             onClick={() => setProjectToCollapse(projectID)}
             className={classes.seeMoreBtn}
@@ -268,7 +268,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       );
     } else if (tasksNb > 1) {
       renderActions.push(
-        <Tooltip title="voir plus tache">
+        <Tooltip key={`${projectID}-hid`} title="voir plus tache">
           <button
             onClick={() => setProjectToCollapse(undefined)}
             className={classes.seeMoreBtn}
@@ -308,8 +308,8 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   function rowContent(_index, row) {
     return (
       <React.Fragment>
-        <TableCell className={classes.rowCell} component="th" scope="row">
-        <Tooltip title={row?.projectCustomId}>
+        <TableCell key={_index} className={classes.rowCell} component="th" scope="row">
+        <Tooltip  key={_index} title={row?.projectCustomId}>
             <p className={classes.projectName}>
               <span
                 className="priority"
@@ -322,7 +322,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             </p>
           </Tooltip>
         </TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell key={_index+1} className={classes.rowCell}>
           {row.manager.image ? (
             <div className={classes.managerContainer}>
               <img
@@ -344,7 +344,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             </div>
           )}
         </TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell key={_index+2} className={classes.rowCell}>
           <div className={classes.lots}>
             {row.lots.map((content,idx) => (
               <p key={idx} className={classes.lot} label={content}>
@@ -353,17 +353,17 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             ))}
           </div>
         </TableCell>
-        <TableCell className={classes.rowCell}>{row?.activePhase}</TableCell>
+        <TableCell  key={_index+3}className={classes.rowCell}>{row?.activePhase}</TableCell>
         <TableCell className={classes.rowCell}>
           {renderProjectTasks(row.id)}
         </TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell  key={_index+4}className={classes.rowCell}>
           {renderTasksStates(row.id)}
         </TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell  key={_index+5}className={classes.rowCell}>
           {renderTaskTimeLine(row.id)}
         </TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell sx={{width:60}}  key={_index+6}className={classes.rowCell}>
           {renderSeeMoreTaskBtn(row.id)}
         </TableCell>
       </React.Fragment>
@@ -409,7 +409,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         </TableCell>
         <TableCell
           className={classes.tableHeader}
-          sx={{ width: 40 }}
+          sx={{ width: 60 }}
         ></TableCell>
       </TableRow>
     );

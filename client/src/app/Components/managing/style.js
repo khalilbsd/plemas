@@ -326,7 +326,8 @@ export const projectsStyles = createUseStyles({
   },
   progressBarContainer: {
     height: 32,
-    display: "flex"
+    display: "flex",
+    maxWidth: "100%",
   },
   progressBar: {
     paddingLeft: 10,

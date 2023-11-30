@@ -23,7 +23,7 @@
   min-height: 100vh;
   background: var(--app-bg-color);
   display: flex;
-  gap: 10px;
+  /* gap: 10px; */
   color: var(--black)
 }
 

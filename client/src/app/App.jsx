@@ -23,8 +23,6 @@ function App() {
   const userObject = useGetAuthenticatedUser();
   const shouldRenderSidebar = useRenderLocation();
   const location = useLocation();
-  const [displayLocation, setDisplayLocation] = useState(location);
-  const [transitionStage, setTransistionStage] = useState("fadeIn");
   const dispatch = useDispatch();
   const { user: userAccount, profile } = useGetUserInfo();
   const [getAuthenticatedUserInfo, {}] =
@@ -50,7 +48,7 @@ function App() {
       loadUserInfo();
     }
     // if (location !== displayLocation) setTransistionStage("fadeOut");
-  }, [location, displayLocation, userObject.loading]);
+  }, [location, userObject.loading]);
   const renderRoutes = (urls) => {
     return urls.map(({ path, Component, nested }, key) => (
       <Route key={key} path={path} element={Component}>
@@ -70,13 +68,8 @@ function App() {
 
   return (
     <div
-      className={`App ${transitionStage}`}
-      onAnimationEnd={() => {
-        if (transitionStage === "fadeOut") {
-          setTransistionStage("fadeIn");
-          setDisplayLocation(location);
-        }
-      }}
+      className={`App`}
+
     >
       {shouldRenderSidebar && (
         <div className="sidebar-container">
