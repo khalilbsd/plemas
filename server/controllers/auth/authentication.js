@@ -12,6 +12,7 @@ import { catchAsync } from "../../Utils/catchAsync.js";
 import { config } from "../../environment.config.js";
 import logger from "../../log/config.js";
 import { send } from "../../mails/config.js";
+
 import ResetPasswordToken from "../../models/users/ResetPasswordToken.model.js";
 import User from "../../models/users/User.model.js";
 import {
@@ -196,7 +197,39 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
 
 
 
+export const changeUserEmail = catchAsync(async(req,res,next)=>{
+  const {oldEmail,newEmail} = req.body
+  if (!oldEmail || !newEmail) return next(new AppError("Vous pouvez pas changer l'email du l'utilisateur sans l'ancien adresse email",401))
+  const user = await User.findOne({where:{email:oldEmail}})
+if (!user) return next (new AppError("utilisateur introuvable",400))
+const isValid = await User.findOne({where:{email:newEmail}})
+if (isValid) return next (new AppError("email existant",400))
+user.email =newEmail
+const token = await createPasswordSetToken();
+user.token = token
+user.password = null
+await user.save()
+//sending
+if (user.token) {
+  logger.info(`sending email confirmation for user ${user.id}`);
+  const url = `http://${config.lms_host}/auth/account/confirmation/${user.token}`;
+  try {
+    await send({
+      template: "account_verification_token",
+      to: user.email,
+      subject: `Account Verification Link (valid for ${
+        config.verify_token_expires_in / 60000
+      } min)`,
+      args: { url }
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
+}
+return res.status(200).json({message:"email  a été modifiée et lui envoyer un email"})
+
+})
 
 
 

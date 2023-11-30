@@ -44,6 +44,10 @@ export const btnStyle = createUseStyles({
   }
 });
 export const listStyle = createUseStyles({
+  icon: {
+    width: 18,
+    height: 18
+  },
   safeLabel: {
     fontWeight: 600,
     fontSize: 14,
@@ -122,8 +126,8 @@ export const listStyle = createUseStyles({
         // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
         background: "var(--pastel-green)"
       },
-      "& .MuiDataGrid-virtualScrollerContent":{
-        height:'100% !important'
+      "& .MuiDataGrid-virtualScrollerContent": {
+        height: "100% !important"
       }
     },
     "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
@@ -132,7 +136,6 @@ export const listStyle = createUseStyles({
       border: "none !important"
     },
     "&.integrated": {
-
       overflow: "visible !important",
       "& .MuiDataGrid-main": {
         overflow: "visible"
@@ -279,17 +282,19 @@ export const projectsStyles = createUseStyles({
     textWrap: "nowrap",
     whiteSpace: "nowrap",
     position: "relative",
-    width: 50,
-    height: 50,
-    display:'flex',
-    alignItems:'flex-end'
+    width: 40,
+    minWidth: 40,
+    height: 40,
+    display: "flex",
+    alignItems: "flex-end"
   },
   dateTitle: {
-   lineHeight:'40px',
-   margin:0,
+    // lineHeight: "40px",
+    margin: 0,
     fontSize: 12,
     textWrap: "nowrap",
     whiteSpace: "nowrap",
+    // width:'100%',
     // margin: "0 -100%",
     "&.disabled": { opacity: 0.5 }
   },
@@ -317,35 +322,20 @@ export const projectsStyles = createUseStyles({
       // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
       background: "var(--pastel-green)"
     },
-    "& .row-data": {
-      display: "flex",
-      padding: "5px 0",
-      margin: "5px 0",
-      width: "100%",
-      borderRadius: 10,
-      justifyContent: "space-between",
-      transition: "all 0.3s ease-in-out",
-      alignItems: "center",
-      "&:hover": {
-        backgroundColor: "var(--app-bg-color)"
-      },
-      "&.active": {
-        backgroundColor: "var(--pastel-green)"
-        // color:'var(--white)'
-      }
-    }
+
   },
   progressBarContainer: {
     height: 32,
     display: "flex"
   },
   progressBar: {
-    paddingLeft:10,
-    fontWeight:600,
+    paddingLeft: 10,
+    fontWeight: 600,
     height: 20,
     borderRadius: 5,
+    textWrap: "nowrap",
     backgroundColor: "var(--bright-orange)",
-    width: "100%",
+    width: "calc(100% - 10px)",
     "&.empty": {
       backgroundColor: "var(--app-bg-color)"
     }
@@ -374,7 +364,6 @@ export const projectsStyles = createUseStyles({
     gap: 10,
     alignItems: "center",
     "& button.add-project": {
-
       backgroundColor: "unset",
       border: "none",
       borderRadius: "100%",
@@ -617,10 +606,10 @@ export const projectsStyles = createUseStyles({
   },
   taskStates: {
     height: 32,
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    fontWeight:600
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    fontWeight: 600
   },
   projectName: {
     margin: 0,
@@ -638,16 +627,78 @@ export const projectsStyles = createUseStyles({
 
   task: {
     borderLeft: "1px solid var(--app-bg-color)",
-    paddingLeft: 5 ,
-    width:'90%'
+    paddingLeft: 5,
+    width: "90%"
   },
   emptyTasks: {
     margin: 0,
     color: "var(--bright-orange)",
     whiteSpace: "normal"
   },
-  lot:{
-    margin:0,
-    marginRight:5
+  lot: {
+    margin: 0,
+    marginRight: 5
+  },
+  table: {
+    width: "100%",
+    "&::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px"
+    },
+
+    "&::-webkit-scrollbar-track": {
+      WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+      borderRadius: "10px"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      borderRadius: "10px",
+      // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+      background: "var(--dark-green)"
+    },
+    "& .row-data": {
+
+      width: "100%",
+      borderRadius: 10,
+
+      transition: "all 0.3s ease-in-out",
+
+      "&:hover": {
+        backgroundColor: "var(--app-bg-color) !important"
+      },
+      "&.active": {
+        backgroundColor: "var(--pastel-green) !important"
+        // color:'var(--white)'
+      }
+    }
+  },
+  tableHead: {
+    backgroundColor: "var(--light-green)",
+    color: "var(--white)"
+  },
+  tableHeader: {
+    color: "var(--white) !important",
+    fontWeight: "600 !important",
+
+    padding:'0 10px !important',
+
+  },
+  seeMoreBtn:{
+    width:32,
+    height:32,
+    borderRadius:'100%',
+    border:'none',
+    background:'var(--orange)',
+    '& svg':{
+      fill:'var(--white)'
+    }
+  },
+  rowCell:{
+    padding:'10px 10px !important',
+    border:'none !important'
+  },
+  lots:{
+    display:'flex',
+    fontWeight:600,
+    gap:2
   }
 });

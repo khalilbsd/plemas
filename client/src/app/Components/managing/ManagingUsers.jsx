@@ -1,10 +1,11 @@
+import { Grid, MenuItem, Select, Switch } from "@mui/material";
 import {
-  Grid,
-  MenuItem,
-  Select,
-  Switch
-} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+  GridRowModes,
+  DataGrid,
+  GridToolbarContainer,
+  GridActionsCellItem,
+  GridRowEditStopReasons
+} from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useGetUsersList from "../../../hooks/manage/usersList";
@@ -36,6 +37,12 @@ import PopUp from "../PopUp/PopUp.jsx";
 import { notify } from "../notification/notification";
 import AddUserForm from "./AddUserForm";
 import { listStyle } from "./style";
+import {
+  CustomCancelIcon,
+  CustomEditIcon,
+  CustomSaveIcon
+} from "../icons/index.jsx";
+import { useResetUserEmailMutation } from "../../../store/api/auth/authentification.js";
 
 // ];
 
@@ -59,16 +66,23 @@ const ManagingUsers = () => {
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [newUser, setNewUser] = useState(newUserInitialState);
   const [addNewUser] = useAddNewUserMutation();
-  const [banUser,{isLoading:banningUser}] = useBanUserMutation();
+  const [banUser, { isLoading: banningUser }] = useBanUserMutation();
   const [unBanUser] = useUnBanUserMutation();
-  const [changeRole,{isLoading:changingUserRole}] = useChangeRoleMutation();
+  const [changeRole, { isLoading: changingUserRole }] = useChangeRoleMutation();
   const dispatch = useDispatch();
   const [roleChange, setRoleChange] = useState({ email: "", state: false });
   const classes = listStyle();
-  const [confirmRoleChange, setConfirmRoleChange] = useState(false)
-  const [confirmBanUser, setConfirmBanUser] = useState(false)
-  const [userRole, setUserRole] = useState({role:undefined,email:undefined})
-  const [userToBan, setUserToBan] = useState({ban:undefined,email:undefined})
+  const [confirmRoleChange, setConfirmRoleChange] = useState(false);
+  const [confirmBanUser, setConfirmBanUser] = useState(false);
+  const [resetUserEmail] = useResetUserEmailMutation();
+  const [userRole, setUserRole] = useState({
+    role: undefined,
+    email: undefined
+  });
+  const [userToBan, setUserToBan] = useState({
+    ban: undefined,
+    email: undefined
+  });
 
   useEffect(() => {
     async function userList() {
@@ -81,7 +95,7 @@ const ManagingUsers = () => {
     }
 
     userList();
-  }, [getUserList,dispatch]);
+  }, [getUserList, dispatch]);
 
   useEffect(() => {
     if (usersList.length) {
@@ -100,7 +114,6 @@ const ManagingUsers = () => {
     setOpenModal(false);
     setTimeout(() => {
       setLoadingSubmit(false);
-
     }, 300);
   };
 
@@ -140,17 +153,14 @@ const ManagingUsers = () => {
     try {
       let resp;
 
-      dispatch(
-        updateUserInList(userToBan)
-      );
+      dispatch(updateUserInList(userToBan));
       if (!e.target.checked) {
-        resp = await banUser({ email:userToBan.email}).unwrap();
+        resp = await banUser({ email: userToBan.email }).unwrap();
       } else {
-        resp = await unBanUser({ email:userToBan.email }).unwrap();
+        resp = await unBanUser({ email: userToBan.email }).unwrap();
       }
-      closeConfirmBanUser()
+      closeConfirmBanUser();
       notify(NOTIFY_SUCCESS, resp?.message);
-
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
@@ -161,9 +171,6 @@ const ManagingUsers = () => {
     return false;
   };
 
-
-
-
   const loadRoleChangeInput = (email) => {
     setRoleChange({
       email: email.currentTarget.getAttribute("data-email"),
@@ -171,43 +178,95 @@ const ManagingUsers = () => {
     });
   };
 
-
-
   const handleRoleChange = async () => {
     try {
-
-      const resp = await changeRole(userRole).unwrap()
-      dispatch(updateUserInList(userRole))
-      notify(NOTIFY_SUCCESS,resp?.message)
+      const resp = await changeRole(userRole).unwrap();
+      dispatch(updateUserInList(userRole));
+      notify(NOTIFY_SUCCESS, resp?.message);
       setRoleChange({
         email: "",
         state: false
       });
-      setConfirmRoleChange(false)
-      setUserRole({email:undefined,role:undefined})
-
+      setConfirmRoleChange(false);
+      setUserRole({ email: undefined, role: undefined });
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
 
-  const handleConfirmBanUser=(ban,email)=>{
-    setUserToBan({email,ban})
-    setConfirmBanUser(true)
-  }
-  const closeConfirmBanUser=()=>{
-    setConfirmBanUser(false)
-    setUserToBan({email:undefined,ban:undefined})
-  }
-  const handleConfirmRoleChange =(newRole,email)=>{
-    setUserRole({email:email,role:newRole})
-    setConfirmRoleChange(true)
-  }
+  const handleConfirmBanUser = (ban, email) => {
+    setUserToBan({ email, ban });
+    setConfirmBanUser(true);
+  };
+  const closeConfirmBanUser = () => {
+    setConfirmBanUser(false);
+    setUserToBan({ email: undefined, ban: undefined });
+  };
+  const handleConfirmRoleChange = (newRole, email) => {
+    setUserRole({ email: email, role: newRole });
+    setConfirmRoleChange(true);
+  };
 
-const closeConfirmRoleChange=()=>{
-  setConfirmRoleChange(false)
-  setUserRole({email:undefined,role:undefined})
-}
+  const closeConfirmRoleChange = () => {
+    setConfirmRoleChange(false);
+    setUserRole({ email: undefined, role: undefined });
+  };
+
+  const [rowModesModel, setRowModesModel] = React.useState({});
+
+  const handleRowEditStop = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+
+  const handleEditClick = (id) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
+
+  const handleSaveClick = (id) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleChangeEmail = async (oldEmail, newEmail) => {
+    try {
+      const res = await resetUserEmail({ oldEmail, newEmail }).unwrap();
+      notify(NOTIFY_SUCCESS, res.message);
+      return true
+    } catch (error) {
+      notify(NOTIFY_ERROR, error?.data.message);
+      return false
+    }
+  };
+
+  const handleCancelClick = (id) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true }
+    });
+
+    // const editedRow = rows.find((row) => row.id === id);
+    // if (editedRow.isNew) {
+    //   setRows(rows.filter((row) => row.id !== id));
+    // }
+  };
+
+  const processRowUpdate = (newRow) => {
+    const user  = usersList.filter((user) => newRow.id === user.id)[0]
+    const oldEmail = user.email;
+    const changed = handleChangeEmail(oldEmail, newRow.email);
+    if (changed){
+      const updatedRow = { ...newRow, isNew: false };
+      return updatedRow;
+    }else{
+      return  user
+    }
+    // setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+  };
+
+  const handleRowModesModelChange = (newRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
 
   //column for the header of the list
   const columns = [
@@ -228,7 +287,7 @@ const closeConfirmRoleChange=()=>{
       field: "email",
       headerName: "Email",
       width: 200,
-      editable: false
+      editable: true
     },
     {
       field: "role",
@@ -237,30 +296,37 @@ const closeConfirmRoleChange=()=>{
       editable: false,
       renderCell: (params) => {
         const { email, role } = params.row;
-        const ch = role === SUPERUSER_ROLE ? "admin" : role.replace('_',' ').toLowerCase();
+        const ch =
+          role === SUPERUSER_ROLE
+            ? "admin"
+            : role.replace("_", " ").toLowerCase();
 
         return (
           <>
-          <PopUp
-            loading={changingUserRole}
-            open={confirmRoleChange}
-            handleClose={closeConfirmRoleChange}
-            handleSubmit={handleRoleChange}
-            title={"Confirmation"}
-            icon={faSave}
-            text={`Êtes-vous sûr de vouloir changer l'utilisateur du rôle ${role === SUPERUSER_ROLE ? "admin" : role.replace('_',' ').toLowerCase()} au role de ${userRole?.role?.replace('_',' ')}?
+            <PopUp
+              loading={changingUserRole}
+              open={confirmRoleChange}
+              handleClose={closeConfirmRoleChange}
+              handleSubmit={handleRoleChange}
+              title={"Confirmation"}
+              icon={faSave}
+              text={`Êtes-vous sûr de vouloir changer l'utilisateur du rôle ${
+                role === SUPERUSER_ROLE
+                  ? "admin"
+                  : role.replace("_", " ").toLowerCase()
+              } au role de ${userRole?.role?.replace("_", " ")}?
             Gardez à l'esprit que changer le rôle d'un utilisateur aura pour conséquence de lui ajouter/supprimer certains privilèges. `}
-            btnText={"Confirmer"}
-            btnLevel="danger"
-          />
+              btnText={"Confirmer"}
+              btnLevel="danger"
+            />
             {getSelectRoleForUser(email) ? (
               <Select
                 labelId="demo-controlled-open-select-label"
                 id="demo-controlled-open-select"
                 value={role}
-                onChange={(e)=>handleConfirmRoleChange(e.target.value,email)}
+                onChange={(e) => handleConfirmRoleChange(e.target.value, email)}
                 name={email}
-                inputProps={{"data-id":email}}
+                inputProps={{ "data-id": email }}
                 size="small"
               >
                 <MenuItem value={role}>
@@ -275,13 +341,19 @@ const closeConfirmRoleChange=()=>{
                   (item) =>
                     item !== role && (
                       <MenuItem value={item} key={item}>
-                        {item === SUPERUSER_ROLE ? "admin" : item.replace('_',' ')}
+                        {item === SUPERUSER_ROLE
+                          ? "admin"
+                          : item.replace("_", " ")}
                       </MenuItem>
                     )
                 )}
               </Select>
             ) : (
-              <button data-email={email} onClick={loadRoleChangeInput} className={classes.roleBtn}>
+              <button
+                data-email={email}
+                onClick={loadRoleChangeInput}
+                className={classes.roleBtn}
+              >
                 {ch}
               </button>
             )}
@@ -313,69 +385,78 @@ const closeConfirmRoleChange=()=>{
         return (
           <>
             <PopUp
-            loading={banningUser}
-            open={confirmBanUser}
-            handleClose={closeConfirmBanUser}
-            handleSubmit={handleBanUser}
-            title={"Confirmation"}
-            icon={faSave}
-            text={`êtes-vous sûr de vouloir bannir l'utilisateur ${userToBan.email} du système ?
+              loading={banningUser}
+              open={confirmBanUser}
+              handleClose={closeConfirmBanUser}
+              handleSubmit={handleBanUser}
+              title={"Confirmation"}
+              icon={faSave}
+              text={`êtes-vous sûr de vouloir bannir l'utilisateur ${userToBan.email} du système ?
             Gardez à l'esprit que le bannissement de l'utilisateur entraînera la suppression de tout accès au système. Cependant, les données antérieures de l'utilisateur resteront intactes.`}
-            btnText={"Confirmer"}
-            btnLevel="danger"
-          />
-          <Switch
-            {...label}
-            value={isBanned}
-            checked={!isBanned}
-            id={email}
-            onChange={(e)=>handleConfirmBanUser(!e.target.checked,email)}
-
-            // defaultValue={isBanned?true:false}
+              btnText={"Confirmer"}
+              btnLevel="danger"
             />
-            </>
+            <Switch
+              {...label}
+              value={isBanned}
+              checked={!isBanned}
+              id={email}
+              onChange={(e) => handleConfirmBanUser(!e.target.checked, email)}
+
+              // defaultValue={isBanned?true:false}
+            />
+          </>
         );
       }
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: ({ id, row }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<CustomSaveIcon className={classes.icon} />}
+              label="Save"
+              sx={{
+                color: "primary.main"
+              }}
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              icon={<CustomCancelIcon className={classes.icon} />}
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />
+          ];
+        }
+        // if (!row.isSuperUser)
+        if (!row.isSuperUser) {
+          return [
+            <GridActionsCellItem
+              icon={<CustomEditIcon className={classes.icon} />}
+              label="Edit"
+              className="textPrimary"
+              onClick={handleEditClick(id)}
+              color="inherit"
+            />
+          ];
+        } else {
+          return [];
+        }
+      }
     }
-    // {
-    //   field: "actions", // Add a field for actions
-    //   headerName: "Actions",
-    //   width: 200,
-    //   renderCell: (params) => {
-    //     const id = params.row.id;
-    //     // Render custom buttons for each row
-    //     return (
-    //       <div>
-    //         <button
-    //           onClick={() => console.log("here")}
-    //           alt={`block the user ${id}`}
-    //         >
-    //           <FontAwesomeIcon icon={faUserLock} />
-    //         </button>
-    //         {/* <button
-    //         onClick={() => {
-    //           // Replace 'id' with your actual identifier field
-    //           const id = params.row.id;
-    //           window.location.href = `/id/${id}`;
-    //         }}
-    //       > */}
-    //         <Link to={`${id}`} title={`see the details of the user ${id}`}>
-    //           <FontAwesomeIcon icon={faCircleInfo} />
-    //         </Link>
-    //         {/* </button> */}
-    //       </div>
-    //     );
-    //   }
-    // }
   ];
 
-
-
-
-
-
   return (
-    <Grid container spacing={2} sx={{height:'100%'}}>
+    <Grid container spacing={2} sx={{ height: "100%" }}>
       <AddUserForm
         loadingSubmit={loadingSubmit}
         open={openModal}
@@ -384,33 +465,35 @@ const closeConfirmRoleChange=()=>{
         changeStateAccount={handleChangeAccount}
         changeStateProfile={handleChangeProfile}
       />
-      <Grid item xs={12} md={12} lg={12}  >
+      <Grid item xs={12} md={12} lg={12}>
         <AddBtn
           title="Ajouter un utilisateur"
           icon={faAddUser}
           handleAdd={handleModelOpen}
         />
       </Grid>
-      <Grid item xs={12} md={12} lg={12} sx={{height:'100%'}}>
-
-          <DataGrid
+      <Grid item xs={12} md={12} lg={12} sx={{ height: "100%" }}>
+        <DataGrid
           className={classes.list}
-            rows={usersList}
-            // rows={testGridSupport()}
-            columns={columns}
-            loading={loading}
-            autoHeight={true}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 100
-                }
+          rows={usersList}
+          // rows={testGridSupport()}
+          columns={columns}
+          loading={loading}
+          autoHeight={true}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 100
               }
-            }}
-            pageSizeOptions={[100]}
-            disableRowSelectionOnClick
-          />
-
+            }
+          }}
+          pageSizeOptions={[100]}
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          disableRowSelectionOnClick
+        />
       </Grid>
       {/* <ToastContainer
         position="bottom-left"

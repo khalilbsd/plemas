@@ -2,15 +2,29 @@ import { createUseStyles } from "react-jss";
 
 export const styles = createUseStyles({
   sidebar: {
-    width: 300,
+    width: '20%',
     height: "calc(100% - 40px)",
+    transition:'all 0.3s ease-in-out',
 
+    '&.opened.showCase':{
+      height: "calc(100% - 40px)",
+      position: 'absolute',
+    zIndex: 9999,
+    border: 'none',
+    width: 300
+    },
+    '&.ps-collapsed':{
+      width:60
+    },
     "&:not(.ps-collapsed)": {
+        height:'100%',
       "& $sidebarHeader": {
         justifyContent:'space-between'
       },
       "& .ps-sidebar-container": {
-        padding: 20
+        padding: 10,
+        height: 'calc(100% - 20px)',
+
       },
       "& .bars-icon": {
         fill: "var(--white) !important"
@@ -35,17 +49,26 @@ export const styles = createUseStyles({
     },
 
     "& .ps-sidebar-container": {
+
       transition: "0.3s all ease-in-out",
       display: "flex",
       padding: "20px 0",
       flexDirection: "column",
-      justifyContent: "space-between",
+      // justifyContent: "space-between",
       borderRadius: 30,
       // background: "rgb(10,82,59)",
       // background: 'linear-gradient(315deg, rgba(10,82,59,1) 0%, rgba(23,145,127,1) 100%)'
       background:
         "linear-gradient(0deg,  var(--light-green)  5%, var(--dark-green) 100%)"
-    }
+    },
+
+  },
+  sideBarContent:{
+      justifyContent: "space-between",
+      display: "flex",
+      height:'calc(100% - 40px)',
+      flexDirection: "column",
+
   },
 
   sidebarHeader: {
