@@ -39,7 +39,6 @@ const Login = () => {
       }).unwrap();
       dispatch(setCredentials({ ...res }));
       setTimeout(() => {
-          console.log(res);
           if (res?.user?.role === SUPERUSER_ROLE){
             navigate('/admin/manage/projects')
 
@@ -57,10 +56,7 @@ const Login = () => {
 
   return (
     <div className={classes.loginPage}>
-      {/* <div className={classes.topLogo}>
-        <ReactSVG src={logo} alt="logo" />
 
-      </div> */}
 
     <div className={classes.bg}>
       {/* <div className={classes.bgLogo}>
@@ -104,6 +100,7 @@ const Login = () => {
                 </label>
               <TextField
                 type="password"
+                autoComplete ="true"
                 required
                 size="small"
                 inputRef={passwordRef}

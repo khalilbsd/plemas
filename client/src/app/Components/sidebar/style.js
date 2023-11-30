@@ -4,7 +4,7 @@ export const styles = createUseStyles({
   sidebar: {
     width: "100%",
     height: "100%",
-    // transition: "all 0.3s ease-in-out",
+    transition: "all 0.3s ease-in-out",
 
     "&.opened.showCase": {
       height: "calc(100% - 40px)",
