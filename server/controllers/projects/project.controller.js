@@ -319,6 +319,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   if (!details || !Object.keys(details).length)
     return next(new MissingParameter("Des paramètres manquants"));
   let phase;
+  console.log(details)
   if (details.phase || details.code) {
     const objectQuery = {
       // id:req.params.projectID

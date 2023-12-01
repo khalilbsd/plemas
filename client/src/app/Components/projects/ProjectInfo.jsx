@@ -24,7 +24,11 @@ import {
   NOTIFY_SUCCESS,
   REQUEST_STATES_TREATED,
   TASK_STATE_ABANDONED,
+  TASK_STATE_ABANDONED_ORG,
+  TASK_STATE_DOING,
+  TASK_STATE_DOING_ORG,
   TASK_STATE_DONE,
+  TASK_STATE_DONE_ORG,
   TASK_STATE_TRANSLATION
 } from "../../../constants/constants";
 import { SUPERUSER_ROLE } from "../../../constants/roles";
@@ -64,7 +68,7 @@ import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
 import { projectDetails } from "./style";
-import faClock from '../../public/svgs/light/clock.svg'
+import faClock from "../../public/svgs/light/clock.svg";
 const initialState = {
   code: "",
   name: "",
@@ -105,8 +109,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
   const [assignManagerHours, { isLoading: loadMangerHours }] =
     useAssignManagerHoursMutation();
 
-  const [abandonProject] =
-    useAbandonProjectMutation();
+  const [abandonProject] = useAbandonProjectMutation();
 
   const changePriority = (e) => {
     setPriorityChange((prevPrio) => !prevPrio);
@@ -153,7 +156,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
 
   useEffect(() => {
     dispatch(setEditProject(edit));
-  }, [edit,dispatch]);
+  }, [edit, dispatch]);
 
   const handleUpdate = async () => {
     try {
@@ -165,8 +168,18 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
       }
       data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
       // }
-      if (data.state && data.state === project.state) {
-        delete data.state;
+      // console.log(    project.state === TASK_STATE_DONE_ORG && data.state === TASK_STATE_DOING_ORG);
+      if (data.state) {
+        if (data.state === project.state) {
+          delete data.state;
+        } else {
+          if (
+            project.state === TASK_STATE_DONE_ORG &&
+            data.state === TASK_STATE_DOING_ORG
+          ) {
+            data.clearDueDate = true;
+          }
+        }
       }
 
       const res = await updateProject({
@@ -189,13 +202,28 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
         window.location.reload(false);
       }, 300);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
 
+
+const isShouldCheckProjectIntegrity =()=>{
+  if ( editedProject.dueDate &&
+    dayjs(project.dueDate).format("DD/MM/YYYY") !== editedProject.dueDate.format("DD/MM/YYYY")
+    )
+    return true
+
+  if (project.state === TASK_STATE_DOING_ORG && (editedProject.state === TASK_STATE_DONE_ORG ||editedProject.state === TASK_STATE_ABANDONED_ORG )) {
+    return true
+  }
+  return false
+}
+
+
   const handleCheckForProjectState = () => {
-    if (editedProject.dueDate && dayjs(project.dueDate).format("DD/MM/YYYY") !== (editedProject.dueDate).format('DD/MM/YYYY')) {
+    console.log(isShouldCheckProjectIntegrity())
+    if (isShouldCheckProjectIntegrity())  {
       setCheckProjectIntegrity(true);
       return;
     }
@@ -265,9 +293,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
     }
   };
 
-  // const isProjectAbandoned =
-  //   TASK_STATE_TRANSLATION.filter((state) => state.label === project.state)[0]
-  //     ?.value === TASK_STATE_ABANDONED;
+
 
   if (loading || !project)
     return <Skeleton className={classes.mainInfoSkeleton} />;
@@ -296,43 +322,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
     return { code: priority.code, value: priority.value };
   };
 
-  // const abandonShip = async () => {
-  //   try {
-  //     console.log(TASK_STATE_TRANSLATION.filter(
-  //       (state) => state.value === TASK_STATE_ABANDONED
-  //     )[0].label);
-  //    const res =  await abandonProject({
-  //       projectID: project.id,
-  //       body:{
-  //         action: TASK_STATE_TRANSLATION.filter(
-  //           (state) => state.value === TASK_STATE_ABANDONED
-  //         )[0].label
-  //       }
-  //     }).unwrap();
-  //     setAlertAbandon(false)
-  //     notify(NOTIFY_SUCCESS, res?.message);
-  //     setTimeout(() => {
-  //       window.location.reload(false);
-  //     }, 300);
 
-  //   } catch (error) {
-  //     notify(NOTIFY_ERROR, error?.data?.message);
-  //   }
-  // };
-  // const resumeShip = async () => {
-  //   try {
-  //     const  res = await abandonProject({
-  //       projectID: project.id,
-  //       action: "Resume"
-  //     }).unwrap();
-  //     notify(NOTIFY_SUCCESS, res?.message);
-  //     setTimeout(() => {
-  //       window.location.reload(false);
-  //     }, 300);
-  //   } catch (error) {
-  //     notify(NOTIFY_ERROR, error?.data?.message);
-  //   }
-  // };
 
   const handleUpdatePriority = (priority) => {
     dispatch(setProjectPriority(parseInt(priority)));
@@ -559,33 +549,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                     </Select>
                   )}
 
-                  {/* <PopUp
-                    loading={abandoningShip}
-                    open={alertAbandon}
-                    handleClose={() => setAlertAbandon(false)}
-                    handleSubmit={abandonShip}
-                    title="Êtes-vous sûr de vouloir abandonner le projet ? "
-                    text="si vous abandonnez le projet, toutes les tâches seront marquées comme abandonnées. les intervenants du projet perdront l'accès à leurs tâches et ne pourront plus les mettre à jour."
-                    icon={faDelete}
-                    btnText={"Abandonner"}
-                    btnLevel="danger"
-                  />
-                  {
-                    (isSuperUser ||
-                      (isManager && user?.email === project?.managerDetails?.email))&&
-                  <button
-                  className={classes.projectQuite}
-                  onClick={
-                    !isProjectAbandoned
-                    ? () => setAlertAbandon(true)
-                    : resumeShip
-                  }
-                  >
-                    {!isProjectAbandoned
-                      ?TASK_STATE_ABANDONED
-                      : "poursuivre le projet"}
-                  </button>
-              } */}
+
                 </div>
               </Grid>
 
@@ -626,7 +590,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                 </div>
               </Grid>
               {/* date fin */}
-              <Grid item xs={12} sm={6} md={6} lg={6}>
+              <Grid item xs={12} sm={6} md={6} lg={4}>
                 <div className={classes.data}>
                   <p className="label">Date fin</p>
                   {!edit ? (
@@ -689,7 +653,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                 </div>
               </Grid>
               {/* prev phase */}
-              <Grid item xs={12} sm={6} md={6} lg={6}>
+              <Grid item xs={12} sm={6} md={6} lg={2}>
                 {project.prevPhase && (
                   <>
                     Phase lié <br />
@@ -719,34 +683,6 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                   </button>
                 </div>
               )}
-              {/* creator */}
-              {/* <Grid item xs={12}>
-              <div className={classes.data}>
-                <p className="label">Initial créateur projet</p>
-                <div className="value">
-                  <div className={classes.manager}>
-                    {project.creatorDetails?.UserProfile?.image ? (
-                      <img
-                        src={`${process.env.REACT_APP_SERVER_URL}${project.creatorDetails?.UserProfile?.image}`}
-                      />
-                    ) : (
-                      <span className="initials">
-                        {project.creatorDetails?.UserProfile?.name[0]}
-                        {project.creatorDetails?.UserProfile?.lastName[0]}
-                      </span>
-                    )}
-                    <p className="manager-name">
-                      {project.creatorDetails?.UserProfile?.name}
-                      {project.creatorDetails?.UserProfile?.lastName}
-                      <br />
-                      <span className="email">
-                        {project.creatorDetails?.email}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Grid> */}
 
               {/* project manager */}
               <Grid item xs={12}>
@@ -768,7 +704,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                         <p className="manager-name">
                           {project.managerDetails?.UserProfile?.name}
                           {project.managerDetails?.UserProfile?.lastName}
-                           &nbsp; {project.managerHours}H
+                          &nbsp; {project.managerHours}H
                           <br />
                           <span className="email">
                             {project.managerDetails?.email}
@@ -782,7 +718,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
                       >
                         {/* <span className="init">Chef de projet</span>
                         <span className="changed">renseigner heurs</span> */}
-                        <ReactSVG className="clock"  src={faClock}/>
+                        <ReactSVG className="clock" src={faClock} />
                       </button>
                     </div>
                   ) : !editData.managers.length ? (
@@ -827,9 +763,11 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
             onClick={
               !edit
                 ? handleEdit
-                : editedProject.dueDate
+                : (editedProject.dueDate ||
+                  editedProject.state !== project.state)
                 ? handleCheckForProjectState
                 : handleUpdate
+                // : ()=>{ console.log("updating")}
             }
           >
             <ReactSVG src={!edit ? faEdit : faSave} />
