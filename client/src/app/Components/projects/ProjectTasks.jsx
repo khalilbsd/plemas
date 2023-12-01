@@ -37,6 +37,7 @@ import {
 import Tooltip from "@mui/material/Tooltip";
 import { frFR } from "@mui/x-data-grid";
 import { useWindowSize } from "@uidotdev/usehooks";
+import { CLIENT_ROLE } from "../../../constants/roles";
 import faAdd from "../../public/svgs/solid/plus.svg";
 import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";
@@ -51,7 +52,6 @@ import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import TaskFiles from "./TaskFiles";
 import { projectDetails, projectTaskDetails } from "./style";
-import { CLIENT_ROLE } from "../../../constants/roles";
 
 
 const ProjectTasks = ({ openAddTask }) => {
@@ -59,6 +59,7 @@ const ProjectTasks = ({ openAddTask }) => {
   const dispatch = useDispatch();
   const tasks = useGetStateFromStore("task", "projectTasks");
   const project = useGetStateFromStore("project", "projectDetails");
+
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
   const [updateTask] = useUpdateTaskMutation();
@@ -70,8 +71,10 @@ const ProjectTasks = ({ openAddTask }) => {
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
-
   const dataGridRef=useRef()
+
+
+
 
 
   const [rowModesModel, setRowModesModel] = React.useState({});
@@ -232,9 +235,9 @@ const ProjectTasks = ({ openAddTask }) => {
     },
     {
       filterable: false,
-      width: dataGridRef.current?.clientWidth - 900,
-      // width:size.width -  ,
 
+      flex:1,
+      minWidth:200,
       field: "name",
       headerName: "Taches",
       editable:

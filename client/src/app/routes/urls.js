@@ -4,20 +4,20 @@ import Login from "../login/Login";
 import Logout from "../logout/Logout.jsx";
 import UserProfile from "../profile/UserProfile";
 // import { faBriefcase, faHouse, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { ALL_ROLES, CLIENT_ROLE, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/roles";
+import { ALL_ROLES, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/roles";
 import ManagingUsers from "../Components/managing/ManagingUsers";
 
 //icons
 import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";
 import AuthConfirmation from "../confirmation/AuthConfirmation";
+import DailyLog from "../dailylog/DailyLog.jsx";
 import ManageProjects from "../projects/ManageProjects";
 import ProjectDetails from "../projects/ProjectDetails";
 import faProject from "../public/svgs/light/diagram-project.svg";
+import faTimeLine from "../public/svgs/light/list-timeline.svg";
 import faLogout from "../public/svgs/light/right-from-bracket.svg";
 import faUser from "../public/svgs/light/user.svg";
 import ResetPassword from "../reset_password/ResetPassword";
-import DailyLog from "../dailylog/DailyLog.jsx";
-import faTimeLine from "../public/svgs/light/list-timeline.svg";
 export const anonymousUrls = [
   { title: "", path: "/", Component: <Navigate to="/login" /> },
   { title: "Login", path: "/login", Component: <Login /> },

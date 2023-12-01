@@ -5,7 +5,6 @@ import {
   GridRowEditStopReasons,
   GridRowModes
 } from "@mui/x-data-grid";
-import { useWindowSize } from "@uidotdev/usehooks";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
@@ -60,10 +59,9 @@ const ProjectRequests = () => {
   const project = useGetProjectRequestMutation("project", "projectDetails");
   const classesDetails = projectDetails();
   const taskStyles = projectTaskDetails();
-  const size = useWindowSize();
 
   const fileInputRef = useRef(null);
-  const [descriptionWidth, setDescriptionWidth] = useState(0)
+
   const [addRequest, setAddRequest] = useState(false);
   const [files, setFiles] = useState([]);
   const { user } = useGetAuthenticatedUser();
@@ -73,7 +71,7 @@ const ProjectRequests = () => {
   const [requestToDelete, setRequestToDelete] = useState(undefined);
   const [checkDelete, setCheckDelete] = useState(false);
   const requests = useGetStateFromStore("project", "projectRequest");
-  const dataGridRef=useRef()
+  const dataGridRef = useRef();
 
   const [getProjectRequest, { isLoading: loadingRequests }] =
     useGetProjectRequestMutation();
@@ -82,11 +80,6 @@ const ProjectRequests = () => {
   const [createProjectRequest] = useCreateProjectRequestMutation();
   const [deleteProjectRequest, { isLoading: deletingRequest }] =
     useDeleteProjectRequestMutation();
-
-
-
-
-
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -106,11 +99,7 @@ const ProjectRequests = () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-
-
   const handleDeleteClick = async () => {
-
-
     try {
       const res = await deleteProjectRequest({
         projectID,
@@ -191,7 +180,9 @@ const ProjectRequests = () => {
       field: "description",
       headerName: "Information",
       // width: 1000,
-      width: descriptionWidth,
+      // width: descriptionWidth,
+      flex: 1,
+      minWidth: 200,
       editable: true,
       filterable: false
     },
@@ -202,9 +193,12 @@ const ProjectRequests = () => {
       editable: false,
       width: 200,
       renderCell: ({ row }) => {
-
         return (
-          <RequestFiles  files={row.file} isCreator={row.requestCreator.email === user?.email} requestID={row.id} />
+          <RequestFiles
+            files={row.file}
+            isCreator={row.requestCreator.email === user?.email}
+            requestID={row.id}
+          />
         );
       }
     },
@@ -323,11 +317,6 @@ const ProjectRequests = () => {
   ];
 
   useEffect(() => {
-    setDescriptionWidth(dataGridRef.current?.clientWidth - 900)
-  }, [size])
-
-
-  useEffect(() => {
     async function loadRequests() {
       try {
         const res = await getProjectRequest(projectID).unwrap();
@@ -344,7 +333,7 @@ const ProjectRequests = () => {
   };
   const closeAddRequest = () => {
     setAddRequest(false);
-    setFiles([])
+    setFiles([]);
   };
 
   const handleSubmitRequest = async () => {
@@ -378,7 +367,6 @@ const ProjectRequests = () => {
       setTimeout(() => {
         setCreatingRequest(false);
       }, 500);
-
     } catch (error) {
       console.log(error);
       notify(NOTIFY_ERROR, error?.data?.message);
@@ -411,9 +399,7 @@ const ProjectRequests = () => {
       }
     }
     setFiles(files);
-
   };
-
 
   return (
     <div className={classesDetails.card}>
@@ -473,7 +459,7 @@ const ProjectRequests = () => {
       />
 
       <DataGrid
-      ref={dataGridRef}
+        ref={dataGridRef}
         className={taskStyles.list}
         loading={
           loadingRequests ||

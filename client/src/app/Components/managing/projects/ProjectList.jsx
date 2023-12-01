@@ -19,7 +19,8 @@ import { TableVirtuoso } from "react-virtuoso";
 import {
   TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
-  TASK_STATE_TRANSLATION
+  TASK_STATE_TRANSLATION,
+  progress_bar_width_cell
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
@@ -40,6 +41,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const addProjectState = useGetStateFromStore("manage", "addProject");
+  const sideBarCollapsed = useGetStateFromStore("sidebar", "collapsed");
   const [projectToCollapse, setProjectToCollapse] = useState(undefined);
   const navigate = useNavigate();
 
@@ -91,28 +93,28 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       headerName: "CP",
       field: "manager",
 
-      width: 50
+      width: 30
     },
     {
       headerName: "Lots",
       field: "lots",
-      width: 60
+      width: 40
     },
     {
       headerName: "Phase",
       field: "activePhase",
 
-      width: 50
+      width: 30
     },
     {
       headerName: " ",
       field: "tasks",
-      width: 250
+      width: sideBarCollapsed?200: 100
     },
     {
       headerName: "Status",
       field: "phaseStatus",
-      width: 80
+      width: 50
     }
   ];
 
@@ -210,18 +212,18 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
           startConverted < dayjs(new Date()) &&
           dueConverted > dayjs(new Date())
         ) {
-          width = 15 * 40;
+          width = 15 * progress_bar_width_cell;
           position = 0;
         }
       } else {
-        position = startIdx !== -1 ? startIdx * 40 : 0;
+        position = startIdx !== -1 ? startIdx * progress_bar_width_cell : 0;
         let diff = startIdx > -1 ? startIdx : 0;
         width =
           dueIdx !== -1
             ? dueIdx
-              ? (dueIdx - diff) * 40
-              : 1 * 40
-            : (convertedDates.length - startIdx) * 40;
+              ? (dueIdx - diff) * progress_bar_width_cell
+              : 1 * progress_bar_width_cell
+            : (convertedDates.length - startIdx) * progress_bar_width_cell;
       }
 
       return (
@@ -289,7 +291,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     ),
     TableHead,
     TableRow: ({ item: _item, ...props }) => (
-      <TableRow key={_item.id} className="row-data"  {...props} />
+      <TableRow key={_item.id} className={`row-data ${_item?.requestsTreated === false ?'notTreatedRequest':''}`}  {...props}  />
     ),
     TableBody: React.forwardRef((props, ref) => (
       <TableBody {...props} ref={ref} />
@@ -322,6 +324,8 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         ? handleClickProject(row.id)
         : handleNavigation(row.id)
         } key={_index+1} className={classes.rowCell}>
+          <Tooltip title={row.manager.fullName} arrow>
+
           {row.manager.image ? (
             <div className={classes.managerContainer}>
               <img
@@ -342,6 +346,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
               </span>
             </div>
           )}
+          </Tooltip>
         </TableCell>
         <TableCell onClick={() =>
         addProjectState.isFiltering && addForm
@@ -400,7 +405,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         ))}
         <TableCell
           className={classes.tableHeader}
-          sx={{ width: (twoWeeksDates.length -1) * 40 }}
+          sx={{ width: (twoWeeksDates.length -1) * progress_bar_width_cell }}
         >
           <div className={classes.datesData}>
             {twoWeeksDates?.map(({ date, weekend }, index) => (

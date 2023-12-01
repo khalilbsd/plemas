@@ -1,7 +1,7 @@
 import { Box } from '@mui/system'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import useGetAuthenticatedUser from '../../hooks/authenticated'
 import useIsPathValid from '../../hooks/path'
 import { toggleSideBar } from '../../store/reducers/sidebar.reducer'

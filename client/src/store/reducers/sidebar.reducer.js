@@ -2,7 +2,8 @@ import {createSlice} from '@reduxjs/toolkit'
 
 
 const initialState ={
-    hide:false
+    hide:false,
+    collapsed:true
 }
 
 
@@ -13,11 +14,14 @@ const sideBarSlice = createSlice({
     reducers:{
         toggleSideBar :(state,action)=>{
             state.hide = action.payload
+        },
+        toggleSideBarStatus:(state,action)=>{
+            state.collapsed = !state.collapsed
         }
     }
 })
 
 
-export const {toggleSideBar} = sideBarSlice.actions
+export const {toggleSideBar,toggleSideBarStatus} = sideBarSlice.actions
 
 export default sideBarSlice.reducer
