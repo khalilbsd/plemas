@@ -711,6 +711,7 @@ const isShouldCheckProjectIntegrity =()=>{
                         </p>
                       </div>
 
+                    {(isSuperUser || project.managerDetails?.email === user?.email) &&
                       <button
                         className="position"
                         onClick={handleManagerHoursPopUP}
@@ -718,7 +719,7 @@ const isShouldCheckProjectIntegrity =()=>{
                         {/* <span className="init">Chef de projet</span>
                         <span className="changed">renseigner heurs</span> */}
                         <ReactSVG className="clock" src={faClock} />
-                      </button>
+                      </button>}
                     </div>
                   ) : !editData.managers.length ? (
                     <Skeleton variant="rectangular" width={210} height={50} />

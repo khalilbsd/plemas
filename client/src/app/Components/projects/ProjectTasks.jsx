@@ -51,6 +51,7 @@ import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
 import TaskFiles from "./TaskFiles";
 import { projectDetails, projectTaskDetails } from "./style";
+import { CLIENT_ROLE } from "../../../constants/roles";
 
 
 const ProjectTasks = ({ openAddTask }) => {
@@ -405,7 +406,7 @@ const ProjectTasks = ({ openAddTask }) => {
         }
         if (
           !emailsList.includes(user?.email) &&
-          TASK_STATE_ABANDONED !== row.state
+          TASK_STATE_ABANDONED !== row.state && user?.role !== CLIENT_ROLE
         ) {
           renderActions.push(
             <GridActionsCellItem

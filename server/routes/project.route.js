@@ -83,7 +83,7 @@ router
   .get(
     "/get/project/:projectID/tracking",
     isUserAuthenticated,
-    checkUserRole(ALL_ROLES),
+    checkUserRole([SUPERUSER_ROLE]),
     getProjectTracking
   )
   // .patch('/change/project/:custom_name/phase',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),changeProjectPhase)

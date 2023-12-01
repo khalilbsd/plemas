@@ -4,7 +4,7 @@ import Login from "../login/Login";
 import Logout from "../logout/Logout.jsx";
 import UserProfile from "../profile/UserProfile";
 // import { faBriefcase, faHouse, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { ALL_ROLES, CLIENT_ROLE, SUPERUSER_ROLE } from "../../constants/roles";
+import { ALL_ROLES, CLIENT_ROLE, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/roles";
 import ManagingUsers from "../Components/managing/ManagingUsers";
 
 //icons
@@ -114,7 +114,7 @@ export const protectedUrls = [
     superUser: true
   },
   {
-    role: ALL_ROLES,
+    role: [SUPERUSER_ROLE,INTERVENANT_ROLE,PROJECT_MANAGER_ROLE],
     title: "Daily log",
     path: "/my/daily",
     Component: <DailyLog />,
@@ -138,8 +138,8 @@ export function getRoleHomeUrl(role) {
     case SUPERUSER_ROLE:
       return "/admin/manage/users";
 
-    case CLIENT_ROLE:
-      return "/dashboard/client";
+    // case CLIENT_ROLE:
+    //   return "/dashboard/client";
     default:
       return "/projects";
   }

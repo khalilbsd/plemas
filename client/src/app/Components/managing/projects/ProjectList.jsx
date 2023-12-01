@@ -289,11 +289,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     ),
     TableHead,
     TableRow: ({ item: _item, ...props }) => (
-      <TableRow key={_item.id} className="row-data" onClick={() =>
-        addProjectState.isFiltering && addForm
-        ? handleClickProject(_item.id)
-        : handleNavigation(_item.id)
-        } {...props} />
+      <TableRow key={_item.id} className="row-data"  {...props} />
     ),
     TableBody: React.forwardRef((props, ref) => (
       <TableBody {...props} ref={ref} />
@@ -303,7 +299,11 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   function rowContent(_index, row) {
     return (
       <React.Fragment>
-        <TableCell key={_index} className={classes.rowCell} component="th" scope="row">
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index} className={classes.rowCell} component="th" scope="row">
         <Tooltip  key={_index} title={row?.projectCustomId}>
             <p className={classes.projectName}>
               <span
@@ -317,7 +317,11 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             </p>
           </Tooltip>
         </TableCell>
-        <TableCell key={_index+1} className={classes.rowCell}>
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+1} className={classes.rowCell}>
           {row.manager.image ? (
             <div className={classes.managerContainer}>
               <img
@@ -339,7 +343,11 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             </div>
           )}
         </TableCell>
-        <TableCell key={_index+2} className={classes.rowCell}>
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+2} className={classes.rowCell}>
           <div className={classes.lots}>
             {row.lots.map(content => (
               <p key={content} className={classes.lot} label={content}>
@@ -349,13 +357,25 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
           </div>
         </TableCell>
         <TableCell  key={_index+3}className={classes.rowCell}>{row?.activePhase}</TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } className={classes.rowCell}>
           {renderProjectTasks(row.id)}
         </TableCell>
-        <TableCell  key={_index+4}className={classes.rowCell}>
+        <TableCell  onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+4}className={classes.rowCell}>
           {renderTasksStates(row.id)}
         </TableCell>
-        <TableCell  key={_index+5}className={classes.rowCell}>
+        <TableCell  onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+5}className={classes.rowCell}>
           {renderTaskTimeLine(row.id)}
         </TableCell>
         <TableCell sx={{width:60}}  key={_index+6}className={classes.rowCell}>
