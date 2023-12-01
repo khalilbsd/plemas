@@ -1,21 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { Link } from "react-router-dom";
 import Logo from "../../public/svgs/Kairos logo_3.svg";
 import { getRolesBasedUrls } from "../../routes/urls";
 import { styles } from "./style";
 
+import { useDispatch } from 'react-redux';
 import { ReactSVG } from "react-svg";
 import { SUPERUSER_ROLE } from "../../../constants/roles";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import useGetUserInfo from "../../../hooks/user";
+import { toggleSideBarStatus } from "../../../store/reducers/sidebar.reducer";
 import faBars from "../../public/svgs/light/bars.svg";
 import faLogout from "../../public/svgs/light/right-from-bracket.svg";
 const SidebarComponent = () => {
   const classes = styles();
-  const [collapse, setCollapse] = useState(true);
+  // const [collapse, setCollapse] = useState(true);
+  const dispatch = useDispatch()
   const user = useGetUserInfo();
+  const collapse = useGetStateFromStore('sidebar','collapsed')
   const handleCollapse = () => {
-    setCollapse(!collapse);
+    // setCollapse(!collapse);
+    dispatch(toggleSideBarStatus())
   };
 
   return (

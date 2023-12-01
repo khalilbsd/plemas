@@ -96,3 +96,10 @@
 {"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
 {"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"abandoned, "}
 {"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"abandoned, ","newValues":"doing, "}
+{"projectID":19,"taskName":null,"requestName":"req from client ","email":"khaliltest@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"01/12/2023"}
+{"projectID":19,"taskName":null,"requestName":"client houssemtest  ","email":"khaliltest@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"01/12/2023"}
+{"projectID":17,"taskName":null,"requestName":"teqst","email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"01/12/2023"}
+{"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"01/12/2023"}
+{"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"01/12/2023","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":20,"taskName":"test","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"01/12/2023"}
+{"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}

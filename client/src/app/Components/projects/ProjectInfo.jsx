@@ -25,7 +25,6 @@ import {
   REQUEST_STATES_TREATED,
   TASK_STATE_ABANDONED,
   TASK_STATE_ABANDONED_ORG,
-  TASK_STATE_DOING,
   TASK_STATE_DOING_ORG,
   TASK_STATE_DONE,
   TASK_STATE_DONE_ORG,
@@ -54,6 +53,7 @@ import {
 } from "../../../store/reducers/project.reducer";
 import { formattedDate } from "../../../store/utils";
 import faChevronUp from "../../public/svgs/light/chevron-up.svg";
+import faClock from "../../public/svgs/light/clock.svg";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faEdit from "../../public/svgs/light/pen.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
@@ -68,7 +68,6 @@ import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
 import { projectDetails } from "./style";
-import faClock from "../../public/svgs/light/clock.svg";
 const initialState = {
   code: "",
   name: "",
@@ -712,6 +711,7 @@ const isShouldCheckProjectIntegrity =()=>{
                         </p>
                       </div>
 
+                    {(isSuperUser || project.managerDetails?.email === user?.email) &&
                       <button
                         className="position"
                         onClick={handleManagerHoursPopUP}
@@ -719,7 +719,7 @@ const isShouldCheckProjectIntegrity =()=>{
                         {/* <span className="init">Chef de projet</span>
                         <span className="changed">renseigner heurs</span> */}
                         <ReactSVG className="clock" src={faClock} />
-                      </button>
+                      </button>}
                     </div>
                   ) : !editData.managers.length ? (
                     <Skeleton variant="rectangular" width={210} height={50} />

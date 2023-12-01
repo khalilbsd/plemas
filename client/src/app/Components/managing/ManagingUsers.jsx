@@ -244,15 +244,12 @@ const ManagingUsers = () => {
       [id]: { mode: GridRowModes.View, ignoreModifications: true }
     });
 
-    // const editedRow = rows.find((row) => row.id === id);
-    // if (editedRow.isNew) {
-    //   setRows(rows.filter((row) => row.id !== id));
-    // }
   };
 
   const processRowUpdate = (newRow) => {
     const user  = usersList.filter((user) => newRow.id === user.id)[0]
     const oldEmail = user.email;
+    if (user?.email === newRow?.email) return user
     const changed = handleChangeEmail(oldEmail, newRow.email);
     if (changed){
       const updatedRow = { ...newRow, isNew: false };

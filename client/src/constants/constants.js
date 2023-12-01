@@ -19,6 +19,9 @@ export const TASK_STATE_ABANDONED_ORG = "abandoned";
 export const TASK_STATE_BLOCKED_ORG = "blocked";
 
 
+
+export const progress_bar_width_cell = 40
+
 export const TASK_STATE_TRANSLATION =[
   {
   label:"doing",

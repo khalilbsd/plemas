@@ -110,7 +110,7 @@ const manageSlice = createSlice({
         let indxOfFilter = state.addProject.filterType
           .map(({ type }) => type)
           .indexOf(action.payload.attribute);
-          console.log(indxOfFilter);
+
         if (indxOfFilter > -1)
 
           if (state.addProject.filterType[indxOfFilter]?.value !== action.payload.value)

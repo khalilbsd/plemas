@@ -15,6 +15,8 @@ import {
   ACTION_NAME_PROJECT_CREATION,
   ACTION_NAME_PROJECT_UPDATE,
   ACTION_NAME_PROJECT_UPDATE_MANAGER,
+  CLIENT_ROLE,
+  INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   PROJECT_PHASE_STATUS_IN_PROGRESS,
   SUPERUSER_ROLE,
@@ -59,8 +61,8 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     objectQuery[Op.or] = [{ manager: req.user.id }];
   }
   if (
-    req.user.role === PROJECT_MANAGER_ROLE ||
-    (req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser)
+    req.user.role === PROJECT_MANAGER_ROLE || req.user.role === INTERVENANT_ROLE
+    // (req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser)
   ) {
     let interventions = await Intervenant.findAll({
       where: { intervenantID: req.user.id },
@@ -637,7 +639,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
   // chekc if the user has access to the project
-  if (!req.user.isSuperUser){
+  if (!req.user.isSuperUser && req.user.role !== CLIENT_ROLE){
   const projectIntervenants = project.intervenants.map(entry=>entry.intervenantID)
     if (!projectIntervenants.includes(req.user.id)) return next(new UnAuthorized("vous ne faites pas partie de ce projet"))
   }

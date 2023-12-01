@@ -1,24 +1,40 @@
-import React from 'react'
-import image404 from '../public/images/404.png'
-import { styles } from './style'
 import { Box } from '@mui/system'
-import { Link } from 'react-router-dom'
-
-
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import useGetAuthenticatedUser from '../../hooks/authenticated'
+import useIsPathValid from '../../hooks/path'
+import { toggleSideBar } from '../../store/reducers/sidebar.reducer'
+import { styles } from './style'
 
 const PageNotFound = () => {
   const classes = styles()
+  const dispatch = useDispatch()
+  const {user} = useGetAuthenticatedUser()
+  const navigate = useNavigate()
+  const isPathValid = useIsPathValid()
+
+
+  useEffect(() => {
+    dispatch(toggleSideBar(true))
+    if ((!user || !user?.isAuthenticated) && isPathValid){
+      navigate('/login')
+    }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[user,isPathValid])
+
   return (
     <div className={classes.pageNotFound}>
       <Box className={classes.box}>
-      <h6>OOPS Page not found</h6>
-      <div className={classes.imageContainer}>
-      <img src={image404} alt="404 " />
-      </div>
-      <h6>We're sorry but the page you requested was not found</h6>
+      <div className='number'>404</div>
+      <div className='message'>Opps ! page non trouvée. vous pouvez aller sur votre page
+    {" "}
       <Link to='/'>
-        Go  home
+
+      d'accueil
       </Link>
+      </div>
       </Box>
     </div>
   )

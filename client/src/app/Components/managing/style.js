@@ -1,4 +1,5 @@
 import { createUseStyles } from "react-jss";
+import { progress_bar_width_cell } from "../../../constants/constants";
 
 export const btnStyle = createUseStyles({
   btn: {
@@ -282,9 +283,9 @@ export const projectsStyles = createUseStyles({
     textWrap: "nowrap",
     whiteSpace: "nowrap",
     position: "relative",
-    width: 40,
-    minWidth: 40,
-    height: 40,
+    width: progress_bar_width_cell,
+    minWidth: progress_bar_width_cell,
+    height: progress_bar_width_cell,
     display: "flex",
     alignItems: "flex-end"
   },
@@ -634,7 +635,8 @@ export const projectsStyles = createUseStyles({
   emptyTasks: {
     margin: 0,
     color: "var(--bright-orange)",
-    whiteSpace: "normal"
+    // whiteSpace: "normal",
+    textWrap:'nowrap',
   },
   lot: {
     margin: 0,
@@ -669,7 +671,10 @@ export const projectsStyles = createUseStyles({
       "&.active": {
         backgroundColor: "var(--pastel-green) !important"
         // color:'var(--white)'
-      }
+      },
+      "&.notTreatedRequest": {
+        backgroundColor: "#e74c3c2e !important"
+      },
     }
   },
   tableHead: {

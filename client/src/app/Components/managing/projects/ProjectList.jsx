@@ -19,7 +19,8 @@ import { TableVirtuoso } from "react-virtuoso";
 import {
   TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
-  TASK_STATE_TRANSLATION
+  TASK_STATE_TRANSLATION,
+  progress_bar_width_cell
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
 import { formattedDate } from "../../../../store/utils";
@@ -40,6 +41,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const addProjectState = useGetStateFromStore("manage", "addProject");
+  const sideBarCollapsed = useGetStateFromStore("sidebar", "collapsed");
   const [projectToCollapse, setProjectToCollapse] = useState(undefined);
   const navigate = useNavigate();
 
@@ -91,28 +93,28 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       headerName: "CP",
       field: "manager",
 
-      width: 50
+      width: 30
     },
     {
       headerName: "Lots",
       field: "lots",
-      width: 60
+      width: 40
     },
     {
       headerName: "Phase",
       field: "activePhase",
 
-      width: 50
+      width: 30
     },
     {
       headerName: " ",
       field: "tasks",
-      width: 250
+      width: sideBarCollapsed?200: 100
     },
     {
       headerName: "Status",
       field: "phaseStatus",
-      width: 80
+      width: 50
     }
   ];
 
@@ -210,18 +212,18 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
           startConverted < dayjs(new Date()) &&
           dueConverted > dayjs(new Date())
         ) {
-          width = 15 * 40;
+          width = 15 * progress_bar_width_cell;
           position = 0;
         }
       } else {
-        position = startIdx !== -1 ? startIdx * 40 : 0;
+        position = startIdx !== -1 ? startIdx * progress_bar_width_cell : 0;
         let diff = startIdx > -1 ? startIdx : 0;
         width =
           dueIdx !== -1
             ? dueIdx
-              ? (dueIdx - diff) * 40
-              : 1 * 40
-            : (convertedDates.length - startIdx) * 40;
+              ? (dueIdx - diff) * progress_bar_width_cell
+              : 1 * progress_bar_width_cell
+            : (convertedDates.length - startIdx) * progress_bar_width_cell;
       }
 
       return (
@@ -289,11 +291,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     ),
     TableHead,
     TableRow: ({ item: _item, ...props }) => (
-      <TableRow key={_item.id} className="row-data" onClick={() =>
-        addProjectState.isFiltering && addForm
-        ? handleClickProject(_item.id)
-        : handleNavigation(_item.id)
-        } {...props} />
+      <TableRow key={_item.id} className={`row-data ${_item?.requestsTreated === false ?'notTreatedRequest':''}`}  {...props}  />
     ),
     TableBody: React.forwardRef((props, ref) => (
       <TableBody {...props} ref={ref} />
@@ -303,7 +301,11 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   function rowContent(_index, row) {
     return (
       <React.Fragment>
-        <TableCell key={_index} className={classes.rowCell} component="th" scope="row">
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index} className={classes.rowCell} component="th" scope="row">
         <Tooltip  key={_index} title={row?.projectCustomId}>
             <p className={classes.projectName}>
               <span
@@ -317,7 +319,13 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             </p>
           </Tooltip>
         </TableCell>
-        <TableCell key={_index+1} className={classes.rowCell}>
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+1} className={classes.rowCell}>
+          <Tooltip title={row.manager.fullName} arrow>
+
           {row.manager.image ? (
             <div className={classes.managerContainer}>
               <img
@@ -338,8 +346,13 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
               </span>
             </div>
           )}
+          </Tooltip>
         </TableCell>
-        <TableCell key={_index+2} className={classes.rowCell}>
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+2} className={classes.rowCell}>
           <div className={classes.lots}>
             {row.lots.map(content => (
               <p key={content} className={classes.lot} label={content}>
@@ -349,13 +362,25 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
           </div>
         </TableCell>
         <TableCell  key={_index+3}className={classes.rowCell}>{row?.activePhase}</TableCell>
-        <TableCell className={classes.rowCell}>
+        <TableCell onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } className={classes.rowCell}>
           {renderProjectTasks(row.id)}
         </TableCell>
-        <TableCell  key={_index+4}className={classes.rowCell}>
+        <TableCell  onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+4}className={classes.rowCell}>
           {renderTasksStates(row.id)}
         </TableCell>
-        <TableCell  key={_index+5}className={classes.rowCell}>
+        <TableCell  onClick={() =>
+        addProjectState.isFiltering && addForm
+        ? handleClickProject(row.id)
+        : handleNavigation(row.id)
+        } key={_index+5}className={classes.rowCell}>
           {renderTaskTimeLine(row.id)}
         </TableCell>
         <TableCell sx={{width:60}}  key={_index+6}className={classes.rowCell}>
@@ -380,7 +405,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         ))}
         <TableCell
           className={classes.tableHeader}
-          sx={{ width: (twoWeeksDates.length -1) * 40 }}
+          sx={{ width: (twoWeeksDates.length -1) * progress_bar_width_cell }}
         >
           <div className={classes.datesData}>
             {twoWeeksDates?.map(({ date, weekend }, index) => (
