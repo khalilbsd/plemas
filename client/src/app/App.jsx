@@ -20,10 +20,12 @@ import Sidebar from "./Components/sidebar/Sidebar";
 import Anonymous from "./routes/Anonymous";
 import { toggleSideBar } from "../store/reducers/sidebar.reducer";
 import useGetStateFromStore from "../hooks/manage/getStateFromStore";
+import useIsPathValid from "../hooks/path";
 
 function App() {
   const userObject = useGetAuthenticatedUser();
   const shouldRenderSidebar = useRenderLocation();
+  const isPathValid  = useIsPathValid()
   const location = useLocation();
   const dispatch = useDispatch();
   const { user: userAccount, profile } = useGetUserInfo();
@@ -32,6 +34,7 @@ const sideBarDisabled = useGetStateFromStore('sidebar','hide')
   const [getAuthenticatedUserInfo] =
     useGetAuthenticatedUserInfoMutation();
 
+
   useEffect(() => {
     async function loadUserInfo() {
       try {
@@ -39,6 +42,7 @@ const sideBarDisabled = useGetStateFromStore('sidebar','hide')
           const { data } = await getAuthenticatedUserInfo({
             email: userObject.user.email
           });
+
 
             dispatch(setUserInfo(data));
 
@@ -52,13 +56,13 @@ const sideBarDisabled = useGetStateFromStore('sidebar','hide')
     if (userObject?.isAuthenticated && (!userAccount || !profile)) {
       loadUserInfo();
 
-      if (sideBarDisabled){
-        dispatch(toggleSideBar(false))
-      }
+    }
+    if (sideBarDisabled && isPathValid){
+      dispatch(toggleSideBar(false))
     }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location, userObject.loading]);
+  }, [location, userObject.loading,sideBarDisabled,isPathValid]);
 
 
 

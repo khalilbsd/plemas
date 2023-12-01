@@ -1,10 +1,10 @@
 import { Box } from '@mui/system'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useGetAuthenticatedUser from '../../hooks/authenticated'
+import useIsPathValid from '../../hooks/path'
 import { toggleSideBar } from '../../store/reducers/sidebar.reducer'
-import { combinedUrls } from '../routes/urls'
 import { styles } from './style'
 
 const PageNotFound = () => {
@@ -12,21 +12,17 @@ const PageNotFound = () => {
   const dispatch = useDispatch()
   const {user} = useGetAuthenticatedUser()
   const navigate = useNavigate()
-  const location  = useLocation()
+  const isPathValid = useIsPathValid()
 
-  const isPathValid = () => {
-    // Check if location.pathname matches any valid path
-    return combinedUrls.filter(path=>path !== '*' && path!=='/').some((path) => {
-      return matchPath({ path:path, exact: true },location.pathname ) !== null;
-    });
-  };
 
   useEffect(() => {
     dispatch(toggleSideBar(true))
-    if ((!user || !user?.isAuthenticated) && isPathValid()){
+    if ((!user || !user?.isAuthenticated) && isPathValid){
       navigate('/login')
     }
-  },[user])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[user,isPathValid])
 
   return (
     <div className={classes.pageNotFound}>
