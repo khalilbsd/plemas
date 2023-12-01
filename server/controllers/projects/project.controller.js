@@ -639,7 +639,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
   // chekc if the user has access to the project
-  if (!req.user.isSuperUser && req.user.role !== CLIENT_ROLE){
+  if (!req.user.isSuperUser && req.user.role !== CLIENT_ROLE && project.manager !== req.user.id){
   const projectIntervenants = project.intervenants.map(entry=>entry.intervenantID)
     if (!projectIntervenants.includes(req.user.id)) return next(new UnAuthorized("vous ne faites pas partie de ce projet"))
   }
