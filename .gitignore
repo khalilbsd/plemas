@@ -2,3 +2,4 @@
 combined.log
 /server/log/*.log
 *.log
+/server/tracking/tracking.txt

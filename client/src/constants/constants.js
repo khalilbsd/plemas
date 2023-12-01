@@ -13,6 +13,12 @@ export const TASK_STATES = [
 ];
 
 
+export const TASK_STATE_DOING_ORG = "doing";
+export const TASK_STATE_DONE_ORG = "done";
+export const TASK_STATE_ABANDONED_ORG = "abandoned";
+export const TASK_STATE_BLOCKED_ORG = "blocked";
+
+
 export const TASK_STATE_TRANSLATION =[
   {
   label:"doing",

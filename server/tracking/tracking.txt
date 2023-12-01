@@ -72,3 +72,27 @@
 {"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"28/11/2023","oldValues":"blocked, ","newValues":"done, "}
 {"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"REQUEST_STATE_CHANGED","code":115,"action_date":"28/11/2023","state":"traité"}
 {"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"REQUEST_STATE_CHANGED","code":115,"action_date":"28/11/2023","state":"non traité"}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"doing, ","newValues":"abandoned, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"abandoned, ","newValues":"doing, "}
