@@ -1,34 +1,46 @@
-import { Typography } from '@mui/material';
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from '../../store/reducers/auth';
-import { clearManageList } from '../../store/reducers/manage.reducer';
+import { logout } from "../../store/reducers/auth";
+import { clearManageList } from "../../store/reducers/manage.reducer";
+import { logoutStyle } from "./style";
 
 const Logout = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const classes = logoutStyle();
+  const navigate = useNavigate();
   useEffect(() => {
     try {
-      dispatch(logout())
-      dispatch(clearManageList())
-
+      dispatch(logout());
+      dispatch(clearManageList());
     } catch (error) {
       console.log(error);
     }
     setTimeout(() => {
       navigate("/login");
-    }, 3000);
-  })
+    }, 4000);
+  });
 
   return (
-    <div>
-
-    <Typography variant="h4" component="h2">
-    Nous vous déconnectons ! à la prochaine fois
-</Typography>
+    <div className={classes.logoutPage}>
+      <div className={classes.logoutCard}>
+        <div className={classes.cardTitle}>
+          <h1 className="title">Déconnexion en cours </h1>
+          <div className="snippet" data-title="dot-floating">
+            <div className="stage">
+              <div className="dot-floating"></div>
+            </div>
+          </div>
+        </div>
+        <p className={classes.textPrimary}>
+          la session est terminée avec succès.
+        </p>
+        <p className={classes.text}>
+          Vous avez fait du excellent travail aujourd'hui, à bientôt !
+        </p>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Logout
+export default Logout;

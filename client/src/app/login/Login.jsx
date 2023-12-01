@@ -16,6 +16,7 @@ import { NOTIFY_ERROR } from "../../constants/constants.js";
 import { SUPERUSER_ROLE } from "../../constants/roles.js";
 import Loading from "../Components/loading/Loading.jsx";
 import { notify } from "../Components/notification/notification.js";
+import { toggleSideBar } from "../../store/reducers/sidebar.reducer.js";
 const Login = () => {
   const classes = styles();
   const emailRef = useRef();
@@ -37,7 +38,9 @@ const Login = () => {
         email: emailRef.current.value,
         password: passwordRef.current.value
       }).unwrap();
+      console.log(res);
       dispatch(setCredentials({ ...res }));
+      dispatch(toggleSideBar(false))
       setTimeout(() => {
           if (res?.user?.role === SUPERUSER_ROLE){
             navigate('/admin/manage/projects')

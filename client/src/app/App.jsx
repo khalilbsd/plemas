@@ -18,6 +18,8 @@ import { setUserInfo } from "../store/reducers/user.reducer";
 import Loading from "./Components/loading/Loading";
 import Sidebar from "./Components/sidebar/Sidebar";
 import Anonymous from "./routes/Anonymous";
+import { toggleSideBar } from "../store/reducers/sidebar.reducer";
+import useGetStateFromStore from "../hooks/manage/getStateFromStore";
 
 function App() {
   const userObject = useGetAuthenticatedUser();
@@ -25,6 +27,8 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { user: userAccount, profile } = useGetUserInfo();
+const sideBarDisabled = useGetStateFromStore('sidebar','hide')
+
   const [getAuthenticatedUserInfo] =
     useGetAuthenticatedUserInfoMutation();
 
@@ -36,7 +40,8 @@ function App() {
             email: userObject.user.email
           });
 
-          dispatch(setUserInfo(data));
+            dispatch(setUserInfo(data));
+
         }
       } catch (error) {
         console.log(error);
@@ -46,10 +51,18 @@ function App() {
     userObject.refetch();
     if (userObject?.isAuthenticated && (!userAccount || !profile)) {
       loadUserInfo();
+
+      if (sideBarDisabled){
+        dispatch(toggleSideBar(false))
+      }
     }
-    // if (location !== displayLocation) setTransistionStage("fadeOut");
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, userObject.loading]);
+
+
+
+
   const renderRoutes = (urls) => {
     return urls.map(({ path, Component, nested }, key) => (
       <Route key={key} path={path} element={Component}>
