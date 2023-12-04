@@ -2,18 +2,20 @@ import moment from "moment";
 import {
   action_codes,
   action_phrases,
+  action_titles_fr,
   actions_list
 } from "../constants/constants.js";
 import logger from "../log/config.js";
 import fs from "fs/promises";
 import readline from "readline";
 import { createReadStream } from "fs";
+import { User, UserProfile } from "../db/relations.js";
+import { serializeSimpleUserObject } from "../controllers/users/lib.js";
 export const takeNote = async (
   actionName,
   email,
   projectID,
-  { taskName = null, requestName = null ,extraProps =null },
-
+  { taskName = null, requestName = null, extraProps = null }
 ) => {
   if (!actions_list.includes(actionName)) {
     logger.error("action name unknown");
@@ -73,10 +75,22 @@ export const getTracking = async (projectID) => {
       const data = JSON.parse(line);
       if (data.projectID !== parseInt(projectID)) continue;
       const text = action_phrases[data.code](data);
-      projectTracking.push({
-        date :data.action_date,
-        text
+      const user = await User.findOne({
+        where: { email: data.email },
+        attributes: ["email"],
+        include: [
+          {
+            model: UserProfile,
+            attributes: ["image", "name", "lastName"]
+          }
+        ]
+      });
 
+      projectTracking.push({
+        date: data.action_date,
+        title: action_titles_fr[data.code],
+        text,
+        user :serializeSimpleUserObject(user)
       });
     }
 

@@ -535,12 +535,12 @@ const isShouldCheckProjectIntegrity =()=>{
                       id="project-state-simple-select"
                       size="small"
                       fullWidth
-                      value={editedProject.state ? editedProject.state : ""}
+                      value={editedProject.state ? editedProject.state===TASK_STATE_ABANDONED_ORG?"":  editedProject.state: ""}
                       label="Etat du  project"
                       name="state"
                       onChange={handleChange}
                     >
-                      {TASK_STATE_TRANSLATION.map((trans, idx) => (
+                      {TASK_STATE_TRANSLATION.filter(state=>state.label !== TASK_STATE_ABANDONED_ORG).map((trans, idx) => (
                         <MenuItem key={idx} value={trans.label}>
                           {trans.value}
                         </MenuItem>

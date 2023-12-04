@@ -27,6 +27,23 @@ export const serializeUser = (user) => {
   };
 };
 
+
+export const serializeSimpleUserObject = (user)=>{
+  let fullName =""
+  if (user?.UserProfile.name)
+    fullName+=user?.UserProfile.name
+  if (user?.UserProfile.lastName)
+    fullName+=` ${user?.UserProfile.lastName}`
+
+
+   return {
+    email: user.email,
+    image:user?.UserProfile?.image,
+    fullName
+   }
+}
+
+
 export const serializeProfile = (userInfo, userId) => {
   return {
     name: userInfo.name,
