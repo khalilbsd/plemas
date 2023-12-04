@@ -10,7 +10,7 @@ export const projectDetails = createUseStyles({
     flexDirection: "column"
   },
   card: {
-    border:'none',
+    border: "none",
     position: "relative",
     backgroundColor: "var(--white)",
     borderRadius: 30,
@@ -174,8 +174,6 @@ export const projectDetails = createUseStyles({
       }
     },
     "& .position": {
-
-
       "& .init": {
         height: 14,
         display: "block",
@@ -187,38 +185,37 @@ export const projectDetails = createUseStyles({
         display: "block",
         width: 0,
         overflow: "hidden"
-      },
-
+      }
     },
     "&.w-actions": {
       display: "flex",
       gap: 10
     },
-    '& button':{
-      background:'none',
-      border:'none',
-      width:36,
-      height:36,
-      marginLeft:'1%',
-      backgroundColor:'var(--app-bg-color)',
-      borderRadius:'100%',
-      padding:0,
-      '&:hover':{
-        backgroundColor:'var(--orange)',
-        '& svg':{
-          fill:'var(--white)',
+    "& button": {
+      background: "none",
+      border: "none",
+      width: 36,
+      height: 36,
+      marginLeft: "1%",
+      backgroundColor: "var(--app-bg-color)",
+      borderRadius: "100%",
+      padding: 0,
+      "&:hover": {
+        backgroundColor: "var(--orange)",
+        "& svg": {
+          fill: "var(--white)"
         }
       },
-      '& div':{
-        display:'flex',
-        alignItems:'center',
-        justifyContent:'center'
+      "& div": {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
       }
     },
-    '& svg':{
-      width:18,
-      height:18,
-      fill:'var(--orange)'
+    "& svg": {
+      width: 18,
+      height: 18,
+      fill: "var(--orange)"
     }
   },
   manager: {
@@ -566,11 +563,11 @@ export const projectDetails = createUseStyles({
       }
     }
   },
-  seeAllIntervenants:{
-    '& .MuiPaper-root':{
-      width:'600px',
+  seeAllIntervenants: {
+    "& .MuiPaper-root": {
+      width: "600px"
     },
-    '& .MuiDialogContent-root':{
+    "& .MuiDialogContent-root": {
       maxHeight: "500px !important",
       height: "100% !important",
       overflow: "visible !important",
@@ -589,29 +586,26 @@ export const projectDetails = createUseStyles({
         background: "var(--pastel-green)"
       }
     }
-
   },
-  intervenantItem:{
-    border:'1px solid var(--app-bg-color)',
-    padding:5,
-    borderRadius:5,
-    display:'grid',
-    margin:'5px 0',
-    gridTemplateColumns:'10% 48% 10% auto',
-    alignItems:'center',
-    gap:10,
-    '& .info':{
-
-      flexDirection:'column',
-      display:'flex',
-      fontSize:13,
-      '& .name':{
-        fontWeight:600
+  intervenantItem: {
+    border: "1px solid var(--app-bg-color)",
+    padding: 5,
+    borderRadius: 5,
+    display: "grid",
+    margin: "5px 0",
+    gridTemplateColumns: "10% 48% 10% auto",
+    alignItems: "center",
+    gap: 10,
+    "& .info": {
+      flexDirection: "column",
+      display: "flex",
+      fontSize: 13,
+      "& .name": {
+        fontWeight: 600
       },
-      '& .email':{
-        color:'grey'
-      },
-
+      "& .email": {
+        color: "grey"
+      }
     },
     "& button": {
       transition: "all 0.3s ease-in-out",
@@ -623,26 +617,26 @@ export const projectDetails = createUseStyles({
       height: 40,
       borderRadius: 10,
       border: "none",
-      width: '100%',
+      width: "100%",
       "&:hover": {
         backgroundColor: "var(--orange)"
       }
     },
-    '& .hours':{
-      fontWeight:600,
-      display:'flex',
-      alignItems:'center',
-      gap:10,
-      '& svg':{
-        fill:'var(--orange)'
+    "& .hours": {
+      fontWeight: 600,
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      "& svg": {
+        fill: "var(--orange)"
       }
     }
   },
-  standAloneIcon:{
-    width:22,
-    height:22,
-    '& svg':{
-      width:'100%'
+  standAloneIcon: {
+    width: 22,
+    height: 22,
+    "& svg": {
+      width: "100%"
     }
   }
 });
@@ -772,7 +766,7 @@ export const projectTaskDetails = createUseStyles({
     }
   },
   list: {
-    border:'none',
+    border: "none",
     paddingTop: 10,
     "& .blocked": {
       opacity: 0.5
@@ -862,9 +856,9 @@ export const projectTaskDetails = createUseStyles({
   },
   filesList: {
     width: "100%",
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent:' space-between',
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: " space-between"
   },
   fileListPreview: {
     listStyle: "none",
@@ -885,9 +879,9 @@ export const projectTaskDetails = createUseStyles({
     margin: "10px 0",
     padding: 10,
     height: 100,
-    width:100,
+    width: 100,
     alignItems: "center",
-    flexDirection:'column',
+    flexDirection: "column",
     background: "var(--white)",
     justifyContent: "space-evenly",
     borderRadius: 10,
@@ -916,9 +910,9 @@ export const projectTaskDetails = createUseStyles({
     "&:hover": {
       color: "var(--white)",
       backgroundColor: "var(--light-green)",
-      '& $fileIcon':{
-        '& svg':{
-          fill:'var(--white)'
+      "& $fileIcon": {
+        "& svg": {
+          fill: "var(--white)"
         }
       },
       "& button": {
@@ -926,8 +920,8 @@ export const projectTaskDetails = createUseStyles({
       }
     },
     "&.add": {
-      height:40,
-      width:'100%',
+      height: 40,
+      width: "100%",
       backgroundColor: "var(--light-green)",
       justifyContent: "unset",
       color: "var(--white)",
@@ -1001,23 +995,23 @@ export const projectTaskDetails = createUseStyles({
       color: "var(--black)"
     }
   },
-  fileIcon:{
-    position:'relative',
-    '& div':{
-      width:60,
-      height:60,
-      display:'flex',
-      alignItems:'center',
-      justifyContent:'center'
+  fileIcon: {
+    position: "relative",
+    "& div": {
+      width: 60,
+      height: 60,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
     },
 
-    width:60,
-    height:60,
-    '& svg':{
-      fill:'var(--orange)',
-      width:40,
-      height:40,
-      margin:'auto',
+    width: 60,
+    height: 60,
+    "& svg": {
+      fill: "var(--orange)",
+      width: 40,
+      height: 40,
+      margin: "auto"
     }
   }
 });
@@ -1039,32 +1033,20 @@ export const logStyle = createUseStyles({
     "&.open": {
       opacity: 1,
       padding: 20,
-      width: "40%",
+      width: "30%",
       zIndex: 999,
       borderLeft: "5px solid var(--orange)"
     },
     // '&.closed':{
     //   overflow:
     // },
-    height: "100%",
-    overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "8px"
-    },
-
-    "&::-webkit-scrollbar-track": {
-      WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
-      borderRadius: "10px"
-    },
-    "&::-webkit-scrollbar-thumb": {
-      borderRadius: "10px",
-      // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
-      background: "var(--pastel-green)"
-    }
+    height: "100%"
   },
   logContainer: {
+    height: "100%",
     "& .header": {
       display: "flex",
+      alignItems: "center",
       gap: 20,
       "& button": {
         border: "none",
@@ -1084,11 +1066,29 @@ export const logStyle = createUseStyles({
     }
   },
   logList: {
-    marginTop: 20
+    marginTop: 20,
+    Bottom: 50,
+    overflowY: "auto",
+    height: "95%",
+
+    "&::-webkit-scrollbar": {
+      width: "8px"
+    },
+
+    "&::-webkit-scrollbar-track": {
+      WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+      borderRadius: "10px"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      borderRadius: "10px",
+      // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+      background: "var(--pastel-green)"
+    }
   },
   logLine: {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 10,
     alignItems: "center",
     fontSize: 14,
     "& p": {},
@@ -1097,6 +1097,32 @@ export const logStyle = createUseStyles({
     },
     "& .date": {
       fontStyle: "italic",
+      fontWeight: "600",
+      color: "grey"
+    },
+    padding: "10px 0",
+    borderBottom: "1px var(--app-bg-color) solid"
+  },
+  logInfo: {
+    "& .text": {
+      margin: 0
+    },
+    "& .action-title": {
+      fontWeight: "600",
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      marginRight: 60,
+      "&::after": {
+        content: '" "',
+        position: "absolute",
+        backgroundColor: "var(--black)",
+        height: 2,
+        width: 50,
+        right: -60
+      }
+    },
+    "& .action-date ": {
       fontWeight: "600",
       color: "grey"
     }
