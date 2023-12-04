@@ -103,3 +103,41 @@
 {"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"01/12/2023","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
 {"projectID":20,"taskName":"test","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"01/12/2023"}
 {"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/12/2023","oldValues":"","newValues":""}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"blocked, ","newValues":"abandoned, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"8, abandoned, ","newValues":"6, done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE_MANAGER","code":120,"action_date":"04/12/2023","newManager":"khalil.bensaid@tunsa.org","oldManager":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"","newValues":""}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"abandoned, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"6, abandoned, ","newValues":"8, done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE_MANAGER","code":120,"action_date":"04/12/2023","newManager":"khalilbensaid98@itsolution-tn.tn","oldManager":"khalil.bensaid@tunsa.org"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"","newValues":""}
+{"projectID":17,"taskName":"tache 1 ","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"04/12/2023","oldState":"done","newState":"doing"}
+{"projectID":17,"taskName":"tache 4 ","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"04/12/2023","oldState":"done","newState":"doing"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"8, abandoned, ","newValues":"6, done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE_MANAGER","code":120,"action_date":"04/12/2023","newManager":"khalil.bensaid@tunsa.org","oldManager":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"blocked, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"blocked, ","newValues":"doing, "}
+{"projectID":17,"taskName":"tache 1 ","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"04/12/2023","oldState":"done","newState":"doing"}
+{"projectID":17,"taskName":"tache 4 ","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"04/12/2023","oldState":"done","newState":"doing"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"","newValues":""}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"","newValues":""}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"","newValues":""}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"done, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"6, ","newValues":"8, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE_MANAGER","code":120,"action_date":"04/12/2023","newManager":"khalilbensaid98@itsolution-tn.tn","oldManager":"khalil.bensaid@tunsa.org"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"abandoned, ","newValues":"doing, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/12/2023","oldValues":"8, ","newValues":"6, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE_MANAGER","code":120,"action_date":"04/12/2023","newManager":"khalil.bensaid@tunsa.org","oldManager":"khalilbensaid98@itsolution-tn.tn"}

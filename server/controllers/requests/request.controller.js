@@ -15,7 +15,10 @@ import {
   ACTION_NAME_REQUEST_UPDATE,
   PROJECT_MANAGER_ROLE,
   REQUEST_STATES_NOT_TREATED,
-  REQUEST_STATES_TREATED
+  REQUEST_STATES_TREATED,
+  TASK_STATE_BLOCKED,
+  TASK_STATE_DOING,
+  TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { Project, Request, User, UserProfile } from "../../db/relations.js";
 import { config } from "../../environment.config.js";
@@ -56,7 +59,9 @@ export const createRequest = catchAsync(async (req, res, next) => {
   if (!data.projectID) return next(new MissingParameter("Missing project id"));
   const project = await Project.findByPk(data.projectID);
   if (!project) return next(new ElementNotFound("Projet introuvable"));
-
+  if (!req.user.isSuperUser){
+    if (![TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state)) return next(new AppError(`vous ne pouvez pas créer des requêtes car le projet est déjà ${TASK_STATE_TRANSLATION.filter(state=>state.value === project.state)[0].label}`))
+  }
   data.creatorID = req.user.id;
   logger.info(
     `creating request for project: ${data.projectID}  ${project.customId}`

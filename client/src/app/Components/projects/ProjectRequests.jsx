@@ -404,10 +404,13 @@ const ProjectRequests = () => {
   return (
     <div className={classesDetails.card}>
       <div className={`${classesDetails.cardTitle}`}>
+        {
+         (isSuperUser ||project.isProjectRunning) &&
         <button onClick={openAddRequest}>
           <span className="text">Requetes et informations</span>
           <ReactSVG className="icon-container" src={faAdd} />
         </button>
+        }
       </div>
       <PopUp
         open={addRequest}

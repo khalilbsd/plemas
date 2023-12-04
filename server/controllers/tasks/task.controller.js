@@ -100,6 +100,9 @@ export const createTask = catchAsync(async (req, res, next) => {
   if (!projectID) return next(new MissingParameter("le projet est requis"));
   const project = await Project.findByPk(projectID);
   if (!project) return next(new ElementNotFound("le projet est introuvable"));
+  if (!req.user.isSuperUser){
+    if (![TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state)) return next(new AppError(`vous ne pouvez pas créer de tâches car le projet est déjà ${TASK_STATE_TRANSLATION.filter(state=>state.value === project.state)[0].label}`))
+  }
   const { name, startDate, dueDate } = req.body;
   if (!name || !startDate || !dueDate)
     return next(

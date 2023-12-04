@@ -22,21 +22,22 @@ import {
   serializeUser
 } from "../users/lib.js";
 
-
-
-
 export const login = catchAsync(async (req, res, next) => {
   const user = await getUserByEmail(req.body.email);
   if (!user) {
-    res
-      .status(404)
-      .json({ state: "failed", message: "email or password is incorrect " });
-    return next(new ElementNotFound("email is incorrect"));
+    return next(new ElementNotFound("email ou le mot de passe est incorrect"));
   }
   //maybe adding a blocking detecting algo
 
   //to manage role redirection later for now static route
   const redirectUrl = "/main";
+  if (!user.password)
+    return next(
+      new UnknownError(
+        "ce compte n'est pas actif : veuillez vous référer à votre email pour l'email d'activation"
+      )
+    );
+
   const isPasswordMatch = bcrypt.compareSync(req.body.password, user.password);
   if (user && isPasswordMatch) {
     // generate new token
@@ -123,8 +124,6 @@ const resetUserPassword = async (req, res, userEmail = null) => {
   // if (password )
 };
 
-
-
 /* @DESC
   function to reset password : this will only work if the user is authenticated otherwise refer to passwordResetWithToken function
 */
@@ -149,26 +148,49 @@ export const passwordReset = catchAsync(async (req, res, next) => {
     .json({ isChanged: true, message: "password changed  successfully" });
 });
 export const passwordResetWithToken = catchAsync(async (req, res, next) => {
-  const { password, confirmPassword,token} = req.body;
+  const { password, confirmPassword, token } = req.body;
 
   // verify the token
-  const resetReq = await ResetPasswordToken.findOne({ where: { token },include: [
-    {
-      model: User,
-      attributes: ["email", "id"]
-    }
-  ] });
+  const resetReq = await ResetPasswordToken.findOne({
+    where: { token },
+    include: [
+      {
+        model: User,
+        attributes: ["email", "id"]
+      }
+    ]
+  });
   // console.log(resetReq.user.email);
-  if (!resetReq) return next(new ElementNotFound("It seems that we didn't note this request. you can generate another request with the reset password page"));
+  if (!resetReq)
+    return next(
+      new ElementNotFound(
+        "It seems that we didn't note this request. you can generate another request with the reset password page"
+      )
+    );
 
-  if (resetReq.expired) return next(new UnAuthorized("This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"))
+  if (resetReq.expired)
+    return next(
+      new UnAuthorized(
+        "This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"
+      )
+    );
 
   const currentTimeInSameTimezone = new Date().getTime();
-  console.log(resetReq.expiresAt.getTime(),"Date now",currentTimeInSameTimezone," res =>",resetReq.expiresAt.getTime() > currentTimeInSameTimezone);
-  if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone) return next(new UnAuthorized("This link has already expired. If you find something wrong with this you can try again or contact the admin"))
+  console.log(
+    resetReq.expiresAt.getTime(),
+    "Date now",
+    currentTimeInSameTimezone,
+    " res =>",
+    resetReq.expiresAt.getTime() > currentTimeInSameTimezone
+  );
+  if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone)
+    return next(
+      new UnAuthorized(
+        "This link has already expired. If you find something wrong with this you can try again or contact the admin"
+      )
+    );
 
-  resetReq.expired=true
-
+  resetReq.expired = true;
 
   if (!password || !confirmPassword)
     return next(new MissingParameter("passwords don't match "));
@@ -176,17 +198,20 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   if (password !== confirmPassword)
     return next(new AppError("passwords don't match", 500));
 
-  const { user, isReseted } = await resetUserPassword(req, res,resetReq.user.email);
+  const { user, isReseted } = await resetUserPassword(
+    req,
+    res,
+    resetReq.user.email
+  );
 
   if (!user || !isReseted)
     return next(new UnknownError("something went wrong"));
 
-  resetReq.save()
-
+  resetReq.save();
 
   user.save();
   //deleting old request
-  await ResetPasswordToken.destroy({where:{id:user.id}})
+  await ResetPasswordToken.destroy({ where: { id: user.id } });
   logger.info(`user ${user.email} changes his password successfully`);
 
   return res
@@ -194,44 +219,45 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
     .json({ isChanged: true, message: "password changed  successfully" });
 });
 
-
-
-
-export const changeUserEmail = catchAsync(async(req,res,next)=>{
-  const {oldEmail,newEmail} = req.body
-  if (!oldEmail || !newEmail) return next(new AppError("Vous pouvez pas changer l'email du l'utilisateur sans l'ancien adresse email",401))
-  const user = await User.findOne({where:{email:oldEmail}})
-if (!user) return next (new AppError("utilisateur introuvable",400))
-const isValid = await User.findOne({where:{email:newEmail}})
-if (isValid) return next (new AppError("email existant",400))
-user.email =newEmail
-const token = await createPasswordSetToken();
-user.token = token
-user.password = null
-await user.save()
-//sending
-if (user.token) {
-  logger.info(`sending email confirmation for user ${user.id}`);
-  const url = `http://${config.lms_host}/auth/account/confirmation/${user.token}`;
-  try {
-    await send({
-      template: "account_verification_token",
-      to: user.email,
-      subject: `Account Verification Link (valid for ${
-        config.verify_token_expires_in / 60000
-      } min)`,
-      args: { url }
-    });
-  } catch (error) {
-    console.log(error);
+export const changeUserEmail = catchAsync(async (req, res, next) => {
+  const { oldEmail, newEmail } = req.body;
+  if (!oldEmail || !newEmail)
+    return next(
+      new AppError(
+        "Vous pouvez pas changer l'email du l'utilisateur sans l'ancien adresse email",
+        401
+      )
+    );
+  const user = await User.findOne({ where: { email: oldEmail } });
+  if (!user) return next(new AppError("utilisateur introuvable", 400));
+  const isValid = await User.findOne({ where: { email: newEmail } });
+  if (isValid) return next(new AppError("email existant", 400));
+  user.email = newEmail;
+  const token = await createPasswordSetToken();
+  user.token = token;
+  user.password = null;
+  await user.save();
+  //sending
+  if (user.token) {
+    logger.info(`sending email confirmation for user ${user.id}`);
+    const url = `http://${config.lms_host}/auth/account/confirmation/${user.token}`;
+    try {
+      await send({
+        template: "account_verification_token",
+        to: user.email,
+        subject: `Account Verification Link (valid for ${
+          config.verify_token_expires_in / 60000
+        } min)`,
+        args: { url }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
-
-}
-return res.status(200).json({message:"email  a été modifiée et lui envoyer un email"})
-
-})
-
-
+  return res
+    .status(200)
+    .json({ message: "email  a été modifiée et lui envoyer un email" });
+});
 
 export const checkUserPassword = catchAsync(async (req, res, next) => {
   // console.log(req.body);
@@ -271,7 +297,6 @@ export const sendResetPasswordEmailToken = catchAsync(
         userID: user.id
       }
     });
-
 
     if (count >= config.reset_password_request_limit) {
       logger.error(
@@ -315,12 +340,10 @@ export const sendResetPasswordEmailToken = catchAsync(
         new AppError("we couldn't send the email! please try again later", 500)
       );
     }
-    return res
-      .status(200)
-      .json({
-        status: "success",
-        message: "a reset password email has been sent"
-      });
+    return res.status(200).json({
+      status: "success",
+      message: "a reset password email has been sent"
+    });
   }
 );
 
@@ -336,22 +359,39 @@ export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
 
   const resetReq = await ResetPasswordToken.findOne({ where: { token } });
 
-  if (!resetReq) return next(new ElementNotFound("It seems that we didn't note this request. you can generate another request with the reset password page"));
+  if (!resetReq)
+    return next(
+      new ElementNotFound(
+        "It seems that we didn't note this request. you can generate another request with the reset password page"
+      )
+    );
 
-  if (resetReq.expired) return next(new UnAuthorized("This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"))
+  if (resetReq.expired)
+    return next(
+      new UnAuthorized(
+        "This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"
+      )
+    );
 
   const currentTimeInSameTimezone = new Date().getTime();
 
-  if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone) return next(new UnAuthorized("This link has already expired. If you find something wrong with this you can try again or contact the admin"))
+  if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone)
+    return next(
+      new UnAuthorized(
+        "This link has already expired. If you find something wrong with this you can try again or contact the admin"
+      )
+    );
 
   // resetReq.expired =true
 
   // expiring old tokens  before saving
-  const oldTokens = await ResetPasswordToken.findAll({where:{
-    id:{
-      [Op.not]: resetReq.id,
+  const oldTokens = await ResetPasswordToken.findAll({
+    where: {
+      id: {
+        [Op.not]: resetReq.id
+      }
     }
-  }})
+  });
 
   oldTokens?.forEach((old) => {
     old.expired = true;
@@ -360,11 +400,7 @@ export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
 
   // resetReq.save()
 
-  return res.status(200).json({status:true,message:"this token is verified"})
+  return res
+    .status(200)
+    .json({ status: true, message: "this token is verified" });
 });
-
-
-
-
-
-

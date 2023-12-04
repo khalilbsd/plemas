@@ -333,7 +333,7 @@ const ProjectTasks = ({ openAddTask }) => {
         const renderActions = [];
         // if (!user?.email)
         //   return [<Skeleton className={classes.joinBtnSkeleton} />];
-
+        if (!isSuperUser && !project.isProjectRunning) return renderActions
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
         );
@@ -445,7 +445,7 @@ const ProjectTasks = ({ openAddTask }) => {
   return (
     <div className={classesDetails.card}>
       {(isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email)) && (
+        (isManager && user?.email === project?.managerDetails?.email && project.isProjectRunning)) && (
         <div className={`${classesDetails.cardTitle}`}>
           <button onClick={openAddTask}>
             <span className="text">Tache</span>

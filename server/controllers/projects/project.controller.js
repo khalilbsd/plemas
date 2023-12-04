@@ -61,7 +61,8 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     objectQuery[Op.or] = [{ manager: req.user.id }];
   }
   if (
-    req.user.role === PROJECT_MANAGER_ROLE || req.user.role === INTERVENANT_ROLE
+    req.user.role === PROJECT_MANAGER_ROLE ||
+    req.user.role === INTERVENANT_ROLE
     // (req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser)
   ) {
     let interventions = await Intervenant.findAll({
@@ -321,7 +322,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   if (!details || !Object.keys(details).length)
     return next(new MissingParameter("Des paramètres manquants"));
   let phase;
-  console.log(details)
+  console.log(details);
   if (details.phase || details.code) {
     const objectQuery = {
       // id:req.params.projectID
@@ -377,9 +378,22 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   if (details.startDate)
     details.startDate = moment(details.startDate, "DD/MM/YYYY");
 
-  //flag the project as done
+  if (
+    details.state !== project.state &&
+    details.state === TASK_STATE_DOING &&
+    project.dueDate
+  ) {
+    console.log(
+      "-------------------------------setting due date to non after trying to set project to doing state "
+    );
+    details.dueDate = null;
+    project.dueDate = null;
+  }
 
-  if (details.dueDate) {
+  //flag the project as done
+  // if the project is not already done
+  if (details.dueDate && !project.dueDate && !details.clearDueDate) {
+    details.state = TASK_STATE_DONE;
     let taskIds = await Intervenant.findAll({
       where: { projectID: req.params.projectID },
       attributes: ["taskID"]
@@ -388,23 +402,28 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     taskIds.forEach(({ taskID }) =>
       !ids.includes(taskID) ? ids.push(taskID) : null
     );
-    if (details.clearDueDate) {
-      details.dueDate = null;
-      details.state = TASK_STATE_DOING;
-    } else {
-      details.state = TASK_STATE_DONE;
-      await Task.update({ state: TASK_STATE_DONE }, { where: { id: ids } });
-    }
-
+    await Task.update({ state: TASK_STATE_DONE }, { where: { id: ids } });
     details.dueDate = moment(details.dueDate, "DD/MM/YYYY");
+  } else {
+    if (details.dueDate && details.clearDueDate) {
+      details.state = TASK_STATE_DOING;
+      details.dueDate = null;
+    }
   }
 
+  console.log(
+    "-------------------------------------------------------- state   ",
+    details.state,
+    [TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)
+  );
   if ([TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)) {
     details.dueDate = moment(new Date(), "DD/MM/YYYY");
     if (TASK_STATE_ABANDONED === details.state) {
       abandonProject(TASK_STATE_ABANDONED, project.id);
     }
   }
+
+  console.log("----------------- final values to update with", details);
 
   await project.update({ ...details });
 
@@ -461,8 +480,8 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   let newValuesString = "";
 
   Object.keys(differences).forEach((key) => {
-    oldValuesString = oldValuesString.concat(differences[key].oldValue,", ");
-    newValuesString = newValuesString.concat(differences[key].newValue,", ");
+    oldValuesString = oldValuesString.concat(differences[key].oldValue, ", ");
+    newValuesString = newValuesString.concat(differences[key].newValue, ", ");
   });
 
   await takeNote(ACTION_NAME_PROJECT_UPDATE, req.user.email, project.id, {
@@ -471,7 +490,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
       newValues: newValuesString
     }
   });
-  if (details.manager && details.manager !==project.oldValues.manager) {
+  if (details.manager && details.manager !== project.oldValues.manager) {
     await takeNote(
       ACTION_NAME_PROJECT_UPDATE_MANAGER,
       req.user.email,
@@ -630,26 +649,28 @@ export const getProjectById = catchAsync(async (req, res, next) => {
         attributes: ["name", "abbreviation"]
       },
       {
-        model:Intervenant
+        model: Intervenant
       }
     ]
   });
 
-
-
   if (!project) return next(new ElementNotFound(`Project was not found`));
   // chekc if the user has access to the project
-  if (!req.user.isSuperUser && req.user.role !== CLIENT_ROLE && project.manager !== req.user.id){
-  const projectIntervenants = project.intervenants.map(entry=>entry.intervenantID)
-    if (!projectIntervenants.includes(req.user.id)) return next(new UnAuthorized("vous ne faites pas partie de ce projet"))
+  if (
+    !req.user.isSuperUser &&
+    req.user.role !== CLIENT_ROLE &&
+    project.manager !== req.user.id
+  ) {
+    const projectIntervenants = project.intervenants.map(
+      (entry) => entry.intervenantID
+    );
+    if (!projectIntervenants.includes(req.user.id))
+      return next(new UnAuthorized("vous ne faites pas partie de ce projet"));
   }
 
   const projectHours = await Intervenant.sum("nbHours", {
     where: { projectID: project.id }
   });
-
-
-
 
   const result = project.toJSON();
 
@@ -666,6 +687,8 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   });
 
   result.projectNbHours = projectHours;
+  result.isProjectRunning = [TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state)
+
   const taskStates = await Task.findAll({
     where: {
       id: ids,
@@ -737,8 +760,8 @@ export const assignManagerHours = catchAsync(async (req, res, next) => {
     req.user.email,
     project.id,
     {
-      extraProps:{
-        hours:hours
+      extraProps: {
+        hours: hours
       }
     }
   );
