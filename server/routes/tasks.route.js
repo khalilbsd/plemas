@@ -17,7 +17,7 @@ import {
 } from "../controllers/tasks/task.controller.js";
 import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
 import createMulterMiddleware from "../middleware/uploader.js";
-import { uploadFileToTask } from "../controllers/tasks/intervenant.controller.js";
+import { uploadFileToTask ,deleteFileFromTask } from "../controllers/tasks/intervenant.controller.js";
 
 const router = Router();
 const fileUploader = createMulterMiddleware("file");
@@ -71,6 +71,12 @@ router
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE, INTERVENANT_ROLE]),
     fileUploader,
     uploadFileToTask
+  )
+  .patch(
+    "/update/project/:projectID/task/:taskID/delete/file",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
+    deleteFileFromTask
   )
   .post(
     "/filter/bulk/projects/start_end/dates",

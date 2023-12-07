@@ -170,30 +170,30 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     // console.log(convertedDates);
     const taskElements = projectTasks(projectID)?.map((task) => {
       // Perform calculations here
-      let { startDate, dueDate, doneDate, blockedDate } = task;
+      let { startDate, dueDate, doneDate } = task;
 
       //converting dates
       let start = formattedDate(startDate, true);
       let due = formattedDate(dueDate, true);
       let done = null;
-      let blocked = null;
+
       if (doneDate) done = formattedDate(doneDate, true);
-      if (blockedDate) blocked = formattedDate(blockedDate, true);
+
 
       let startIdx = convertedDates.findIndex((date) => date === start);
       let dueIdx = convertedDates.findIndex((date) => date === due);
       let doneIdx = convertedDates.findIndex((date) => date === done);
-      let blockedIdx = convertedDates.findIndex((date) => date === blocked);
+
       let width = 0;
       let widthD = 0;
-      let widthB = 0;
+
       let position = 0;
 
       if (startIdx === -1 && dueIdx === -1) {
         let startConverted = dayjs(start, "DD/MM/YYYY");
         let dueConverted = dayjs(due, "DD/MM/YYYY");
 
-        let blockedConverted = blocked ? dayjs(blocked, "DD/MM/YYYY") : null;
+
         let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
 
         if (
@@ -202,20 +202,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         ) {
           width = twoWeeksDates.length * progress_bar_width_cell;
           position = 0;
-          if (blocked) {
-            widthB =
-              blockedIdx > -1
-                ? blockedIdx
-                  ? progress_bar_width_cell * blockedIdx
-                  : progress_bar_width_cell * 1
-                : blockedConverted >
-                  dayjs(
-                    convertTwoWeeksDates[convertTwoWeeksDates.length - 1],
-                    "DD/MM/YYYY"
-                  )
-                ? width
-                : 0;
-          }
+
           if (done) {
             widthD =
               doneIdx > -1
@@ -240,16 +227,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
               ? (dueIdx - diff) * progress_bar_width_cell
               : 1 * progress_bar_width_cell
             : (convertedDates.length - startIdx) * progress_bar_width_cell;
-        if (blocked) {
-          widthB =
-            blockedIdx !== -1
-              ? blockedIdx
-                ? (blockedIdx - diff) * progress_bar_width_cell
-                : 1 * progress_bar_width_cell
-              : (convertedDates.length - startIdx) * progress_bar_width_cell;
 
-          console.log("last width b blockedIDX", blockedIdx, widthB);
-        }
 
         if (done) {
         let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
@@ -293,14 +271,8 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             >
               {" "}
             </span>
-          ) : blockedDate ? (
-            <span
-              style={{ width: widthB }}
-              className={`${classes.progressBar} blocked-bar`}
-            >
-              {" "}
-            </span>
-          ) : null}
+          )
+          : null}
         </div>
       );
     });

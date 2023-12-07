@@ -211,7 +211,6 @@ export function calculateDates(nbWeeks, starting = null, ending = null, locale =
 
   const formattedDateList = dateList.map((item) => {
     const dayNames = new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(item.date);
-    console.log(dayNames);
     const dateStr = item.date.format('DD/MM/YYYY', locale);
     return { date: `${dayNames} ${dateStr}`, weekend: item.weekend };
   });

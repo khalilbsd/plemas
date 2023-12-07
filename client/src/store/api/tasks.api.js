@@ -63,6 +63,13 @@ export const taskApi = api.injectEndpoints({
         data: body
       })
     }),
+    deleteFileFromTask: builder.mutation({
+      query: ({ body, taskID, projectID }) => ({
+        url: `tasks/update/project/${projectID}/task/${taskID}/delete/file`,
+        method: "PATCH",
+        data: body
+      })
+    }),
     downloadTaskFile: builder.mutation({
       query: ({ url }) => ({
         url: url,
@@ -93,5 +100,6 @@ export const {
   useGetDailyLogTasksMutation,
   useDownloadTaskFileMutation,
   useUploadFileToTaskMutation,
-  useFilterProjectsTasksByDatesMutation
+  useFilterProjectsTasksByDatesMutation,
+  useDeleteFileFromTaskMutation
 } = taskApi;

@@ -86,14 +86,13 @@ const ResetPassword = () => {
           )
         ) : (
           <div>
-            <h2>Merci de réinitialiser votre mot de passe</h2>
+            <h2>Merci d'avoir réinitialisé votre mot de passe</h2>
             <p className={classes.text}>
-            votre mot de passe a été réinitialisé
+            Votre mot de passe a été réinitialisé.
               {user?.isAuthenticated ? (
                 <span>
-                  vous pouvez choisir de vous <Link to="/logout">déconnecter </Link> or
-                  ou
-                  de poursuivre votre navigation
+                   Vous pouvez choisir de vous <Link to="/logout">déconnecter </Link> ou de poursuivre votre navigation
+
                 </span>
               ) : (
                 <span>vous serez redirigé vers le formulaire de connexion dans 5 secondes</span>

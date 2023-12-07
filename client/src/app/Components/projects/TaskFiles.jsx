@@ -6,12 +6,16 @@ import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
 import axios from "../../../store/api/base.js";
-import { useUploadFileToTaskMutation } from "../../../store/api/tasks.api.js";
+import {
+  useDeleteFileFromTaskMutation,
+  useUploadFileToTaskMutation
+} from "../../../store/api/tasks.api.js";
 import { updateInterventionUploadedFile } from "../../../store/reducers/task.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
 import faFolders from "../../public/svgs/light/folders.svg";
 import faFile from "../../public/svgs/solid/file.svg";
 import faPlus from "../../public/svgs/solid/plus.svg";
+import faClose from "../../public/svgs/light/xmark.svg";
 
 import PopUp from "../PopUp/PopUp.jsx";
 
@@ -19,6 +23,7 @@ import { notify } from "../notification/notification.js";
 import { projectTaskDetails } from "./style.js";
 import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
 import useIsUserCanAccess from "../../../hooks/access.js";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore.js";
 
 const TaskFiles = ({
   interventions,
@@ -30,12 +35,14 @@ const TaskFiles = ({
   const isDownloadingRef = useRef(false);
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
+  const project = useGetStateFromStore("project", "projectDetails");
 
   const { projectID } = useParams();
   const classes = projectTaskDetails();
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const [uploadFileToTask] = useUploadFileToTaskMutation();
+  const [deleteFileFromTask] = useDeleteFileFromTaskMutation();
   // const [downloadTaskFile] = useDownloadTaskFileMutation();
   const handleOpen = () => {
     setOpenFolder(true);
@@ -47,8 +54,6 @@ const TaskFiles = ({
 
   const handleDownload = async (e, url, name) => {
     try {
-      // Check if the download is already in progress
-
       if (isDownloadingRef.current) {
         return;
       }
@@ -72,6 +77,23 @@ const TaskFiles = ({
   const handleUpload = () => {
     // Use current property of the ref to access the input element
     fileInputRef.current.click();
+  };
+
+  const handleDelete = async (intervention, file) => {
+    try {
+      const res = await deleteFileFromTask({
+        projectID,
+        taskID,
+        body: {
+          interventionID: intervention.id,
+          file: file
+        }
+      }).unwrap();
+      handleClose();
+      notify(NOTIFY_SUCCESS, res.message);
+    } catch (error) {
+      notify(NOTIFY_ERROR, error);
+    }
   };
 
   const onChange = async (e) => {
@@ -118,32 +140,42 @@ const TaskFiles = ({
     const files = item.file ? JSON.parse(item.file) : [];
     files.forEach((file, key) => {
       elements.push(
-        <div
-          onClick={(e) =>
-            handleDownload(
-              e,
-              `${process.env.REACT_APP_SERVER_URL}${file}`,
-              file.split("-")[1]
-            )
-          }
-          key={key}
-          className={`file ${classes.fileItem}`}
-        >
-          <ReactSVG className={classes.fileIcon} src={faFile} />
-          <Tooltip
-            title={file.substr(file.indexOf("-") + 1)}
-            arrow
-            placement="top"
+        <div className={classes.fileContainer} key={key}>
+           {(isSuperUser ||
+       ( isManager && project?.managerDetails?.email === user?.email)) && (
+              <button
+                className="delete-btn"
+                onClick={() => handleDelete(item, file)}
+              >
+                <ReactSVG src={faClose} />
+              </button>
+            )}
+          <div
+            onClick={(e) =>
+              handleDownload(
+                e,
+                `${process.env.REACT_APP_SERVER_URL}${file}`,
+                file.split("-")[1]
+              )
+            }
+            className={`file ${classes.fileItem}`}
           >
-            <span className="file-name">
-              {" "}
-              {file.substr(file.indexOf("-") + 1)}
-            </span>
-          </Tooltip>
+            <ReactSVG className={classes.fileIcon} src={faFile} />
+            <Tooltip
+              title={file.substr(file.indexOf("-") + 1)}
+              arrow
+              placement="top"
+            >
+              <span className="file-name">
+                {" "}
+                {file.substr(file.indexOf("-") + 1)}
+              </span>
+            </Tooltip>
 
-          {/* <Link to={`${process.env.REACT_APP_SERVER_URL}${item.file}`}  rel="noopener noreferrer"target="_blank"   download="Example-PDF-document"> */}
-          {/* <span> {file.split('-')[1]}</span> */}
-          {/* </Link> */}
+            {/* <Link to={`${process.env.REACT_APP_SERVER_URL}${item.file}`}  rel="noopener noreferrer"target="_blank"   download="Example-PDF-document"> */}
+            {/* <span> {file.split('-')[1]}</span> */}
+            {/* </Link> */}
+          </div>
         </div>
       );
     });
@@ -157,7 +189,7 @@ const TaskFiles = ({
         <div className={classes.filesList}>
           {filesList}
           {(isSuperUser ||
-            ( isProjectManager && isManager) ||
+            (isProjectManager && isManager) ||
             intervenantList.includes(user?.email)) && (
             <div className={`${classes.fileItem} add`} onClick={handleUpload}>
               <ReactSVG src={faPlus} /> <span>Ajouter un fichier</span>
@@ -175,11 +207,11 @@ const TaskFiles = ({
       <button className={classes.taskFileBtn} onClick={handleOpen}>
         {attachedFiles.length === 0 ? (
           <>
-            <ReactSVG src={faEmptyFolder} /> <span>Pas de fichiers</span>
+            <ReactSVG src={faEmptyFolder} /> <span>Pas de document</span>
           </>
         ) : (
           <>
-            <ReactSVG src={faFolders} /> <span>Voir attachements</span>
+            <ReactSVG src={faFolders} /> <span>Voir document</span>
           </>
         )}
       </button>

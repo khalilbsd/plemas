@@ -227,7 +227,7 @@ const manageSlice = createSlice({
       );
     },
     setProjectTasksDateFilter:(state,action)=>{
-      console.log(action.payload);
+
       state.projectsTaskFiltersDates.start = action.payload.start
       state.projectsTaskFiltersDates.end = action.payload.end
     },

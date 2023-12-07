@@ -160,7 +160,7 @@ const ProjectListHeader = () => {
         end: dateFilter.endDate.format("DD/MM/YYYY"),
         nbWeeks: dateFilter.endDate.diff(dateFilter.startDate, "week")
       }).unwrap();
-      console.log(res);
+
       dispatch(setTwoWeeksDatesListFiltered(res.dates));
       dispatch(setProjectTaskListFiltered(res.tasks));
       dispatch(
@@ -171,7 +171,7 @@ const ProjectListHeader = () => {
       );
       hideDatesFilter();
     } catch (error) {
-      console.log(error);
+
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   };

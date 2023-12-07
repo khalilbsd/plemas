@@ -52,6 +52,7 @@ import {
 import { notify } from "../notification/notification";
 import RequestFiles from "./RequestFiles";
 import { projectDetails, projectTaskDetails } from "./style";
+import AddBtn from "../managing/AddBtn.jsx";
 
 const ProjectRequests = () => {
   const dispatch = useDispatch();
@@ -404,27 +405,26 @@ const ProjectRequests = () => {
   return (
     <div className={classesDetails.card}>
       <div className={`${classesDetails.cardTitle}`}>
-        {
-         (isSuperUser ||project.isProjectRunning) &&
-        <button onClick={openAddRequest}>
-          <span className="text">Requetes et informations</span>
-          <ReactSVG className="icon-container" src={faAdd} />
-        </button>
-        }
+        {(isSuperUser || project.isProjectRunning) && (
+          <button onClick={openAddRequest}>
+            <span className="text">Requetes et informations</span>
+            <ReactSVG className="icon-container" src={faAdd} />
+          </button>
+        )}
       </div>
       <PopUp
         open={addRequest}
         handleClose={closeAddRequest}
-        handleSubmit={handleSubmitRequest}
+        // handleSubmit={handleSubmitRequest}
         title="Ajouter une requête"
-        text="La demande créée aura la date de création comme date de référence, l'état d'avancement ne sera pas traité comme un état par défaut et le créateur sera celui qui l'a créée."
-        icon={faSave}
-        btnText="Ajouter"
+        // icon={faSave}
+        // btnText="Ajouter"
         loading={creatingRequest}
       >
         <TextField
           label="Information"
           name="description"
+          className={classesDetails.requestInput}
           inputRef={descriptionRef}
           multiline
           fullWidth
@@ -434,20 +434,29 @@ const ProjectRequests = () => {
             <li key={idx}>{file.name}</li>
           ))}
         </ul>
-        <button
-          onClick={selectFiles}
-          className={`${taskStyles.fileItem} add requests`}
-        >
-          <ReactSVG src={faUpload} /> Choisir des fichiers
-          <input
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            type="file"
-            onChange={onChange}
-            name="file"
-            multiple
+        <div className={classesDetails.requestPopAction}>
+          <button
+            onClick={selectFiles}
+            className={`${taskStyles.fileItem} add requests`}
+          >
+            <ReactSVG src={faUpload} /> Choisir des fichiers
+            <input
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              type="file"
+              onChange={onChange}
+              name="file"
+              multiple
+            />
+          </button>
+          <AddBtn
+            handleAdd={handleSubmitRequest}
+            title="Ajouter"
+            // large="large"
+            icon={faSave}
+            loading={creatingRequest}
           />
-        </button>
+        </div>
       </PopUp>
       <PopUp
         open={checkDelete}

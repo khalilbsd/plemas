@@ -7,7 +7,10 @@ import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
 import axios from "../../../store/api/base.js";
-import { useUploadFileToProjectRequestMutation } from "../../../store/api/requests.api.js";
+import {
+  useDeleteFileFromRequestOrTasksMutation,
+  useUploadFileToProjectRequestMutation
+} from "../../../store/api/requests.api.js";
 import { updateFileRequestList } from "../../../store/reducers/project.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
 import faFolders from "../../public/svgs/light/folders.svg";
@@ -16,7 +19,10 @@ import faPlus from "../../public/svgs/solid/plus.svg";
 import PopUp from "../PopUp/PopUp.jsx";
 import { notify } from "../notification/notification.js";
 import { projectTaskDetails } from "./style";
-
+import useIsUserCanAccess from "../../../hooks/access.js";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore.js";
+import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
+import faClose from "../../public/svgs/light/xmark.svg";
 const RequestFiles = (props) => {
   const { files, requestID, isCreator } = props;
   const { projectID } = useParams();
@@ -25,7 +31,14 @@ const RequestFiles = (props) => {
   const classes = projectTaskDetails();
   const isDownloadingRef = useRef(false);
   const dispatch = useDispatch();
+  const { isSuperUser, isManager } = useIsUserCanAccess();
+  const { user } = useGetAuthenticatedUser();
+
+  const project = useGetStateFromStore("project", "projectDetails");
+
   const [uploadFileToProjectRequest] = useUploadFileToProjectRequestMutation();
+  const [deleteFileFromRequestOrTasks] =
+    useDeleteFileFromRequestOrTasksMutation();
   // const [downloadTaskFile] = useDownloadTaskFileMutation();
 
   const handleDownload = async (e, url, name) => {
@@ -53,6 +66,23 @@ const RequestFiles = (props) => {
   };
   const handleClose = () => {
     setOpenFolder(false);
+  };
+
+  const handleDelete = async (file) => {
+    try {
+      const res = await deleteFileFromRequestOrTasks({
+        projectID,
+        requestID,
+        body: {
+          file: file
+        }
+      }).unwrap();
+
+      notify(NOTIFY_SUCCESS, res.message);
+      handleClose();
+    } catch (error) {
+      notify(NOTIFY_ERROR, error);
+    }
   };
 
   const onChange = async (e) => {
@@ -93,21 +123,36 @@ const RequestFiles = (props) => {
   };
 
   const filesList = files.map((file, key) => (
-    <div
-      onClick={(e) =>
-        handleDownload(
-          e,
-          `${process.env.REACT_APP_SERVER_URL}${file}`,
-          file.split("-")[1]
-        )
-      }
-      key={key}
-      className={`file ${classes.fileItem}`}
-    >
-      <ReactSVG className={classes.fileIcon} src={faFile} />
-      <Tooltip title={file.substr(file.indexOf("-") + 1)} arrow placement="top">
-        <span className="file-name"> {file.substr(file.indexOf("-") + 1)}</span>
-      </Tooltip>
+    <div className={classes.fileContainer} key={key}>
+      {(isSuperUser ||
+       ( isManager && project?.managerDetails?.email === user?.email)) && (
+          <button className="delete-btn" onClick={() => handleDelete(file)}>
+            <ReactSVG src={faClose} />
+          </button>
+        )}
+      <div
+        onClick={(e) =>
+          handleDownload(
+            e,
+            `${process.env.REACT_APP_SERVER_URL}${file}`,
+            file.split("-")[1]
+          )
+        }
+        key={key}
+        className={`file ${classes.fileItem}`}
+      >
+        <ReactSVG className={classes.fileIcon} src={faFile} />
+        <Tooltip
+          title={file.substr(file.indexOf("-") + 1)}
+          arrow
+          placement="top"
+        >
+          <span className="file-name">
+            {" "}
+            {file.substr(file.indexOf("-") + 1)}
+          </span>
+        </Tooltip>
+      </div>
     </div>
   ));
 
@@ -126,9 +171,11 @@ const RequestFiles = (props) => {
         <div className={classes.filesList}>
           {files && filesList}
 
-          {isCreator && (
+          {(isCreator ||
+            isSuperUser ||
+            (isManager && project?.managerDetails?.email === user?.email)) && (
             <div className={`${classes.fileItem} add`} onClick={handleUpload}>
-              <ReactSVG src={faPlus} /> <span>Ajouter un fichier</span>
+              <ReactSVG src={faPlus} /> <span>Ajouter un document</span>
               <input
                 ref={fileInputRef}
                 style={{ display: "none" }}
@@ -144,11 +191,11 @@ const RequestFiles = (props) => {
       <button className={classes.taskFileBtn} onClick={handleOpen}>
         {files.length === 0 ? (
           <>
-            <ReactSVG src={faEmptyFolder} /> <span>Pas de fichiers</span>
+            <ReactSVG src={faEmptyFolder} /> <span>Pas de document</span>
           </>
         ) : (
           <>
-            <ReactSVG src={faFolders} /> <span>Voir attachements</span>
+            <ReactSVG src={faFolders} /> <span>Voir documents</span>
           </>
         )}
       </button>

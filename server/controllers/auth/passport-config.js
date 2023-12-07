@@ -9,7 +9,6 @@ const options = {
   secretOrKey: config.jwt_secret
 };
 
-console.log("passport options", options);
 
 passport.use(new JwtStrategy(options, authenticateUser));
 

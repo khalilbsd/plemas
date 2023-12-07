@@ -75,9 +75,6 @@ const ProjectTasks = ({ openAddTask }) => {
   const dataGridRef=useRef()
 
 
-
-
-
   const [rowModesModel, setRowModesModel] = React.useState({});
 
   const joinTask = async (e) => {

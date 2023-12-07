@@ -6,7 +6,7 @@ import {
   UnAuthorized
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
-import { findObjectDifferences } from "../../Utils/utils.js";
+import { deleteFile, findObjectDifferences } from "../../Utils/utils.js";
 import { takeNote } from "../../Utils/writer.js";
 import {
   ACTION_NAME_ADMIN_REQUEST_DELETE,
@@ -207,7 +207,7 @@ export const uploadFileToRequest = catchAsync(async (req, res, next) => {
   if (!requestID) return next(new MissingParameter("la requete est requis"));
   const request = await Request.findByPk(requestID);
   if (!request) return next(new ElementNotFound("requete est introuvable"));
-  if (request.creatorID !== req.user.id)
+  if (!req.user.isSuperUser && (req.user.role !== PROJECT_MANAGER_ROLE && project.manager !== req.user.id)&&(request.creatorID !== req.user.id ))
     return AppError("cette demande ne vous appartient pas ");
 
   let url;
@@ -224,6 +224,37 @@ export const uploadFileToRequest = catchAsync(async (req, res, next) => {
     urls.push(url);
   }
 
+  request.file = JSON.stringify(urls);
+
+  await request.save();
+  return res.status(200).json({
+    status: "success",
+    message: "fichiers attaché au requete",
+    files: urls
+  });
+});
+
+export const deleteFileFromRequest = catchAsync(async (req, res, next) => {
+  const { projectID, requestID } = req.params;
+  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+
+  if (!requestID) return next(new MissingParameter("la requete est requis"));
+  const request = await Request.findByPk(requestID);
+  if (!request) return next(new ElementNotFound("requete est introuvable"));
+
+
+  let urls = JSON.parse(request.file);
+  if (urls.includes(req.body.file)) {
+    let deleted = await deleteFile(req.body.file);
+    if (deleted) {
+      logger.info("file deleted from system");
+    } else {
+      logger.error(`something went wrong when deleting file ${req.body.file}`);
+    }
+    urls = urls.filter((file) => file !== req.body.file);
+  }
   request.file = JSON.stringify(urls);
 
   await request.save();
