@@ -47,11 +47,7 @@ const DailyLog = () => {
   };
 
   const handleDate = (date) => {
-    console.log(
-      date
-        .startOf("day")
-        .isSame(dayjs(new Date()).startOf("day").locale("en-gb"))
-    );
+
     if (
       !date
         .startOf("day")

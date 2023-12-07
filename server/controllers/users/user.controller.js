@@ -198,11 +198,11 @@ export const addUser = catchAsync(async (req, res, next) => {
     newUser.token = token;
   }
 
-  const isUserCreated = await User.create({ ...newUser });
-  if (!isUserCreated)
+  const user = await User.create({ ...newUser });
+  if (!user)
     return next(new AppError("quelque chose n'a pas fonctionné when creation", 500));
 
-  const { dataValues: user } = isUserCreated;
+  // const { dataValues: user } = isUserCreated;
 
   logger.info(`user ${user.id} created successfully`);
 
@@ -210,7 +210,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   let userProfile;
   if (Object.keys(data?.profile).length) {
-    userProfile = await createUserProfile(data.profile, user.id, next);
+    userProfile = await createUserProfile(data.profile, user, next);
     if (!userProfile)
       return next(
         new AppError("Something wrong with the profile creation", 500)
@@ -244,12 +244,14 @@ export const addUser = catchAsync(async (req, res, next) => {
   return res.status(200).json({ message: "utilisateur créé avec succès", createdUSer });
 });
 
-export const createUserProfile = async (info, userId,next) => {
-  if (!userId || !info) return null;
-  const profile = serializeProfile(info, userId);
+export const createUserProfile = async (info, user,next) => {
+  if (!user || !info) return null;
+  const isNameLastNameExists = await UserProfile.findOne({where:{name:info.name,lastName:info.lastName}})
+  if (isNameLastNameExists) {
+    await user.destroy();
+    return next(new AppError("un utilisateur existe déjà avec le même nom et prénom"))}
+  const profile = serializeProfile(info, user.id);
 //  check if name and lastName exists together
-const isNameLastNameExists = await UserProfile.findOne({where:{name:info.name,lastName:info.lastName}})
-if (isNameLastNameExists) return next(new AppError("un utilisateur existe déjà avec le même nom et prénom"))
   if (!profile) return null;
   const newProfile = await UserProfile.create({ ...profile });
 

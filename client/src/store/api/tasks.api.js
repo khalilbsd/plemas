@@ -50,31 +50,35 @@ export const taskApi = api.injectEndpoints({
       })
     }),
     updateTask: builder.mutation({
-      query: ({ body, taskID,projectID }) => ({
+      query: ({ body, taskID, projectID }) => ({
         url: `tasks/update_details/project/${projectID}/task/${taskID}`,
         method: "PATCH",
         data: body
       })
     }),
     uploadFileToTask: builder.mutation({
-      query: ({ body, taskID,projectID }) => ({
+      query: ({ body, taskID, projectID }) => ({
         url: `tasks/update/project/${projectID}/task/${taskID}/upload/file`,
         method: "PATCH",
         data: body
       })
     }),
     downloadTaskFile: builder.mutation({
-      query: ({url}) =>
-      (
-        {
+      query: ({ url }) => ({
         url: url,
-        method: 'GET',
-        headers:{
-          'response-type':'blob'
-
+        method: "GET",
+        headers: {
+          "response-type": "blob"
         }
       })
     }),
+    filterProjectsTasksByDates: builder.mutation({
+      query: (data) => ({
+        url: `tasks/filter/bulk/projects/start_end/dates`,
+        method: "POST",
+        data: data
+      })
+    })
   })
 });
 
@@ -88,5 +92,6 @@ export const {
   useUpdateTaskMutation,
   useGetDailyLogTasksMutation,
   useDownloadTaskFileMutation,
-  useUploadFileToTaskMutation
+  useUploadFileToTaskMutation,
+  useFilterProjectsTasksByDatesMutation
 } = taskApi;

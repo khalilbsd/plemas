@@ -1,3 +1,4 @@
+import moment from "moment";
 import { TASK_STATE_TRANSLATION } from "../../constants/constants.js";
 import { Phase, Project } from "../../db/relations.js";
 import logger from "../../log/config.js";
@@ -142,36 +143,78 @@ export const serializeProject = (projects) => {
   return list;
 };
 
-export function calculateDates(nbWeeks) {
-  const currentDate = new Date();
-  const endDate = new Date();
-  endDate.setDate(currentDate.getDate() + nbWeeks * 7); // Calculate the end date (2 weeks from today)
+// export function calculateDates(nbWeeks,starting=null,ending=null) {
+//   //ending ans starting format must me DD/MM/YYYY
+//   const currentDate = !starting? new Date():new Date(starting);
+//   let endDate
+//   if (!ending) {
+//     endDate = new Date();
+//     endDate.setDate(currentDate.getDate() + nbWeeks * 7); // Calculate the end date (nb weeks from today)
+//   }else{
+//     endDate = new Date(ending)
+//   }
+
+
+//   const dateList = [];
+
+//   while (currentDate <= endDate) {
+//     let item = { date: new Date(currentDate) };
+
+//     if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+//       item.weekend = false;
+//     } else {
+//       item.weekend = true;
+//     }
+
+//     dateList.push(item);
+//     currentDate.setDate(currentDate.getDate() + 1);
+//   }
+
+//   const formattedDateList = dateList.map((item) => {
+//     const dayNames = new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(item.date);
+//     const dateStr = item.date.toLocaleDateString("fr-FR", {
+//       day: "2-digit",
+//       month: "2-digit",
+//       year: "numeric",
+//     });
+//     return { date: `${dayNames} ${dateStr}`, weekend: item.weekend };
+//   });
+
+//   return formattedDateList;
+// }
+
+
+export function calculateDates(nbWeeks, starting = null, ending = null, locale = 'fr-FR') {
+  const currentDate = !starting ? moment() : moment(starting, 'DD/MM/YYYY');
+  let endDate;
+
+  if (!ending) {
+    endDate = moment().add(nbWeeks * 7, 'days');
+  } else {
+    endDate = moment(ending, 'DD/MM/YYYY');
+  }
 
   const dateList = [];
 
-  while (currentDate <= endDate) {
-    let item = { date: new Date(currentDate) };
+  while (currentDate.isSameOrBefore(endDate, 'day')) {
+    let item = { date: currentDate.clone() };
 
-    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+    if (currentDate.day() !== 0 && currentDate.day() !== 6) {
       item.weekend = false;
     } else {
       item.weekend = true;
     }
 
     dateList.push(item);
-    currentDate.setDate(currentDate.getDate() + 1);
+    currentDate.add(1, 'day');
   }
 
   const formattedDateList = dateList.map((item) => {
     const dayNames = new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(item.date);
-    const dateStr = item.date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    console.log(dayNames);
+    const dateStr = item.date.format('DD/MM/YYYY', locale);
     return { date: `${dayNames} ${dateStr}`, weekend: item.weekend };
   });
 
   return formattedDateList;
 }
-

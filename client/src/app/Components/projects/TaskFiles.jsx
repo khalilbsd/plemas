@@ -6,9 +6,7 @@ import { useParams } from "react-router";
 import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
 import axios from "../../../store/api/base.js";
-import {
-  useUploadFileToTaskMutation
-} from "../../../store/api/tasks.api.js";
+import { useUploadFileToTaskMutation } from "../../../store/api/tasks.api.js";
 import { updateInterventionUploadedFile } from "../../../store/reducers/task.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
 import faFolders from "../../public/svgs/light/folders.svg";
@@ -20,17 +18,23 @@ import PopUp from "../PopUp/PopUp.jsx";
 import { notify } from "../notification/notification.js";
 import { projectTaskDetails } from "./style.js";
 import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
+import useIsUserCanAccess from "../../../hooks/access.js";
 
-
-const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
+const TaskFiles = ({
+  interventions,
+  taskID,
+  intervenantList,
+  isProjectManager
+}) => {
   const [openFolder, setOpenFolder] = useState(false);
   const isDownloadingRef = useRef(false);
   const { user } = useGetAuthenticatedUser();
+  const { isSuperUser, isManager } = useIsUserCanAccess();
 
   const { projectID } = useParams();
   const classes = projectTaskDetails();
   const fileInputRef = useRef(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [uploadFileToTask] = useUploadFileToTaskMutation();
   // const [downloadTaskFile] = useDownloadTaskFileMutation();
   const handleOpen = () => {
@@ -51,9 +55,8 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
       // Set the download in progress
       isDownloadingRef.current = true;
 
-
       // const fileName = `${name}.${url.split(".")[2]}`;
-      const fileName = url.substr(url.indexOf('-')+1);
+      const fileName = url.substr(url.indexOf("-") + 1);
 
       const res = await axios.get(url, {
         responseType: "blob"
@@ -69,7 +72,6 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
   const handleUpload = () => {
     // Use current property of the ref to access the input element
     fileInputRef.current.click();
-
   };
 
   const onChange = async (e) => {
@@ -81,7 +83,7 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
       return;
     }
 
-    if (file){
+    if (file) {
       onLoad(file);
     }
     // setHideBtn(false)
@@ -96,11 +98,17 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
         taskID,
         body: formData
       }).unwrap();
-      dispatch(updateInterventionUploadedFile({taskID,attribute:'file',value:res.file,intervenantID:res.interventionID}))
+      dispatch(
+        updateInterventionUploadedFile({
+          taskID,
+          attribute: "file",
+          value: res.file,
+          intervenantID: res.interventionID
+        })
+      );
       notify(NOTIFY_SUCCESS, res?.message);
-      handleClose()
+      handleClose();
     } catch (error) {
-
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
@@ -115,16 +123,23 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
             handleDownload(
               e,
               `${process.env.REACT_APP_SERVER_URL}${file}`,
-              file.split('-')[1]
+              file.split("-")[1]
             )
           }
           key={key}
           className={`file ${classes.fileItem}`}
         >
-            <ReactSVG className={classes.fileIcon} src={faFile} />
-      <Tooltip title={file.substr(file.indexOf("-") + 1)} arrow placement="top">
-        <span className="file-name"> {file.substr(file.indexOf("-") + 1)}</span>
-      </Tooltip>
+          <ReactSVG className={classes.fileIcon} src={faFile} />
+          <Tooltip
+            title={file.substr(file.indexOf("-") + 1)}
+            arrow
+            placement="top"
+          >
+            <span className="file-name">
+              {" "}
+              {file.substr(file.indexOf("-") + 1)}
+            </span>
+          </Tooltip>
 
           {/* <Link to={`${process.env.REACT_APP_SERVER_URL}${item.file}`}  rel="noopener noreferrer"target="_blank"   download="Example-PDF-document"> */}
           {/* <span> {file.split('-')[1]}</span> */}
@@ -138,27 +153,23 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
 
   return (
     <div className="project-details-page-task-file-list">
-      <PopUp
-        open={openFolder}
-        handleClose={handleClose}
-        title={`Les attachements du tache ${taskID}`}
-      >
+      <PopUp open={openFolder} handleClose={handleClose} title={`Documents`}>
         <div className={classes.filesList}>
           {filesList}
-        {
-        intervenantList.includes(user?.email) &&
-
-          <div className={`${classes.fileItem} add`} onClick={handleUpload}>
-            <ReactSVG src={faPlus} /> <span>Ajouter un fichier</span>
-            <input
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              type="file"
-              onChange={onChange}
-              name="file"
+          {(isSuperUser ||
+            ( isProjectManager && isManager) ||
+            intervenantList.includes(user?.email)) && (
+            <div className={`${classes.fileItem} add`} onClick={handleUpload}>
+              <ReactSVG src={faPlus} /> <span>Ajouter un fichier</span>
+              <input
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                type="file"
+                onChange={onChange}
+                name="file"
               />
-          </div>
-            }
+            </div>
+          )}
         </div>
       </PopUp>
       <button className={classes.taskFileBtn} onClick={handleOpen}>
@@ -168,8 +179,7 @@ const TaskFiles = ({ interventions, taskID ,intervenantList }) => {
           </>
         ) : (
           <>
-            <ReactSVG src={faFolders} />{" "}
-            <span>Voir attachements</span>
+            <ReactSVG src={faFolders} /> <span>Voir attachements</span>
           </>
         )}
       </button>

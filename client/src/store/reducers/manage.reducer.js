@@ -1,9 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const filtersInit = [
+  { type: "manager.fullName", active: false },
+  { type: "lots", active: false },
+  { type: "phase", active: false },
+  { type: "state", active: false },
+  { type: "taskState", active: false }
+];
+
 const initialState = {
   userList: [],
   projectsList: [],
   projectsTaskList: [],
+  projectsTaskListFiltered: [],
 
   addProject: {
     existantProjects: [],
@@ -18,7 +27,14 @@ const initialState = {
     projectsListFiltered: [],
     isFiltering: false,
     filterType: []
+  },
+  filters: filtersInit,
+  projectsTaskFilters: [],
+  projectsTaskFiltersDates: {
+    start:"",
+    end:"",
   }
+
 };
 
 const manageSlice = createSlice({
@@ -46,6 +62,10 @@ const manageSlice = createSlice({
     setProjectList: (state, action) => {
       state.projectsList = action?.payload.projects;
       state.projectsTaskList = action?.payload.tasks;
+    },
+    setProjectTaskListFiltered: (state, action) => {
+
+      state.projectsTaskListFiltered = action?.payload;
     },
 
     updateProjectList: (state, action) => {
@@ -90,6 +110,8 @@ const manageSlice = createSlice({
         )[0].projectCustomId;
       }
     },
+
+    // to do the filter
     filterProjectsList: (state, action) => {
       // const regex = new RegExp(action.payload.value, "i"); // 'i' for case-insensitive search
 
@@ -112,9 +134,12 @@ const manageSlice = createSlice({
           .indexOf(action.payload.attribute);
 
         if (indxOfFilter > -1)
-
-          if (state.addProject.filterType[indxOfFilter]?.value !== action.payload.value)
-          state.addProject.filterType[indxOfFilter].value = action.payload.value;
+          if (
+            state.addProject.filterType[indxOfFilter]?.value !==
+            action.payload.value
+          )
+            state.addProject.filterType[indxOfFilter].value =
+              action.payload.value;
       }
 
       if (!action.payload.value && isFilteredBy) {
@@ -128,8 +153,8 @@ const manageSlice = createSlice({
       } else {
         state.addProject.isFiltering = action.payload.flag;
       }
-      if (!state.addProject.isFiltering){
-        state.addProject.filterType =[]
+      if (!state.addProject.isFiltering) {
+        state.addProject.filterType = [];
       }
       // Now, filter the projects based on the filterType array
       state.addProject.projectsListFiltered = state.projectsList.filter(
@@ -148,9 +173,67 @@ const manageSlice = createSlice({
       );
     },
 
+    // remove filter from  list
+    undoFilterType: (state, action) => {
+      state.addProject.filterType = state.addProject.filterType.filter(
+        (ft) => ft.type !== action.payload
+      );
+      // Now, filter the projects based on the filterType array
+      state.addProject.projectsListFiltered = state.projectsList.filter(
+        (project) => {
+          return state.addProject.filterType.every((filterAttribute) => {
+            const nestedProperty = filterAttribute.type.split(".");
+            const nestedValue = nestedProperty.reduce(
+              (obj, key) => (obj && obj[key] ? obj[key] : null),
+              project
+            );
+            const regex = new RegExp(filterAttribute.value, "i"); // 'i' for case-insensitive search
 
+            return regex.test(nestedValue);
+          });
+        }
+      );
+    },
+    // to disable the filtering
     setIsFiltering: (state, action) => {
       state.addProject.isFiltering = action.payload;
+    },
+
+    // to enable the filtering just display
+    showFilterForType: (state, action) => {
+      state.filters = state.filters.map((ft) => {
+        if (ft.type === action.payload) {
+          ft.active = true;
+        } else {
+          ft.active = false;
+        }
+        return ft;
+      });
+    },
+    hideFilterForType: (state, action) => {
+      state.filters = state.filters.map((ft) => {
+        ft.active = false;
+        return ft;
+      });
+    },
+    filterByTaskStatus: (state, action) => {
+      if (!state.projectsTaskFilters.includes(action.payload)) {
+        state.projectsTaskFilters.push(action.payload);
+      }
+    },
+    popTaskStateFromFilter: (state, action) => {
+      state.projectsTaskFilters = state.projectsTaskFilters.filter(
+        (filter) => filter !== action.payload
+      );
+    },
+    setProjectTasksDateFilter:(state,action)=>{
+      console.log(action.payload);
+      state.projectsTaskFiltersDates.start = action.payload.start
+      state.projectsTaskFiltersDates.end = action.payload.end
+    },
+    clearProjectTasksDateFilter:(state,action)=>{
+      state.projectsTaskFiltersDates.start = null
+      state.projectsTaskFiltersDates.end = null
     }
   }
 });
@@ -169,7 +252,15 @@ export const {
   setLinkingProject,
   setLinkedProject,
   filterProjectsList,
-  updateUserInList
+  updateUserInList,
+  showFilterForType,
+  hideFilterForType,
+  undoFilterType,
+  filterByTaskStatus,
+  popTaskStateFromFilter,
+  setProjectTaskListFiltered,
+  setProjectTasksDateFilter,
+clearProjectTasksDateFilter
 } = manageSlice.actions;
 
 export default manageSlice.reducer;

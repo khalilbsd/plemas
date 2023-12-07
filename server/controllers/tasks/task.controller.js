@@ -25,6 +25,7 @@ import {
   TASK_STATE_ABANDONED,
   TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
+  TASK_STATE_DONE,
   TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
@@ -32,6 +33,7 @@ import { projectPotentialIntervenants } from "../users/user.controller.js";
 import InterventionHour from "../../models/tasks/interventionHours.model.js";
 import { takeNote } from "../../Utils/writer.js";
 import { findObjectDifferences, removeDuplicates } from "../../Utils/utils.js";
+import { calculateDates } from "../projects/lib.js";
 
 /*
  * params [projectID] REQUIRED
@@ -710,6 +712,16 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
   if (data.state === TASK_STATE_BLOCKED) {
     project.state = TASK_STATE_BLOCKED;
     await project.save();
+    data.blockedDate  = moment(new Date(), "DD/MM/YYYY");
+  }
+
+  if (data.state === TASK_STATE_DONE){
+    data.doneDate  = moment(new Date(), "DD/MM/YYYY");
+    data.blockedDate = null
+  }
+  if (data.state === TASK_STATE_DOING || data.state === TASK_STATE_ABANDONED){
+    data.doneDate = null
+    data.blockedDate = null
   }
   const oldState = task.state;
   const isAlreadyVerified = task.isVerified;
@@ -759,3 +771,67 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: "succuss", message: "tache mis a jours" });
 });
+
+
+export const getProjectsTasksBulk =async (projectsList,start=null,end=null)=>{
+  let tasks = [];
+  const today = new Date();
+  let filterDate ={}
+  // start and end format must be DD/MM/YYYY
+  if (start && end ){
+    filterDate.dueDate= {
+      [Op.gte]:  moment(start, "DD/MM/YYYY") ,
+      [Op.lte]:  moment(end, "DD/MM/YYYY")
+    }
+  }else{
+    filterDate.dueDate= {
+      [Op.gte]: today ,
+
+    }
+  }
+  for (const projIdx in projectsList) {
+    let projectTasks = await Task.findAll({
+      attributes: ["id", "name", "name", "startDate", "dueDate", "state","blockedDate","doneDate"],
+      // order: [["dueDate", "DESC"]],
+      where: filterDate,
+      include: [
+        {
+          model: Intervenant,
+          attributes: ["id"],
+          where: {
+            projectID: projectsList[projIdx]
+          }
+        }
+      ]
+    });
+
+    projectTasks.sort(
+      (a, b) =>
+        moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
+    );
+
+    tasks.push({
+      projectID: projectsList[projIdx],
+      tasks: projectTasks ? projectTasks : []
+    });
+  }
+
+
+  return tasks.sort((a, b) => a.tasks[0]?.dueDate - b.tasks[0]?.dueDate);
+}
+
+
+
+
+
+export const getProjectTasksBulkInDates =catchAsync(async(req,res,next)=>{
+  const {projects} = req.body
+  if (!projects) return next(new MissingParameter("List des projet est introuvable"))
+  const {start,end,nbWeeks} = req.body
+console.log(start,end,nbWeeks);
+if (!start || !end || nbWeeks === undefined) return next(new MissingParameter("les dates de filtre est introuvable"))
+  const tasks = await getProjectsTasksBulk(projects,start,end)
+
+  const dates = calculateDates(nbWeeks,start,end)
+  return res.status(200).json({status:"success",tasks,dates})
+})

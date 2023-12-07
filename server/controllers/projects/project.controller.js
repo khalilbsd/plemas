@@ -48,6 +48,7 @@ import { getPhaseByName } from "./phase.controller.js";
 import sequelize from "../../db/db.js";
 import { getTracking, takeNote } from "../../Utils/writer.js";
 import { findObjectDifferences } from "../../Utils/utils.js";
+import { getProjectsTasksBulk } from "../tasks/task.controller.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -117,40 +118,41 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   const dates = calculateDates(3);
 
-  let tasks = [];
-  const today = new Date();
+  // let tasks = [];
 
-  for (const projIdx in projectsList) {
-    let projectTasks = await Task.findAll({
-      attributes: ["id", "name", "name", "startDate", "dueDate", "state"],
-      // order: [["dueDate", "DESC"]],
-      where: {
-        "dueDate": {
-          [Op.gte]: today
-        }
-      },
-      include: [
-        {
-          model: Intervenant,
-          attributes: ["id"],
-          where: {
-            projectID: projectsList[projIdx].id
-          }
-        }
-      ]
-    });
 
-    projectTasks.sort(
-      (a, b) =>
-        moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
-    );
+  // for (const projIdx in projectsList) {
+  //   let projectTasks = await Task.findAll({
+  //     attributes: ["id", "name", "name", "startDate", "dueDate", "state","blockedDate","doneDate"],
+  //     // order: [["dueDate", "DESC"]],
+  //     where: {
+  //       "dueDate": {
+  //         [Op.gte]: today
+  //       }
+  //     },
+  //     include: [
+  //       {
+  //         model: Intervenant,
+  //         attributes: ["id"],
+  //         where: {
+  //           projectID: projectsList[projIdx].id
+  //         }
+  //       }
+  //     ]
+  //   });
 
-    tasks.push({
-      projectID: projectsList[projIdx].id,
-      tasks: projectTasks ? projectTasks : []
-    });
-  }
-  tasks.sort((a, b) => a.tasks[0]?.dueDate - b.tasks[0]?.dueDate);
+  //   projectTasks.sort(
+  //     (a, b) =>
+  //       moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
+  //   );
+
+  //   tasks.push({
+  //     projectID: projectsList[projIdx].id,
+  //     tasks: projectTasks ? projectTasks : []
+  //   });
+  // }
+  let tasks = await getProjectsTasksBulk(projectsList.map(project=>project.id))
+
 
   const indexMap = {};
   tasks.forEach((task, index) => {
@@ -411,19 +413,16 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     }
   }
 
-  console.log(
-    "-------------------------------------------------------- state   ",
-    details.state,
-    [TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)
-  );
   if ([TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)) {
     details.dueDate = moment(new Date(), "DD/MM/YYYY");
     if (TASK_STATE_ABANDONED === details.state) {
       abandonProject(TASK_STATE_ABANDONED, project.id);
     }
+    if (TASK_STATE_DONE === details.state) {
+      abandonProject(TASK_STATE_DONE, project.id);
+    }
   }
 
-  console.log("----------------- final values to update with", details);
 
   await project.update({ ...details });
 
@@ -807,10 +806,13 @@ const abandonProject = async (action, projectID) => {
       taskIds.forEach(({ taskID }) => {
         if (!ids.includes(taskID)) ids.push(taskID);
       });
+      let obj ={
+        state: action
+      }
+      if (action === TASK_STATE_DONE) obj.doneDate  = moment(new Date(), "DD/MM/YYYY");
+
       await Task.update(
-        {
-          state: action
-        },
+        obj,
         {
           where: {
             id: ids

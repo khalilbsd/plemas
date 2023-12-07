@@ -9,9 +9,19 @@ import { ReactComponent as FaDelete } from "../../public/svgs/light/trash.svg";
 import { ReactComponent as FaCheck } from "../../public/svgs/light/check.svg";
 import { ReactComponent as FaPlus } from "../../public/svgs/light/plus.svg";
 import { ReactComponent as FaArrowDown } from "../../public/svgs/light/chevron-down.svg";
+import { ReactComponent as FaExcelFile } from "../../public/svgs/light/file-excel.svg";
+import { ReactComponent as FaCsvFile } from "../../public/svgs/light/file-csv.svg";
 
 
 
+
+
+export const CustomExcelFile = ({ className }) => (
+  <FaExcelFile className={className} /> // Customize the width and height as needed
+);
+export const CustomFileCsvFile = ({ className }) => (
+  <FaCsvFile className={className} /> // Customize the width and height as needed
+);
 export const CustomSaveIcon = ({ className }) => (
   <FaSave className={className} /> // Customize the width and height as needed
 );

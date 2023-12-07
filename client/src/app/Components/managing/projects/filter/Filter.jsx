@@ -9,6 +9,7 @@ const Filter = (props) => {
   const { items, handleChange, filterType, label } = props;
   const classes = filterStyles();
 
+
   const getInitials = (fullName) => {
     let first;
     let second;
@@ -25,43 +26,7 @@ const Filter = (props) => {
         filterType === "manager.fullName" ? "wide" : ""
       }`}
     >
-      {/* <FormControl fullWidth>
-      <InputLabel >{label}</InputLabel>
-        <Select
-          color="info"
-          value={value}
-          labelId="select-label"
-          IconComponent={()=><CustomArrowDownIcon className={classes.filterArrowIcon}/>}
-          onChange={handleChange}
-          size="small"
-        >
-          {filterType === "manager.fullName"
-            ? items?.map((manager, idx) => (
-                <MenuItem key={idx} value={manager}>
-                  {manager.image ? (
-                    <Avatar
-                      sx={{ width: 24, height: 24 }}
-                      alt={manager.fullName}
-                      src={`${process.env.REACT_APP_SERVER_URL}${manager.image}`}
-                    />
-                  ) : (
-                    <Avatar sx={{ width: 24, height: 24 }}>
-                      {getInitials(manager.fullName)}
-                    </Avatar>
-                  )}
-                  <span className={classes.managerFullName}>
-                    {" "}
-                    {manager.fullName}
-                  </span>
-                </MenuItem>
-              ))
-            : items?.map((item, idx) => (
-                <MenuItem key={idx} value={item}>
-                  <span> {item}</span>
-                </MenuItem>
-              ))}
-        </Select>
-      </FormControl> */}
+
       {filterType === "manager.fullName" ? (
         <Autocomplete
           options={items}

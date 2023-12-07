@@ -100,7 +100,11 @@ const AddUserForm = ({
                 <TextField
                   className={classes.inputs}
                   label="Téléphone"
-                  type="phone"
+                  type="number"
+                  inputProps={{
+                    min:0,
+                    max:99999999
+                  }}
                   name="phone"
                   variant="outlined"
                   onChange={changeStateProfile}
