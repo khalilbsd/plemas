@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { dailyLogStyle } from "./style";
 import { Grid, Skeleton } from "@mui/material";
-import TasksList from "../Components/dailylog/TasksList";
-import { notify } from "../Components/notification/notification";
-import { NOTIFY_ERROR } from "../../constants/constants";
-import { useGetDailyLogTasksMutation } from "../../store/api/tasks.api";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { NOTIFY_ERROR } from "../../constants/constants";
+import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
+import { useGetDailyLogTasksMutation } from "../../store/api/tasks.api";
 import { setUserDailyTasks } from "../../store/reducers/task.reducer";
 import JoinableTasks from "../Components/dailylog/JoinableTasks";
-import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
-import dayjs from "dayjs";
+import TasksList from "../Components/dailylog/TasksList";
+import { notify } from "../Components/notification/notification";
+import { dailyLogStyle } from "./style";
 const DailyLog = () => {
   const classes = dailyLogStyle();
   const generalTasks = useGetStateFromStore("task", "userGeneralTasks");
   const [history, setHistory] = useState(dayjs(new Date()));
   const [openJoinableTasks, setOpenJoinableTasks] = useState(false);
+
   const [disableJoin, setDisableJoin] = useState(false);
 
   const [getDailyLogTasks, { isLoading: loadingTasks }] =
@@ -32,11 +33,15 @@ const DailyLog = () => {
         dispatch(
           setUserDailyTasks({
             allTasks: res.allTasks,
-            joinableTasks: res.joinableTasks
+            joinableTasks: res.joinableTasks,
+            dailyProjectManager : res.managedProjects,
+            managedProjectHours:res.managedProjectHours
           })
+
         );
       } catch (error) {
-        notify(NOTIFY_ERROR, error?.data.message);
+        console.log(error);
+        notify(NOTIFY_ERROR, error?.data?.message);
       }
     }
     loadDailyTasks();

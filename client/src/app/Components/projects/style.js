@@ -62,7 +62,10 @@ export const projectDetails = createUseStyles({
         opacity: 1,
         width: "100% !important"
       }
-    }
+    },
+  },
+  headerContainer:{
+    background:'var(--white)'
   },
 
   seeMoreProject: {
@@ -779,7 +782,7 @@ export const projectTaskDetails = createUseStyles({
   },
   list: {
     border: "none",
-    paddingTop: 10,
+    padding:0 ,
     "& .blocked": {
       opacity: 0.5
       // backgroundColor: "var(--app-bg-color)"

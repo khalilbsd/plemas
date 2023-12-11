@@ -48,7 +48,7 @@ router
     associateIntervenantToTask
   )
   .patch(
-    "/project/:projectID/intervenant/working/hours",
+    "/project/bulk/intervenant/working/hours",
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE, INTERVENANT_ROLE]),
     updateIntervenantHours

@@ -217,3 +217,12 @@ export function calculateDates(nbWeeks, starting = null, ending = null, locale =
 
   return formattedDateList;
 }
+
+export async function isProjectExist(projectID){
+
+  const project = await Project.findByPk(projectID);
+  if (!project) return null
+
+  return true
+
+}

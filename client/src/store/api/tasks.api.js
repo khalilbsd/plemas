@@ -43,8 +43,8 @@ export const taskApi = api.injectEndpoints({
       })
     }),
     assignHoursInTask: builder.mutation({
-      query: ({ body, projectID }) => ({
-        url: `tasks/project/${projectID}/intervenant/working/hours`,
+      query: (body) => ({
+        url: `tasks/project/bulk/intervenant/working/hours`,
         method: "PATCH",
         data: body
       })

@@ -60,3 +60,7 @@ export const FILTER_TITLES = {
   "state": "État du projet",
   "activePhase": "la phase",
 };
+
+
+
+export const DAILY_HOURS_VALUE=480

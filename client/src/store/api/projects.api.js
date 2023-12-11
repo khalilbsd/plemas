@@ -91,9 +91,9 @@ export const projectApi = api.injectEndpoints({
         data: body
       })
     }),
-    assignManagerHours: builder.mutation({
-      query: ({ body, projectID }) => ({
-        url: `projects/change/manager/assign/hours/${projectID}`,
+    assignManagerHoursBulk: builder.mutation({
+      query: (body) => ({
+        url: `projects/change/manager/assign/hours/bulk`,
         method: "PATCH",
         data: body
       })
@@ -130,7 +130,7 @@ export const {
   useGetPotentielIntervenantsMutation,
   useGetProjectIntervenantsMutation,
   useRemoveIntervenantFromProjectMutation,
-  useAssignManagerHoursMutation,
+  useAssignManagerHoursBulkMutation,
   useAbandonProjectMutation,
   useProjectGetLogMutation
 

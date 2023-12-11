@@ -1,17 +1,23 @@
-import React from "react";
-import { logStyle, projectDetails } from "./style";
-import Loading from "../loading/Loading";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import { ReactSVG } from "react-svg";
-import faClose from "../../public/svgs/light/xmark.svg";
 import Avatar from "@mui/material/Avatar";
-const ProjectLog = ({ open, closeLogTab, loadingLog }) => {
+import React from "react";
+import { ReactSVG } from "react-svg";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
+import faClose from "../../public/svgs/light/xmark.svg";
+import Loading from "../loading/Loading";
+import { logStyle, projectDetails } from "./style";
+
+const ProjectLog = ({ open, closeLogTab, loadingLog , trackingRef }) => {
+
+
   const classes = logStyle();
   const generalStyle = projectDetails();
   const log = useGetStateFromStore("project", "projectLog");
 
   return (
-    <div className={`${classes.logTab} ${open ? "open" : ""} `}>
+    <div
+      ref={trackingRef}
+      className={`${classes.logTab} ${open ? "open" : ""} `}
+    >
       {loadingLog ? (
         <Loading color="var(--orange)" />
       ) : (
@@ -46,12 +52,10 @@ const ProjectLog = ({ open, closeLogTab, loadingLog }) => {
                   </div>
                   <div className={classes.logInfo}>
                     <div className="header">
-                    <span className="action-title">{line.title}</span>
-                    <span className="action-date">{line.date}</span>
+                      <span className="action-title">{line.title}</span>
+                      <span className="action-date">{line.date}</span>
                     </div>
-                    <p className="text">
-                      {line.text}
-                    </p>
+                    <p className="text">{line.text}</p>
                   </div>
                 </div>
               ))}

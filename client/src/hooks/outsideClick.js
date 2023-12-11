@@ -7,6 +7,7 @@ function useOutsideAlerter(ref, callback) {
   useEffect(() => {
     if (typeof callback === "function") {
       function handleClickOutside(event) {
+
         if (ref.current && !ref.current.contains(event.target)) {
           setTimeout(() => {
             callback(); // Call the provided callback function
