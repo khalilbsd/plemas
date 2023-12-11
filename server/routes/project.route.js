@@ -7,7 +7,7 @@ import {
 import {
   abandonOrResumeProject,
   addProject,
-  assignManagerHours,
+  assignManagerHoursBulk,
   checkProjectCode,
   checkProjectLinking,
   generateProjectCode,
@@ -106,10 +106,10 @@ router
     removeIntervenantFromProject
   )
   .patch(
-    "/change/manager/assign/hours/:projectID",
+    "/change/manager/assign/hours/bulk",
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE,PROJECT_MANAGER_ROLE]),
-    assignManagerHours
+    assignManagerHoursBulk
   )
   .patch(
     "/abandon/project/:projectID",

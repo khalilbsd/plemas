@@ -45,6 +45,16 @@ export const requestApi = api.injectEndpoints({
 
       })
     }),
+    deleteFileFromRequestOrTasks: builder.mutation({
+      query: ({projectID,requestID,body}) => ({
+        url: `/requests/update/project/${projectID}/task/${requestID}/delete/file`,
+        method: "PATCH",
+        // data: body
+        data: body
+
+      })
+    }),
+
 
   })
 });
@@ -54,5 +64,6 @@ export const {
  useCreateProjectRequestMutation,
  useUpdateProjectRequestMutation,
  useDeleteProjectRequestMutation,
- useUploadFileToProjectRequestMutation
+ useUploadFileToProjectRequestMutation,
+ useDeleteFileFromRequestOrTasksMutation
 } = requestApi;

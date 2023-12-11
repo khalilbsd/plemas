@@ -18,6 +18,14 @@ const Task = database.define(
       type: DataTypes.DATE,
       allowNull: false
     },
+    blockedDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    doneDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
     isVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

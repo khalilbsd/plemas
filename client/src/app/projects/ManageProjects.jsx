@@ -47,7 +47,7 @@ const newProjectInitialState = {
     required: true
   },
   priority: {
-    value: undefined,
+    value: 3,
     required: false
   },
   phase: {

@@ -5,6 +5,7 @@ const initialState = {
   projectRequest: [],
   edit: false,
   twoWeeksList: [],
+  twoWeeksListFiltered: [],
   projectLog:[],
 };
 
@@ -23,6 +24,9 @@ const projectSlice = createSlice({
     },
     setTwoWeeksDatesList: (state, action) => {
       state.twoWeeksList = action.payload;
+    },
+    setTwoWeeksDatesListFiltered: (state, action) => {
+      state.twoWeeksListFiltered = action.payload;
     },
     setProjectRequests: (state, action) => {
       state.projectRequest = action.payload;
@@ -56,7 +60,8 @@ export const {
   removeRequestFromList,
   updateProjectState,
   setProjectLog,
-  updateFileRequestList
+  updateFileRequestList,
+  setTwoWeeksDatesListFiltered
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

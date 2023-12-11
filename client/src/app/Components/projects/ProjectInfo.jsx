@@ -20,7 +20,6 @@ import { Link } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import {
   NOTIFY_ERROR,
-  NOTIFY_INFO,
   NOTIFY_SUCCESS,
   REQUEST_STATES_TREATED,
   TASK_STATE_ABANDONED,
@@ -36,7 +35,6 @@ import useGetAuthenticatedUser from "../../../hooks/authenticated";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useAbandonProjectMutation,
-  useAssignManagerHoursMutation,
   useGetLotsMutation,
   useGetPhasesMutation,
   useGetPotentielManagersMutation,
@@ -53,7 +51,6 @@ import {
 } from "../../../store/reducers/project.reducer";
 import { formattedDate } from "../../../store/utils";
 import faChevronUp from "../../public/svgs/light/chevron-up.svg";
-import faClock from "../../public/svgs/light/clock.svg";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faEdit from "../../public/svgs/light/pen.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
@@ -64,7 +61,6 @@ import PriorityField, {
 } from "../managing/projects/addProject/PriorityField";
 import { projectsStyles } from "../managing/style";
 import { notify } from "../notification/notification";
-import HoursPopUp from "./HoursPopUp";
 import ProjectIntervenant from "./ProjectIntervenant";
 import ProjectUserLists from "./ProjectUserLists";
 import { projectDetails } from "./style";
@@ -95,7 +91,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [edit, setEdit] = useState(false);
   // const [alertAbandon, setAlertAbandon] = useState(false);
-  const [managerPopUP, setManagerPopUP] = useState({ open: false, hours: 0 });
+  // const [managerPopUP, setManagerPopUP] = useState({ open: false, hours: 0 });
   const [priorityChange, setPriorityChange] = useState(false);
   const [checkProjectIntegrity, setCheckProjectIntegrity] = useState(false);
   const [editedProject, setEditedProject] = useState(initialState);
@@ -105,8 +101,8 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
   const [getPotentielManagers] = useGetPotentielManagersMutation();
   const [updateProject, { isLoading: updatingProject }] =
     useUpdateProjectMutation();
-  const [assignManagerHours, { isLoading: loadMangerHours }] =
-    useAssignManagerHoursMutation();
+  // const [assignManagerHours, { isLoading: loadMangerHours }] =
+  //   useAssignManagerHoursMutation();
 
   const [abandonProject] = useAbandonProjectMutation();
 
@@ -252,45 +248,45 @@ const isShouldCheckProjectIntegrity =()=>{
     });
   };
 
-  const handleManagerHoursPopUP = () => {
-    setManagerPopUP((prevState) => {
-      return { ...managerPopUP, open: !prevState.open };
-    });
-  };
+  // const handleManagerHoursPopUP = () => {
+  //   setManagerPopUP((prevState) => {
+  //     return { ...managerPopUP, open: !prevState.open };
+  //   });
+  // };
 
-  const handleManagerHours = (e) => {
-    setManagerPopUP({ ...managerPopUP, hours: e.target.value });
-    return;
-  };
+  // const handleManagerHours = (e) => {
+  //   setManagerPopUP({ ...managerPopUP, hours: e.target.value });
+  //   return;
+  // };
 
-  const handleSubmitManagerHours = async () => {
-    try {
-      if (managerPopUP.hours === 0) {
-        notify(
-          NOTIFY_INFO,
-          "rien ne changera le nombre d'heures restera le même"
-        );
-        return;
-      }
-      let obj = {};
-      if (isSuperUser) {
-        obj.user = project.manager;
-      }
-      obj.hours = managerPopUP.hours;
-      const res = await assignManagerHours({
-        body: obj,
-        projectID: project.id
-      }).unwrap();
-      notify(NOTIFY_SUCCESS, res?.message);
-      handleManagerHoursPopUP();
-    } catch (error) {
-      if (error.status === 400) {
-        notify(NOTIFY_INFO, error?.data?.message);
-        return;
-      }
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
-  };
+  // const handleSubmitManagerHours = async () => {
+  //   try {
+  //     if (managerPopUP.hours === 0) {
+  //       notify(
+  //         NOTIFY_INFO,
+  //         "rien ne changera le nombre d'heures restera le même"
+  //       );
+  //       return;
+  //     }
+  //     let obj = {};
+  //     if (isSuperUser) {
+  //       obj.user = project.manager;
+  //     }
+  //     obj.hours = managerPopUP.hours;
+  //     const res = await assignManagerHours({
+  //       body: obj,
+  //       projectID: project.id
+  //     }).unwrap();
+  //     notify(NOTIFY_SUCCESS, res?.message);
+  //     handleManagerHoursPopUP();
+  //   } catch (error) {
+  //     if (error.status === 400) {
+  //       notify(NOTIFY_INFO, error?.data?.message);
+  //       return;
+  //     }
+  //     notify(NOTIFY_ERROR, error?.data?.message);
+  //   }
+  // };
 
 
 
@@ -329,7 +325,7 @@ const isShouldCheckProjectIntegrity =()=>{
 
   return (
     <div className={`${classes.mainInfo} ${open ? "collapsed" : "hidden"}`}>
-      <HoursPopUp
+      {/* <HoursPopUp
         open={managerPopUP.open}
         close={handleManagerHoursPopUP}
         title="Renseigner votre heurs"
@@ -340,7 +336,7 @@ const isShouldCheckProjectIntegrity =()=>{
         submit={handleSubmitManagerHours}
         btnText="Confirmer"
         loading={loadMangerHours}
-      />
+      /> */}
 
       <PopUp
         open={checkProjectIntegrity}
@@ -711,15 +707,15 @@ const isShouldCheckProjectIntegrity =()=>{
                         </p>
                       </div>
 
-                    {(isSuperUser || project.managerDetails?.email === user?.email) &&
+                    {/* {(isSuperUser || project.managerDetails?.email === user?.email) &&
                       <button
                         className="position"
                         onClick={handleManagerHoursPopUP}
                       >
                         {/* <span className="init">Chef de projet</span>
-                        <span className="changed">renseigner heurs</span> */}
+                        <span className="changed">renseigner heurs</span> }
                         <ReactSVG className="clock" src={faClock} />
-                      </button>}
+                      </button>} */}
                     </div>
                   ) : !editData.managers.length ? (
                     <Skeleton variant="rectangular" width={210} height={50} />

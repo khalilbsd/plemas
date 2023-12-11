@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
 
-import { createRequest, getAllRequests, updateRequest,deleteRequest,uploadFileToRequest } from "../controllers/requests/request.controller.js";
+import { createRequest, getAllRequests, updateRequest,deleteRequest,uploadFileToRequest,deleteFileFromRequest } from "../controllers/requests/request.controller.js";
 import { ALL_ROLES, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE,INTERVENANT_ROLE } from "../constants/constants.js";
 import createMulterMiddleware from "../middleware/uploader.js";
 
@@ -24,6 +24,13 @@ router
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
     fileUploader,
     uploadFileToRequest
+  )
+.patch(
+    "/update/project/:projectID/task/:requestID/delete/file",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
+    fileUploader,
+    deleteFileFromRequest
   );
 
 

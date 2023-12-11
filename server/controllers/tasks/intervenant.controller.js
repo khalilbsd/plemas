@@ -21,6 +21,8 @@ import { getUserByEmail } from "../users/lib.js";
 import { takeNote } from "../../Utils/writer.js";
 import { config } from "../../environment.config.js";
 import { createMediaUrl } from "../../Utils/FileManager.js";
+import { deleteFile } from "../../Utils/utils.js";
+import path from "path";
 
 export const getAllIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
@@ -95,7 +97,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
   ) {
     return next(new UnAuthorized("vous n'êtes pas le chef de ce projet"));
   }
-  let intervenantsNames=""
+  let intervenantsNames = "";
 
   const { emails } = req.body;
   if (!emails) return next(new MissingParameter("Emails est requis"));
@@ -120,8 +122,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
         new AppError("La création a échoué, veuillez réessayer plus tard ")
       );
     }
-    intervenantsNames = intervenantsNames.concat(user.email,", ")
-
+    intervenantsNames = intervenantsNames.concat(user.email, ", ");
   }
 
   if (emails.length > 1) {
@@ -129,18 +130,22 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
       ACTION_NAME_ADD_INTERVENANTS_BULK_PROJECT,
       req.user.email,
       project.id,
-      {extraProps:{
-        intervenantsNames:intervenantsNames
-      }}
+      {
+        extraProps: {
+          intervenantsNames: intervenantsNames
+        }
+      }
     );
   } else if (emails.length) {
     await takeNote(
       ACTION_NAME_ADD_INTERVENANT_PROJECT,
       req.user.email,
       project.id,
-      {extraProps:{
-        intervenantsNames:emails[0]
-      }}
+      {
+        extraProps: {
+          intervenantsNames: emails[0]
+        }
+      }
     );
   }
 
@@ -194,16 +199,11 @@ export const removeIntervenantFromProject = catchAsync(
         new AppError("Vous ne pouvez pas retirer cet intervenant", 304)
       );
     }
-    await takeNote(
-      ACTION_NAME_DELETE_INTERVENANT,
-      req.user.email,
-      project.id,
-      {
-        extraProps:{
-          deletedIntervenant:user.email
-        }
+    await takeNote(ACTION_NAME_DELETE_INTERVENANT, req.user.email, project.id, {
+      extraProps: {
+        deletedIntervenant: user.email
       }
-    );
+    });
 
     //TODO:: add task check rules
     await intervenant.destroy();
@@ -223,10 +223,20 @@ export const uploadFileToTask = catchAsync(async (req, res, next) => {
   const task = await Task.findByPk(taskID);
   if (!task) return next(new ElementNotFound("la tache est introuvable"));
 
+  let objSearch = {
+    projectID,
+    taskID
+  };
+  if (!req.user.isSuperUser && req.user.role !== PROJECT_MANAGER_ROLE) {
+    objSearch.intervenantID = req.user.id;
+  } else {
+  }
+
   const intervention = await Intervenant.findOne({
-    where: { projectID, taskID, intervenantID: req.user.id }
+    where: objSearch
   });
-  if (!intervention) return next("vous ne faites pas partie de cette tâche ");
+  if (!intervention)
+    return next(new AppError("vous ne faites pas partie de cette tâche ", 401));
   let url;
 
   if (!req.files)
@@ -251,8 +261,44 @@ export const uploadFileToTask = catchAsync(async (req, res, next) => {
   await intervention.save();
   return res.status(200).json({
     status: "success",
-    interventionID:intervention.id,
+    interventionID: intervention.id,
     message: "fichier attaché au tâche",
-    file:JSON.stringify(obj)
+    file: JSON.stringify(obj)
+  });
+});
+export const deleteFileFromTask = catchAsync(async (req, res, next) => {
+  const { projectID, taskID } = req.params;
+  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  const project = await Project.findByPk(projectID);
+  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+
+  if (!taskID) return next(new MissingParameter("la tache est requis"));
+  const task = await Task.findByPk(taskID);
+  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+
+  const intervention = await Intervenant.findByPk(req.body.interventionID);
+  if (!intervention) return next("vous ne faites pas partie de cette tâche ");
+
+  //['item']
+
+  let obj = JSON.parse(intervention.file);
+
+
+  if (obj.includes(req.body.file)) {
+    let deleted = await deleteFile(req.body.file);
+    if (deleted) {
+      logger.info("file deleted from system");
+    } else {
+      logger.error(`something went wrong when deleting file ${req.body.file}`);
+    }
+    obj = obj.filter((file) => file !== req.body.file);
+  }
+
+  intervention.file = JSON.stringify(obj);
+  await intervention.save();
+  return res.status(200).json({
+    status: "success",
+    interventionID: intervention.id,
+    message: "fichier supprimé du tâche",
   });
 });

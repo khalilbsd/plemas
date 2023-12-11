@@ -62,6 +62,10 @@ Intervenant.belongsTo(Task,{foreignKey:'taskID'})
 Intervenant.hasMany(InterventionHour,{foreignKey:'interventionID'})
 InterventionHour.belongsTo(Intervenant,{foreignKey:'interventionID'})
 
+Project.hasMany(InterventionHour,{foreignKey:'projectID'})
+InterventionHour.belongsTo(Project,{foreignKey:'projectID'})
+
+
 
 Project.belongsToMany(Lot, {
   through: ProjectLots,

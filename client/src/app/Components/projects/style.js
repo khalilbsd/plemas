@@ -62,7 +62,10 @@ export const projectDetails = createUseStyles({
         opacity: 1,
         width: "100% !important"
       }
-    }
+    },
+  },
+  headerContainer:{
+    background:'var(--white)'
   },
 
   seeMoreProject: {
@@ -638,7 +641,19 @@ export const projectDetails = createUseStyles({
     "& svg": {
       width: "100%"
     }
-  }
+  },
+  requestInput:{
+    '& textarea':{
+      height:'100px !important',
+      width:'500px !important',
+
+    }
+  },
+  requestPopAction:{
+    display:'flex',
+    justifyContent: 'space-between',
+  },
+
 });
 
 export const projectTaskDetails = createUseStyles({
@@ -767,7 +782,7 @@ export const projectTaskDetails = createUseStyles({
   },
   list: {
     border: "none",
-    paddingTop: 10,
+    padding:0 ,
     "& .blocked": {
       opacity: 0.5
       // backgroundColor: "var(--app-bg-color)"
@@ -890,6 +905,7 @@ export const projectTaskDetails = createUseStyles({
     fontSize: 12,
     position: "relative",
     overflow: "hidden",
+
     "& .file-name": {
       width: 90,
       textOverflow: "ellipsis",
@@ -923,11 +939,16 @@ export const projectTaskDetails = createUseStyles({
       height: 40,
       width: "100%",
       backgroundColor: "var(--light-green)",
-      justifyContent: "unset",
+
       color: "var(--white)",
       "&.requests": {
         width: "50%",
-        height: 40
+        margin:0,
+        display:'flex',
+        justifyContent: "center",
+        flexDirection: "row",
+        height:50,
+        borderRadius:5
       },
       gap: 10,
       fontWeight: 600,
@@ -1012,6 +1033,35 @@ export const projectTaskDetails = createUseStyles({
       width: 40,
       height: 40,
       margin: "auto"
+    }
+  },
+  fileContainer:{
+    position:'relative',
+    '& .delete-btn':{
+      position:'absolute',
+      top:0,
+      right:-9,
+      zIndex:2,
+      backgroundColor:'unset',
+      border:'1px solid var(--app-bg-color)',
+      borderRadius:'100%',
+      '& div':{
+        display:'flex',
+        alignItems:'center',
+        justifyContent: 'center',
+
+      },
+      height:22,
+      width:22,
+      '&:hover':{
+      backgroundColor:' var(--app-bg-color)',
+
+      },
+      '& svg':{
+        fill: 'var(--toastify-icon-color-error)',
+        height:18,
+        width:18,
+      }
     }
   }
 });

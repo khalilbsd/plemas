@@ -88,9 +88,7 @@ const SidebarComponent = () => {
                 {user?.profile?.name} {user?.profile?.lastName}
               </h3>
               <p className="role">
-                {user?.user?.role === SUPERUSER_ROLE
-                  ? "admin"
-                  : user?.user?.role}
+                {user?.profile?.poste?user?.profile?.poste:""}
               </p>
             </div>
           </MenuItem>

@@ -17,6 +17,7 @@ import {
   TASK_STATES,
   TASK_STATE_ABANDONED,
   TASK_STATE_BLOCKED,
+  TASK_STATE_BLOCKED_ORG,
   TASK_STATE_DONE,
   TASK_STATE_TRANSLATION
 } from "../../../constants/constants";
@@ -72,9 +73,6 @@ const ProjectTasks = ({ openAddTask }) => {
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
   const dataGridRef=useRef()
-
-
-
 
 
   const [rowModesModel, setRowModesModel] = React.useState({});
@@ -209,17 +207,6 @@ const ProjectTasks = ({ openAddTask }) => {
   };
   const columns = [
     {
-      field: "dueDate",
-      headerName: "Échéance",
-      type: "date",
-      width: 120,
-      editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
-      valueGetter: (params) =>
-        dayjs(params.row.dueDate).locale("en-gb").toDate()
-    },
-    {
       field: "startDate",
       headerName: "Debut",
       format: "DD/MM/YYYY",
@@ -233,6 +220,18 @@ const ProjectTasks = ({ openAddTask }) => {
         return dayjs(params.row.startDate).locale("en-gb").toDate();
       }
     },
+    {
+      field: "dueDate",
+      headerName: "Échéance",
+      type: "date",
+      width: 120,
+      editable:
+        isSuperUser ||
+        (isManager && user?.email === project?.managerDetails?.email),
+      valueGetter: (params) =>
+        dayjs(params.row.dueDate).locale("en-gb").toDate()
+    },
+
     {
       filterable: false,
 
@@ -262,6 +261,7 @@ const ProjectTasks = ({ openAddTask }) => {
         );
         return (
           <TaskFiles
+            isProjectManager={project?.managerDetails?.email === user?.email}
             taskID={params.row.id}
             interventions={params.row.intervenants}
             intervenantList = {emailsList}
@@ -292,7 +292,7 @@ const ProjectTasks = ({ openAddTask }) => {
       filterable: false,
       field: "state",
       headerName: "État",
-      width: 100,
+      width: 150,
       editable: true,
       type: "singleSelect",
       valueOptions: ({ row }) => {
@@ -309,9 +309,11 @@ const ProjectTasks = ({ openAddTask }) => {
         const taskStatus = TASK_STATE_TRANSLATION.filter(
           (state) => state?.value === params.row?.state
         )[0]?.label;
+        const date = params.row?.state === TASK_STATE_BLOCKED  ? params.row?.blockedDate : params.row?.doneDate
+
         return (
           <span className={`${classes.task} ${taskStatus}`}>
-            {params.row.state}
+            {params.row.state}  {date?`le ${dayjs(date).format('DD/MM/YYYY')}`:"" }
           </span>
         );
       }

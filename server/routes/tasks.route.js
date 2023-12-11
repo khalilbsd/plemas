@@ -1,25 +1,26 @@
 import { Router } from "express";
 import {
-    ALL_ROLES,
-    INTERVENANT_ROLE,
-    PROJECT_MANAGER_ROLE,
-    SUPERUSER_ROLE
+  ALL_ROLES,
+  INTERVENANT_ROLE,
+  PROJECT_MANAGER_ROLE,
+  SUPERUSER_ROLE
 } from "../constants/constants.js";
 import {
-    associateIntervenantToTask,
-    createTask,
-    getDailyTasks,
-    getProjectTasks,
-    getTaskPotentialIntervenants,
-    updateIntervenantHours,
-    updateTaskInfo
+  associateIntervenantToTask,
+  createTask,
+  getDailyTasks,
+  getProjectTasks,
+  getProjectTasksBulkInDates,
+  getTaskPotentialIntervenants,
+  updateIntervenantHours,
+  updateTaskInfo
 } from "../controllers/tasks/task.controller.js";
 import { checkUserRole, isUserAuthenticated } from "../middleware/auth.js";
 import createMulterMiddleware from "../middleware/uploader.js";
-import { uploadFileToTask } from "../controllers/tasks/intervenant.controller.js";
+import { uploadFileToTask ,deleteFileFromTask } from "../controllers/tasks/intervenant.controller.js";
 
 const router = Router();
-const  fileUploader = createMulterMiddleware('file')
+const fileUploader = createMulterMiddleware("file");
 
 router
   .get(
@@ -47,7 +48,7 @@ router
     associateIntervenantToTask
   )
   .patch(
-    "/project/:projectID/intervenant/working/hours",
+    "/project/bulk/intervenant/working/hours",
     isUserAuthenticated,
     checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE, INTERVENANT_ROLE]),
     updateIntervenantHours
@@ -61,16 +62,27 @@ router
   .patch(
     "/update_details/project/:projectID/task/:taskID",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE, INTERVENANT_ROLE]),
     updateTaskInfo
   )
   .patch(
     "/update/project/:projectID/task/:taskID/upload/file",
     isUserAuthenticated,
-    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE,INTERVENANT_ROLE]),
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE, INTERVENANT_ROLE]),
     fileUploader,
     uploadFileToTask
+  )
+  .patch(
+    "/update/project/:projectID/task/:taskID/delete/file",
+    isUserAuthenticated,
+    checkUserRole([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE]),
+    deleteFileFromTask
+  )
+  .post(
+    "/filter/bulk/projects/start_end/dates",
+    isUserAuthenticated,
+    checkUserRole(ALL_ROLES),
+    getProjectTasksBulkInDates
   );
-
 
 export default router;

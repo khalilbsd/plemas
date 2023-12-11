@@ -48,6 +48,9 @@ import { getPhaseByName } from "./phase.controller.js";
 import sequelize from "../../db/db.js";
 import { getTracking, takeNote } from "../../Utils/writer.js";
 import { findObjectDifferences } from "../../Utils/utils.js";
+import { getProjectsTasksBulk } from "../tasks/task.controller.js";
+import { isAllProjectsAreValid } from "../tasks/lib.js";
+import InterventionHour from "../../models/tasks/interventionHours.model.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -117,40 +120,41 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   const dates = calculateDates(3);
 
-  let tasks = [];
-  const today = new Date();
+  // let tasks = [];
 
-  for (const projIdx in projectsList) {
-    let projectTasks = await Task.findAll({
-      attributes: ["id", "name", "name", "startDate", "dueDate", "state"],
-      // order: [["dueDate", "DESC"]],
-      where: {
-        "dueDate": {
-          [Op.gte]: today
-        }
-      },
-      include: [
-        {
-          model: Intervenant,
-          attributes: ["id"],
-          where: {
-            projectID: projectsList[projIdx].id
-          }
-        }
-      ]
-    });
+  // for (const projIdx in projectsList) {
+  //   let projectTasks = await Task.findAll({
+  //     attributes: ["id", "name", "name", "startDate", "dueDate", "state","blockedDate","doneDate"],
+  //     // order: [["dueDate", "DESC"]],
+  //     where: {
+  //       "dueDate": {
+  //         [Op.gte]: today
+  //       }
+  //     },
+  //     include: [
+  //       {
+  //         model: Intervenant,
+  //         attributes: ["id"],
+  //         where: {
+  //           projectID: projectsList[projIdx].id
+  //         }
+  //       }
+  //     ]
+  //   });
 
-    projectTasks.sort(
-      (a, b) =>
-        moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
-    );
+  //   projectTasks.sort(
+  //     (a, b) =>
+  //       moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
+  //   );
 
-    tasks.push({
-      projectID: projectsList[projIdx].id,
-      tasks: projectTasks ? projectTasks : []
-    });
-  }
-  tasks.sort((a, b) => a.tasks[0]?.dueDate - b.tasks[0]?.dueDate);
+  //   tasks.push({
+  //     projectID: projectsList[projIdx].id,
+  //     tasks: projectTasks ? projectTasks : []
+  //   });
+  // }
+  let tasks = await getProjectsTasksBulk(
+    projectsList.map((project) => project.id)
+  );
 
   const indexMap = {};
   tasks.forEach((task, index) => {
@@ -411,19 +415,15 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     }
   }
 
-  console.log(
-    "-------------------------------------------------------- state   ",
-    details.state,
-    [TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)
-  );
   if ([TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)) {
     details.dueDate = moment(new Date(), "DD/MM/YYYY");
     if (TASK_STATE_ABANDONED === details.state) {
       abandonProject(TASK_STATE_ABANDONED, project.id);
     }
+    if (TASK_STATE_DONE === details.state) {
+      abandonProject(TASK_STATE_DONE, project.id);
+    }
   }
-
-  console.log("----------------- final values to update with", details);
 
   await project.update({ ...details });
 
@@ -687,7 +687,9 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   });
 
   result.projectNbHours = projectHours;
-  result.isProjectRunning = [TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state)
+  result.isProjectRunning = [TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(
+    project.state
+  );
 
   const taskStates = await Task.findAll({
     where: {
@@ -722,55 +724,134 @@ export const getProjectById = catchAsync(async (req, res, next) => {
     .json({ status: "success", project: result, taskStatus });
 });
 
-export const assignManagerHours = catchAsync(async (req, res, next) => {
-  const { projectID } = req.params;
-  if (!projectID) return next(new MissingParameter("Missing project id"));
-  const project = await Project.findByPk(projectID);
+/**
+ * {
+ * data:date,
+ * projectsHours:{
+ *  id :{value:hours,changed:bool}
+ *  id :{value:hours,changed:bool}
+ *  id :{value:hours,changed:bool}
+ *  id :{value:hours,changed:bool}
+ * }
+ * }
+ */
+export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
+  const { projectsHours, date } = req.body;
+  console.log(req.body);
+  if (!projectsHours || !date)
+    return next(new MissingParameter("les heurs des projets sont obligatoire"));
+  const projectsKeys = Object.keys(projectsHours);
+  await isAllProjectsAreValid(projectsKeys, next);
 
-  if (!project) return next(new ElementNotFound("Projet introuvable"));
-  let userId;
+  for (const idx in projectsKeys) {
+    let userId;
 
-  if (req.user.role === PROJECT_MANAGER_ROLE) {
-    if (req.user.id !== project.manager)
-      return next(new UnAuthorized("Vous n’êtes pas le chef du ce projet"));
-    userId = req.user.id;
-  }
+    const project = await Project.findByPk(projectsKeys[idx]);
 
-  if (req.user.isSuperUser && req.user.role === SUPERUSER_ROLE) {
-    userId = req.body.user;
-  }
-  const user = await User.findByPk(userId);
-  if (!user) return next(new ElementNotFound("le chef projet est introuvable"));
-
-  const hours = parseInt(req.body.hours);
-  if (isNaN(hours) || hours < 0)
-    return next(
-      new AppError("le nombre des heurs doit être un chiffre positif ", 400)
-    );
-  if (hours < project.managerHours)
-    return next(
-      new AppError("vous ne pouvez pas diminuer votre nombre d'heures", 400)
-    );
-
-  project.managerHours = hours;
-
-  await project.save();
-  await takeNote(
-    ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
-    req.user.email,
-    project.id,
-    {
-      extraProps: {
-        hours: hours
-      }
+    if (req.user.role === PROJECT_MANAGER_ROLE) {
+      if (req.user.id !== project.manager)
+        return next(new UnAuthorized("Vous n’êtes pas le chef du ce projet"));
+      userId = req.user.id;
     }
-  );
+    if (req.user.isSuperUser && req.user.role === SUPERUSER_ROLE) {
+      userId = project.manager;
+    }
+    const user = await User.findByPk(userId);
+    if (!user)
+      return next(new ElementNotFound("le chef projet est introuvable"));
+
+    const hours = Math.round(
+      parseInt(projectsHours[projectsKeys[idx]].value) / 60
+    );
+    console.log(hours);
+    if (isNaN(hours) || hours < 0)
+      return next(
+        new AppError("le nombre des heurs doit être un chiffre positif ", 400)
+      );
+
+    //  affecting hours per date
+    const managedHours = await InterventionHour.findOne({
+      where: { projectID: project.id, date: moment(date) }
+    });
+
+    if (managedHours) {
+      if (hours === managedHours.nbHours) continue;
+      managedHours.nbHours = hours;
+    } else {
+      await InterventionHour.create({
+        hours: hours,
+        projectID: project.id,
+        date: moment(date)
+      });
+    }
+
+    project.managerHours += hours;
+    await project.save();
+    await takeNote(
+      ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
+      req.user.email,
+      project.id,
+      {
+        extraProps: {
+          hours: hours
+        }
+      }
+    );
+  }
 
   return res
     .status(200)
     .json({ status: "success", message: "heurs renseigner avec succès" });
 });
 
+// export const assignManagerHours = catchAsync(async (req, res, next) => {
+//   const { projectID } = req.params;
+//   if (!projectID) return next(new MissingParameter("Missing project id"));
+//   const project = await Project.findByPk(projectID);
+
+//   if (!project) return next(new ElementNotFound("Projet introuvable"));
+//   let userId;
+
+//   if (req.user.role === PROJECT_MANAGER_ROLE) {
+//     if (req.user.id !== project.manager)
+//       return next(new UnAuthorized("Vous n’êtes pas le chef du ce projet"));
+//     userId = req.user.id;
+//   }
+
+//   if (req.user.isSuperUser && req.user.role === SUPERUSER_ROLE) {
+//     userId = req.body.user;
+//   }
+//   const user = await User.findByPk(userId);
+//   if (!user) return next(new ElementNotFound("le chef projet est introuvable"));
+
+//   const hours = parseInt(req.body.hours);
+//   if (isNaN(hours) || hours < 0)
+//     return next(
+//       new AppError("le nombre des heurs doit être un chiffre positif ", 400)
+//     );
+//   if (hours < project.managerHours)
+//     return next(
+//       new AppError("vous ne pouvez pas diminuer votre nombre d'heures", 400)
+//     );
+
+//   project.managerHours = hours;
+
+//   await project.save();
+//   await takeNote(
+//     ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,
+//     req.user.email,
+//     project.id,
+//     {
+//       extraProps: {
+//         hours: hours
+//       }
+//     }
+//   );
+
+//   return res
+//     .status(200)
+//     .json({ status: "success", message: "heurs renseigner avec succès" });
+// });
 export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
 
@@ -807,17 +888,18 @@ const abandonProject = async (action, projectID) => {
       taskIds.forEach(({ taskID }) => {
         if (!ids.includes(taskID)) ids.push(taskID);
       });
-      await Task.update(
-        {
-          state: action
-        },
-        {
-          where: {
-            id: ids
-            //check if
-          }
+      let obj = {
+        state: action
+      };
+      if (action === TASK_STATE_DONE)
+        obj.doneDate = moment(new Date(), "DD/MM/YYYY");
+
+      await Task.update(obj, {
+        where: {
+          id: ids
+          //check if
         }
-      );
+      });
     }
   } catch (error) {
     logger.error(error);

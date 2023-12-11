@@ -7,7 +7,7 @@ import { FILE_TYPE_PATH, IMAGE_TYPE_PATH } from "../constants/constants.js";
 const createMulterMiddleware = (fieldName) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      console.log("_________________INSODE MIDDLE",file)
+
       let uploadDir = "../uploads";
 
       // Determine the upload directory based on the fieldName parameter
@@ -20,7 +20,7 @@ const createMulterMiddleware = (fieldName) => {
       cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-      console.log("_________________INSODE MIDDLE",file)
+
       cb(null, Date.now() + "-" + file.originalname); // Generate unique file names
     }
   });

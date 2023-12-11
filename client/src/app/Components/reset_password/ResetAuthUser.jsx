@@ -106,7 +106,7 @@ const ResetAuthUser = ({handleSuccess,handleFailure}) => {
           )}
           <Grid item xs={12} lg={12}>
             <button type="submit">
-              {currentIsValid ? "Modifier le mot de passe" : "vérifier le mot de passe actuel"}
+              {currentIsValid ? "Modifier le mot de passe" : "Vérifier le mot de passe actuel"}
             </button>
           </Grid>
         </Grid>

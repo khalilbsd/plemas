@@ -67,7 +67,6 @@ const ProjectFilters = () => {
   };
 
   const handleChangeManager = (value) => {
-
     setSelected({ ...selected, manager: value });
 
     dispatch(
@@ -103,7 +102,6 @@ const ProjectFilters = () => {
   };
 
   const handleChangeLots = (value) => {
-
     setSelected({ ...selected, lot: value });
     dispatch(
       filterProjectsList({
@@ -128,25 +126,30 @@ const ProjectFilters = () => {
       type: "manager.fullName",
       ref: selected.manager,
       items: managers,
-        title:'Filtre par chef de projet',
+      title: "Filtre par chef de projet",
       handler: handleChangeManager
     },
     {
       type: "state",
       ref: selected.state,
       items: states,
-        title:'Filtre par etat du projet',
+      title: "Filtre par etat du projet",
       handler: handChangeState
     },
     {
       type: "phase",
       ref: selected.phase,
       items: phase,
-        title:'Filtre par phase',
+      title: "Filtre par phase",
       handler: handleChangePhase
     },
-    { type: "lots", ref: selected.lot, items: lots,
-      title:'Filtre par lot',handler: handleChangeLots }
+    {
+      type: "lots",
+      ref: selected.lot,
+      items: lots,
+      title: "Filtre par lot",
+      handler: handleChangeLots
+    }
   ];
   return (
     <div className={classes.filters}>

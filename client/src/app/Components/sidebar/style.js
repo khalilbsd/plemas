@@ -107,7 +107,7 @@ export const styles = createUseStyles({
   link: {
     fontWeight: 500,
     color: "var(--white)",
-    textTransform: "capitalize",
+
     '&.logout':{
       textTransform:'none'
     },

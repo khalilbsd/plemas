@@ -292,10 +292,21 @@ const ManagingUsers = () => {
       editable: false,
       renderCell: (params) => {
         const { email, role } = params.row;
-        const ch =
-          role === SUPERUSER_ROLE
-            ? "admin"
-            : role.replace("_", " ").toLowerCase();
+        let ch
+        switch (role) {
+          case SUPERUSER_ROLE :
+            ch  = "Administrateur"
+            break
+          case INTERVENANT_ROLE  :
+             ch  = "Intervenant"
+             break
+          case PROJECT_MANAGER_ROLE  :
+            ch = "Chef de projet"
+            break
+          default :
+            ch = "Client"
+          }
+
 
         return (
           <>
@@ -308,7 +319,7 @@ const ManagingUsers = () => {
               icon={faSave}
               text={`Êtes-vous sûr de vouloir changer l'utilisateur du rôle ${
                 role === SUPERUSER_ROLE
-                  ? "admin"
+                  ? "Administrateur"
                   : role.replace("_", " ").toLowerCase()
               } au role de ${userRole?.role?.replace("_", " ")}?
             Gardez à l'esprit que changer le rôle d'un utilisateur aura pour conséquence de lui ajouter/supprimer certains privilèges. `}
@@ -326,7 +337,7 @@ const ManagingUsers = () => {
                 size="small"
               >
                 <MenuItem value={role}>
-                  <em>{role === SUPERUSER_ROLE ? "admin" : role}</em>
+                  <em>{role === SUPERUSER_ROLE ? "Administrateur" : role}</em>
                 </MenuItem>
                 {[
                   SUPERUSER_ROLE,
@@ -338,7 +349,7 @@ const ManagingUsers = () => {
                     item !== role && (
                       <MenuItem value={item} key={item}>
                         {item === SUPERUSER_ROLE
-                          ? "admin"
+                          ? "Administrateur"
                           : item.replace("_", " ")}
                       </MenuItem>
                     )
@@ -360,7 +371,7 @@ const ManagingUsers = () => {
     {
       field: "active",
       headerName: "Statut",
-      width: 250,
+      width: 200,
       // editable:true,
       renderCell: (params) => {
         const active = params.row?.active;
@@ -374,7 +385,7 @@ const ManagingUsers = () => {
     {
       field: "isBanned",
       headerName: "Actif",
-      width: 200,
+      width: 100,
       renderCell: (params) => {
         const isBanned = params.row?.isBanned;
         const email = params.row?.email;
@@ -404,6 +415,30 @@ const ManagingUsers = () => {
           </>
         );
       }
+    },
+    {
+      field: "phone",
+      headerName: "Téléphone",
+    width:100,
+      editable: false
+    },
+    {
+      field: "poste",
+      headerName: "Poste",
+     width:100,
+      editable: false
+    },
+    {
+      field: "address",
+      headerName: "Adresse",
+     width:100,
+      editable: false
+    },
+    {
+      field: "hireDate",
+      headerName: "Date d'embauche",
+     width:100,
+      editable: false
     },
     {
       field: "actions",

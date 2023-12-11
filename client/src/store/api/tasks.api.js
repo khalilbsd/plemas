@@ -43,38 +43,49 @@ export const taskApi = api.injectEndpoints({
       })
     }),
     assignHoursInTask: builder.mutation({
-      query: ({ body, projectID }) => ({
-        url: `tasks/project/${projectID}/intervenant/working/hours`,
+      query: (body) => ({
+        url: `tasks/project/bulk/intervenant/working/hours`,
         method: "PATCH",
         data: body
       })
     }),
     updateTask: builder.mutation({
-      query: ({ body, taskID,projectID }) => ({
+      query: ({ body, taskID, projectID }) => ({
         url: `tasks/update_details/project/${projectID}/task/${taskID}`,
         method: "PATCH",
         data: body
       })
     }),
     uploadFileToTask: builder.mutation({
-      query: ({ body, taskID,projectID }) => ({
+      query: ({ body, taskID, projectID }) => ({
         url: `tasks/update/project/${projectID}/task/${taskID}/upload/file`,
         method: "PATCH",
         data: body
       })
     }),
+    deleteFileFromTask: builder.mutation({
+      query: ({ body, taskID, projectID }) => ({
+        url: `tasks/update/project/${projectID}/task/${taskID}/delete/file`,
+        method: "PATCH",
+        data: body
+      })
+    }),
     downloadTaskFile: builder.mutation({
-      query: ({url}) =>
-      (
-        {
+      query: ({ url }) => ({
         url: url,
-        method: 'GET',
-        headers:{
-          'response-type':'blob'
-
+        method: "GET",
+        headers: {
+          "response-type": "blob"
         }
       })
     }),
+    filterProjectsTasksByDates: builder.mutation({
+      query: (data) => ({
+        url: `tasks/filter/bulk/projects/start_end/dates`,
+        method: "POST",
+        data: data
+      })
+    })
   })
 });
 
@@ -88,5 +99,7 @@ export const {
   useUpdateTaskMutation,
   useGetDailyLogTasksMutation,
   useDownloadTaskFileMutation,
-  useUploadFileToTaskMutation
+  useUploadFileToTaskMutation,
+  useFilterProjectsTasksByDatesMutation,
+  useDeleteFileFromTaskMutation
 } = taskApi;

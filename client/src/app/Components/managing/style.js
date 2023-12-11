@@ -322,13 +322,13 @@ export const projectsStyles = createUseStyles({
       borderRadius: "10px",
       // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
       background: "var(--pastel-green)"
-    },
-
+    }
   },
   progressBarContainer: {
     height: 32,
     display: "flex",
     maxWidth: "100%",
+    position: "relative",
   },
   progressBar: {
     paddingLeft: 10,
@@ -340,6 +340,29 @@ export const projectsStyles = createUseStyles({
     width: "calc(100% - 10px)",
     "&.empty": {
       backgroundColor: "var(--app-bg-color)"
+    },
+    "&.done-bar": {
+      backgroundColor:'var(--dark-green)',
+      position:'absolute',
+      left:0,
+      top:0,
+      height:20,
+
+      padding:0,
+
+    },
+    "&.blocked-bar": {
+      padding:0,
+      backgroundColor: "var(--toastify-color-error)",
+
+      position:'absolute',
+      left:0,
+      top:0,
+      height:20
+    },
+    '& .date':{
+      position:'relative',
+      zIndex:10,
     }
   },
   dataList: {
@@ -361,7 +384,7 @@ export const projectsStyles = createUseStyles({
   //     }
   //   }
   // },
-  addBtnContainer: {
+  actionBtnContainer: {
     display: "flex",
     gap: 10,
     alignItems: "center",
@@ -380,6 +403,11 @@ export const projectsStyles = createUseStyles({
         height: 22,
         width: 22
       }
+    },
+    "& .left": {
+      width: "100%",
+      display: "flex",
+      alignItems: "center"
     }
   },
   modalActionBtn: {
@@ -636,7 +664,7 @@ export const projectsStyles = createUseStyles({
     margin: 0,
     color: "var(--bright-orange)",
     // whiteSpace: "normal",
-    textWrap:'nowrap',
+    textWrap: "nowrap"
   },
   lot: {
     margin: 0,
@@ -659,7 +687,6 @@ export const projectsStyles = createUseStyles({
       background: "var(--dark-green)"
     },
     "& .row-data": {
-
       width: "100%",
       borderRadius: 10,
 
@@ -674,7 +701,7 @@ export const projectsStyles = createUseStyles({
       },
       "&.notTreatedRequest": {
         backgroundColor: "#e74c3c2e !important"
-      },
+      }
     }
   },
   tableHead: {
@@ -682,29 +709,142 @@ export const projectsStyles = createUseStyles({
     color: "var(--white)"
   },
   tableHeader: {
-    color: "var(--white) !important",
-    fontWeight: "600 !important",
-
-    padding:'0 10px !important',
-
+    backgroundColor: "var(--light-green)",
+    color: "var(--white)",
+    paddingBottom:'0 !important'
   },
-  seeMoreBtn:{
-    width:32,
-    height:32,
-    borderRadius:'100%',
-    border:'none',
-    background:'var(--orange)',
-    '& svg':{
-      fill:'var(--white)'
+  // tableHeader: {
+  //   color:'var(--white) !important',
+  //   fontWeight: "600 !important",
+
+  //   padding:'0 10px !important',
+
+  // '& button':{
+  //   background:'none',
+  //   border:'none',
+  //   borderRadius:10,
+  //   transition:'all 0.5s ease-in-out',
+  //   display:'flex',
+  //   color:'var(--white)',
+  //   fontWeight: "600 !important",
+  //   gap:5,
+  //   height:30,
+  //   alignItems:'center',
+  //   '&:hover':{
+  //     background:'var(--white-hover)',
+  //   }
+  // }
+  // },
+
+  // filterBtn:{
+
+  //   '& svg':{
+  //     width:11,
+  //     height:11,
+  //     fill:'var(--bright-orange) '
+  //   }
+  // },
+  seeMoreBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: "100%",
+    border: "none",
+    background: "var(--orange)",
+    "& svg": {
+      fill: "var(--white)"
     }
   },
-  rowCell:{
-    padding:'10px 10px !important',
-    border:'none !important'
+  rowCell: {
+    padding: "10px 10px !important",
+    border: "none !important"
   },
-  lots:{
+  lots: {
+    display: "flex",
+    fontWeight: 600,
+    gap: 2
+  },
+  exportAction: {
+    position: "relative"
+  },
+  exportBtn: {
+    display: "flex",
+    gap: 10,
+    fontWeight: 600,
+    borderRadius: 5,
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    transition: "all 0.3s ease-in-out",
+    backgroundColor: "#1fb39d",
+    alignItems: "center",
+    color: "var(--white)",
+    border: "none",
+    "& .export-icon": {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      "& svg": {
+        width: 22,
+        height: 22,
+        fill: "var(--white)"
+      }
+    },
+    "&:hover,&:active,&:focus": {
+      backgroundColor: "var(--orange)"
+    }
+  },
+  exportList: {
+    position: "absolute",
+    zIndex: 999,
+    background: "var(--white)",
+    border: "1px solid var(--app-bg-color)",
+    borderRadius: 5,
+    overflow: "hidden",
+    width: 200,
+    right: 0,
+    "& .list-icon": {
+      width: 28,
+      height: 28
+    }
+  },
+  csvLink: {
+    textDecoration: "none",
+    color: "var(--black)",
+    width: "100%"
+  },
+  filterBtn: {
+    "& svg": {
+      width: 11,
+      height: 11,
+      fill: "var(--bright-orange) "
+    }
+  },
+  datesListHeader:{
     display:'flex',
-    fontWeight:600,
-    gap:2
+    alignItems: 'center',
+    gap:50,
+    '& button':{
+      backgroundColor:'unset',
+      border: 'none',
+      width: 22,
+      height: 22,
+      borderRadius:'100%',
+      transition:'all 0.5s ease-in-out',
+      '&:hover':{
+        backgroundColor: 'var(--white-hover)',
+      }
+    }
+  },
+  filterDate:{
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap:50
+  },
+  arrowIcon:{
+    '& svg':{width:22,
+    height:22,
+      fill:'grey'
+  }
   }
 });

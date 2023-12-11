@@ -46,7 +46,14 @@ export const getAll = catchAsync(async (req, res, next) => {
     include: [
       {
         model: UserProfile,
-        attributes: ["name", "lastName"]
+        attributes: [
+          "name",
+          "lastName",
+          "poste",
+          "phone",
+          "address",
+          "hireDate"
+        ]
       }
     ]
   });
@@ -63,7 +70,8 @@ export const getAll = catchAsync(async (req, res, next) => {
       active
     } = user.toJSON();
     const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
-    const { name, lastName } = userProfile || "";
+    const { name, lastName, poste, phone, address, hireDate } =
+      userProfile || "";
     return {
       id,
       email,
@@ -74,11 +82,15 @@ export const getAll = catchAsync(async (req, res, next) => {
       name,
       lastName,
       isBanned,
-      active
+      active,
+      poste,
+      phone,
+      address,
+      hireDate
     };
   });
 
-  res.json({ users: simplifiedUsers });
+  return res.json({ users: simplifiedUsers });
 });
 
 export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
@@ -130,9 +142,6 @@ export const projectPotentialIntervenants = async (projectID) => {
     attributes: ["intervenantID"]
   });
 
-
-
-
   if (existingIntervenants) {
     let list = [];
     existingIntervenants.forEach((inter) => {
@@ -142,7 +151,6 @@ export const projectPotentialIntervenants = async (projectID) => {
       [Op.notIn]: list
     };
   }
-
 
   const users = await User.findAll({
     where: objectQuery,
@@ -176,7 +184,9 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   if (!data || !data.account) {
     logger.error("there is no data in the request: ADMIN REQUESTED");
-    return res.status(500).json({ message: "quelque chose n'a pas fonctionné" });
+    return res
+      .status(500)
+      .json({ message: "quelque chose n'a pas fonctionné" });
   }
 
   const newUser = data.account;
@@ -198,11 +208,13 @@ export const addUser = catchAsync(async (req, res, next) => {
     newUser.token = token;
   }
 
-  const isUserCreated = await User.create({ ...newUser });
-  if (!isUserCreated)
-    return next(new AppError("quelque chose n'a pas fonctionné when creation", 500));
+  const user = await User.create({ ...newUser });
+  if (!user)
+    return next(
+      new AppError("quelque chose n'a pas fonctionné when creation", 500)
+    );
 
-  const { dataValues: user } = isUserCreated;
+  // const { dataValues: user } = isUserCreated;
 
   logger.info(`user ${user.id} created successfully`);
 
@@ -210,7 +222,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   let userProfile;
   if (Object.keys(data?.profile).length) {
-    userProfile = await createUserProfile(data.profile, user.id, next);
+    userProfile = await createUserProfile(data.profile, user, next);
     if (!userProfile)
       return next(
         new AppError("Something wrong with the profile creation", 500)
@@ -241,15 +253,24 @@ export const addUser = catchAsync(async (req, res, next) => {
     createdUSer.lastName = userProfile.lastName;
   }
 
-  return res.status(200).json({ message: "utilisateur créé avec succès", createdUSer });
+  return res
+    .status(200)
+    .json({ message: "utilisateur créé avec succès", createdUSer });
 });
 
-export const createUserProfile = async (info, userId,next) => {
-  if (!userId || !info) return null;
-  const profile = serializeProfile(info, userId);
-//  check if name and lastName exists together
-const isNameLastNameExists = await UserProfile.findOne({where:{name:info.name,lastName:info.lastName}})
-if (isNameLastNameExists) return next(new AppError("un utilisateur existe déjà avec le même nom et prénom"))
+export const createUserProfile = async (info, user, next) => {
+  if (!user || !info) return null;
+  const isNameLastNameExists = await UserProfile.findOne({
+    where: { name: info.name, lastName: info.lastName }
+  });
+  if (isNameLastNameExists) {
+    await user.destroy();
+    return next(
+      new AppError("Un utilisateur existant a le même nom et prénom")
+    );
+  }
+  const profile = serializeProfile(info, user.id);
+  //  check if name and lastName exists together
   if (!profile) return null;
   const newProfile = await UserProfile.create({ ...profile });
 
@@ -314,9 +335,10 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   }
   await userProfile.update({ ...newProfile });
   await userProfile.save();
-  return res
-    .status(200)
-    .json({ status: "success", message: "le profil de l'utilisateur a été mis à jour avec succès" });
+  return res.status(200).json({
+    status: "success",
+    message: "le profil de l'utilisateur a été mis à jour avec succès"
+  });
 });
 /**
  update user image  : this is a standalone api  to lighten up the request
@@ -340,13 +362,17 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   }
   let url;
   // console.log(req.file,req.files);
-  if (!req.files[0]) return next(new AppError("aucun fichier n'a été fourni", 500));
+  if (!req.files[0])
+    return next(new AppError("aucun fichier n'a été fourni", 500));
 
   // console.log("request file size",req.file.size,"is above 5mo",req.file.size > 5 * 1024 * 1024);
 
   if (req.files[0].size > 5 * 1024 * 1024)
     return next(new AppError("le fichier dépasse la limite de 5MB", 400));
-  if (req.files[0].mimetype !== "image/jpeg" && req.files[0].mimetype !== "image/png") {
+  if (
+    req.files[0].mimetype !== "image/jpeg" &&
+    req.files[0].mimetype !== "image/png"
+  ) {
     removeTmp(req.file.tempFilePath);
     return res.status(400).json({ msg: "Le format du fichier est incorrect." });
   }
@@ -395,7 +421,11 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
 export const changeUserRole = catchAsync(async (req, res, next) => {
   const { email, role } = req.body;
   if ((!email, !role))
-    return next(new MissingParameter("l'adresse électronique et le rôle sont obligatoires"));
+    return next(
+      new MissingParameter(
+        "l'adresse électronique et le rôle sont obligatoires"
+      )
+    );
   //check if role exists : for now the list of roles is hardcode in server/constant
   if (
     ![
@@ -457,7 +487,8 @@ export const unBanUser = catchAsync(async (req, res, next) => {
   user.isBanned = false;
   user.save();
 
-  return res
-    .status(200)
-    .json({ state: "success", message: `l'utilisateur ${email} a été débanni` });
+  return res.status(200).json({
+    state: "success",
+    message: `l'utilisateur ${email} a été débanni`
+  });
 });
