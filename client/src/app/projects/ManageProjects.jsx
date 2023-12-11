@@ -189,7 +189,7 @@ const [creatingProject, setCreatingProject] = useState(false)
         project.isCodeCustomized = false;
       }
       const data = await createProject(project).unwrap();
-      console.log(data);
+
 
       notify(NOTIFY_SUCCESS, data.message);
       handleOpenAddForm();

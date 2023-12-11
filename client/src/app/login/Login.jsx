@@ -38,7 +38,7 @@ const Login = () => {
         email: emailRef.current.value,
         password: passwordRef.current.value
       }).unwrap();
-      console.log(res);
+
       dispatch(setCredentials({ ...res }));
       dispatch(toggleSideBar(false))
       setTimeout(() => {

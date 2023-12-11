@@ -27,7 +27,7 @@ const authSlice = createSlice({
 
         // Calculate the time remaining in seconds
         const timeRemaining = expirationTime - currentTime;
-        console.log(token,process.env.REACT_APP_DOMAIN);
+
         cookies.set(
           "session_token",
           token,
@@ -38,7 +38,7 @@ const authSlice = createSlice({
           }
         );
 
-        // console.log("cookie is set for domain",process.env.REACT_APP_DOMAIN);
+
       } catch (error) {
         console.log(error);
       }
