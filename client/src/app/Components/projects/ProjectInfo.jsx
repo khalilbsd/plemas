@@ -163,7 +163,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
       }
       data.startDate = dayjs(data.startDate).format("DD/MM/YYYY");
       // }
-      // console.log(    project.state === TASK_STATE_DONE_ORG && data.state === TASK_STATE_DOING_ORG);
+
       if (data.state) {
         if (data.state === project.state) {
           delete data.state;
@@ -217,7 +217,7 @@ const isShouldCheckProjectIntegrity =()=>{
 
 
   const handleCheckForProjectState = () => {
-    console.log(isShouldCheckProjectIntegrity())
+
     if (isShouldCheckProjectIntegrity())  {
       setCheckProjectIntegrity(true);
       return;
@@ -763,7 +763,7 @@ const isShouldCheckProjectIntegrity =()=>{
                   editedProject.state !== project.state)
                 ? handleCheckForProjectState
                 : handleUpdate
-                // : ()=>{ console.log("updating")}
+
             }
           >
             <ReactSVG src={!edit ? faEdit : faSave} />

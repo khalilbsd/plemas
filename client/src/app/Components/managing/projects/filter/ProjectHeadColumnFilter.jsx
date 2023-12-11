@@ -22,8 +22,7 @@ const ProjectHeadColumnFilter = (props) => {
   const classes = filterStyles();
 
   const showFilter = (filterType) => {
-    // console.log(filterType);
-    // handleFilter(filterType);
+
     dispatch(showFilterForType(filterType))
   };
 

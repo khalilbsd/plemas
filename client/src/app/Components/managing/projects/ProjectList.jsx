@@ -40,7 +40,10 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const projects = useGetStateFromStore("manage", "projectsList");
   const tasks = useGetStateFromStore("manage", "projectsTaskList");
-  const tasksFiltered = useGetStateFromStore("manage", "projectsTaskListFiltered");
+  const tasksFiltered = useGetStateFromStore(
+    "manage",
+    "projectsTaskListFiltered"
+  );
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const filterTaskState = useGetStateFromStore("manage", "projectsTaskFilters");
@@ -69,7 +72,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   };
 
   function projectTasks(projectID) {
-    let projTasks = tasksFiltered.length ? tasksFiltered : tasks
+    let projTasks = tasksFiltered.length ? tasksFiltered : tasks;
     const projectTasksList = projTasks?.filter(
       (item) => item.projectID === projectID
     );
@@ -167,7 +170,6 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   const renderTaskTimeLine = (projectID) => {
     const convertedDates = convertTwoWeeksDates();
 
-    // console.log(convertedDates);
     const taskElements = projectTasks(projectID)?.map((task) => {
       // Perform calculations here
       let { startDate, dueDate, doneDate } = task;
@@ -178,7 +180,6 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       let done = null;
 
       if (doneDate) done = formattedDate(doneDate, true);
-
 
       let startIdx = convertedDates.findIndex((date) => date === start);
       let dueIdx = convertedDates.findIndex((date) => date === due);
@@ -192,7 +193,6 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       if (startIdx === -1 && dueIdx === -1) {
         let startConverted = dayjs(start, "DD/MM/YYYY");
         let dueConverted = dayjs(due, "DD/MM/YYYY");
-
 
         let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
 
@@ -228,27 +228,21 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
               : 1 * progress_bar_width_cell
             : (convertedDates.length - startIdx) * progress_bar_width_cell;
 
-
         if (done) {
-        let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
+          let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
 
           widthD =
             doneIdx !== -1
               ? doneIdx
                 ? (doneIdx - diff) * progress_bar_width_cell
                 : 1 * progress_bar_width_cell
-              :
-              doneConverted >
-                  dayjs(
-                    convertTwoWeeksDates[convertTwoWeeksDates.length - 1],
-                    "DD/MM/YYYY"
-                  )
-               ?
-
-              (convertedDates.length - startIdx) * progress_bar_width_cell
-              :
-              0
-
+              : doneConverted >
+                dayjs(
+                  convertTwoWeeksDates[convertTwoWeeksDates.length - 1],
+                  "DD/MM/YYYY"
+                )
+              ? (convertedDates.length - startIdx) * progress_bar_width_cell
+              : 0;
         }
       }
 
@@ -271,8 +265,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             >
               {" "}
             </span>
-          )
-          : null}
+          ) : null}
         </div>
       );
     });
@@ -286,9 +279,9 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
 
   const renderSeeMoreTaskBtn = (projectID) => {
     const renderActions = [];
-    // console.log(row)
+
     const tasksNb = projectTasks(projectID)?.length;
-    // console.log(tasks);
+
     if (tasksNb > 1 && !isProjectCollapsed(projectID)) {
       renderActions.push(
         <Tooltip key={`${projectID}-exp`} title="voir plus tache">

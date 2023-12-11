@@ -431,7 +431,7 @@ const ProjectTasks = ({ openAddTask }) => {
   ];
 
   const getRowClassName = (params) => {
-    // console.log(params.row.state)
+
     return TASK_STATE_ABANDONED === params.row.state
       ? isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email)

@@ -140,7 +140,6 @@ const ProjectCreationForm = ({
     }
   };
 
-  // console.log(newProject);
 
   return !projectState.lots.length ||
     !projectState.phases.length ||
