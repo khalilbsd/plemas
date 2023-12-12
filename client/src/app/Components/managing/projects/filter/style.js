@@ -95,10 +95,15 @@ export const filterStyles = createUseStyles({
       padding:'2px  5px 2px 20px',
 
     },
-    '& span':{
+    '& span.title':{
       fontWeight:600,
       color:'var(--white)',
       fontSize:11,
+    },
+    '& span.value':{
+      marginTop:5,
+      display: 'flex',
+      gap:5
     },
     '& .filter-value':{
       display: 'flex',

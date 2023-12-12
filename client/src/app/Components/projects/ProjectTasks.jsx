@@ -17,7 +17,6 @@ import {
   TASK_STATES,
   TASK_STATE_ABANDONED,
   TASK_STATE_BLOCKED,
-  TASK_STATE_BLOCKED_ORG,
   TASK_STATE_DONE,
   TASK_STATE_TRANSLATION
 } from "../../../constants/constants";
@@ -37,7 +36,6 @@ import {
 
 import Tooltip from "@mui/material/Tooltip";
 import { frFR } from "@mui/x-data-grid";
-import { useWindowSize } from "@uidotdev/usehooks";
 import { CLIENT_ROLE } from "../../../constants/roles";
 import faAdd from "../../public/svgs/solid/plus.svg";
 import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
@@ -54,7 +52,6 @@ import ProjectIntervenant from "./ProjectIntervenant";
 import TaskFiles from "./TaskFiles";
 import { projectDetails, projectTaskDetails } from "./style";
 
-
 const ProjectTasks = ({ openAddTask }) => {
   const { projectID } = useParams();
   const dispatch = useDispatch();
@@ -64,16 +61,12 @@ const ProjectTasks = ({ openAddTask }) => {
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
   const [updateTask] = useUpdateTaskMutation();
-  // eslint-disable-next-line no-unused-vars
-  const size = useWindowSize();
-  // const [uploadFileToTask] = useUploadFileToTaskMutation();
   const classes = projectTaskDetails();
   const classesDetails = projectDetails();
   const { user } = useGetAuthenticatedUser();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const [reloadingIntervenants, setReloadingIntervenants] = useState(false);
-  const dataGridRef=useRef()
-
+  const dataGridRef = useRef();
 
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -175,9 +168,6 @@ const ProjectTasks = ({ openAddTask }) => {
     setRowModesModel(newRowModesModel);
   };
 
-
-
-
   // // Define custom date formatting function
   // const customDateFormat = (date) => {
   //   // Customize the date formatting according to your locale
@@ -213,8 +203,8 @@ const ProjectTasks = ({ openAddTask }) => {
       type: "date",
       width: 120,
       editable:
-      isSuperUser ||
-      (isManager && user?.email === project?.managerDetails?.email),
+        isSuperUser ||
+        (isManager && user?.email === project?.managerDetails?.email),
 
       valueGetter: (params) => {
         return dayjs(params.row.startDate).locale("en-gb").toDate();
@@ -235,8 +225,8 @@ const ProjectTasks = ({ openAddTask }) => {
     {
       filterable: false,
 
-      flex:1,
-      minWidth:200,
+      flex: 1,
+      minWidth: 200,
       field: "name",
       headerName: "Taches",
       editable:
@@ -250,7 +240,7 @@ const ProjectTasks = ({ openAddTask }) => {
     },
     {
       filterable: false,
-      editable:false,
+      editable: false,
       sortable: false,
       field: "",
       headerName: "Attachements",
@@ -264,7 +254,7 @@ const ProjectTasks = ({ openAddTask }) => {
             isProjectManager={project?.managerDetails?.email === user?.email}
             taskID={params.row.id}
             interventions={params.row.intervenants}
-            intervenantList = {emailsList}
+            intervenantList={emailsList}
           />
         );
       }
@@ -309,11 +299,15 @@ const ProjectTasks = ({ openAddTask }) => {
         const taskStatus = TASK_STATE_TRANSLATION.filter(
           (state) => state?.value === params.row?.state
         )[0]?.label;
-        const date = params.row?.state === TASK_STATE_BLOCKED  ? params.row?.blockedDate : params.row?.doneDate
+        const date =
+          params.row?.state === TASK_STATE_BLOCKED
+            ? params.row?.blockedDate
+            : params.row?.doneDate;
 
         return (
           <span className={`${classes.task} ${taskStatus}`}>
-            {params.row.state}  {date?`le ${dayjs(date).format('DD/MM/YYYY')}`:"" }
+            {params.row.state}{" "}
+            {date ? `le ${dayjs(date).format("DD/MM/YYYY")}` : ""}
           </span>
         );
       }
@@ -335,7 +329,7 @@ const ProjectTasks = ({ openAddTask }) => {
         const renderActions = [];
         // if (!user?.email)
         //   return [<Skeleton className={classes.joinBtnSkeleton} />];
-        if (!isSuperUser && !project.isProjectRunning) return renderActions
+        if (!isSuperUser && !project.isProjectRunning) return renderActions;
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
         );
@@ -411,7 +405,8 @@ const ProjectTasks = ({ openAddTask }) => {
         }
         if (
           !emailsList.includes(user?.email) &&
-          TASK_STATE_ABANDONED !== row.state && user?.role !== CLIENT_ROLE
+          TASK_STATE_ABANDONED !== row.state &&
+          user?.role !== CLIENT_ROLE
         ) {
           renderActions.push(
             <GridActionsCellItem
@@ -431,7 +426,6 @@ const ProjectTasks = ({ openAddTask }) => {
   ];
 
   const getRowClassName = (params) => {
-
     return TASK_STATE_ABANDONED === params.row.state
       ? isSuperUser ||
         (isManager && user?.email === project?.managerDetails?.email)
@@ -447,7 +441,9 @@ const ProjectTasks = ({ openAddTask }) => {
   return (
     <div className={classesDetails.card}>
       {(isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email && project.isProjectRunning)) && (
+        (isManager &&
+          user?.email === project?.managerDetails?.email &&
+          project.isProjectRunning)) && (
         <div className={`${classesDetails.cardTitle}`}>
           <button onClick={openAddTask}>
             <span className="text">Tache</span>
@@ -457,8 +453,8 @@ const ProjectTasks = ({ openAddTask }) => {
       )}
 
       <DataGrid
-      // apiRef={dataGridRef}
-      ref={dataGridRef}
+        // apiRef={dataGridRef}
+        ref={dataGridRef}
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         autoHeight
         rows={tasks || []}
