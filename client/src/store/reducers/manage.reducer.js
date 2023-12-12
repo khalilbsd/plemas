@@ -31,10 +31,9 @@ const initialState = {
   filters: filtersInit,
   projectsTaskFilters: [],
   projectsTaskFiltersDates: {
-    start:"",
-    end:"",
+    start: "",
+    end: ""
   }
-
 };
 
 const manageSlice = createSlice({
@@ -64,7 +63,6 @@ const manageSlice = createSlice({
       state.projectsTaskList = action?.payload.tasks;
     },
     setProjectTaskListFiltered: (state, action) => {
-
       state.projectsTaskListFiltered = action?.payload;
     },
 
@@ -122,30 +120,41 @@ const manageSlice = createSlice({
       const isFilteredBy = state.addProject.filterType.filter(
         ({ type }) => type === action.payload.attribute
       )[0];
-
+      let indxOfFilter = -1;
       if (!isFilteredBy) {
         state.addProject.filterType.push({
           type: action.payload.attribute,
-          value: action.payload.value
+          value: [action.payload.value]
         });
+        indxOfFilter = state.addProject.filterType.length - 1;
       } else {
-        let indxOfFilter = state.addProject.filterType
+        indxOfFilter = state.addProject.filterType
           .map(({ type }) => type)
           .indexOf(action.payload.attribute);
 
         if (indxOfFilter > -1)
           if (
-            state.addProject.filterType[indxOfFilter]?.value !==
-            action.payload.value
-          )
+            !state.addProject.filterType[indxOfFilter]?.value.includes(
+              action.payload.value
+            )
+          ) {
+            state.addProject.filterType[indxOfFilter].value.push(
+              action.payload.value
+            );
+          } else {
             state.addProject.filterType[indxOfFilter].value =
-              action.payload.value;
+              state.addProject.filterType[indxOfFilter].value.filter(
+                (value) => value !== action.payload.value
+              );
+          }
       }
 
-      if (!action.payload.value && isFilteredBy) {
-        state.addProject.filterType = state.addProject.filterType.filter(
-          (elem) => elem.type !== action.payload.attribute
-        );
+      if (action.payload.value && isFilteredBy && indxOfFilter > -1) {
+        //check if the value is an empty array
+        if (!state.addProject.filterType[indxOfFilter].value.length)
+          state.addProject.filterType = state.addProject.filterType.filter(
+            (elem) => elem.type !== action.payload.attribute
+          );
       }
 
       if (!state.addProject.filterType.length) {
@@ -165,9 +174,18 @@ const manageSlice = createSlice({
               (obj, key) => (obj && obj[key] ? obj[key] : null),
               project
             );
-            const regex = new RegExp(filterAttribute.value, "i"); // 'i' for case-insensitive search
 
-            return regex.test(nestedValue);
+            if (Array.isArray(filterAttribute.value)) {
+              // If filter value is an array, check if any element matches
+              return filterAttribute.value.some((filterVal) => {
+                const regex = new RegExp(filterVal, "i");
+                return regex.test(nestedValue);
+              });
+            } else {
+              // If filter value is a string, perform the original case-insensitive search
+              const regex = new RegExp(filterAttribute.value, "i");
+              return regex.test(nestedValue);
+            }
           });
         }
       );
@@ -226,14 +244,13 @@ const manageSlice = createSlice({
         (filter) => filter !== action.payload
       );
     },
-    setProjectTasksDateFilter:(state,action)=>{
-
-      state.projectsTaskFiltersDates.start = action.payload.start
-      state.projectsTaskFiltersDates.end = action.payload.end
+    setProjectTasksDateFilter: (state, action) => {
+      state.projectsTaskFiltersDates.start = action.payload.start;
+      state.projectsTaskFiltersDates.end = action.payload.end;
     },
-    clearProjectTasksDateFilter:(state,action)=>{
-      state.projectsTaskFiltersDates.start = null
-      state.projectsTaskFiltersDates.end = null
+    clearProjectTasksDateFilter: (state, action) => {
+      state.projectsTaskFiltersDates.start = null;
+      state.projectsTaskFiltersDates.end = null;
     }
   }
 });
@@ -260,7 +277,7 @@ export const {
   popTaskStateFromFilter,
   setProjectTaskListFiltered,
   setProjectTasksDateFilter,
-clearProjectTasksDateFilter
+  clearProjectTasksDateFilter
 } = manageSlice.actions;
 
 export default manageSlice.reducer;

@@ -1,29 +1,43 @@
 import TableCell from "@mui/material/TableCell";
 import React, { useRef } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
 import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
 import useOutsideAlerter from "../../../../../hooks/outsideClick";
-import { hideFilterForType, showFilterForType } from "../../../../../store/reducers/manage.reducer";
+import {
+  hideFilterForType,
+  showFilterForType
+} from "../../../../../store/reducers/manage.reducer";
 import faFilter from "../../../../public/svgs/light/filter.svg";
 import Filter from "./Filter";
 import { filterStyles } from "./style";
 const ProjectHeadColumnFilter = (props) => {
   const {
-    column: { headerName, width, filter, items, handler, ref, title, type  , filterWidth},
-
-
+    column: {
+      field,
+      headerName,
+      width,
+      filter,
+      items,
+      handler,
+      ref,
+      title,
+      type,
+      filterWidth
+    }
   } = props;
   const wrapperRef = useRef(null);
-  const dispatch =useDispatch()
-  const filterStatus = useGetStateFromStore("manage","filters")
+  const dispatch = useDispatch();
+  const filterStatus = useGetStateFromStore("manage", "filters");
 
-  useOutsideAlerter(wrapperRef,()=>dispatch(hideFilterForType()));
+  // useOutsideAlerter(wrapperRef,()=>dispatch(hideFilterForType()));
   const classes = filterStyles();
 
   const showFilter = (filterType) => {
-
-    dispatch(showFilterForType(filterType))
+    dispatch(showFilterForType(filterType));
+  };
+  const hideFilter = () => {
+    dispatch(hideFilterForType());
   };
 
   const isFiltering = filterStatus?.filter((ft) => ft.type === type)[0]?.active;
@@ -37,11 +51,16 @@ const ProjectHeadColumnFilter = (props) => {
       style={{ width }}
     >
       {isFiltering && (
-        <div className={classes.filterContainer}
-        style={{width:filterWidth?filterWidth:'auto'}}
-        ref={wrapperRef}
+        <div
+          className={classes.filterContainer}
+          style={{ width: filterWidth ? filterWidth : "auto" }}
+          ref={wrapperRef}
         >
           <Filter
+            handleOpen={()=>showFilter(type)}
+            handleClose={()=>hideFilter()}
+            name={field}
+            open={isFiltering}
             items={items}
             handleChange={handler}
             value={ref}

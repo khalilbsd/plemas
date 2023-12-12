@@ -30,7 +30,7 @@ const init = {
   manager: "",
   state: "",
   phase: "",
-  lot: "",
+  lots: "",
   taskState: ""
 };
 
@@ -104,48 +104,37 @@ const ProjectListHeader = () => {
     return list;
   };
 
-  const handleChangeManager = (value) => {
+  const handleChangeManager = (event) => {
+    const {
+      target: { value, name }
+    } = event;
+
     setSelected({ ...selected, manager: value });
 
     dispatch(
       filterProjectsList({
         flag: true,
-        value: value?.fullName,
+        value: value[0]?.fullName,
         attribute: "manager.fullName"
       })
     );
   };
 
-  const handChangeState = (value) => {
-    setSelected({ ...selected, state: value });
+  const handleChangeFilter = (event) => {
+    const {
+      target: { value, name }
+    } = event;
+
+    setSelected({
+      ...selected,
+      [name]: typeof value === "string" ? value.split(",") : value[0]
+    });
 
     dispatch(
       filterProjectsList({
         flag: true,
-
-        value: value,
-        attribute: "state"
-      })
-    );
-  };
-  const handleChangePhase = (value) => {
-    setSelected({ ...selected, phase: value });
-    dispatch(
-      filterProjectsList({
-        flag: true,
-        value: value,
-        attribute: "activePhase"
-      })
-    );
-  };
-
-  const handleChangeLots = (value) => {
-    setSelected({ ...selected, lot: value });
-    dispatch(
-      filterProjectsList({
-        flag: true,
-        value: value,
-        attribute: "lots"
+        value: typeof value === "string" ? value.split(",") : value[0],
+        attribute: name
       })
     );
   };
@@ -166,19 +155,20 @@ const ProjectListHeader = () => {
       dispatch(
         setProjectTasksDateFilter({
           start: dateFilter.startDate.format("DD/MM/YYYY"),
-        end: dateFilter.endDate.format("DD/MM/YYYY"),
+          end: dateFilter.endDate.format("DD/MM/YYYY")
         })
       );
       hideDatesFilter();
     } catch (error) {
-
       notify(NOTIFY_ERROR, error?.data?.message);
     }
   };
 
-  const handleChangeTaskState = (value) => {
-    setSelected({ ...selected, taskState: value });
-    dispatch(filterByTaskStatus(value));
+  const handleChangeTaskState = (event) => {
+    const { target:{ value, name }} = event;
+
+    setSelected({ ...selected, [name]: value[0] });
+    dispatch(filterByTaskStatus(value[0]));
   };
 
   const showDatesFilter = () => {
@@ -223,14 +213,14 @@ const ProjectListHeader = () => {
   const columns = [
     {
       headerName: "Nom du projet",
-      field: "projectCustomId",
+      field: "state",
       width: 200,
       filter: true,
       type: "state",
       ref: selected.state,
       items: states,
       title: "Filtre par état du projet",
-      handler: handChangeState,
+      handler: handleChangeFilter,
       filterWidth: 200
     },
     {
@@ -254,7 +244,7 @@ const ProjectListHeader = () => {
       title: "Filtre par lot",
 
       items: lots,
-      handler: handleChangeLots,
+      handler: handleChangeFilter,
       width: 51
     },
     {
@@ -267,7 +257,7 @@ const ProjectListHeader = () => {
       type: "phase",
       ref: selected.phase,
       items: phase,
-      handler: handleChangePhase
+      handler: handleChangeFilter
     },
     {
       headerName: " ",
@@ -277,7 +267,7 @@ const ProjectListHeader = () => {
     },
     {
       headerName: "Status",
-      field: "phaseStatus",
+      field: "taskState",
       filter: true,
       width: 65,
       type: "taskState",
