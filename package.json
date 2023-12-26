@@ -11,7 +11,8 @@
     "start.server": "cd server && npm start",
     "start.dev.server": "cd server && npm run start:dev",
     "chronos": "concurrently \"npm run start.client\" \"npm run start.server\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate-data":"cd server && node ./scripts/syncDB.js"
   },
   "repository": {
     "type": "git",
