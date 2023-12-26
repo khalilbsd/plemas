@@ -124,7 +124,7 @@ export const serializeProject = (projects) => {
     list.push({
       id: element.id,
       code: element.code,
-      activePhase: element.phase.name,
+      activePhase: element.phase?.name,
       state:TASK_STATE_TRANSLATION.filter(state=>state.value === element.state)[0].label,
       manager: {
         image: element.managerDetails.UserProfile.image,

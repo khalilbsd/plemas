@@ -123,30 +123,30 @@ async function syncDataBaseFromXL(excelFilePath) {
       let data  = { ...projects[idx].project}
       data.code = data.code.slice(0, data.code.length - 1);
       console.log(`creating project ${data.code} and phase ${projects[idx].project.phaseID} `);
-      // const project = await Project.create({...data});
+      const project = await Project.create({...data});
 
-      // // creating projects Lots
-      // let lot
-      // for (const lIdx in projects[idx].lots) {
-      //    lot = await Lot.findOne({
-      //     where: { name: projects[idx].lots[lIdx] }
-      //   });
-      //   await ProjectLots.create({
-      //     projectID: project?.id,
-      //     lotID: lot?.id
-      //   });
-      // }
-      // console.log(`creating  tasks for project ${projects[idx].project.code}`);
+      // creating projects Lots
+      let lot
+      for (const lIdx in projects[idx].lots) {
+         lot = await Lot.findOne({
+          where: { name: projects[idx].lots[lIdx] }
+        });
+        await ProjectLots.create({
+          projectID: project?.id,
+          lotID: lot?.id
+        });
+      }
+      console.log(`creating  tasks for project ${projects[idx].project.code}`);
 
-      // ; // creating tasks
-      // console.log(projects[idx].tasks);
-      // for (const tIdx in projects[idx].tasks) {
-      //   const task = await Task.create({ ...projects[idx].tasks[tIdx] });
-      //   await Intervenant.create({
-      //     projectID: project.id,
-      //     taskID: task.id
-      //   })
-      // }
+      ; // creating tasks
+      console.log(projects[idx].tasks);
+      for (const tIdx in projects[idx].tasks) {
+        const task = await Task.create({ ...projects[idx].tasks[tIdx] });
+        await Intervenant.create({
+          projectID: project.id,
+          taskID: task.id
+        })
+      }
     }
     // console.log(projects);
     console.log(`data migration is done  from the inside`)

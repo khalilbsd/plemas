@@ -138,9 +138,15 @@ const manageSlice = createSlice({
               action.payload.value
             )
           ) {
-            state.addProject.filterType[indxOfFilter].value.push(
-              action.payload.value
-            );
+            if (action.payload.attribute === 'projectCustomId'){
+              state.addProject.filterType[indxOfFilter].value =[action.payload.value]
+
+            }else{
+
+              state.addProject.filterType[indxOfFilter].value.push(
+                action.payload.value
+                );
+              }
           } else {
             state.addProject.filterType[indxOfFilter].value =
               state.addProject.filterType[indxOfFilter].value.filter(
