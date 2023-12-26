@@ -70,10 +70,8 @@ async function syncDataBaseFromXL(excelFilePath) {
     console.log(`Starting data structuring for Excel file: ${excelFilePath}`);
     for (let idx = 2; idx <= worksheet.actualRowCount; idx++) {
       const row = worksheet.getRow(idx);
-      const code = row
-        .getCell(5)
-        .value.slice(0, row.getCell(5).value.length - 1);
 
+      // console.log("code :",code);
       const tache = {
         name: row.getCell(33).value,
         startDate: row.getCell(31).value,
@@ -87,7 +85,7 @@ async function syncDataBaseFromXL(excelFilePath) {
 
       const indexProject = projects
         .map((item) => item.project.code)
-        .indexOf(code);
+        .indexOf(row.getCell(5).value);
 
       if (indexProject > -1) {
         projects[indexProject].tasks.push(tache);
@@ -98,7 +96,7 @@ async function syncDataBaseFromXL(excelFilePath) {
         );
         const entry = {
           project: {
-            code,
+            code:row.getCell(5).value,
             customId: row.getCell(7).value.replace("-", "_"),
             name: row.getCell(6).value,
             startDate: row.getCell(9).value,
@@ -122,33 +120,33 @@ async function syncDataBaseFromXL(excelFilePath) {
     // Now, the projects array should be correctly populated therefore it's time to insert
     for (const idx in projects) {
       //create the project
-      console.log(`creating project ${projects[idx].project.code} and phase ${projects[idx].project.phaseID} `);
+      let data  = { ...projects[idx].project}
+      data.code = data.code.slice(0, data.code.length - 1);
+      console.log(`creating project ${data.code} and phase ${projects[idx].project.phaseID} `);
+      // const project = await Project.create({...data});
 
-      const project = await Project.create({ ...projects[idx].project });
+      // // creating projects Lots
+      // let lot
+      // for (const lIdx in projects[idx].lots) {
+      //    lot = await Lot.findOne({
+      //     where: { name: projects[idx].lots[lIdx] }
+      //   });
+      //   await ProjectLots.create({
+      //     projectID: project?.id,
+      //     lotID: lot?.id
+      //   });
+      // }
+      // console.log(`creating  tasks for project ${projects[idx].project.code}`);
 
-      // creating projects Lots
-      let lot
-      for (const lIdx in projects[idx].lots) {
-         lot = await Lot.findOne({
-          where: { name: projects[idx].lots[lIdx] }
-        });
-        console.log("lotttttt",projects[idx].lots[lIdx]);
-        await ProjectLots.create({
-          projectID: project?.id,
-          lotID: lot?.id
-        });
-      }
-      console.log(`creating  tasks for project ${projects[idx].project.code}`);
-
-      ; // creating tasks
-      console.log(projects[idx].tasks);
-      for (const tIdx in projects[idx].tasks) {
-        const task = await Task.create({ ...projects[idx].tasks[tIdx] });
-        await Intervenant.create({
-          projectID: project.id,
-          taskID: task.id
-        })
-      }
+      // ; // creating tasks
+      // console.log(projects[idx].tasks);
+      // for (const tIdx in projects[idx].tasks) {
+      //   const task = await Task.create({ ...projects[idx].tasks[tIdx] });
+      //   await Intervenant.create({
+      //     projectID: project.id,
+      //     taskID: task.id
+      //   })
+      // }
     }
     // console.log(projects);
     console.log(`data migration is done  from the inside`)

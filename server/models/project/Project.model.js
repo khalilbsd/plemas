@@ -6,7 +6,7 @@ const Project = database.define(
   "projects",
   {
     code: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       unique: false,
       allowNull: false
     },
