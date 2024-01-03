@@ -26,6 +26,8 @@ import faArrowRight from "../../../public/svgs/light/arrow-right.svg";
 import { useFilterProjectsTasksByDatesMutation } from "../../../../store/api/tasks.api";
 import { notify } from "../../notification/notification";
 import { setTwoWeeksDatesListFiltered } from "../../../../store/reducers/project.reducer";
+import Tooltip from "@mui/material/Tooltip";
+
 const init = {
   manager: "",
   state: "",
@@ -165,7 +167,9 @@ const ProjectListHeader = () => {
   };
 
   const handleChangeTaskState = (event) => {
-    const { target:{ value, name }} = event;
+    const {
+      target: { value, name }
+    } = event;
 
     setSelected({ ...selected, [name]: value[0] });
     dispatch(filterByTaskStatus(value[0]));
@@ -308,7 +312,7 @@ const ProjectListHeader = () => {
                   }`}
                   key={index}
                 >
-                  {date[0].toUpperCase()}
+                  <Tooltip title={date}>{date[0].toUpperCase()}</Tooltip>
                 </p>
               </div>
             ))}

@@ -45,6 +45,11 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     "projectsTaskListFiltered"
   );
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
+  const WeeksDatesListFiltered = useGetStateFromStore(
+    "project",
+    "twoWeeksListFiltered"
+  );
+
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const filterTaskState = useGetStateFromStore("manage", "projectsTaskFilters");
 
@@ -94,7 +99,8 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
   };
 
   function convertTwoWeeksDates() {
-    return twoWeeksDates?.map(({ date }) => {
+
+    return renderByWeeks()?.map(({ date }) => {
       return date.split(" ")[1];
     });
   }
@@ -140,6 +146,13 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       return <div className={classes.task}>{taskInfoElement?.shift()}</div>;
   };
 
+
+
+  const renderByWeeks =()=>{
+    if (WeeksDatesListFiltered.length) return WeeksDatesListFiltered
+
+    return twoWeeksDates
+  }
   const renderTasksStates = (projectID) => {
     let tasksNb = projectTasks(projectID)?.length;
     if (!tasksNb) return null;
@@ -169,7 +182,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
 
   const renderTaskTimeLine = (projectID) => {
     const convertedDates = convertTwoWeeksDates();
-
+    console.log(twoWeeksDates);
     const taskElements = projectTasks(projectID)?.map((task) => {
       // Perform calculations here
       let { startDate, dueDate, doneDate } = task;
@@ -200,7 +213,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
           startConverted < dayjs(new Date()) &&
           dueConverted > dayjs(new Date())
         ) {
-          width = twoWeeksDates.length * progress_bar_width_cell;
+          width = renderByWeeks().length * progress_bar_width_cell;
           position = 0;
 
           if (done) {
