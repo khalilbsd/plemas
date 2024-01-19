@@ -949,10 +949,11 @@ export const getProjectsTasksBulk = async (
       [Op.gte]: moment(start, "DD/MM/YYYY"),
       [Op.lte]: moment(end, "DD/MM/YYYY")
     };
-  } else {
-    filterDate.dueDate = {
-      [Op.gte]: today
-    };
+  }
+  else {
+    // filterDate.dueDate = {
+    //   [Op.gte]: today
+    // };
   }
   for (const projIdx in projectsList) {
     let projectTasks = await Task.findAll({
@@ -983,7 +984,6 @@ export const getProjectsTasksBulk = async (
       (a, b) =>
         moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
     );
-
     tasks.push({
       projectID: projectsList[projIdx],
       tasks: projectTasks ? projectTasks : []

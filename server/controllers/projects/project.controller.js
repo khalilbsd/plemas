@@ -120,47 +120,20 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   const dates = calculateDates(3);
 
-  // let tasks = [];
 
-  // for (const projIdx in projectsList) {
-  //   let projectTasks = await Task.findAll({
-  //     attributes: ["id", "name", "name", "startDate", "dueDate", "state","blockedDate","doneDate"],
-  //     // order: [["dueDate", "DESC"]],
-  //     where: {
-  //       "dueDate": {
-  //         [Op.gte]: today
-  //       }
-  //     },
-  //     include: [
-  //       {
-  //         model: Intervenant,
-  //         attributes: ["id"],
-  //         where: {
-  //           projectID: projectsList[projIdx].id
-  //         }
-  //       }
-  //     ]
-  //   });
-
-  //   projectTasks.sort(
-  //     (a, b) =>
-  //       moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
-  //   );
-
-  //   tasks.push({
-  //     projectID: projectsList[projIdx].id,
-  //     tasks: projectTasks ? projectTasks : []
-  //   });
-  // }
   let tasks = await getProjectsTasksBulk(
     projectsList.map((project) => project.id)
   );
+
+    // console.log(object);
 
   const indexMap = {};
   tasks.forEach((task, index) => {
     indexMap[task.projectID] = index;
   });
 
+  console.log(tasks);
+  // console.log(indexMap);k
   // Custom sorting function based on the tasks array index
   const customSort = (a, b) => {
     const indexA = indexMap[a.id];

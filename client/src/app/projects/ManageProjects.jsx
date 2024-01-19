@@ -2,7 +2,7 @@ import { Grid } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../constants/constants";
+import { NOTIFY_ERROR, NOTIFY_SUCCESS, TASK_STATE_BLOCKED, TASK_STATE_DOING } from "../../constants/constants";
 import useIsUserCanAccess from "../../hooks/access";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import {
@@ -10,11 +10,14 @@ import {
   useGetProjectListMutation
 } from "../../store/api/projects.api";
 import {
+  applyDailyFilter,
   clearAddProjectState,
+  filterByTaskStatus,
   filterProjectsList,
   setLinkedProject,
   setLinkingProject,
-  setProjectList
+  setProjectList,
+  setProjectTasksDateFilter
 } from "../../store/reducers/manage.reducer";
 import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
 import { containsOnlySpaces } from "../../store/utils";
@@ -69,6 +72,7 @@ const ManageProjects = () => {
   const [newProject, setNewProject] = useState(newProjectInitialState);
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
+  const dailyFilter = useGetStateFromStore('manage','projectListDailyFilter')
 const [creatingProject, setCreatingProject] = useState(false)
   //ADD hooks
   const [createProject] =
@@ -80,7 +84,14 @@ const [creatingProject, setCreatingProject] = useState(false)
 
       dispatch(setProjectList({projects:data.projects,tasks:data.projectsTasks}));
       dispatch(setTwoWeeksDatesList(data.dates));
+      dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      if (dailyFilter){
+        dispatch(filterProjectsList({ flag: true, value: TASK_STATE_DOING ,attribute:'state' }));
+        dispatch(filterProjectsList({ flag: true, value: TASK_STATE_BLOCKED ,attribute:'state' }));
+        dispatch(filterByTaskStatus(TASK_STATE_DOING));
 
+
+      }
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
     }

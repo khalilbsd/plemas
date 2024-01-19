@@ -30,6 +30,7 @@ const initialState = {
   },
   filters: filtersInit,
   projectsTaskFilters: [],
+  projectListDailyFilter:true,
   projectsTaskFiltersDates: {
     start: "",
     end: ""
@@ -61,6 +62,8 @@ const manageSlice = createSlice({
     setProjectList: (state, action) => {
       state.projectsList = action?.payload.projects;
       state.projectsTaskList = action?.payload.tasks;
+      // launch dailyLogFilter
+
     },
     setProjectTaskListFiltered: (state, action) => {
       state.projectsTaskListFiltered = action?.payload;
@@ -108,15 +111,11 @@ const manageSlice = createSlice({
         )[0].projectCustomId;
       }
     },
+    applyDailyFilter:(state,action)=>{
 
+    },
     // to do the filter
     filterProjectsList: (state, action) => {
-      // const regex = new RegExp(action.payload.value, "i"); // 'i' for case-insensitive search
-
-      // let filterItem  ={
-      //   type:action.payload.attribute ,
-      //   value :  regex,
-      // }
       const isFilteredBy = state.addProject.filterType.filter(
         ({ type }) => type === action.payload.attribute
       )[0];
@@ -257,7 +256,11 @@ const manageSlice = createSlice({
     clearProjectTasksDateFilter: (state, action) => {
       state.projectsTaskFiltersDates.start = null;
       state.projectsTaskFiltersDates.end = null;
+    },
+    changeDailyFilter:(state,action)=>{
+      state.projectListDailyFilter = action.payload
     }
+
   }
 });
 
@@ -283,7 +286,9 @@ export const {
   popTaskStateFromFilter,
   setProjectTaskListFiltered,
   setProjectTasksDateFilter,
-  clearProjectTasksDateFilter
+  clearProjectTasksDateFilter,
+  changeDailyFilter,
+  applyDailyFilter
 } = manageSlice.actions;
 
 export default manageSlice.reducer;

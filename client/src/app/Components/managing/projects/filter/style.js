@@ -130,6 +130,12 @@ export const filterStyles = createUseStyles({
       '&:hover':{
         backgroundColor:'var(--white-hover)',
       }
+    },
+    '&.standalone':{
+      '& .title':{
+        fontSize:14,
+        textTransform:'capitalize'
+      }
     }
   },
 

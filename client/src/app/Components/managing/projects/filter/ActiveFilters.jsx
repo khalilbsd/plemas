@@ -13,7 +13,7 @@ import {
 import { setTwoWeeksDatesListFiltered } from "../../../../../store/reducers/project.reducer";
 import faClose from "../../../../public/svgs/light/xmark.svg";
 import { filterStyles } from "./style";
-const ActiveFilters = () => {
+const ActiveFilters = ({ dailyFilter, disableDailyFilter }) => {
   const { filterType: active } = useGetStateFromStore("manage", "addProject");
   const taskFilters = useGetStateFromStore("manage", "projectsTaskFilters");
   const taskFilteredByDates = useGetStateFromStore(
@@ -51,12 +51,27 @@ const ActiveFilters = () => {
   return (
     <div className={classes.activeFilterList}>
       <ul>
+        {dailyFilter&&<li>
+          <div className={`${classes.activeFilter} standalone`}>
+            <div className="filter-value">
+              <span className="title">filtre quotidien</span>
+
+            </div>
+            <button onClick={disableDailyFilter}>
+              <ReactSVG src={faClose} className="remove-filter" />
+            </button>
+          </div>
+        </li>}
         {active.map((filter, key) => (
           <li key={key}>
             <div className={classes.activeFilter}>
               <div className="filter-value">
                 <span className="title">{FILTER_TITLES[filter.type]}</span>
-                <span className="value">{filter.value.map((value) => <span key={value}>{value}</span>)}</span>
+                <span className="value">
+                  {filter.value.map((value) => (
+                    <span key={value}>{value}</span>
+                  ))}
+                </span>
               </div>
               <button onClick={() => removeFilter(filter.type)}>
                 <ReactSVG src={faClose} className="remove-filter" />
@@ -69,9 +84,7 @@ const ActiveFilters = () => {
             <div className={classes.activeFilter}>
               <div className="filter-value">
                 <span className="title">les taches qui sont </span>
-                <span className="value">
-                {filter}
-                   </span>
+                <span className="value">{filter}</span>
               </div>
               <button onClick={() => removeTaskFilter(filter)}>
                 <ReactSVG src={faClose} className="remove-filter" />

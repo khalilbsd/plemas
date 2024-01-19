@@ -7,6 +7,7 @@ import {
   TASK_STATE_DOING,
   TASK_STATE_DONE
 } from "../constants/constants.js";
+import moment from "moment";
 
 const determineProjectState = (stateNB) => {
   switch (stateNB) {
@@ -56,6 +57,14 @@ const determineProjectPhase = async ( code) => {
   return idPhase;
 };
 
+function resetTime(dateString) {
+  if (dateString) {
+      return moment(dateString).startOf('day').toDate();
+  }
+  return null;
+}
+
+
 async function syncDataBaseFromXL(excelFilePath) {
   console.log(`Starting data migration from Excel file: ${excelFilePath}`);
 
@@ -74,10 +83,10 @@ async function syncDataBaseFromXL(excelFilePath) {
       // console.log("code :",code);
       const tache = {
         name: row.getCell(33).value,
-        startDate: row.getCell(31).value,
-        dueDate: row.getCell(32).value,
+        startDate: resetTime(row.getCell(31).value),
+        dueDate: resetTime(row.getCell(32).value),
         blockedDate: null,
-        doneDate: row.getCell(37).value,
+        doneDate: resetTime(row.getCell(37).value),
         isVerified: false,
         totalHours: 0,
         state: determineTaskState(row.getCell(34).value)

@@ -42,7 +42,7 @@ const dateFilterInit = {
   endDate: dayjs().locale("en-gb").add(21, "day")
 };
 
-const ProjectListHeader = () => {
+const ProjectListHeader = ({disableDailyFilter}) => {
   const [selected, setSelected] = useState(init);
   const classes = projectsStyles();
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
@@ -112,7 +112,7 @@ const ProjectListHeader = () => {
     } = event;
 
     setSelected({ ...selected, manager: value });
-
+    //disableDailyFilter()
     dispatch(
       filterProjectsList({
         flag: true,
@@ -126,6 +126,7 @@ const ProjectListHeader = () => {
     const {
       target: { value, name }
     } = event;
+    //disableDailyFilter()
 
     setSelected({
       ...selected,
@@ -143,6 +144,7 @@ const ProjectListHeader = () => {
 
   const applyDateFilter = async () => {
     const projectIds = projects.map((project) => project.id);
+    //disableDailyFilter()
 
     try {
       const res = await filterProjectsTasksByDates({
@@ -170,6 +172,7 @@ const ProjectListHeader = () => {
     const {
       target: { value, name }
     } = event;
+    //disableDailyFilter()
 
     setSelected({ ...selected, [name]: value[0] });
     dispatch(filterByTaskStatus(value[0]));
@@ -312,7 +315,7 @@ const ProjectListHeader = () => {
                   }`}
                   key={index}
                 >
-                  <Tooltip title={date}>{date[0].toUpperCase()}</Tooltip>
+                  <Tooltip title={date}><span>{date[0].toUpperCase()}</span></Tooltip>
                 </p>
               </div>
             ))}
