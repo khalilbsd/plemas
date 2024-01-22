@@ -70,6 +70,9 @@ const ManageProjects = () => {
   const codeRef = useRef();
   const [errorMessage, setErrorMessage] = useState(initialError);
   const [newProject, setNewProject] = useState(newProjectInitialState);
+  const { filterType:filters } = useGetStateFromStore("manage", "addProject");
+  const {isFiltering} = useGetStateFromStore("manage", "addProject");
+
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const dailyFilter = useGetStateFromStore('manage','projectListDailyFilter')
@@ -80,11 +83,15 @@ const [creatingProject, setCreatingProject] = useState(false)
 
   async function loadProjects() {
     try {
+      console.log("loadingProjects");
       const data = await getProjectList().unwrap();
 
       dispatch(setProjectList({projects:data.projects,tasks:data.projectsTasks}));
       dispatch(setTwoWeeksDatesList(data.dates));
-      dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      console.log(!isFiltering && addProjectForm && !dailyFilter);
+      if (!isFiltering && addProjectForm && !dailyFilter ){
+        dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      }
       if (dailyFilter){
         dispatch(filterProjectsList({ flag: true, value: TASK_STATE_DOING ,attribute:'state' }));
         dispatch(filterProjectsList({ flag: true, value: TASK_STATE_BLOCKED ,attribute:'state' }));
@@ -98,7 +105,7 @@ const [creatingProject, setCreatingProject] = useState(false)
   }
   useEffect(() => {
     // if (!projectList.length){
-      dispatch(filterProjectsList({ flag: false, value: "" ,attribute:'projectCustomId' }));
+
       loadProjects();
     // }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,7 +122,9 @@ const [creatingProject, setCreatingProject] = useState(false)
       dispatch(setLinkedProject(null));
       dispatch(setLinkingProject(null));
     } else {
-      dispatch(filterProjectsList({ flag: false, value: "" ,attribute:'projectCustomId' }));
+      if (!isFiltering && !dailyFilter ){
+        dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      }
     }
 
     setAddProjectForm((prevState) => !prevState);

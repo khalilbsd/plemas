@@ -30,7 +30,7 @@ const initialState = {
   },
   filters: filtersInit,
   projectsTaskFilters: [],
-  projectListDailyFilter:true,
+  projectListDailyFilter: true,
   projectsTaskFiltersDates: {
     start: "",
     end: ""
@@ -63,7 +63,6 @@ const manageSlice = createSlice({
       state.projectsList = action?.payload.projects;
       state.projectsTaskList = action?.payload.tasks;
       // launch dailyLogFilter
-
     },
     setProjectTaskListFiltered: (state, action) => {
       state.projectsTaskListFiltered = action?.payload;
@@ -111,63 +110,74 @@ const manageSlice = createSlice({
         )[0].projectCustomId;
       }
     },
-    applyDailyFilter:(state,action)=>{
-
-    },
+    applyDailyFilter: (state, action) => {},
     // to do the filter
     filterProjectsList: (state, action) => {
+      console.log("calling for action ", action.payload);
+      //checking is there is already a filter with same attribute
       const isFilteredBy = state.addProject.filterType.filter(
         ({ type }) => type === action.payload.attribute
       )[0];
       let indxOfFilter = -1;
+      console.log("calling for action  isFiltred by",!isFilteredBy," ",action.payload.attribute);
+        // if the filter is new
       if (!isFilteredBy) {
         state.addProject.filterType.push({
           type: action.payload.attribute,
           value: [action.payload.value]
         });
+
         indxOfFilter = state.addProject.filterType.length - 1;
       } else {
         indxOfFilter = state.addProject.filterType
           .map(({ type }) => type)
           .indexOf(action.payload.attribute);
-
-        if (indxOfFilter > -1)
+          // position of the filter in the filterType
           if (
             !state.addProject.filterType[indxOfFilter]?.value.includes(
               action.payload.value
             )
           ) {
-            if (action.payload.attribute === 'projectCustomId'){
-              state.addProject.filterType[indxOfFilter].value =[action.payload.value]
-
-            }else{
-
+            if (action.payload.attribute === "projectCustomId") {
+              state.addProject.filterType[indxOfFilter].value = [
+                action.payload.value
+              ];
+            } else {
               state.addProject.filterType[indxOfFilter].value.push(
                 action.payload.value
-                );
-              }
+              );
+            }
           } else {
-            state.addProject.filterType[indxOfFilter].value =
+            if (!action.payload.flag){
+
+              state.addProject.filterType[indxOfFilter].value =
               state.addProject.filterType[indxOfFilter].value.filter(
                 (value) => value !== action.payload.value
-              );
+                );
+              }
           }
       }
 
+
+      console.log("before insertion",action.payload.value && isFilteredBy && indxOfFilter > -1);
       if (action.payload.value && isFilteredBy && indxOfFilter > -1) {
-        //check if the value is an empty array
+
+        console.log("before insertion 1.1",state.addProject?.filterType[indxOfFilter]?.value?.length);
+        // check if the value is an empty array
         if (!state.addProject.filterType[indxOfFilter].value.length)
+
           state.addProject.filterType = state.addProject.filterType.filter(
             (elem) => elem.type !== action.payload.attribute
           );
       }
-
+      console.log("checking for filterType length",!state.addProject.filterType.length);
       if (!state.addProject.filterType.length) {
         state.addProject.isFiltering = false;
       } else {
         state.addProject.isFiltering = action.payload.flag;
       }
-      if (!state.addProject.isFiltering) {
+
+      if (!state.addProject.isFiltering ) {
         state.addProject.filterType = [];
       }
       // Now, filter the projects based on the filterType array
@@ -257,10 +267,9 @@ const manageSlice = createSlice({
       state.projectsTaskFiltersDates.start = null;
       state.projectsTaskFiltersDates.end = null;
     },
-    changeDailyFilter:(state,action)=>{
-      state.projectListDailyFilter = action.payload
+    changeDailyFilter: (state, action) => {
+      state.projectListDailyFilter = action.payload;
     }
-
   }
 });
 
