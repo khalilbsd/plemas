@@ -2,7 +2,12 @@ import { Grid } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { NOTIFY_ERROR, NOTIFY_SUCCESS, TASK_STATE_BLOCKED, TASK_STATE_DOING } from "../../constants/constants";
+import {
+  NOTIFY_ERROR,
+  NOTIFY_SUCCESS,
+  TASK_STATE_BLOCKED,
+  TASK_STATE_DOING
+} from "../../constants/constants";
 import useIsUserCanAccess from "../../hooks/access";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import {
@@ -70,34 +75,49 @@ const ManageProjects = () => {
   const codeRef = useRef();
   const [errorMessage, setErrorMessage] = useState(initialError);
   const [newProject, setNewProject] = useState(newProjectInitialState);
-  const { filterType:filters } = useGetStateFromStore("manage", "addProject");
-  const {isFiltering} = useGetStateFromStore("manage", "addProject");
+  const { filterType: filters } = useGetStateFromStore("manage", "addProject");
+  const { isFiltering } = useGetStateFromStore("manage", "addProject");
 
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
-  const dailyFilter = useGetStateFromStore('manage','projectListDailyFilter')
-const [creatingProject, setCreatingProject] = useState(false)
+  const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
+  const [creatingProject, setCreatingProject] = useState(false);
   //ADD hooks
-  const [createProject] =
-    useCreateProjectMutation();
+  const [createProject] = useCreateProjectMutation();
 
   async function loadProjects() {
     try {
-      console.log("loadingProjects");
       const data = await getProjectList().unwrap();
 
-      dispatch(setProjectList({projects:data.projects,tasks:data.projectsTasks}));
+      dispatch(
+        setProjectList({ projects: data.projects, tasks: data.projectsTasks })
+      );
       dispatch(setTwoWeeksDatesList(data.dates));
-      console.log(!isFiltering && addProjectForm && !dailyFilter);
-      if (!isFiltering && addProjectForm && !dailyFilter ){
-        dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      if (!isFiltering && addProjectForm && !dailyFilter) {
+        dispatch(
+          filterProjectsList({
+            flag: false,
+            value: "",
+            attribute: "projectCustomId"
+          })
+        );
       }
-      if (dailyFilter){
-        dispatch(filterProjectsList({ flag: true, value: TASK_STATE_DOING ,attribute:'state' }));
-        dispatch(filterProjectsList({ flag: true, value: TASK_STATE_BLOCKED ,attribute:'state' }));
+      if (dailyFilter) {
+        dispatch(
+          filterProjectsList({
+            flag: true,
+            value: TASK_STATE_DOING,
+            attribute: "state"
+          })
+        );
+        dispatch(
+          filterProjectsList({
+            flag: true,
+            value: TASK_STATE_BLOCKED,
+            attribute: "state"
+          })
+        );
         dispatch(filterByTaskStatus(TASK_STATE_DOING));
-
-
       }
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
@@ -106,15 +126,21 @@ const [creatingProject, setCreatingProject] = useState(false)
   useEffect(() => {
     // if (!projectList.length){
 
-      loadProjects();
+    loadProjects();
     // }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenAddForm = () => {
     if (addProjectForm) {
       setNewProject(newProjectInitialState);
-      dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      dispatch(
+        filterProjectsList({
+          flag: false,
+          value: "",
+          attribute: "projectCustomId"
+        })
+      );
       const elements = document.querySelectorAll(".row-data");
       elements.forEach((element) => {
         element.classList.remove("active");
@@ -122,8 +148,14 @@ const [creatingProject, setCreatingProject] = useState(false)
       dispatch(setLinkedProject(null));
       dispatch(setLinkingProject(null));
     } else {
-      if (!isFiltering && !dailyFilter ){
-        dispatch(filterProjectsList({ flag: false, value: "",attribute:'projectCustomId' }));
+      if (!isFiltering && !dailyFilter) {
+        dispatch(
+          filterProjectsList({
+            flag: false,
+            value: "",
+            attribute: "projectCustomId"
+          })
+        );
       }
     }
 
@@ -163,7 +195,10 @@ const [creatingProject, setCreatingProject] = useState(false)
         newProject[Object.keys(newProject)[index]].required
       ) {
         if (
-          !newProject[Object.keys(newProject)[index]].value || containsOnlySpaces(newProject[Object.keys(newProject)[index]].value ) ||
+          !newProject[Object.keys(newProject)[index]].value ||
+          containsOnlySpaces(
+            newProject[Object.keys(newProject)[index]].value
+          ) ||
           (Array.isArray(newProject[Object.keys(newProject)[index]].value) &&
             !newProject[Object.keys(newProject)[index]].value.length)
         ) {
@@ -178,7 +213,7 @@ const [creatingProject, setCreatingProject] = useState(false)
     }
 
     try {
-      setCreatingProject(true)
+      setCreatingProject(true);
       const {
         // code: { value: codeValue },
         name: { value: nameValue },
@@ -210,27 +245,24 @@ const [creatingProject, setCreatingProject] = useState(false)
       }
       const data = await createProject(project).unwrap();
 
-
       notify(NOTIFY_SUCCESS, data.message);
       handleOpenAddForm();
       setTimeout(() => {
-        setCreatingProject(false)
+        setCreatingProject(false);
       }, 300);
       dispatch(clearAddProjectState());
       loadProjects();
       setNewProject(newProjectInitialState);
-
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
-      setCreatingProject(false)
+      setCreatingProject(false);
     }
   };
 
   return (
     <div className={classes.projectsPage}>
       <Grid container alignItems="center" spacing={2} sx={{ height: "100%" }}>
-        {(isSuperUser||isManager)&&
-        addProjectForm && (
+        {(isSuperUser || isManager) && addProjectForm && (
           <Grid item xs={12} lg={12}>
             <ProjectCreationForm
               loading={creatingProject}
@@ -245,9 +277,9 @@ const [creatingProject, setCreatingProject] = useState(false)
             />
           </Grid>
         )}
-        <Grid item xs={12} lg={12} sx={{height:'100%'}}>
+        <Grid item xs={12} lg={12} sx={{ height: "100%" }}>
           <ProjectList
-            loadingProjectList= {isLoading}
+            loadingProjectList={isLoading}
             addForm={addProjectForm}
             handleForm={handleOpenAddForm}
           />

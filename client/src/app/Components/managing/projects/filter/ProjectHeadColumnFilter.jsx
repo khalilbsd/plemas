@@ -30,7 +30,7 @@ const ProjectHeadColumnFilter = (props) => {
   const dispatch = useDispatch();
   const filterStatus = useGetStateFromStore("manage", "filters");
 
-  // useOutsideAlerter(wrapperRef,()=>dispatch(hideFilterForType()));
+  useOutsideAlerter(wrapperRef, () => dispatch(hideFilterForType()));
   const classes = filterStyles();
 
   const showFilter = (filterType) => {
@@ -50,31 +50,32 @@ const ProjectHeadColumnFilter = (props) => {
       // align={column.numeric || false ? 'right' : 'left'}
       style={{ width }}
     >
-      {isFiltering && (
-        <div
-          className={classes.filterContainer}
-          style={{ width: filterWidth ? filterWidth : "auto" }}
-          ref={wrapperRef}
-        >
-          <Filter
-            handleOpen={()=>showFilter(type)}
-            handleClose={()=>hideFilter()}
-            name={field}
-            open={isFiltering}
-            items={items}
-            handleChange={handler}
-            value={ref}
-            label={title}
-            filterType={type}
-          />
-        </div>
-      )}
-
       {filter ? (
-        <button onClick={() => showFilter(type)}>
-          {headerName}
-          <ReactSVG src={faFilter} className={classes.filterBtn} />
-        </button>
+        <>
+          <button onClick={() => showFilter(type)}>
+            {headerName}
+            <ReactSVG src={faFilter} className={classes.filterBtn} />
+          </button>
+          {isFiltering && (
+            <div
+              className={classes.filterContainer}
+              style={{ width: filterWidth ? filterWidth : "auto" }}
+              ref={wrapperRef}
+            >
+              <Filter
+                handleOpen={() => showFilter(type)}
+                handleClose={() => hideFilter()}
+                name={field}
+                open={isFiltering}
+                items={items}
+                handleChange={handler}
+                value={ref}
+                label={title}
+                filterType={type}
+              />
+            </div>
+          )}
+        </>
       ) : (
         `${headerName}`
       )}

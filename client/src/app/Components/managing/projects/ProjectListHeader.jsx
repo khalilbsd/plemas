@@ -9,6 +9,7 @@ import {
 } from "../../../../constants/constants";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import {
+  changeDailyFilter,
   filterByTaskStatus,
   filterProjectsList,
   setProjectTaskListFiltered,
@@ -100,7 +101,10 @@ const ProjectListHeader = ({disableDailyFilter}) => {
     projects.forEach((project) => {
       let exist = list.filter((item) => item === project.activePhase);
       if (!exist.length) {
-        list.push(project.activePhase);
+        if (project.activePhase){
+          list.push(project.activePhase);
+
+        }
       }
     });
     return list;
@@ -108,41 +112,46 @@ const ProjectListHeader = ({disableDailyFilter}) => {
 
   const handleChangeManager = (event) => {
     const {
-      target: { value, name }
+      target: { value,checked }
     } = event;
-
+    console.log(value);
     setSelected({ ...selected, manager: value });
     //disableDailyFilter()
     dispatch(
       filterProjectsList({
         flag: true,
-        value: value[0]?.fullName,
-        attribute: "manager.fullName"
+        value: value,
+        attribute: "manager.fullName",
+        popFilter:!checked?true:false
       })
     );
   };
 
   const handleChangeFilter = (event) => {
     const {
-      target: { value, name }
+      target: { value, name ,checked}
     } = event;
     //disableDailyFilter()
 
     setSelected({
       ...selected,
-      [name]: typeof value === "string" ? value.split(",") : value[0]
+      [name]:value
     });
 
     dispatch(
       filterProjectsList({
         flag: true,
-        value: typeof value === "string" ? value.split(",") : value[0],
-        attribute: name
+        value: value,
+        attribute: name,
+        popFilter:!checked?true:false
       })
     );
   };
 
   const applyDateFilter = async () => {
+      //disabling daily filter
+      dispatch(changeDailyFilter(false));
+
     const projectIds = projects.map((project) => project.id);
     //disableDailyFilter()
 
@@ -216,6 +225,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
   const lots = useMemo(() => selectLots(), [projects]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const phase = useMemo(() => selectPhases(), [projects]);
+
 
   const columns = [
     {
