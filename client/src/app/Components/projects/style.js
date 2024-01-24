@@ -873,7 +873,7 @@ export const projectTaskDetails = createUseStyles({
     width: "100%",
     display: "flex",
     flexWrap: "wrap",
-    justifyContent: " space-between"
+    gap:10
   },
   fileListPreview: {
     listStyle: "none",

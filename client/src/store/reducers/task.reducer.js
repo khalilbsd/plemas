@@ -237,8 +237,13 @@ const taskSlice = createSlice({
         .map((interv) => interv.id)
         .indexOf(action.payload.intervenantID);
 
-      state.projectTasks[taskIdx].intervenants[intervIdx].file =
-        action.payload.file;
+      let obj =  JSON.parse(state.projectTasks[taskIdx].intervenants[intervIdx].file)
+      if (action.payload.upload){
+        obj.push(action.payload.file)
+      }else{
+        obj = obj.filter(file=>file !== action.payload.file)
+      }
+      state.projectTasks[taskIdx].intervenants[intervIdx].file =  JSON.stringify(obj)
     }
     // setUserPotentialTasks: (state, action) => {
     // }

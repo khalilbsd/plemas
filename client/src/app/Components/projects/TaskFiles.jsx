@@ -13,17 +13,17 @@ import {
 import { updateInterventionUploadedFile } from "../../../store/reducers/task.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
 import faFolders from "../../public/svgs/light/folders.svg";
+import faClose from "../../public/svgs/light/xmark.svg";
 import faFile from "../../public/svgs/solid/file.svg";
 import faPlus from "../../public/svgs/solid/plus.svg";
-import faClose from "../../public/svgs/light/xmark.svg";
 
 import PopUp from "../PopUp/PopUp.jsx";
 
+import useIsUserCanAccess from "../../../hooks/access.js";
+import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
+import useGetStateFromStore from "../../../hooks/manage/getStateFromStore.js";
 import { notify } from "../notification/notification.js";
 import { projectTaskDetails } from "./style.js";
-import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
-import useIsUserCanAccess from "../../../hooks/access.js";
-import useGetStateFromStore from "../../../hooks/manage/getStateFromStore.js";
 
 const TaskFiles = ({
   interventions,
@@ -43,13 +43,14 @@ const TaskFiles = ({
   const dispatch = useDispatch();
   const [uploadFileToTask] = useUploadFileToTaskMutation();
   const [deleteFileFromTask] = useDeleteFileFromTaskMutation();
-  // const [downloadTaskFile] = useDownloadTaskFileMutation();
+
   const handleOpen = () => {
     setOpenFolder(true);
   };
   const handleClose = () => {
     setOpenFolder(false);
   };
+
   const attachedFiles = interventions.filter((item) => item.file !== null);
 
   const handleDownload = async (e, url, name) => {
@@ -89,6 +90,16 @@ const TaskFiles = ({
           file: file
         }
       }).unwrap();
+      //updating the list of files
+      dispatch(
+        updateInterventionUploadedFile({
+          taskID,
+          attribute: "file",
+          file: res.file,
+          intervenantID: res.interventionID,
+          upload: false
+        })
+      );
       handleClose();
       notify(NOTIFY_SUCCESS, res.message);
     } catch (error) {
@@ -124,8 +135,9 @@ const TaskFiles = ({
         updateInterventionUploadedFile({
           taskID,
           attribute: "file",
-          value: res.file,
-          intervenantID: res.interventionID
+          file: res.file,
+          intervenantID: res.interventionID,
+          upload: true
         })
       );
       notify(NOTIFY_SUCCESS, res?.message);
@@ -141,15 +153,15 @@ const TaskFiles = ({
     files.forEach((file, key) => {
       elements.push(
         <div className={classes.fileContainer} key={key}>
-           {(isSuperUser ||
-       ( isManager && project?.managerDetails?.email === user?.email)) && (
-              <button
-                className="delete-btn"
-                onClick={() => handleDelete(item, file)}
-              >
-                <ReactSVG src={faClose} />
-              </button>
-            )}
+          {(isSuperUser ||
+            (isManager && project?.managerDetails?.email === user?.email)) && (
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(item, file)}
+            >
+              <ReactSVG src={faClose} />
+            </button>
+          )}
           <div
             onClick={(e) =>
               handleDownload(
@@ -211,7 +223,15 @@ const TaskFiles = ({
           </>
         ) : (
           <>
-            <ReactSVG src={faFolders} /> <span>Voir document</span>
+            {JSON.parse(attachedFiles[0].file).length ? (
+              <>
+                <ReactSVG src={faFolders} /> <span>Voir les documents</span>
+              </>
+            ) : (
+              <>
+                <ReactSVG src={faEmptyFolder} /> <span>Pas de document</span>
+              </>
+            )}
           </>
         )}
       </button>

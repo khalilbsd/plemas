@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ReactSVG } from "react-svg";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { projectsStyles } from "../style";
@@ -8,31 +8,28 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import dayjs from "dayjs";
 import "dayjs/locale/fr";
+import { useDispatch } from "react-redux";
 import { TableVirtuoso } from "react-virtuoso";
 import {
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
-  TASK_STATE_DOING_ORG,
   TASK_STATE_TRANSLATION
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
+import { changeDailyFilter } from "../../../../store/reducers/manage.reducer";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import ExportActions from "./ExportActions";
 import ProjectLine from "./ProjectLine";
 import ProjectListHeader from "./ProjectListHeader";
 import LinkProject from "./addProject/LinkProject";
 import ActiveFilters from "./filter/ActiveFilters";
-import { useDispatch } from "react-redux";
-import { changeDailyFilter } from "../../../../store/reducers/manage.reducer";
-import dayjs from "dayjs";
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   // const [dailyFilter, setDailyFilter] = useState(true);
   const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
-  const projects = useGetStateFromStore("manage", "projectsList");
+  // const projects = useGetStateFromStore("manage", "projectsList");
   const tasks = useGetStateFromStore("manage", "projectsTaskList");
   const tasksFiltered = useGetStateFromStore(
     "manage",
@@ -41,6 +38,7 @@ const ProjectList = ({ addForm, handleForm }) => {
   const dispatch = useDispatch();
   const filterTaskState = useGetStateFromStore("manage", "projectsTaskFilters");
   const addProjectState = useGetStateFromStore("manage", "addProject");
+  const {filterType:activeFilters} = useGetStateFromStore("manage", "addProject");
 
   const disableDailyFilter = () => {
     dispatch(changeDailyFilter(false));
@@ -48,7 +46,12 @@ const ProjectList = ({ addForm, handleForm }) => {
 
   const projectList = () => {
     return !dailyFilter
-      ? addProjectState.projectsListFiltered.filter(  (project) => projectTasks(project.id).length)
+      ? addProjectState.projectsListFiltered.filter(  (project) =>
+      activeFilters.length?
+      true
+      :
+      projectTasks(project.id).length
+      )
       : addProjectState.projectsListFiltered.filter(
           (project) => projectTasks(project.id).length
         ).sort((a,b)=>{
@@ -56,15 +59,6 @@ const ProjectList = ({ addForm, handleForm }) => {
           return dayjs(projectTasks(a.id)[0].dueDate) - dayjs(projectTasks(b.id)[0].dueDate)
         })
         ;
-    // if (addForm || addProjectState.isFiltering) {
-    //   return addProjectState.projectsListFiltered;
-    // }
-
-    // return dailyFilter
-    //   ? projects.filter((project) =>
-    //       [TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(project.state)
-    //     )
-    //   : projects;
   };
 
   function projectTasks(projectID) {

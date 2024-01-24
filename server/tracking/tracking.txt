@@ -244,3 +244,10 @@
 {"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"11/12/2023","hours":3}
 {"projectID":1253,"taskName":"reprise escalier béton et vérif escalier bois","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"08/01/2024","oldValues":"","newValues":""}
 {"projectID":1105,"taskName":"note de calcul","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"10/01/2024","oldState":"abandoned","newState":"doing"}
+{"projectID":3407,"taskName":null,"requestName":"fdffdg","email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"23/01/2024"}
+{"projectID":3603,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"23/01/2024"}
+{"projectID":3603,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"23/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"23/01/2024"}
+{"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"23/01/2024","intervenantsNames":"k"}
+{"projectID":3604,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"23/01/2024"}
+{"projectID":3604,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"23/01/2024","managerEmail":"khalil.bensaid@tunsa.org"}

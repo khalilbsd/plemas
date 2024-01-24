@@ -299,6 +299,7 @@ export const deleteFileFromTask = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     interventionID: intervention.id,
-    message: "fichier supprimé du tâche",
+    file:req.body.file,
+    message: "fichier lié a la tache supprimé",
   });
 });

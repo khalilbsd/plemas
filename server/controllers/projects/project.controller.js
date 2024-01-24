@@ -114,7 +114,6 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     ]
   });
 
-  // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
   // projectsList.sort((a, b) => b.code - a.code);
 
@@ -125,15 +124,12 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     projectsList.map((project) => project.id)
   );
 
-    // console.log(object);
 
   const indexMap = {};
   tasks.forEach((task, index) => {
     indexMap[task.projectID] = index;
   });
 
-  console.log(tasks);
-  // console.log(indexMap);k
   // Custom sorting function based on the tasks array index
   const customSort = (a, b) => {
     const indexA = indexMap[a.id];
@@ -299,7 +295,6 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   if (!details || !Object.keys(details).length)
     return next(new MissingParameter("Des paramètres manquants"));
   let phase;
-  console.log(details);
   if (details.phase || details.code) {
     const objectQuery = {
       // id:req.params.projectID
@@ -360,9 +355,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     details.state === TASK_STATE_DOING &&
     project.dueDate
   ) {
-    console.log(
-      "-------------------------------setting due date to non after trying to set project to doing state "
-    );
+
     details.dueDate = null;
     project.dueDate = null;
   }
@@ -710,7 +703,6 @@ export const getProjectById = catchAsync(async (req, res, next) => {
  */
 export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
   const { projectsHours, date } = req.body;
-  console.log(req.body);
   if (!projectsHours || !date)
     return next(new MissingParameter("les heurs des projets sont obligatoire"));
   const projectsKeys = Object.keys(projectsHours);
@@ -736,7 +728,6 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     const hours = Math.round(
       parseInt(projectsHours[projectsKeys[idx]].value) / 60
     );
-    console.log(hours);
     if (isNaN(hours) || hours < 0)
       return next(
         new AppError("le nombre des heurs doit être un chiffre positif ", 400)
