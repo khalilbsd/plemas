@@ -6,8 +6,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import {
-    TASK_STATE_TRANSLATION,
-    progress_bar_width_cell
+  TASK_STATE_TRANSLATION,
+  progress_bar_width_cell
 } from "../../../../constants/constants";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
@@ -16,20 +16,25 @@ import { CustomCancelIcon, CustomPlusIcon } from "../../icons";
 import { projectTaskDetails } from "../../projects/style";
 import { projectsStyles } from "../style";
 import { priorityColors } from "./addProject/PriorityField";
+import useCheckFilterWindowActive from "../../../../hooks/filterWindowActive";
 
-const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
+const ProjectLine = ({ index, row, addForm, projectTasks }) => {
   const tasksStyles = projectTaskDetails();
   const classes = projectsStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const addProjectState = useGetStateFromStore("manage", "addProject");
 
+  const isAnyFilterWindowActive = useCheckFilterWindowActive()
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const [projectToCollapse, setProjectToCollapse] = useState(undefined);
   const WeeksDatesListFiltered = useGetStateFromStore(
     "project",
     "twoWeeksListFiltered"
   );
+
+
+
 
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
 
@@ -67,9 +72,6 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
       element.classList.remove("active");
     });
   };
-
-
-
 
   const renderProjectTasks = (projectID) => {
     const tasksNb = projectTasks(projectID)?.length;
@@ -128,7 +130,6 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
 
   const renderTaskTimeLine = (projectID) => {
     const convertedDates = convertTwoWeeksDates();
-    // console.log(twoWeeksDates);
     const taskElements = projectTasks(projectID)?.map((task) => {
       // Perform calculations here
       let { startDate, dueDate, doneDate } = task;
@@ -274,7 +275,7 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : handleNavigation(row.id)
+            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
         }
         key={index}
         className={classes.rowCell}
@@ -298,7 +299,7 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : handleNavigation(row.id)
+            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
         }
         key={index + 1}
         className={classes.rowCell}
@@ -330,7 +331,7 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : handleNavigation(row.id)
+            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
         }
         key={index + 2}
         className={classes.rowCell}
@@ -350,7 +351,7 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : handleNavigation(row.id)
+            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
         }
         className={classes.rowCell}
       >
@@ -360,7 +361,7 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : handleNavigation(row.id)
+            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
         }
         key={index + 4}
         className={classes.rowCell}
@@ -371,7 +372,7 @@ const ProjectLine = ({ index, row , addForm ,projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : handleNavigation(row.id)
+            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
         }
         key={index + 5}
         className={classes.rowCell}

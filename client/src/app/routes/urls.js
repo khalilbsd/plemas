@@ -136,7 +136,7 @@ export const combinedUrls = [...(anonymousUrls).map(url=>url.path), ...(publicUr
 export function getRoleHomeUrl(role) {
   switch (role) {
     case SUPERUSER_ROLE:
-      return "/admin/manage/users";
+      return "/admin/manage/projects";
 
     // case CLIENT_ROLE:
     //   return "/dashboard/client";

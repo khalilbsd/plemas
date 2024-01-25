@@ -136,7 +136,8 @@ export const serializeProject = (projects) => {
       phaseStatus: "tasks in progress",
       lots: getProjectLots(element.projectLots),
       priority: element.priority,
-      requestsTreated : isAllRequestsTreated(element.requests)
+      requestsTreated : isAllRequestsTreated(element.requests),
+      createdAt : element.createdAt
     });
   });
 

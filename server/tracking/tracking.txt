@@ -251,3 +251,17 @@
 {"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"23/01/2024","intervenantsNames":"k"}
 {"projectID":3604,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"23/01/2024"}
 {"projectID":3604,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"23/01/2024","managerEmail":"khalil.bensaid@tunsa.org"}
+{"projectID":3574,"taskName":"Ferraillage fondation","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3605,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3605,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalil.bensaid@tunsa.org"}
+{"projectID":3384,"taskName":"Reprise coffrage","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3475,"taskName":"maj demande bls","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3598,"taskName":"Ferraillage","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3480,"taskName":"Coffrage EXE","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3606,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3606,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":3607,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3607,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}

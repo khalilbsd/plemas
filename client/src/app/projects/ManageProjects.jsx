@@ -15,14 +15,12 @@ import {
   useGetProjectListMutation
 } from "../../store/api/projects.api";
 import {
-  applyDailyFilter,
   clearAddProjectState,
   filterByTaskStatus,
   filterProjectsList,
   setLinkedProject,
   setLinkingProject,
-  setProjectList,
-  setProjectTasksDateFilter
+  setProjectList
 } from "../../store/reducers/manage.reducer";
 import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
 import { containsOnlySpaces } from "../../store/utils";
@@ -30,6 +28,9 @@ import ProjectList from "../Components/managing/projects/ProjectList";
 import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import { projectsStyles } from "../Components/managing/style";
 import { notify } from "../Components/notification/notification";
+import LoadingWithProgress from "../Components/loading/LoadingWithProgress";
+import Backdrop from '@mui/material/Backdrop';
+import { useNavigate } from "react-router";
 
 const initialError = {
   filedName: undefined,
@@ -70,12 +71,13 @@ const newProjectInitialState = {
 
 const ManageProjects = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [getProjectList, { isLoading }] = useGetProjectListMutation();
   const [addProjectForm, setAddProjectForm] = useState(false);
+  const [loadingCreatedProject, setLoadingCreatedProject] = useState(false);
   const codeRef = useRef();
   const [errorMessage, setErrorMessage] = useState(initialError);
   const [newProject, setNewProject] = useState(newProjectInitialState);
-  const { filterType: filters } = useGetStateFromStore("manage", "addProject");
   const { isFiltering } = useGetStateFromStore("manage", "addProject");
 
   const projectState = useGetStateFromStore("manage", "addProject");
@@ -244,7 +246,7 @@ const ManageProjects = () => {
         project.isCodeCustomized = false;
       }
       const data = await createProject(project).unwrap();
-
+      setLoadingCreatedProject(true)
       notify(NOTIFY_SUCCESS, data.message);
       handleOpenAddForm();
       setTimeout(() => {
@@ -253,9 +255,16 @@ const ManageProjects = () => {
       dispatch(clearAddProjectState());
       loadProjects();
       setNewProject(newProjectInitialState);
+      setTimeout(() => {
+        navigate(`/projects/${data.projectPhase.id}`);
+      }, 5000);
+      setLoadingCreatedProject(false);
+
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data.message);
       setCreatingProject(false);
+      setLoadingCreatedProject(false);
+
     }
   };
 
@@ -267,7 +276,6 @@ const ManageProjects = () => {
             <ProjectCreationForm
               loading={creatingProject}
               handleSubmit={handleSubmitProject}
-              refreshProjects={loadProjects}
               formOpen={addProjectForm}
               handleClose={handleOpenAddForm}
               codeRef={codeRef}
@@ -275,6 +283,14 @@ const ManageProjects = () => {
               setNewProject={setNewProject}
               newProject={newProject}
             />
+            {loadingCreatedProject&&
+            <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={true}
+          >
+            <LoadingWithProgress/>
+          </Backdrop>
+            }
           </Grid>
         )}
         <Grid item xs={12} lg={12} sx={{ height: "100%" }}>

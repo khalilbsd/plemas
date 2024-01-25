@@ -13,20 +13,30 @@ import "dayjs/locale/fr";
 import { useDispatch } from "react-redux";
 import { TableVirtuoso } from "react-virtuoso";
 import {
+  TASK_STATE_BLOCKED,
+  TASK_STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
-import { changeDailyFilter } from "../../../../store/reducers/manage.reducer";
+import {
+  changeDailyFilter,
+  filterProjectsList,
+  popTaskStateFromFilter
+} from "../../../../store/reducers/manage.reducer";
 import faAdd from "../../../public/svgs/solid/plus.svg";
 import ExportActions from "./ExportActions";
 import ProjectLine from "./ProjectLine";
 import ProjectListHeader from "./ProjectListHeader";
 import LinkProject from "./addProject/LinkProject";
 import ActiveFilters from "./filter/ActiveFilters";
+import useCheckActiveFilters from "../../../../hooks/activeFilters";
+import useCheckProjectFiltersOnly from "../../../../hooks/onlyProjectFilters";
 
 const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
   const { isSuperUser, isManager } = useIsUserCanAccess();
+  const isFiltersActive = useCheckActiveFilters();
+  const isFiltersOnlyProjectFilters = useCheckProjectFiltersOnly();
   // const [dailyFilter, setDailyFilter] = useState(true);
   const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
   // const projects = useGetStateFromStore("manage", "projectsList");
@@ -38,27 +48,82 @@ const ProjectList = ({ addForm, handleForm }) => {
   const dispatch = useDispatch();
   const filterTaskState = useGetStateFromStore("manage", "projectsTaskFilters");
   const addProjectState = useGetStateFromStore("manage", "addProject");
-  const {filterType:activeFilters} = useGetStateFromStore("manage", "addProject");
 
   const disableDailyFilter = () => {
     dispatch(changeDailyFilter(false));
+    dispatch(
+      filterProjectsList({
+        flag: true,
+        value: TASK_STATE_DOING,
+        attribute: "state",
+        popFilter: true
+      })
+    );
+    dispatch(
+      filterProjectsList({
+        flag: true,
+        value: TASK_STATE_BLOCKED,
+        attribute: "state",
+        popFilter: true
+      })
+    );
+    dispatch(popTaskStateFromFilter(TASK_STATE_DOING));
   };
-
   const projectList = () => {
-    return !dailyFilter
-      ? addProjectState.projectsListFiltered.filter(  (project) =>
-      activeFilters.length?
-      true
-      :
-      projectTasks(project.id).length
-      )
-      : addProjectState.projectsListFiltered.filter(
-          (project) => projectTasks(project.id).length
-        ).sort((a,b)=>{
-          // console.log(dayjs(projectTasks(a.id)[0].dueDate) - dayjs(projectTasks(b.id)[0].dueDate));
-          return dayjs(projectTasks(a.id)[0].dueDate) - dayjs(projectTasks(b.id)[0].dueDate)
-        })
-        ;
+    let listPastTodayDate = [];
+    let listBeforeTodayDate = [];
+    if (!dailyFilter) {
+      let tl = addProjectState.projectsListFiltered.filter((project) =>
+        !isFiltersActive
+          ? true
+          : isFiltersOnlyProjectFilters
+          ? true
+          : projectTasks(project.id).length
+      );
+      if (!isFiltersActive) {
+
+        return tl.sort((a, b) => {
+          return dayjs(b.createdAt) - dayjs(a.createdAt);
+        });
+      } else {
+
+
+        tl.forEach((project) => {
+          if (
+            dayjs(projectTasks(project.id)[0]?.dueDate)
+              .startOf("day")
+              .locale("en-gb") >=
+            dayjs(new Date()).startOf("day").locale("en-gb")
+          ) {
+            listPastTodayDate.push(project);
+          } else {
+            listBeforeTodayDate.push(project);
+          }
+        });
+        return listPastTodayDate.concat(listBeforeTodayDate);
+      }
+    } else {
+      let dailyList = addProjectState.projectsListFiltered
+        .filter((project) => projectTasks(project.id).length)
+        .sort((a, b) => {
+          return (
+            dayjs(projectTasks(a.id)[0].dueDate) -
+            dayjs(projectTasks(b.id)[0].dueDate)
+          );
+        });
+      dailyList.forEach((project) => {
+        if (
+          dayjs(projectTasks(project.id)[0].dueDate)
+            .startOf("day")
+            .locale("en-gb") >= dayjs(new Date()).startOf("day").locale("en-gb")
+        ) {
+          listPastTodayDate.push(project);
+        } else {
+          listBeforeTodayDate.push(project);
+        }
+      });
+      return listPastTodayDate.concat(listBeforeTodayDate);
+    }
   };
 
   function projectTasks(projectID) {

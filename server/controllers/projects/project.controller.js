@@ -145,6 +145,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     if (hasTasksA && hasTasksB) {
       // Both have tasks, compare based on the dueDate of the first task
       return tasks[indexA].tasks[0].dueDate - tasks[indexB].tasks[0].dueDate;
+      // return tasks[indexA].tasks[0].dueDate - tasks[indexB].tasks[0].dueDate;
     } else if (hasTasksA) {
       // Only project A has tasks, it should come first
       return -1;

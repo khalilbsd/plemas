@@ -29,9 +29,10 @@ const LinkProject = ({ label, className, color, size }) => {
     } else {
       dispatch(
         filterProjectsList({
-          flag: false,
+          flag: true,
           value: "",
-          attribute: "projectCustomId"
+          attribute: "projectCustomId",
+          popFilter:true
         })
       );
     }

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const filtersInit = [
   { type: "manager.fullName", active: false },
   { type: "lots", active: false },
-  { type: "phase", active: false },
+  { type: "activePhase", active: false },
   { type: "state", active: false },
   { type: "taskState", active: false }
 ];
@@ -132,15 +132,22 @@ const manageSlice = createSlice({
           .map(({ type }) => type)
           .indexOf(action.payload.attribute);
         // position of the filter in the filterType
+
         if (
           !state.addProject.filterType[indxOfFilter]?.value.includes(
             action.payload.value
           )
         ) {
           if (action.payload.attribute === "projectCustomId") {
-            state.addProject.filterType[indxOfFilter].value = [
-              action.payload.value
-            ];
+            if (action.payload.value === "" && action.payload.popFilter) {
+              state.addProject.filterType = state.addProject.filterType.filter(
+                (filter) => filter.type !== "projectCustomId"
+              );
+            } else {
+              state.addProject.filterType[indxOfFilter].value = [
+                action.payload.value
+              ];
+            }
           } else {
             state.addProject.filterType[indxOfFilter].value.push(
               action.payload.value
@@ -207,19 +214,21 @@ const manageSlice = createSlice({
       // Now, filter the projects based on the filterType array
       state.addProject.projectsListFiltered = state.projectsList.filter(
         (project) => {
-          return  state.addProject.filterType.every((filterAttribute) => {
+          return state.addProject.filterType.every((filterAttribute) => {
             const nestedProperty = filterAttribute.type.split(".");
-            console.log(nestedProperty);
+
             const nestedValue = nestedProperty.reduce(
               (obj, key) => (obj && obj[key] ? obj[key] : null),
               project
             );
             const valueToMatch = Array.isArray(filterAttribute.value)
-            ? filterAttribute.value.map(val => val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join("|")
-            : filterAttribute.value;
+              ? filterAttribute.value
+                  .map((val) => val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+                  .join("|")
+              : filterAttribute.value;
 
             // Create a regular expression that matches any of the values in the array
-            const regex = new RegExp(valueToMatch , "i");
+            const regex = new RegExp(valueToMatch, "i");
 
             return regex.test(nestedValue);
           });

@@ -1,51 +1,27 @@
-import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import React from "react";
-import { filterStyles } from "./style";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import FilledInput from "@mui/material/FilledInput";
+import Checkbox from "@mui/material/Checkbox";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import CommentIcon from "@mui/icons-material/Comment";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import React from "react";
+import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
+import { filterStyles } from "./style";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
 
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
+
 const Filter = (props) => {
   const {
     items,
     handleChange,
     filterType,
-    label,
-    open,
     name,
-    handleClose,
-    handleOpen
   } = props;
   const classes = filterStyles();
 
   const { filterType: active } = useGetStateFromStore("manage", "addProject");
+  const taskFilters = useGetStateFromStore("manage", "projectsTaskFilters");
 
   const getInitials = (fullName) => {
     let first;
@@ -58,13 +34,14 @@ const Filter = (props) => {
   };
 
   const filterValues = ()=>{
+
+    if (filterType === 'taskState'){
+      return taskFilters
+    }
     const ft = active?.filter((ft) => ft.type === filterType)
     if (!ft.length) return []
     return ft[0]?.value
    };
-
-
-
 
   return (
     <div
