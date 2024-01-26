@@ -265,3 +265,4 @@
 {"projectID":3607,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
 {"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
 {"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":25,"taskName":"Détail Qt charpente","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"26/01/2024","oldValues":"","newValues":""}

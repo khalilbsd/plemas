@@ -210,7 +210,7 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
       //to set initial intervenants list
       setIntervenants(taskIntervenants || []);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intervenantsDialog, projectID, taskId]);
 
   useEffect(() => {
@@ -236,7 +236,7 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
         loadTaskPotentialIntervenants(taskId);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intervenantsDialog]);
 
   const showIntervenantDetails = (intervenant) => {
@@ -278,50 +278,62 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
         {!isLoading ? (
           <>
             <AvatarGroup max={4} spacing={10}>
-              {intervenants.map((intervenant, idx) => (
-                <Tooltip
-                  key={idx}
-                  placement="top"
-                  title={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
-                  arrow
-                >
-                  {intervenant?.user?.UserProfile?.image ? (
-                    <Avatar
-                      onClick={
-                        !taskId && !showList
-                          ? () => showIntervenantDetails(intervenant)
-                          : undefined
-                      }
-                      key={idx}
-                      className={`${classes.manager} ${
-                        colors[idx % colors.length]
-                      } ${taskId ? "small" : ""}`}
-                      alt={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
-                      src={`${process.env.REACT_APP_SERVER_URL}${intervenant?.user?.UserProfile.image}`}
-                    />
-                  ) : (
-                    <Avatar
-                      onClick={
-                        !taskId
-                          ? () => showIntervenantDetails(intervenant)
-                          : undefined
-                      }
-                      key={idx}
-                      className={`${classes.manager} ${
-                        colors[idx % colors.length]
-                      } ${taskId ? "small" : ""}
+              {intervenants.map((intervenant, idx) => {
+                let title=""
+                if (intervenant?.user?.UserProfile?.name){
+                  title += `${intervenant?.user?.UserProfile?.name} `
+                }
+                if (intervenant?.user?.UserProfile?.lastName){
+                  title += `${intervenant?.user?.UserProfile?.lastName}`
+                }
+
+                if (!intervenant?.user?.UserProfile?.name && !intervenant?.user?.UserProfile?.lastName) title = "cliquez sur + pour ajouter un intervenant à cette tâche"
+
+                return (
+                  <Tooltip
+                    key={idx}
+                    placement="top"
+                    title={title}
+                    arrow
+                  >
+                    {intervenant?.user?.UserProfile?.image ? (
+                      <Avatar
+                        onClick={
+                          !taskId && !showList
+                            ? () => showIntervenantDetails(intervenant)
+                            : undefined
+                        }
+                        key={idx}
+                        className={`${classes.manager} ${
+                          colors[idx % colors.length]
+                        } ${taskId ? "small" : ""}`}
+                        alt={`${intervenant?.user?.UserProfile?.name} ${intervenant?.user?.UserProfile?.lastName}`}
+                        src={`${process.env.REACT_APP_SERVER_URL}${intervenant?.user?.UserProfile.image}`}
+                      />
+                    ) : (
+                      <Avatar
+                        onClick={
+                          !taskId
+                            ? () => showIntervenantDetails(intervenant)
+                            : undefined
+                        }
+                        key={idx}
+                        className={`${classes.manager} ${
+                          colors[idx % colors.length]
+                        } ${taskId ? "small" : ""}
                     `}
-                    >
-                      {intervenant?.user?.UserProfile?.name
-                        ? intervenant?.user?.UserProfile?.name[0]?.toUpperCase()
-                        : ""}
-                      {intervenant?.user?.UserProfile?.lastName
-                        ? intervenant?.user?.UserProfile?.lastName[0]?.toUpperCase()
-                        : ""}
-                    </Avatar>
-                  )}
-                </Tooltip>
-              ))}
+                      >
+                        {intervenant?.user?.UserProfile?.name
+                          ? intervenant?.user?.UserProfile?.name[0]?.toUpperCase()
+                          : ""}
+                        {intervenant?.user?.UserProfile?.lastName
+                          ? intervenant?.user?.UserProfile?.lastName[0]?.toUpperCase()
+                          : ""}
+                      </Avatar>
+                    )}
+                  </Tooltip>
+                );
+              })}
             </AvatarGroup>
             {((isManager && project?.managerDetails?.email === user?.email) ||
               isSuperUser) && (

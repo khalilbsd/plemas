@@ -3,8 +3,12 @@ import PageNotFound from "../404/PageNotFound";
 import Login from "../login/Login";
 import Logout from "../logout/Logout.jsx";
 import UserProfile from "../profile/UserProfile";
-// import { faBriefcase, faHouse, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { ALL_ROLES, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/roles";
+import {
+  ALL_ROLES,
+  INTERVENANT_ROLE,
+  PROJECT_MANAGER_ROLE,
+  SUPERUSER_ROLE,
+} from "../../constants/roles";
 import ManagingUsers from "../Components/managing/ManagingUsers";
 
 //icons
@@ -24,19 +28,19 @@ export const anonymousUrls = [
   {
     title: "Reset Password",
     path: "/reset-password",
-    Component: <ResetPassword />
+    Component: <ResetPassword />,
   },
   {
     title: "Reset Password",
     path: "/reset-password/request/token/:token",
-    Component: <ResetPasswordNotAuthForm />
+    Component: <ResetPasswordNotAuthForm />,
   },
   {
     title: "Confirmation",
     path: "/auth/account/confirmation/:token",
     Component: <AuthConfirmation />,
-    icon: faLogout
-  }
+    icon: faLogout,
+  },
 ];
 
 export const publicUrls = [
@@ -45,8 +49,8 @@ export const publicUrls = [
     title: "Se déconnecté",
     path: "/logout",
     Component: <Logout />,
-    icon: faLogout
-  }
+    icon: faLogout,
+  },
 ];
 
 export const exceptPathSidebar = [
@@ -54,7 +58,7 @@ export const exceptPathSidebar = [
   "/logout",
   "/auth",
   "/confirmation/:token",
-  "/reset-password"
+  "/reset-password",
 ];
 
 export const protectedUrls = [
@@ -64,7 +68,7 @@ export const protectedUrls = [
     path: "/settings/account/change-password",
     Component: <ResetPassword />,
     sideBar: false,
-    superUser: true
+    superUser: true,
   },
 
   {
@@ -74,7 +78,7 @@ export const protectedUrls = [
     Component: <UserProfile />,
     icon: faUser,
     sideBar: false,
-    superUser: true
+    superUser: true,
   },
 
   {
@@ -84,7 +88,7 @@ export const protectedUrls = [
     Component: <ManagingUsers />,
     icon: faUser,
     sideBar: true,
-    superUser: true
+    superUser: true,
   },
 
   {
@@ -94,7 +98,7 @@ export const protectedUrls = [
     Component: <ManageProjects />,
     icon: faProject,
     sideBar: true,
-    superUser: true
+    superUser: true,
   },
   {
     role: ALL_ROLES,
@@ -103,7 +107,7 @@ export const protectedUrls = [
     Component: <ManageProjects />,
     icon: faProject,
     sideBar: true,
-    superUser: false
+    superUser: false,
   },
   {
     role: ALL_ROLES,
@@ -111,17 +115,17 @@ export const protectedUrls = [
     path: "/projects/:projectID",
     Component: <ProjectDetails />,
     sideBar: false,
-    superUser: true
+    superUser: true,
   },
   {
-    role: [SUPERUSER_ROLE,INTERVENANT_ROLE,PROJECT_MANAGER_ROLE],
+    role: [SUPERUSER_ROLE, INTERVENANT_ROLE, PROJECT_MANAGER_ROLE],
     title: "Daily log",
     path: "/my/daily",
     Component: <DailyLog />,
     icon: faTimeLine,
     sideBar: true,
-    superUser: true
-  }
+    superUser: true,
+  },
 ];
 
 export function getRolesBasedUrls(user, role = null) {
@@ -131,7 +135,11 @@ export function getRolesBasedUrls(user, role = null) {
   return protectedUrls.filter((url) => url.role.includes(accessRole));
 }
 
-export const combinedUrls = [...(anonymousUrls).map(url=>url.path), ...(publicUrls).map(url=>url.path), ...(protectedUrls).map(url=>url.path)];
+export const combinedUrls = [
+  ...anonymousUrls.map((url) => url.path),
+  ...publicUrls.map((url) => url.path),
+  ...protectedUrls.map((url) => url.path),
+];
 
 export function getRoleHomeUrl(role) {
   switch (role) {

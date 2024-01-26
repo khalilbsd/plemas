@@ -112,8 +112,9 @@ const ProjectList = ({ addForm, handleForm }) => {
           );
         });
       dailyList.forEach((project) => {
+          let pt = projectTasks(project.id)
         if (
-          dayjs(projectTasks(project.id)[0].dueDate)
+          dayjs(pt[pt.length -1 ].dueDate)
             .startOf("day")
             .locale("en-gb") >= dayjs(new Date()).startOf("day").locale("en-gb")
         ) {
