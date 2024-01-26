@@ -141,8 +141,8 @@ const ProjectList = ({ addForm, handleForm }) => {
         // Compare the minimum due dates
         return minDueDateA - minDueDateB;
       });
-      console.log("after sorting", listPastTodayDate);
-      return listPastTodayDate;
+
+      return listPastTodayDate.concat(listBeforeTodayDate);
     }
   };
 
