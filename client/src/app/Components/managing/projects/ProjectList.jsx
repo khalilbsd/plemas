@@ -121,7 +121,7 @@ const ProjectList = ({ addForm, handleForm }) => {
           listBeforeTodayDate.push(project);
         }
       });
-      console.log("before sorting", listPastTodayDate);
+
       listPastTodayDate.sort((a, b) => {
         let pta = projectTasks(a.id).filter((task) =>
           dayjs(task.dueDate)
