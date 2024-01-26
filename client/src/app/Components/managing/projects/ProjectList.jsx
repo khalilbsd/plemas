@@ -81,13 +81,10 @@ const ProjectList = ({ addForm, handleForm }) => {
           : projectTasks(project.id).length
       );
       if (!isFiltersActive) {
-
         return tl.sort((a, b) => {
           return dayjs(b.createdAt) - dayjs(a.createdAt);
         });
       } else {
-
-
         tl.forEach((project) => {
           if (
             dayjs(projectTasks(project.id)[0]?.dueDate)
@@ -111,10 +108,11 @@ const ProjectList = ({ addForm, handleForm }) => {
             dayjs(projectTasks(b.id)[0].dueDate)
           );
         });
+      // return
       dailyList.forEach((project) => {
-          let pt = projectTasks(project.id)
+        let pt = projectTasks(project.id);
         if (
-          dayjs(pt[pt.length -1 ].dueDate)
+          dayjs(pt[pt.length - 1].dueDate)
             .startOf("day")
             .locale("en-gb") >= dayjs(new Date()).startOf("day").locale("en-gb")
         ) {
@@ -123,7 +121,28 @@ const ProjectList = ({ addForm, handleForm }) => {
           listBeforeTodayDate.push(project);
         }
       });
-      return listPastTodayDate.concat(listBeforeTodayDate);
+      console.log("before sorting", listPastTodayDate);
+      listPastTodayDate.sort((a, b) => {
+        let pta = projectTasks(a.id).filter((task) =>
+          dayjs(task.dueDate)
+            .startOf("day").locale("en-gb") >=
+            dayjs(new Date()).startOf("day").locale("en-gb")
+        );
+        let ptb = projectTasks(b.id).filter((task) =>
+          dayjs(task.dueDate)
+          .startOf("day").locale("en-gb") >=
+          dayjs(new Date()).startOf("day").locale("en-gb")
+      );
+
+        // Get the minimum due date in each project
+        let minDueDateA = pta.length > 0 ? dayjs(pta[0].dueDate) : Infinity;
+        let minDueDateB = ptb.length > 0 ? dayjs(ptb[0].dueDate) : Infinity;
+
+        // Compare the minimum due dates
+        return minDueDateA - minDueDateB;
+      });
+      console.log("after sorting", listPastTodayDate);
+      return listPastTodayDate;
     }
   };
 

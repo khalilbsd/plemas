@@ -10,18 +10,22 @@ import {
 import moment from "moment";
 
 const determineProjectState = (stateNB) => {
-  switch (stateNB) {
+  const tempState = Math.floor(Math.random() * 3) +1
+  switch (tempState) {
     case 1:
       return TASK_STATE_DOING;
     case 2:
       return TASK_STATE_DONE;
-
+    case 3:
+      return TASK_STATE_BLOCKED
     default:
       return TASK_STATE_ABANDONED;
   }
 };
 const determineTaskState = (stateNB) => {
-  switch (stateNB) {
+  const tempState = Math.floor(Math.random() * 5) +1
+
+  switch (tempState) {
     case 1:
       return TASK_STATE_DOING;
 
@@ -59,7 +63,7 @@ const determineProjectPhase = async ( code) => {
 
 function resetTime(dateString) {
   if (dateString) {
-      return moment(dateString).startOf('day').toDate();
+      return moment(dateString).add(3,'M').startOf('day').toDate();
   }
   return null;
 }
@@ -129,12 +133,13 @@ async function syncDataBaseFromXL(excelFilePath) {
     // Now, the projects array should be correctly populated therefore it's time to insert
     // for (const idx in projects) {
 
-    for (var idx = 0 ; idx < 30 ; idx++ ) {
+    for (var idx = projects.length -1  ; idx >  projects.length - 31  ; idx-- ) {
       //create the project
       let data  = { ...projects[idx].project}
       data.code = data.code.slice(0, data.code.length - 1);
       console.log(`creating project ${data.code} and phase ${projects[idx].project.phaseID} `);
       data.manager = Math.floor(Math.random() * 5) +1;
+
       const project = await Project.create({...data});
 
       // creating projects Lots

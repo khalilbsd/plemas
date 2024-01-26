@@ -266,3 +266,9 @@
 {"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
 {"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
 {"projectID":25,"taskName":"Détail Qt charpente","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"26/01/2024","oldValues":"","newValues":""}
+{"projectID":16,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":2}
+{"projectID":18,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":1}
+{"projectID":20,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":2}
+{"projectID":23,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":1}
+{"projectID":27,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":2}
+{"projectID":10,"taskName":"Coffrage ferraillage et note de calcul","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"26/01/2024","oldValues":"","newValues":""}
