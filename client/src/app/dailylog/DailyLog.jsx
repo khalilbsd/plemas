@@ -34,10 +34,9 @@ const DailyLog = () => {
           setUserDailyTasks({
             allTasks: res.allTasks,
             joinableTasks: res.joinableTasks,
-            dailyProjectManager : res.managedProjects,
-            managedProjectHours:res.managedProjectHours
+            dailyProjectManager: res.managedProjects,
+            managedProjectHours: res.managedProjectHours
           })
-
         );
       } catch (error) {
         console.log(error);
@@ -45,14 +44,13 @@ const DailyLog = () => {
       }
     }
     loadDailyTasks();
-  }, [history,dispatch,getDailyLogTasks]);
+  }, [history, dispatch, getDailyLogTasks]);
 
   const handleOpenJoinableTasks = () => {
     setOpenJoinableTasks((pevState) => !pevState);
   };
 
   const handleDate = (date) => {
-
     if (
       !date
         .startOf("day")

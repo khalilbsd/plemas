@@ -106,38 +106,99 @@ const taskSlice = createSlice({
 
       const diff = hours - state.dailyLogDevisions[type][id].value;
 
-      if (
-        hours > state.dailyLogDevisions[type][id].value &&
-        hoursSum + diff > DAILY_HOURS_VALUE
-      ) {
-        // Block the process if adding the new value exceeds the limit
-        return;
-      }
+      // if (
+      // hours > state.dailyLogDevisions[type][id].value &&
+      // hoursSum + diff > DAILY_HOURS_VALUE
+      // ) {
+      // // Block the process if adding the new value exceeds the limit
+      // return;
+      // }
 
-      let rest = DAILY_HOURS_VALUE - hours;
       const taskKeys = Object.keys(state.dailyLogDevisions.tasks).filter(
-        (key) => parseInt(key) !== id
+        (key) => {
+          if (type === "tasks") {
+            return parseInt(key) !== id;
+          }
+          return true;
+        }
       );
       const projectKeys = Object.keys(state.dailyLogDevisions.projects).filter(
-        (key) => parseInt(key) !== id
+        (key) => {
+          if (type === "projects") {
+            return parseInt(key) !== id;
+          }
+          return true;
+        }
       );
-
+      // total of changed values
+      let projectsTotalChangedValues = 0;
+      let tasksTotalChangedValues = 0;
+      projectKeys.forEach((key) => {
+        if (state.dailyLogDevisions.projects[key].changed) {
+          projectsTotalChangedValues +=
+            state.dailyLogDevisions.projects[key].value;
+        }
+      });
+      taskKeys.forEach((key) => {
+        if (state.dailyLogDevisions.tasks[key].changed) {
+          tasksTotalChangedValues += state.dailyLogDevisions.tasks[key].value;
+        }
+      });
+      // let rest = 0
+      // let rest = DAILY_HOURS_VALUE - hours;
+      let rest =
+        DAILY_HOURS_VALUE -
+        (hours + projectsTotalChangedValues + tasksTotalChangedValues);
       const nbOfEntries = projectKeys.length + taskKeys.length;
+      let negativeRest = 0;
+      if (rest < 0) {
+        let nbOfChangedEntriesProjects = 0;
+        let nbOfChangedEntriesTasks = 0;
+        projectKeys.forEach((key) => {
+          if (state.dailyLogDevisions.projects[key].changed) {
+            nbOfChangedEntriesProjects += 1;
+          }
+        });
+        taskKeys.forEach((key) => {
+          if (state.dailyLogDevisions.tasks[key].changed) {
+            nbOfChangedEntriesTasks += 1;
+          }
+        });
+        negativeRest =
+          rest / (nbOfChangedEntriesProjects + nbOfChangedEntriesTasks);
+      }
 
       taskKeys.forEach((key) => {
         if (!state.dailyLogDevisions.tasks[key].changed) {
-          state.dailyLogDevisions.tasks[key].value = Math.round(
-            rest / nbOfEntries
-          );
+          console.log("not changed rest task ",rest);
+          state.dailyLogDevisions.tasks[key].value =
+            rest > 0 ? Math.round(rest / nbOfEntries) : 0;
+        } else if (rest < 0) {
+          if ((state.dailyLogDevisions.tasks[key]?.value + negativeRest) > 0) {
+            state.dailyLogDevisions.tasks[key].value += negativeRest;
+
+          }else{
+            state.dailyLogDevisions.tasks[key].value = 0
+          }
         }
       });
+
       projectKeys.forEach((key) => {
         if (!state.dailyLogDevisions.projects[key].changed) {
-          state.dailyLogDevisions.projects[key].value = Math.round(
-            rest / nbOfEntries
-          );
+          console.log("not changed rest project",rest);
+          state.dailyLogDevisions.projects[key].value =
+            rest > 0 ? Math.round(rest / nbOfEntries) : 0;
+        } else if (rest < 0) {
+          if ((state.dailyLogDevisions.tasks[key]?.value + negativeRest) > 0) {
+            state.dailyLogDevisions.projects[key].value += negativeRest;
+
+          }else{
+            state.dailyLogDevisions.projects[key].value = 0
+          }
+
         }
       });
+      //determine the max between projects and tasks except for itself
 
       if (!state.dailyLogDevisions[type][id].changed) {
         state.dailyLogDevisions[type][id].changed = true;
@@ -157,22 +218,22 @@ const taskSlice = createSlice({
       state.userPotentialTasks.push(task);
 
       const taskLength = Object.keys(state.dailyLogDevisions.tasks).length;
-      const projectLength = Object.keys(
-        state.dailyLogDevisions.projects
-      ).length;
-
+      // const projectLength = Object.keys(
+      //   state.dailyLogDevisions.projects
+      // ).length;
+      const projectLength = state.dailyProjectManager.length;
       const nbOfEntries = projectLength + taskLength;
-      const portion =
-        DAILY_HOURS_VALUE / (nbOfEntries - 1) - DAILY_HOURS_VALUE / nbOfEntries;
-
+      // const portion =
+      //   DAILY_HOURS_VALUE / (nbOfEntries - 1) - DAILY_HOURS_VALUE / nbOfEntries;
+      const portion = DAILY_HOURS_VALUE / nbOfEntries;
       delete state.dailyLogDevisions.tasks[action.payload.id];
       Object.keys(state.dailyLogDevisions.tasks).map(
         (key) =>
-          (state.dailyLogDevisions.tasks[key].value += Math.floor(portion))
+          (state.dailyLogDevisions.tasks[key].value = Math.floor(portion))
       );
       Object.keys(state.dailyLogDevisions.projects).map(
         (key) =>
-          (state.dailyLogDevisions.projects[key].value += Math.floor(portion))
+          (state.dailyLogDevisions.projects[key].value = Math.floor(portion))
       );
     },
 
@@ -182,23 +243,25 @@ const taskSlice = createSlice({
       );
 
       const taskLength = Object.keys(state.dailyLogDevisions.tasks).length;
-      const projectLength = Object.keys(
-        state.dailyLogDevisions.projects
-      ).length;
+      // const projectLength = Object.keys(
+      //   state.dailyLogDevisions.projects
+      // ).length;
+      const projectLength = state.dailyProjectManager.length;
 
       const nbOfEntries = projectLength + taskLength;
-      const portion =
-        DAILY_HOURS_VALUE / (nbOfEntries - 1) - DAILY_HOURS_VALUE / nbOfEntries;
+      // const portion =
+      //   DAILY_HOURS_VALUE / nbOfEntries - DAILY_HOURS_VALUE / nbOfEntries;
+      const portion = DAILY_HOURS_VALUE / nbOfEntries;
 
       delete state.dailyLogDevisions.projects[action.payload.id];
 
       Object.keys(state.dailyLogDevisions.tasks).map(
         (key) =>
-          (state.dailyLogDevisions.tasks[key].value += Math.floor(portion))
+          (state.dailyLogDevisions.tasks[key].value = Math.floor(portion))
       );
       Object.keys(state.dailyLogDevisions.projects).map(
         (key) =>
-          (state.dailyLogDevisions.projects[key].value += Math.floor(portion))
+          (state.dailyLogDevisions.projects[key].value = Math.floor(portion))
       );
     },
 
@@ -237,13 +300,16 @@ const taskSlice = createSlice({
         .map((interv) => interv.id)
         .indexOf(action.payload.intervenantID);
 
-      let obj =  JSON.parse(state.projectTasks[taskIdx].intervenants[intervIdx].file)
-      if (action.payload.upload){
-        obj.push(action.payload.file)
-      }else{
-        obj = obj.filter(file=>file !== action.payload.file)
+      let obj = JSON.parse(
+        state.projectTasks[taskIdx].intervenants[intervIdx].file
+      );
+      if (action.payload.upload) {
+        obj.push(action.payload.file);
+      } else {
+        obj = obj.filter((file) => file !== action.payload.file);
       }
-      state.projectTasks[taskIdx].intervenants[intervIdx].file =  JSON.stringify(obj)
+      state.projectTasks[taskIdx].intervenants[intervIdx].file =
+        JSON.stringify(obj);
     }
     // setUserPotentialTasks: (state, action) => {
     // }
