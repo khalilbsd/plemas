@@ -24,6 +24,7 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const addProjectState = useGetStateFromStore("manage", "addProject");
+  const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
 
   const isAnyFilterWindowActive = useCheckFilterWindowActive()
   const colors = useGetStateFromStore("userInfo", "avatarColors");
@@ -83,7 +84,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         </p>
       );
     const taskInfoElement = tasksNb ? (
-      projectTasks(projectID)?.map((task) => {
+      projectTasks(projectID)?.
+
+      map((task) => {
         return (
           <div key={task.id} className={classes.taskStates}>
             <Tooltip key={task.id} title={task?.name}>

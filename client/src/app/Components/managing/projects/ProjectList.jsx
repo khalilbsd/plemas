@@ -121,18 +121,18 @@ const ProjectList = ({ addForm, handleForm }) => {
           listBeforeTodayDate.push(project);
         }
       });
-      console.log("before sorting", listPastTodayDate);
+
       listPastTodayDate.sort((a, b) => {
-        let pta = projectTasks(a.id).filter((task) =>
-          dayjs(task.dueDate)
-            .startOf("day").locale("en-gb") >=
+        let pta = projectTasks(a.id).filter(
+          (task) =>
+            dayjs(task.dueDate).startOf("day").locale("en-gb") >=
             dayjs(new Date()).startOf("day").locale("en-gb")
         );
-        let ptb = projectTasks(b.id).filter((task) =>
-          dayjs(task.dueDate)
-          .startOf("day").locale("en-gb") >=
-          dayjs(new Date()).startOf("day").locale("en-gb")
-      );
+        let ptb = projectTasks(b.id).filter(
+          (task) =>
+            dayjs(task.dueDate).startOf("day").locale("en-gb") >=
+            dayjs(new Date()).startOf("day").locale("en-gb")
+        );
 
         // Get the minimum due date in each project
         let minDueDateA = pta.length > 0 ? dayjs(pta[0].dueDate) : Infinity;
@@ -153,17 +153,27 @@ const ProjectList = ({ addForm, handleForm }) => {
     );
     if (!projectTasksList) return [];
 
-    return projectTasksList[0]?.tasks.filter((task) => {
-      // if (dailyFilter) {
-      //   return task.state === TASK_STATE_DOING_ORG;
-      // }
-      return filterTaskState.length
-        ? filterTaskState.includes(
-            TASK_STATE_TRANSLATION.filter((t) => t.label === task.state)[0]
-              ?.value
-          )
-        : true;
-    });
+    return projectTasksList[0]?.tasks
+      .filter((task) => {
+        // if (dailyFilter) {
+        //   return task.state === TASK_STATE_DOING_ORG;
+        // }
+        return filterTaskState.length
+          ? filterTaskState.includes(
+              TASK_STATE_TRANSLATION.filter((t) => t.label === task.state)[0]
+                ?.value
+            )
+          : true;
+      }).sort((a,b)=>{
+        if (!dailyFilter) return true
+       let ta =dayjs(a.dueDate).startOf("day").locale("en-gb").diff(dayjs(new Date()).startOf("day"), 'days')
+       let tb =dayjs(b.dueDate).startOf("day").locale("en-gb").diff(dayjs(new Date()).startOf("day"), 'days')
+      //  let tb =dayjs(b.dueDate).startOf("day").diff(dayjs(new Date()).startOf("day"), 'days').locale("en-gb")
+      // console.log('and 'Math.abs(ta) - Math.abs(tb));
+       return Math.abs(ta) - Math.abs(tb)
+      })
+
+
   }
 
   function rowContent(_index, row) {
@@ -194,7 +204,7 @@ const ProjectList = ({ addForm, handleForm }) => {
       <TableRow
         key={_item.id}
         className={`row-data ${
-          _item?.requestsTreated === false ? "notTreatedRequest" : ""
+          _item?.requestsTreated === 'non traité' ? "notTreatedRequest" : ""
         }`}
         {...props}
       />

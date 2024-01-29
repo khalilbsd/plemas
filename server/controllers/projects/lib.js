@@ -108,13 +108,13 @@ function getProjectLots(lots) {
  */
 
 export function isAllRequestsTreated(requests){
-    if(!requests.length) return true
+    if(!requests.length) return '-'
     // let res =true
     for (const idx in requests){
-      if (!requests[idx].state) return false
+      if (!requests[idx].state) return 'non traité'
     }
 
-    return true
+    return 'traité'
 }
 
 

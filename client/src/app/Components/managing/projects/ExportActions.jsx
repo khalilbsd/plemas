@@ -63,7 +63,7 @@ const ExportActions = () => {
       "Liste des taches": getProjectTasks(item.id),
       // "Etat du projet": item.phaseStatus,
       Priority: item.priority,
-      "Requête traité": item.requestsTreated ? "traité" : "non traité"
+      "Requête traité": item.requestsTreated
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
