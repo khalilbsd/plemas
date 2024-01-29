@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const filtersInit = [
   { type: "manager.fullName", active: false },
   { type: "lots", active: false },
-  { type: "phase", active: false },
+  { type: "activePhase", active: false },
   { type: "state", active: false },
   { type: "taskState", active: false }
 ];
@@ -30,6 +30,7 @@ const initialState = {
   },
   filters: filtersInit,
   projectsTaskFilters: [],
+  projectListDailyFilter: true,
   projectsTaskFiltersDates: {
     start: "",
     end: ""
@@ -61,6 +62,7 @@ const manageSlice = createSlice({
     setProjectList: (state, action) => {
       state.projectsList = action?.payload.projects;
       state.projectsTaskList = action?.payload.tasks;
+      // launch dailyLogFilter
     },
     setProjectTaskListFiltered: (state, action) => {
       state.projectsTaskListFiltered = action?.payload;
@@ -108,49 +110,61 @@ const manageSlice = createSlice({
         )[0].projectCustomId;
       }
     },
-
+    applyDailyFilter: (state, action) => {},
     // to do the filter
     filterProjectsList: (state, action) => {
-      // const regex = new RegExp(action.payload.value, "i"); // 'i' for case-insensitive search
-
-      // let filterItem  ={
-      //   type:action.payload.attribute ,
-      //   value :  regex,
-      // }
+      //checking is there is already a filter with same attribute
       const isFilteredBy = state.addProject.filterType.filter(
         ({ type }) => type === action.payload.attribute
       )[0];
       let indxOfFilter = -1;
+
+      // if the filter is new
       if (!isFilteredBy) {
         state.addProject.filterType.push({
           type: action.payload.attribute,
           value: [action.payload.value]
         });
+
         indxOfFilter = state.addProject.filterType.length - 1;
       } else {
         indxOfFilter = state.addProject.filterType
           .map(({ type }) => type)
           .indexOf(action.payload.attribute);
+        // position of the filter in the filterType
 
-        if (indxOfFilter > -1)
-          if (
-            !state.addProject.filterType[indxOfFilter]?.value.includes(
-              action.payload.value
-            )
-          ) {
+        if (
+          !state.addProject.filterType[indxOfFilter]?.value.includes(
+            action.payload.value
+          )
+        ) {
+          if (action.payload.attribute === "projectCustomId") {
+            if (action.payload.value === "" && action.payload.popFilter) {
+              state.addProject.filterType = state.addProject.filterType.filter(
+                (filter) => filter.type !== "projectCustomId"
+              );
+            } else {
+              state.addProject.filterType[indxOfFilter].value = [
+                action.payload.value
+              ];
+            }
+          } else {
             state.addProject.filterType[indxOfFilter].value.push(
               action.payload.value
             );
-          } else {
+          }
+        } else {
+          if (!action.payload.flag || action.payload.popFilter) {
             state.addProject.filterType[indxOfFilter].value =
               state.addProject.filterType[indxOfFilter].value.filter(
                 (value) => value !== action.payload.value
               );
           }
+        }
       }
 
       if (action.payload.value && isFilteredBy && indxOfFilter > -1) {
-        //check if the value is an empty array
+        // check if the value is an empty array
         if (!state.addProject.filterType[indxOfFilter].value.length)
           state.addProject.filterType = state.addProject.filterType.filter(
             (elem) => elem.type !== action.payload.attribute
@@ -162,6 +176,7 @@ const manageSlice = createSlice({
       } else {
         state.addProject.isFiltering = action.payload.flag;
       }
+
       if (!state.addProject.isFiltering) {
         state.addProject.filterType = [];
       }
@@ -201,14 +216,24 @@ const manageSlice = createSlice({
         (project) => {
           return state.addProject.filterType.every((filterAttribute) => {
             const nestedProperty = filterAttribute.type.split(".");
+
             const nestedValue = nestedProperty.reduce(
               (obj, key) => (obj && obj[key] ? obj[key] : null),
               project
             );
-            const regex = new RegExp(filterAttribute.value, "i"); // 'i' for case-insensitive search
+            const valueToMatch = Array.isArray(filterAttribute.value)
+              ? filterAttribute.value
+                  .map((val) => val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+                  .join("|")
+              : filterAttribute.value;
+
+            // Create a regular expression that matches any of the values in the array
+            const regex = new RegExp(valueToMatch, "i");
 
             return regex.test(nestedValue);
           });
+
+          // return list;
         }
       );
     },
@@ -251,6 +276,9 @@ const manageSlice = createSlice({
     clearProjectTasksDateFilter: (state, action) => {
       state.projectsTaskFiltersDates.start = null;
       state.projectsTaskFiltersDates.end = null;
+    },
+    changeDailyFilter: (state, action) => {
+      state.projectListDailyFilter = action.payload;
     }
   }
 });
@@ -277,7 +305,9 @@ export const {
   popTaskStateFromFilter,
   setProjectTaskListFiltered,
   setProjectTasksDateFilter,
-  clearProjectTasksDateFilter
+  clearProjectTasksDateFilter,
+  changeDailyFilter,
+  applyDailyFilter
 } = manageSlice.actions;
 
 export default manageSlice.reducer;

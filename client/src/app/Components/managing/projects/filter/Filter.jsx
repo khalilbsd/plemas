@@ -1,43 +1,27 @@
-import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import React from "react";
-import { filterStyles } from "./style";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import ListItemText from "@mui/material/ListItemText";
-import Select from "@mui/material/Select";
 import Checkbox from "@mui/material/Checkbox";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import React from "react";
 import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
+import { filterStyles } from "./style";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
 
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
+
 const Filter = (props) => {
   const {
     items,
     handleChange,
     filterType,
-    label,
-    open,
     name,
-    handleClose,
-    handleOpen
   } = props;
   const classes = filterStyles();
 
   const { filterType: active } = useGetStateFromStore("manage", "addProject");
+  const taskFilters = useGetStateFromStore("manage", "projectsTaskFilters");
 
   const getInitials = (fullName) => {
     let first;
@@ -49,7 +33,15 @@ const Filter = (props) => {
     return `${first}${second}`;
   };
 
-  const filterValues = active?.filter((ft) => ft.type === name)[0];
+  const filterValues = ()=>{
+
+    if (filterType === 'taskState'){
+      return taskFilters
+    }
+    const ft = active?.filter((ft) => ft.type === filterType)
+    if (!ft.length) return []
+    return ft[0]?.value
+   };
 
   return (
     <div
@@ -58,113 +50,70 @@ const Filter = (props) => {
       }`}
     >
       {filterType === "manager.fullName" ? (
-        // <Autocomplete
-        //   disableCloseOnSelect
-        //   multiple
-        //   defaultValue={[]}
-        //   options={items}
-        //   name={name}
-        //   getOptionLabel={(option) => option?.fullName}
-        //   onChange={(event, value) => handleChange(value)}
-        //   renderOption={(props, option) => (
-        // <Box component="li" {...props}>
-        //   {option.image ? (
-        //     <Avatar
-        //       sx={{ width: 24, height: 24 }}
-        //       alt={option?.fullName}
-        //       src={`${process.env.REACT_APP_SERVER_URL}${option.image}`}
-        //     />
-        //   ) : (
-        //     <Avatar sx={{ width: 24, height: 24 }}>
-        //       {getInitials(option?.fullName)}
-        //     </Avatar>
-        //   )}
-        //   <span className={classes.managerFullName}>
-        //     {" "}
-        //     {option?.fullName}
-        //   </span>
-        // </Box>
-        //   )}
-        //   renderInput={(params) => (
-        //     <TextField
-        //       {...params}
-        //       label={label}
-        //       size="small"
-        //       inputProps={{
-        //         ...params.inputProps,
-        //         autoComplete: "new-password" // disable autocomplete and autofill
-        //       }}
-        //     />
-        //   )}
-        // />
-        <FormControl sx={{ width: "100%" }}>
-          <Select
-            name={name}
-            open={open}
-            onOpen={handleOpen}
-            onClose={handleClose}
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={[]}
-            onChange={handleChange}
-            input={<OutlinedInput size="small" />}
-            renderValue={(selected) => selected.join(", ")}
-            MenuProps={MenuProps}
-          >
-            {items.map((option, key) => (
-              <MenuItem key={key} value={option}>
-                <Checkbox
-                  checked={filterValues?.value.indexOf(option.fullName) > -1}
-                />
-
-                {option.image ? (
-                  <Avatar
-                    sx={{ width: 24, height: 24 }}
-                    alt={option?.fullName}
-                    src={`${process.env.REACT_APP_SERVER_URL}${option.image}`}
+        <List>
+          {items.map((option) => {
+            const labelId = `checkbox-list-managerName-label-${option?.fullName}`;
+            return (
+              <ListItem
+                key={option?.fullName}
+                secondaryAction={
+                  <Checkbox
+                    edge="end"
+                    value={option.fullName}
+                    onChange={handleChange}
+                    checked={filterValues().indexOf(option.fullName) !== -1}
+                    inputProps={{ "aria-labelledby": labelId }}
                   />
-                ) : (
-                  <Avatar sx={{ width: 24, height: 24 }}>
-                    {getInitials(option?.fullName)}
-                  </Avatar>
-                )}
-                <span className={classes.managerFullName}>
-                  {" "}
-                  {option?.fullName}
-                </span>
-
-                <ListItemText primary={name} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+                }
+                disablePadding
+              >
+                <ListItemButton>
+                  <ListItemAvatar>
+                    {option.image ? (
+                      <Avatar
+                        // sx={{ width: 32, height: 32 }}
+                        alt={option?.fullName}
+                        src={`${process.env.REACT_APP_SERVER_URL}${option.image}`}
+                      />
+                    ) : (
+                      <Avatar sx={{ width: 32, height: 32 }}>
+                        {getInitials(option?.fullName)}
+                      </Avatar>
+                    )}
+                  </ListItemAvatar>
+                  <ListItemText id={labelId} primary={`${option?.fullName}`} />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
       ) : (
-        <FormControl sx={{ width: "100%" }}>
-          <Select
-            name={name}
-            open={open}
-            onOpen={handleOpen}
-            onClose={handleClose}
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={[]}
-            onChange={handleChange}
-            input={<OutlinedInput size="small" />}
-            renderValue={(selected) => selected.join(", ")}
-            MenuProps={MenuProps}
-          >
-            {items.map((item) => (
-              <MenuItem key={item} value={item}>
-                {name !== "taskState" && (
-                  <Checkbox checked={filterValues?.value.indexOf(item) > -1} />
-                )}
-                <ListItemText primary={item} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <List>
+        {items.map((option) => {
+          const labelId = `checkbox-list-managerName-label-${option}`;
+          return (
+            <ListItem
+              key={`${name}-${option}`}
+              secondaryAction={
+                <Checkbox
+                  edge="end"
+                    value={option}
+                    name={name}
+                  onChange={handleChange}
+                  checked={filterValues().indexOf(option) !== -1}
+
+                  inputProps={{ "aria-labelledby": labelId }}
+                />
+              }
+              disablePadding
+            >
+              <ListItemButton>
+                <ListItemText id={labelId} primary={`${option}`} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
       )}
     </div>
   );

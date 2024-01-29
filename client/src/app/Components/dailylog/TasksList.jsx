@@ -42,25 +42,27 @@ const TasksList = ({
   const dispatch = useDispatch();
 
   const handleChangeHourTask = (id, val) => {
-    dispatch(updateDailyHours({ id: id, percent: parseInt(val) , type:"tasks"}));
+    dispatch(
+      updateDailyHours({ id: id, percent: parseInt(val), type: "tasks" })
+    );
   };
   const handleChangeHourProject = (id, val) => {
-    dispatch(updateDailyHours({ id: id, percent: parseInt(val), type:"projects" }));
+    dispatch(
+      updateDailyHours({ id: id, percent: parseInt(val), type: "projects" })
+    );
   };
 
   const handleSaveHours = async () => {
     try {
-       await assignHoursInTask({
+      await assignHoursInTask({
         date: historyDate,
         userTasks: hourDivision?.tasks
       }).unwrap();
 
-       await assignManagerHoursBulk({
+      await assignManagerHoursBulk({
         date: historyDate,
         projectsHours: hourDivision?.projects
       }).unwrap();
-
-
 
       notify(NOTIFY_SUCCESS, "mise a jour des heurs a terminé");
     } catch (error) {
@@ -72,7 +74,6 @@ const TasksList = ({
     dispatch(hideDailyTask({ id }));
   };
   const hideProject = (id) => {
-
     dispatch(hideDailyProject({ id }));
   };
 
@@ -119,12 +120,11 @@ const TasksList = ({
                 id={project.id}
                 handleChange={handleChangeHourProject}
                 key={idx}
-
                 project={project}
                 isProject={true}
                 handleHide={(e) => hideProject(project.id)}
                 percentValue={DAILY_HOURS_VALUE}
-              value={hourDivision.projects[project.id]?.value}
+                value={hourDivision.projects[project.id]?.value}
               />
             ))}
           </div>

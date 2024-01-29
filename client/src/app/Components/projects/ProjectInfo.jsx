@@ -585,7 +585,7 @@ const isShouldCheckProjectIntegrity =()=>{
                 </div>
               </Grid>
               {/* date fin */}
-              <Grid item xs={12} sm={6} md={6} lg={4}>
+              <Grid item xs={12} sm={6} md={6} lg={3}>
                 <div className={classes.data}>
                   <p className="label">Date fin</p>
                   {!edit ? (
@@ -648,7 +648,7 @@ const isShouldCheckProjectIntegrity =()=>{
                 </div>
               </Grid>
               {/* prev phase */}
-              <Grid item xs={12} sm={6} md={6} lg={2}>
+              <Grid item xs={12} sm={6} md={6} lg={3}>
                 {project.prevPhase && (
                   <>
                     Phase lié <br />

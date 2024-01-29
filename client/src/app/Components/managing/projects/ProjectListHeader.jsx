@@ -1,31 +1,35 @@
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
+import Tooltip from "@mui/material/Tooltip";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { ReactSVG } from "react-svg";
 import {
   NOTIFY_ERROR,
   TASK_STATE_TRANSLATION,
   progress_bar_width_cell
 } from "../../../../constants/constants";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
+import { useFilterProjectsTasksByDatesMutation } from "../../../../store/api/tasks.api";
 import {
+  changeDailyFilter,
   filterByTaskStatus,
   filterProjectsList,
+  popTaskStateFromFilter,
   setProjectTaskListFiltered,
   setProjectTasksDateFilter
 } from "../../../../store/reducers/manage.reducer";
-import { projectsStyles } from "../style";
-import ProjectHeadColumnFilter from "./filter/ProjectHeadColumnFilter";
-import { ReactSVG } from "react-svg";
+import { setTwoWeeksDatesListFiltered } from "../../../../store/reducers/project.reducer";
+import faArrowRight from "../../../public/svgs/light/arrow-right.svg";
 import faFilter from "../../../public/svgs/light/filter.svg";
 import PopUp from "../../PopUp/PopUp";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import faArrowRight from "../../../public/svgs/light/arrow-right.svg";
-import { useFilterProjectsTasksByDatesMutation } from "../../../../store/api/tasks.api";
 import { notify } from "../../notification/notification";
-import { setTwoWeeksDatesListFiltered } from "../../../../store/reducers/project.reducer";
+import { projectsStyles } from "../style";
+import ProjectHeadColumnFilter from "./filter/ProjectHeadColumnFilter";
+
 const init = {
   manager: "",
   state: "",
@@ -40,7 +44,7 @@ const dateFilterInit = {
   endDate: dayjs().locale("en-gb").add(21, "day")
 };
 
-const ProjectListHeader = () => {
+const ProjectListHeader = ({disableDailyFilter}) => {
   const [selected, setSelected] = useState(init);
   const classes = projectsStyles();
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
@@ -52,7 +56,7 @@ const ProjectListHeader = () => {
   const projects = useGetStateFromStore("manage", "projectsList");
   const dispatch = useDispatch();
   const [dateFilter, setDateFilter] = useState(dateFilterInit);
-  const [filterProjectsTasksByDates, { isLoading: filtringByDates }] =
+  const [filterProjectsTasksByDates] =
     useFilterProjectsTasksByDatesMutation();
   // const [filters, setFilters] = useState(filtersInit);
 
@@ -98,7 +102,10 @@ const ProjectListHeader = () => {
     projects.forEach((project) => {
       let exist = list.filter((item) => item === project.activePhase);
       if (!exist.length) {
-        list.push(project.activePhase);
+        if (project.activePhase){
+          list.push(project.activePhase);
+
+        }
       }
     });
     return list;
@@ -106,41 +113,47 @@ const ProjectListHeader = () => {
 
   const handleChangeManager = (event) => {
     const {
-      target: { value, name }
+      target: { value,checked }
     } = event;
-
     setSelected({ ...selected, manager: value });
-
+    //disableDailyFilter()
     dispatch(
       filterProjectsList({
         flag: true,
-        value: value[0]?.fullName,
-        attribute: "manager.fullName"
+        value: value,
+        attribute: "manager.fullName",
+        popFilter:!checked?true:false
       })
     );
   };
 
   const handleChangeFilter = (event) => {
     const {
-      target: { value, name }
+      target: { value, name ,checked}
     } = event;
+    //disableDailyFilter()
 
     setSelected({
       ...selected,
-      [name]: typeof value === "string" ? value.split(",") : value[0]
+      [name]:value
     });
 
     dispatch(
       filterProjectsList({
         flag: true,
-        value: typeof value === "string" ? value.split(",") : value[0],
-        attribute: name
+        value: value,
+        attribute: name,
+        popFilter:!checked?true:false
       })
     );
   };
 
   const applyDateFilter = async () => {
+      //disabling daily filter
+      dispatch(changeDailyFilter(false));
+
     const projectIds = projects.map((project) => project.id);
+    //disableDailyFilter()
 
     try {
       const res = await filterProjectsTasksByDates({
@@ -165,10 +178,19 @@ const ProjectListHeader = () => {
   };
 
   const handleChangeTaskState = (event) => {
-    const { target:{ value, name }} = event;
+    const {
+      target: { value, name ,checked}
+    } = event;
+    //disableDailyFilter()
 
-    setSelected({ ...selected, [name]: value[0] });
-    dispatch(filterByTaskStatus(value[0]));
+    setSelected({ ...selected, [name]: value });
+    if (checked){
+      dispatch(filterByTaskStatus(value));
+
+    }else{
+    dispatch(popTaskStateFromFilter(value));
+
+    }
   };
 
   const showDatesFilter = () => {
@@ -209,6 +231,7 @@ const ProjectListHeader = () => {
   const lots = useMemo(() => selectLots(), [projects]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const phase = useMemo(() => selectPhases(), [projects]);
+
 
   const columns = [
     {
@@ -254,7 +277,7 @@ const ProjectListHeader = () => {
 
       filter: true,
       width: 65,
-      type: "phase",
+      type: "activePhase",
       ref: selected.phase,
       items: phase,
       handler: handleChangeFilter
@@ -308,7 +331,7 @@ const ProjectListHeader = () => {
                   }`}
                   key={index}
                 >
-                  {date[0].toUpperCase()}
+                  <Tooltip title={date}><span>{date[0].toUpperCase()}</span></Tooltip>
                 </p>
               </div>
             ))}

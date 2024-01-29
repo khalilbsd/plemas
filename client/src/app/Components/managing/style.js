@@ -5,7 +5,7 @@ export const btnStyle = createUseStyles({
   btn: {
     width: 200,
     "&.large": {
-      width: "100%"
+      width: "100%",
     },
     height: 50,
     borderRadius: 5,
@@ -23,31 +23,31 @@ export const btnStyle = createUseStyles({
     "&.danger": {
       backgroundColor: "var(--toastify-color-progress-error)",
       "&:hover": {
-        opacity: 0.8
-      }
+        opacity: 0.8,
+      },
     },
     "&.warning": {
       backgroundColor: "var(--orange)",
       "&:hover": {
-        opacity: 0.8
-      }
+        opacity: 0.8,
+      },
     },
     "&.normal": {
       backgroundColor: "var(--dark-green)",
       "&:hover": {
-        backgroundColor: "var(--light-green)"
-      }
-    }
+        backgroundColor: "var(--light-green)",
+      },
+    },
   },
   icon: {
     width: 18,
-    fill: "var(--white)"
-  }
+    fill: "var(--white)",
+  },
 });
 export const listStyle = createUseStyles({
   icon: {
     width: 18,
-    height: 18
+    height: 18,
   },
   safeLabel: {
     fontWeight: 600,
@@ -59,7 +59,7 @@ export const listStyle = createUseStyles({
     color: "var(--dark-green)",
     borderRadius: 4,
     padding: "5px 00px",
-    border: "2px solid var(--dark-green)"
+    border: "2px solid var(--dark-green)",
   },
   redLabel: {
     fontWeight: 600,
@@ -70,14 +70,14 @@ export const listStyle = createUseStyles({
     width: "150px",
     // margin:'auto',
     textAlign: "center",
-    border: "2px solid var(--toastify-icon-color-error)"
+    border: "2px solid var(--toastify-icon-color-error)",
   },
   roleBtn: {
     background: "none",
     border: "none",
     width: "100%",
     textAlign: "left",
-    height: "100%"
+    height: "100%",
   },
   list: {
     height: "calc(100% - 53px) !important",
@@ -89,14 +89,14 @@ export const listStyle = createUseStyles({
       backgroundColor: "var(--light-green)",
       color: "var(--white)",
       "& .MuiDataGrid-columnHeaderTitle": {
-        fontWeight: "600 !important"
+        fontWeight: "600 !important",
       },
       height: "90px !important",
       maxHeight: "90px !important",
       "& .MuiDataGrid-columnHeadersInner": {
         width: "98%",
-        margin: "auto"
-      }
+        margin: "auto",
+      },
     },
     "& .MuiDataGrid-virtualScroller": {
       width: "98%",
@@ -115,38 +115,38 @@ export const listStyle = createUseStyles({
       overflowX: "hidden !important",
       overflowY: "auto !important",
       "&::-webkit-scrollbar": {
-        width: "8px"
+        width: "8px",
       },
 
       "&::-webkit-scrollbar-track": {
         WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
-        borderRadius: "10px"
+        borderRadius: "10px",
       },
       "&::-webkit-scrollbar-thumb": {
         borderRadius: "10px",
         // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
-        background: "var(--pastel-green)"
+        background: "var(--pastel-green)",
       },
       "& .MuiDataGrid-virtualScrollerContent": {
-        height: "100% !important"
-      }
+        height: "100% !important",
+      },
     },
     "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
       minHeight: "42px !important",
       maxHeight: "42px !important",
-      border: "none !important"
+      border: "none !important",
     },
     "&.integrated": {
       overflow: "visible !important",
       "& .MuiDataGrid-main": {
-        overflow: "visible"
+        overflow: "visible",
       },
       "& .MuiDataGrid-columnHeaderTitleContainerContent": {
         width: "100%",
-        overflow: "visible"
+        overflow: "visible",
       },
       "& .MuiDataGrid-columnHeaderTitleContainer": {
-        overflow: "visible"
+        overflow: "visible",
       },
       borderTopLeftRadius: "0px !important",
       borderTopRightRadius: "0px !important",
@@ -158,32 +158,32 @@ export const listStyle = createUseStyles({
         //   height: "170px !important",
         // maxHeight: "170px !important",
         "& .MuiDataGrid-columnHeader": {
-          paddingLeft: "0 !important"
-        }
+          paddingLeft: "0 !important",
+        },
       },
       "& .MuiDataGrid-row, .MuiDataGrid-cell ": {
         minHeight: "42px !important",
         maxHeight: "unset !important",
         border: "none !important",
         alignItems: "flex-start",
-        padding: "7px 0"
+        padding: "7px 0",
       },
       "& .MuiDataGrid-overlayWrapperInner": {
-        height: "600px !important"
-      }
+        height: "600px !important",
+      },
     },
     "& .notTreatedRequest": {
-      backgroundColor: "#e74c3c2e !important"
+      backgroundColor: "#e74c3c2e !important",
     },
     "& .MuiDataGrid-footerContainer": {
-      display: "none !important"
-    }
-  }
+      display: "none !important",
+    },
+  },
 });
 
 export const addUserFormStyles = createUseStyles({
   inputs: {
-    width: "100%"
+    width: "100%",
   },
   saveBtn: {
     width: "100%",
@@ -198,8 +198,16 @@ export const addUserFormStyles = createUseStyles({
     fontFamily: "'MyriadPro', sans-serif !important",
     fontSize: 16,
     transition: "0.3s all ease-in-out",
-    "&:hover": {
-      backgroundColor: "var(--light-green)"
+    "&:not([disabled]):hover": {
+      backgroundColor: "var(--light-green)",
+    },
+    display:'flex',
+    gap:10,
+    justifyContent:'center',
+    alignItems:'center',
+    '& p.text':{
+      margin:0,
+      color:'white'
     }
   },
   cancelBtn: {
@@ -215,15 +223,18 @@ export const addUserFormStyles = createUseStyles({
     fontSize: 16,
     transition: "0.3s all ease-in-out",
     "&:hover": {
-      opacity: 0.8
-    }
-  }
+      opacity: 0.8,
+    },
+  },
+  loadingSaveBtn: {
+    "& span": { width: '10px !important', height: '10px !important' },
+  },
 });
 
 export const projectsStyles = createUseStyles({
   projectsPage: {
     height: "100%",
-    width: "100%"
+    width: "100%",
   },
 
   empty: {
@@ -231,7 +242,7 @@ export const projectsStyles = createUseStyles({
     width: "60%",
     fontSize: 18,
     color: "lightgrey",
-    textAlign: "center"
+    textAlign: "center",
   },
   listContainer: {
     backgroundColor: "var(--white)",
@@ -240,13 +251,13 @@ export const projectsStyles = createUseStyles({
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    paddingBottom: 20
+    paddingBottom: 20,
     // transition:'all 0.3s ease-in-out'
   },
   header: {
     backgroundColor: "var(--light-green)",
     padding: "20px 20px",
-    width: "calc(100% - 40px)"
+    width: "calc(100% - 40px)",
   },
   headersItem: {
     display: "flex",
@@ -259,8 +270,8 @@ export const projectsStyles = createUseStyles({
       minHeight: 90,
       justifyContent: "space-between",
       fontWeight: 600,
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
 
     // padding:'0 20px'
   },
@@ -271,13 +282,13 @@ export const projectsStyles = createUseStyles({
     width: "calc(100% - 40px)",
     minHeight: 60,
     fontWeight: 600,
-    fontSize: 14
+    fontSize: 14,
   },
 
   column: {
     fontSize: 14,
     textWrap: "nowrap",
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
   },
   dateColumn: {
     textWrap: "nowrap",
@@ -287,7 +298,7 @@ export const projectsStyles = createUseStyles({
     minWidth: progress_bar_width_cell,
     height: progress_bar_width_cell,
     display: "flex",
-    alignItems: "flex-end"
+    alignItems: "flex-end",
   },
   dateTitle: {
     // lineHeight: "40px",
@@ -297,7 +308,7 @@ export const projectsStyles = createUseStyles({
     whiteSpace: "nowrap",
     // width:'100%',
     // margin: "0 -100%",
-    "&.disabled": { opacity: 0.5 }
+    "&.disabled": { opacity: 0.5 },
   },
   content: {
     padding: 20,
@@ -311,18 +322,18 @@ export const projectsStyles = createUseStyles({
     margin: "auto",
     overflowY: "auto",
     "&::-webkit-scrollbar": {
-      width: "8px"
+      width: "8px",
     },
 
     "&::-webkit-scrollbar-track": {
       WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
-      borderRadius: "10px"
+      borderRadius: "10px",
     },
     "&::-webkit-scrollbar-thumb": {
       borderRadius: "10px",
       // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
-      background: "var(--pastel-green)"
-    }
+      background: "var(--pastel-green)",
+    },
   },
   progressBarContainer: {
     height: 32,
@@ -339,38 +350,37 @@ export const projectsStyles = createUseStyles({
     backgroundColor: "var(--bright-orange)",
     width: "calc(100% - 10px)",
     "&.empty": {
-      backgroundColor: "var(--app-bg-color)"
+      backgroundColor: "var(--app-bg-color)",
     },
     "&.done-bar": {
-      backgroundColor:'var(--dark-green)',
-      position:'absolute',
-      left:0,
-      top:0,
-      height:20,
+      backgroundColor: "var(--dark-green)",
+      position: "absolute",
+      left: 0,
+      top: 0,
+      height: 20,
 
-      padding:0,
-
+      padding: 0,
     },
     "&.blocked-bar": {
-      padding:0,
+      padding: 0,
       backgroundColor: "var(--toastify-color-error)",
 
-      position:'absolute',
-      left:0,
-      top:0,
-      height:20
+      position: "absolute",
+      left: 0,
+      top: 0,
+      height: 20,
     },
-    '& .date':{
-      position:'relative',
-      zIndex:10,
-    }
+    "& .date": {
+      position: "relative",
+      zIndex: 10,
+    },
   },
   dataList: {
     display: "flex",
     alignItems: "center",
     gap: 10,
     flex: 1,
-    fontSize: 14
+    fontSize: 14,
   },
   // avatar: {
   //   width: 32,
@@ -396,19 +406,19 @@ export const projectsStyles = createUseStyles({
       width: 32,
       transition: "0.3s all ease-in-out",
       "&:hover": {
-        backgroundColor: "var(--pastel-green)"
+        backgroundColor: "var(--pastel-green)",
       },
       "& svg": {
         fill: "var(--white)",
         height: 22,
-        width: 22
-      }
+        width: 22,
+      },
     },
     "& .left": {
       width: "100%",
       display: "flex",
-      alignItems: "center"
-    }
+      alignItems: "center",
+    },
   },
   modalActionBtn: {
     position: "absolute",
@@ -429,40 +439,40 @@ export const projectsStyles = createUseStyles({
       justifyContent: "center",
       transition: "all 0.3s ease-in-out",
       "&.close": {
-        backgroundColor: "var(--toastify-color-error)"
+        backgroundColor: "var(--toastify-color-error)",
       },
       "&.submit": {
-        backgroundColor: "var(--dark-green)"
+        backgroundColor: "var(--dark-green)",
       },
       "&:hover": {
-        backgroundColor: "lightgrey"
-      }
+        backgroundColor: "lightgrey",
+      },
     },
     "& svg": {
       width: 22,
       height: 22,
-      fill: "white"
-    }
+      fill: "white",
+    },
   },
   modalTitle: {
-    fontWeight: 600
+    fontWeight: 600,
   },
   info: {
-    fontSize: 14
+    fontSize: 14,
   },
   textWarning: {
     fontSize: 14,
     "& .warning": {
       fontWeight: 600,
-      color: "var(--orange)"
-    }
+      color: "var(--orange)",
+    },
   },
   labels: {
     marginBottom: 10,
     fontWeight: 600,
     fontSize: 14,
     fontStyle: "italic",
-    display: "block"
+    display: "block",
   },
   manager: {
     lineHeight: "12px",
@@ -474,21 +484,21 @@ export const projectsStyles = createUseStyles({
       flexDirection: "column",
       "& .name": {
         fontWeight: 600,
-        fontSize: 14
+        fontSize: 14,
       },
       "& .email, .poste": {
         color: "grey",
         fontSize: 13,
-        fontWeight: 500
-      }
-    }
+        fontWeight: 500,
+      },
+    },
   },
   avatar: {
     "&:not(.chip)": {
       width: 32,
       minWidth: 32,
       height: 32,
-      fontWeight: 600
+      fontWeight: 600,
     },
     color: "var(--white) !important",
     display: "flex",
@@ -497,30 +507,30 @@ export const projectsStyles = createUseStyles({
     borderRadius: "100%",
     fontSize: 13,
     "&.light-green": {
-      backgroundColor: "var(--light-green)"
+      backgroundColor: "var(--light-green)",
     },
     "&.dark-green": {
-      backgroundColor: "var(--dark-green)"
+      backgroundColor: "var(--dark-green)",
     },
     "&.orange": {
-      backgroundColor: "var(--orange)"
+      backgroundColor: "var(--orange)",
     },
     "&.bright-orange": {
-      backgroundColor: " var(--orange)"
+      backgroundColor: " var(--orange)",
     },
 
     "&.black": {
-      backgroundColor: "var(--black)"
-    }
+      backgroundColor: "var(--black)",
+    },
   },
   managerContainer: {
     display: "flex",
     gap: 5,
-    alignItems: "center"
+    alignItems: "center",
   },
   managerFullName: {
     margin: 0,
-    whiteSpace: "normal"
+    whiteSpace: "normal",
   },
   verificationMessage: {
     color: "grey",
@@ -528,7 +538,7 @@ export const projectsStyles = createUseStyles({
     marginTop: 30,
     display: "block",
     margin: "auto",
-    textAlign: "center"
+    textAlign: "center",
   },
   data: {
     margin: 0,
@@ -536,12 +546,12 @@ export const projectsStyles = createUseStyles({
     fontSize: 16,
     "& .chip": {
       marginRight: 10,
-      fontWeight: 600
+      fontWeight: 600,
     },
     "&.disabled": {
       color: "grey",
-      fontSize: 13
-    }
+      fontSize: 13,
+    },
   },
   projectChoice: {
     width: "100%",
@@ -559,27 +569,27 @@ export const projectsStyles = createUseStyles({
     "& .bold": {
       fontWeight: 600,
       fontSize: 14,
-      color: "var(--black)"
+      color: "var(--black)",
     },
     fontSize: 13,
     color: "darkgrey",
     "&:hover": {
-      backgroundColor: "var(--pastel-green)"
+      backgroundColor: "var(--pastel-green)",
     },
     "&[disabled]": {
       "& .bold": {
-        color: "grey"
+        color: "grey",
       },
       "&:hover": {
-        backgroundColor: "var(--app-bg)"
-      }
-    }
+        backgroundColor: "var(--app-bg)",
+      },
+    },
   },
   addProjectForm: {
     backgroundColor: "var(--white)",
     padding: "20px 40px ",
     borderRadius: 30,
-    position: "relative"
+    position: "relative",
   },
   // managerSelect:{
   //   '& .MuiSelect-select':{
@@ -588,10 +598,10 @@ export const projectsStyles = createUseStyles({
   //   }
   // }
   hidden: {
-    display: "none"
+    display: "none",
   },
   priorityContainer: {
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   priorityFiled: {
     height: 30,
@@ -606,17 +616,17 @@ export const projectsStyles = createUseStyles({
       outline: "none",
       borderRadius: "100%",
       "&:hover": {
-        opacity: 0.7
+        opacity: 0.7,
       },
       "&.active": {
-        border: "2px solid var(--black)"
-      }
-    }
+        border: "2px solid var(--black)",
+      },
+    },
   },
   formSkeleton: {
     width: "100%",
     height: "170px !important",
-    backgroundColor: "var(--pastel-green) !important"
+    backgroundColor: "var(--pastel-green) !important",
   },
   search: {
     width: "30%",
@@ -624,22 +634,22 @@ export const projectsStyles = createUseStyles({
     backgroundColor: "white",
     borderRadius: 5,
     "& label[data-shrink=true]": {
-      color: "var(--orange) !important"
-    }
+      color: "var(--orange) !important",
+    },
   },
   intevDialog: {
-    width: 300
+    width: 300,
   },
   multipleUsers: {
     marginBottom: "5px !important",
-    width: "100%"
+    width: "100%",
   },
   taskStates: {
     height: 32,
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
-    fontWeight: 600
+    fontWeight: 600,
   },
   projectName: {
     margin: 0,
@@ -651,40 +661,40 @@ export const projectsStyles = createUseStyles({
       marginRight: 5,
       width: 18,
       height: 18,
-      borderRadius: "100%"
-    }
+      borderRadius: "100%",
+    },
   },
 
   task: {
     borderLeft: "1px solid var(--app-bg-color)",
     paddingLeft: 5,
-    width: "90%"
+    width: "90%",
   },
   emptyTasks: {
     margin: 0,
     color: "var(--bright-orange)",
     // whiteSpace: "normal",
-    textWrap: "nowrap"
+    textWrap: "nowrap",
   },
   lot: {
     margin: 0,
-    marginRight: 5
+    marginRight: 5,
   },
   table: {
     width: "100%",
     "&::-webkit-scrollbar": {
       width: "8px",
-      height: "8px"
+      height: "8px",
     },
 
     "&::-webkit-scrollbar-track": {
       WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
-      borderRadius: "10px"
+      borderRadius: "10px",
     },
     "&::-webkit-scrollbar-thumb": {
       borderRadius: "10px",
       // WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
-      background: "var(--dark-green)"
+      background: "var(--dark-green)",
     },
     "& .row-data": {
       width: "100%",
@@ -693,25 +703,25 @@ export const projectsStyles = createUseStyles({
       transition: "all 0.3s ease-in-out",
 
       "&:hover": {
-        backgroundColor: "var(--app-bg-color) !important"
+        backgroundColor: "var(--app-bg-color) !important",
       },
       "&.active": {
-        backgroundColor: "var(--pastel-green) !important"
+        backgroundColor: "var(--pastel-green) !important",
         // color:'var(--white)'
       },
       "&.notTreatedRequest": {
-        backgroundColor: "#e74c3c2e !important"
-      }
-    }
+        backgroundColor: "#e74c3c2e !important",
+      },
+    },
   },
   tableHead: {
     backgroundColor: "var(--light-green)",
-    color: "var(--white)"
+    color: "var(--white)",
   },
   tableHeader: {
     backgroundColor: "var(--light-green)",
     color: "var(--white)",
-    paddingBottom:'0 !important'
+    paddingBottom: "0 !important",
   },
   // tableHeader: {
   //   color:'var(--white) !important',
@@ -751,20 +761,20 @@ export const projectsStyles = createUseStyles({
     border: "none",
     background: "var(--orange)",
     "& svg": {
-      fill: "var(--white)"
-    }
+      fill: "var(--white)",
+    },
   },
   rowCell: {
     padding: "10px 10px !important",
-    border: "none !important"
+    border: "none !important",
   },
   lots: {
     display: "flex",
     fontWeight: 600,
-    gap: 2
+    gap: 2,
   },
   exportAction: {
-    position: "relative"
+    position: "relative",
   },
   exportBtn: {
     display: "flex",
@@ -787,12 +797,12 @@ export const projectsStyles = createUseStyles({
       "& svg": {
         width: 22,
         height: 22,
-        fill: "var(--white)"
-      }
+        fill: "var(--white)",
+      },
     },
     "&:hover,&:active,&:focus": {
-      backgroundColor: "var(--orange)"
-    }
+      backgroundColor: "var(--orange)",
+    },
   },
   exportList: {
     position: "absolute",
@@ -805,46 +815,43 @@ export const projectsStyles = createUseStyles({
     right: 0,
     "& .list-icon": {
       width: 28,
-      height: 28
-    }
+      height: 28,
+    },
   },
   csvLink: {
     textDecoration: "none",
     color: "var(--black)",
-    width: "100%"
+    width: "100%",
   },
   filterBtn: {
     "& svg": {
       width: 11,
       height: 11,
-      fill: "var(--bright-orange) "
-    }
+      fill: "var(--bright-orange) ",
+    },
   },
-  datesListHeader:{
-    display:'flex',
-    alignItems: 'center',
-    gap:50,
-    '& button':{
-      backgroundColor:'unset',
-      border: 'none',
+  datesListHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: 50,
+    "& button": {
+      backgroundColor: "unset",
+      border: "none",
       width: 22,
       height: 22,
-      borderRadius:'100%',
-      transition:'all 0.5s ease-in-out',
-      '&:hover':{
-        backgroundColor: 'var(--white-hover)',
-      }
-    }
+      borderRadius: "100%",
+      transition: "all 0.5s ease-in-out",
+      "&:hover": {
+        backgroundColor: "var(--white-hover)",
+      },
+    },
   },
-  filterDate:{
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap:50
+  filterDate: {
+    display: "flex",
+    alignItems: "flex-end",
+    gap: 50,
   },
-  arrowIcon:{
-    '& svg':{width:22,
-    height:22,
-      fill:'grey'
-  }
-  }
+  arrowIcon: {
+    "& svg": { width: 22, height: 22, fill: "grey" },
+  },
 });

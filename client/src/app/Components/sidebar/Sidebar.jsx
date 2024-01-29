@@ -7,7 +7,6 @@ import { styles } from "./style";
 
 import { useDispatch } from 'react-redux';
 import { ReactSVG } from "react-svg";
-import { SUPERUSER_ROLE } from "../../../constants/roles";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import useGetUserInfo from "../../../hooks/user";
 import { toggleSideBarStatus } from "../../../store/reducers/sidebar.reducer";

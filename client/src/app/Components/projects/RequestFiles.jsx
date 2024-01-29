@@ -79,7 +79,10 @@ const RequestFiles = (props) => {
       }).unwrap();
 
       notify(NOTIFY_SUCCESS, res.message);
+      dispatch(updateFileRequestList({ requestID, file: file ,upload: false }));
+
       handleClose();
+
     } catch (error) {
       notify(NOTIFY_ERROR, error);
     }
@@ -113,7 +116,7 @@ const RequestFiles = (props) => {
         body: formData
       }).unwrap();
       notify(NOTIFY_SUCCESS, res?.message);
-      dispatch(updateFileRequestList({ requestID, urls: res.files }));
+      dispatch(updateFileRequestList({ requestID, urls: res.files ,upload: true }));
 
       handleClose();
     } catch (error) {

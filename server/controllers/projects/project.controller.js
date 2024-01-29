@@ -114,47 +114,16 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     ]
   });
 
-  // console.log(projects[0].phase);
   const projectsList = serializeProject(projects);
   // projectsList.sort((a, b) => b.code - a.code);
 
   const dates = calculateDates(3);
 
-  // let tasks = [];
 
-  // for (const projIdx in projectsList) {
-  //   let projectTasks = await Task.findAll({
-  //     attributes: ["id", "name", "name", "startDate", "dueDate", "state","blockedDate","doneDate"],
-  //     // order: [["dueDate", "DESC"]],
-  //     where: {
-  //       "dueDate": {
-  //         [Op.gte]: today
-  //       }
-  //     },
-  //     include: [
-  //       {
-  //         model: Intervenant,
-  //         attributes: ["id"],
-  //         where: {
-  //           projectID: projectsList[projIdx].id
-  //         }
-  //       }
-  //     ]
-  //   });
-
-  //   projectTasks.sort(
-  //     (a, b) =>
-  //       moment(a.dueDate, "DD/MM/YYYY") - moment(b.dueDate, "DD/MM/YYYY")
-  //   );
-
-  //   tasks.push({
-  //     projectID: projectsList[projIdx].id,
-  //     tasks: projectTasks ? projectTasks : []
-  //   });
-  // }
   let tasks = await getProjectsTasksBulk(
     projectsList.map((project) => project.id)
   );
+
 
   const indexMap = {};
   tasks.forEach((task, index) => {
@@ -176,6 +145,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     if (hasTasksA && hasTasksB) {
       // Both have tasks, compare based on the dueDate of the first task
       return tasks[indexA].tasks[0].dueDate - tasks[indexB].tasks[0].dueDate;
+      // return tasks[indexA].tasks[0].dueDate - tasks[indexB].tasks[0].dueDate;
     } else if (hasTasksA) {
       // Only project A has tasks, it should come first
       return -1;
@@ -326,7 +296,6 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   if (!details || !Object.keys(details).length)
     return next(new MissingParameter("Des paramètres manquants"));
   let phase;
-  console.log(details);
   if (details.phase || details.code) {
     const objectQuery = {
       // id:req.params.projectID
@@ -387,9 +356,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     details.state === TASK_STATE_DOING &&
     project.dueDate
   ) {
-    console.log(
-      "-------------------------------setting due date to non after trying to set project to doing state "
-    );
+
     details.dueDate = null;
     project.dueDate = null;
   }
@@ -737,7 +704,6 @@ export const getProjectById = catchAsync(async (req, res, next) => {
  */
 export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
   const { projectsHours, date } = req.body;
-  console.log(req.body);
   if (!projectsHours || !date)
     return next(new MissingParameter("les heurs des projets sont obligatoire"));
   const projectsKeys = Object.keys(projectsHours);
@@ -763,7 +729,6 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     const hours = Math.round(
       parseInt(projectsHours[projectsKeys[idx]].value) / 60
     );
-    console.log(hours);
     if (isNaN(hours) || hours < 0)
       return next(
         new AppError("le nombre des heurs doit être un chiffre positif ", 400)

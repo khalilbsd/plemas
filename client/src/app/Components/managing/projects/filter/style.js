@@ -7,6 +7,7 @@ export const filterStyles = createUseStyles({
     alignItems: "center",
     gap: 10
   },
+
   filter: {
     width: "100%",
     "& .MuiInputBase-root.MuiOutlinedInput-root": {
@@ -41,7 +42,7 @@ export const filterStyles = createUseStyles({
     fontWeight: "600 !important",
     position: "relative",
     padding: "0 10px !important",
-
+    // position: "relative",
     "& button": {
       background: "none",
       border: "none",
@@ -69,10 +70,12 @@ export const filterStyles = createUseStyles({
   },
   filterContainer: {
     position: "absolute",
-    bottom: -10,
+    color:'black',
     background: "var(--white)",
     borderRadius: 10,
-    zIndex:999
+    zIndex:999,
+    border:'2px solid var(--bright-orange)',
+    boxShadow:' 0px 13px 15px -3px rgba(0,0,0,0.1)',
   },
   activeFilterSkeleton:{
     // backgroundColor: "var(--dark-green) !important",
@@ -129,6 +132,12 @@ export const filterStyles = createUseStyles({
       borderRadius:'100%',
       '&:hover':{
         backgroundColor:'var(--white-hover)',
+      }
+    },
+    '&.standalone':{
+      '& .title':{
+        fontSize:14,
+        textTransform:'capitalize'
       }
     }
   },

@@ -16,7 +16,7 @@ import {
   CLIENT_ROLE,
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
-  SUPERUSER_ROLE
+  SUPERUSER_ROLE,
 } from "../../../constants/roles";
 import Loading from "../loading/Loading";
 import { addUserFormStyles } from "./style";
@@ -29,7 +29,7 @@ const style = {
   bgcolor: "background.paper",
   borderRadius: 5,
   boxShadow: 24,
-  p: 4
+  p: 4,
 };
 
 const AddUserForm = ({
@@ -38,7 +38,7 @@ const AddUserForm = ({
   handleSubmit,
   changeStateAccount,
   changeStateProfile,
-  loadingSubmit
+  loadingSubmit,
 }) => {
   const classes = addUserFormStyles();
 
@@ -52,8 +52,8 @@ const AddUserForm = ({
       slots={{ backdrop: Backdrop }}
       slotProps={{
         backdrop: {
-          timeout: 500
-        }
+          timeout: 500,
+        },
       }}
     >
       <Fade in={open}>
@@ -102,8 +102,8 @@ const AddUserForm = ({
                   label="Téléphone"
                   type="number"
                   inputProps={{
-                    min:0,
-                    max:99999999
+                    min: 0,
+                    max: 99999999,
                   }}
                   name="phone"
                   variant="outlined"
@@ -146,7 +146,14 @@ const AddUserForm = ({
                   type="submit"
                   disabled={loadingSubmit}
                 >
-                  {loadingSubmit ? <Loading color="white" /> : "Ajouter"}
+                  {loadingSubmit ? (
+                    <>
+                    <Loading color="white" className={classes.loadingSaveBtn} />
+                    <p className="text">Ajout</p>
+                    </>
+                  ) : (
+                    "Ajouter"
+                  )}
                 </button>
               </Grid>
               <Grid item xs={12} sm={12} md={6} lg={6}>

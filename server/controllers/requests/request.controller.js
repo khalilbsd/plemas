@@ -260,7 +260,8 @@ export const deleteFileFromRequest = catchAsync(async (req, res, next) => {
   await request.save();
   return res.status(200).json({
     status: "success",
-    message: "fichiers attaché au requete",
+    message: "fichier lié a la requete supprimé",
+
     files: urls
   });
 });

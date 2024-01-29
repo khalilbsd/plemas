@@ -1,74 +1,149 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import React from "react";
 import { ReactSVG } from "react-svg";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
-import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
 import { projectsStyles } from "../style";
 // import { projectTestList } from "./test/projectList.test";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
+import { useDispatch } from "react-redux";
 import { TableVirtuoso } from "react-virtuoso";
 import {
   TASK_STATE_BLOCKED,
   TASK_STATE_DOING,
-  TASK_STATE_TRANSLATION,
-  progress_bar_width_cell
+  TASK_STATE_TRANSLATION
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
-import { formattedDate } from "../../../../store/utils";
+import {
+  changeDailyFilter,
+  filterProjectsList,
+  popTaskStateFromFilter
+} from "../../../../store/reducers/manage.reducer";
 import faAdd from "../../../public/svgs/solid/plus.svg";
-import { CustomCancelIcon, CustomPlusIcon } from "../../icons";
-import { projectTaskDetails } from "../../projects/style";
+import ExportActions from "./ExportActions";
+import ProjectLine from "./ProjectLine";
 import ProjectListHeader from "./ProjectListHeader";
 import LinkProject from "./addProject/LinkProject";
-import { priorityColors } from "./addProject/PriorityField";
 import ActiveFilters from "./filter/ActiveFilters";
-import ExportActions from "./ExportActions";
+import useCheckActiveFilters from "../../../../hooks/activeFilters";
+import useCheckProjectFiltersOnly from "../../../../hooks/onlyProjectFilters";
 
-const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
+const ProjectList = ({ addForm, handleForm }) => {
   const classes = projectsStyles();
-  const tasksStyles = projectTaskDetails();
-
   const { isSuperUser, isManager } = useIsUserCanAccess();
-  const projects = useGetStateFromStore("manage", "projectsList");
+  const isFiltersActive = useCheckActiveFilters();
+  const isFiltersOnlyProjectFilters = useCheckProjectFiltersOnly();
+  // const [dailyFilter, setDailyFilter] = useState(true);
+  const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
+  // const projects = useGetStateFromStore("manage", "projectsList");
   const tasks = useGetStateFromStore("manage", "projectsTaskList");
   const tasksFiltered = useGetStateFromStore(
     "manage",
     "projectsTaskListFiltered"
   );
-  const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
-  const colors = useGetStateFromStore("userInfo", "avatarColors");
-  const filterTaskState = useGetStateFromStore("manage", "projectsTaskFilters");
-
-  const addProjectState = useGetStateFromStore("manage", "addProject");
-  const [projectToCollapse, setProjectToCollapse] = useState(undefined);
-
-  const navigate = useNavigate();
-
-  // const [emptyMessage, setEmptyMessage] = useState("");
-
   const dispatch = useDispatch();
-  const getPriorityColor = (id) => {
-    const priority = priorityColors.filter((color) => color.value === id)[0];
-    if (!priority) return { code: "var(--bright-orange)", value: -1 };
+  const filterTaskState = useGetStateFromStore("manage", "projectsTaskFilters");
+  const addProjectState = useGetStateFromStore("manage", "addProject");
 
-    return { code: priority.code, value: priority.value };
+  const disableDailyFilter = () => {
+    dispatch(changeDailyFilter(false));
+    dispatch(
+      filterProjectsList({
+        flag: true,
+        value: TASK_STATE_DOING,
+        attribute: "state",
+        popFilter: true
+      })
+    );
+    dispatch(
+      filterProjectsList({
+        flag: true,
+        value: TASK_STATE_BLOCKED,
+        attribute: "state",
+        popFilter: true
+      })
+    );
+    dispatch(popTaskStateFromFilter(TASK_STATE_DOING));
   };
   const projectList = () => {
-    if (addForm || addProjectState.isFiltering) {
-      return addProjectState.projectsListFiltered;
+    let listPastTodayDate = [];
+    let listBeforeTodayDate = [];
+    if (!dailyFilter) {
+      let tl = addProjectState.projectsListFiltered.filter((project) =>
+        !isFiltersActive
+          ? true
+          : isFiltersOnlyProjectFilters
+          ? true
+          : projectTasks(project.id).length
+      );
+      if (!isFiltersActive) {
+        return tl.sort((a, b) => {
+          return dayjs(b.createdAt) - dayjs(a.createdAt);
+        });
+      } else {
+        tl.forEach((project) => {
+          if (
+            dayjs(projectTasks(project.id)[0]?.dueDate)
+              .startOf("day")
+              .locale("en-gb") >=
+            dayjs(new Date()).startOf("day").locale("en-gb")
+          ) {
+            listPastTodayDate.push(project);
+          } else {
+            listBeforeTodayDate.push(project);
+          }
+        });
+        return listPastTodayDate.concat(listBeforeTodayDate);
+      }
+    } else {
+      let dailyList = addProjectState.projectsListFiltered
+        .filter((project) => projectTasks(project.id).length)
+        .sort((a, b) => {
+          return (
+            dayjs(projectTasks(a.id)[0].dueDate) -
+            dayjs(projectTasks(b.id)[0].dueDate)
+          );
+        });
+      // return
+      dailyList.forEach((project) => {
+        let pt = projectTasks(project.id);
+        if (
+          dayjs(pt[pt.length - 1].dueDate)
+            .startOf("day")
+            .locale("en-gb") >= dayjs(new Date()).startOf("day").locale("en-gb")
+        ) {
+          listPastTodayDate.push(project);
+        } else {
+          listBeforeTodayDate.push(project);
+        }
+      });
+
+      listPastTodayDate.sort((a, b) => {
+        let pta = projectTasks(a.id).filter(
+          (task) =>
+            dayjs(task.dueDate).startOf("day").locale("en-gb") >=
+            dayjs(new Date()).startOf("day").locale("en-gb")
+        );
+        let ptb = projectTasks(b.id).filter(
+          (task) =>
+            dayjs(task.dueDate).startOf("day").locale("en-gb") >=
+            dayjs(new Date()).startOf("day").locale("en-gb")
+        );
+
+        // Get the minimum due date in each project
+        let minDueDateA = pta.length > 0 ? dayjs(pta[0].dueDate) : Infinity;
+        let minDueDateB = ptb.length > 0 ? dayjs(ptb[0].dueDate) : Infinity;
+
+        // Compare the minimum due dates
+        return minDueDateA - minDueDateB;
+      });
+
+      return listPastTodayDate.concat(listBeforeTodayDate);
     }
-    return projects.filter((project) =>
-      [TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(project.state)
-    );
   };
 
   function projectTasks(projectID) {
@@ -78,356 +153,37 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
     );
     if (!projectTasksList) return [];
 
-    return projectTasksList[0]?.tasks.filter((task) => {
-      return filterTaskState.length
-        ? filterTaskState.includes(
-            TASK_STATE_TRANSLATION.filter((t) => t.label === task.state)[0]
-              ?.value
-          )
-        : true;
-    });
-  }
-
-  const isProjectCollapsed = (id) => {
-    if (projectToCollapse === id) return true;
-    return false;
-  };
-
-  function convertTwoWeeksDates() {
-    return twoWeeksDates?.map(({ date }) => {
-      return date.split(" ")[1];
-    });
-  }
-
-  const handleNavigation = (rowID) => {
-    navigate(`/projects/${rowID}`);
-  };
-
-  const handleClickProject = (rowID) => {
-    dispatch(setLinkedProject(rowID));
-    const elements = document.querySelectorAll(".row-data");
-    elements.forEach((element) => {
-      element.classList.remove("active");
-    });
-  };
-
-  const renderProjectTasks = (projectID) => {
-    const tasksNb = projectTasks(projectID)?.length;
-    if (!tasksNb)
-      return (
-        <p className={classes.emptyTasks}>
-          {" "}
-          il n'y a pas de tâches planifiées{" "}
-        </p>
-      );
-    const taskInfoElement = tasksNb ? (
-      projectTasks(projectID)?.map((task) => {
-        return (
-          <div key={task.id} className={classes.taskStates}>
-            <Tooltip key={task.id} title={task?.name}>
-              <span>{task?.name}</span>
-            </Tooltip>
-          </div>
-        );
+    return projectTasksList[0]?.tasks
+      .filter((task) => {
+        // if (dailyFilter) {
+        //   return task.state === TASK_STATE_DOING_ORG;
+        // }
+        return filterTaskState.length
+          ? filterTaskState.includes(
+              TASK_STATE_TRANSLATION.filter((t) => t.label === task.state)[0]
+                ?.value
+            )
+          : true;
+      }).sort((a,b)=>{
+        if (!dailyFilter) return true
+       let ta =dayjs(a.dueDate).startOf("day").locale("en-gb").diff(dayjs(new Date()).startOf("day"), 'days')
+       let tb =dayjs(b.dueDate).startOf("day").locale("en-gb").diff(dayjs(new Date()).startOf("day"), 'days')
+      //  let tb =dayjs(b.dueDate).startOf("day").diff(dayjs(new Date()).startOf("day"), 'days').locale("en-gb")
+      // console.log('and 'Math.abs(ta) - Math.abs(tb));
+       return Math.abs(ta) - Math.abs(tb)
       })
-    ) : (
-      <p className={classes.emptyTasks}> il n'y a pas de tâches planifiées </p>
-    );
 
-    if (tasksNb > 1 && isProjectCollapsed(projectID))
-      return <div className={classes.task}>{taskInfoElement}</div>;
-    if (taskInfoElement.length)
-      return <div className={classes.task}>{taskInfoElement?.shift()}</div>;
-  };
 
-  const renderTasksStates = (projectID) => {
-    let tasksNb = projectTasks(projectID)?.length;
-    if (!tasksNb) return null;
-    const taskStateElement = tasksNb ? (
-      projectTasks(projectID)?.map((task) => {
-        return (
-          <div key={task.id} className={classes.taskStates}>
-            <span className={`${tasksStyles.task} ${task.state} wb`}>
-              {
-                TASK_STATE_TRANSLATION.filter(
-                  (state) => state.label === task.state
-                )[0]?.value
-              }
-            </span>
-          </div>
-        );
-      })
-    ) : (
-      <span></span>
-    );
-
-    if (tasksNb > 1 && isProjectCollapsed(projectID))
-      return <div>{taskStateElement}</div>;
-
-    if (taskStateElement?.length) return <div>{taskStateElement?.shift()}</div>;
-  };
-
-  const renderTaskTimeLine = (projectID) => {
-    const convertedDates = convertTwoWeeksDates();
-
-    const taskElements = projectTasks(projectID)?.map((task) => {
-      // Perform calculations here
-      let { startDate, dueDate, doneDate } = task;
-
-      //converting dates
-      let start = formattedDate(startDate, true);
-      let due = formattedDate(dueDate, true);
-      let done = null;
-
-      if (doneDate) done = formattedDate(doneDate, true);
-
-      let startIdx = convertedDates.findIndex((date) => date === start);
-      let dueIdx = convertedDates.findIndex((date) => date === due);
-      let doneIdx = convertedDates.findIndex((date) => date === done);
-
-      let width = 0;
-      let widthD = 0;
-
-      let position = 0;
-
-      if (startIdx === -1 && dueIdx === -1) {
-        let startConverted = dayjs(start, "DD/MM/YYYY");
-        let dueConverted = dayjs(due, "DD/MM/YYYY");
-
-        let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
-
-        if (
-          startConverted < dayjs(new Date()) &&
-          dueConverted > dayjs(new Date())
-        ) {
-          width = twoWeeksDates.length * progress_bar_width_cell;
-          position = 0;
-
-          if (done) {
-            widthD =
-              doneIdx > -1
-                ? doneIdx
-                  ? progress_bar_width_cell * doneIdx
-                  : progress_bar_width_cell * 1
-                : doneConverted >
-                  dayjs(
-                    convertTwoWeeksDates[convertTwoWeeksDates.length - 1],
-                    "DD/MM/YYYY"
-                  )
-                ? width
-                : 0;
-          }
-        }
-      } else {
-        position = startIdx !== -1 ? startIdx * progress_bar_width_cell : 0;
-        let diff = startIdx > -1 ? startIdx : 0;
-        width =
-          dueIdx !== -1
-            ? dueIdx
-              ? (dueIdx - diff) * progress_bar_width_cell
-              : 1 * progress_bar_width_cell
-            : (convertedDates.length - startIdx) * progress_bar_width_cell;
-
-        if (done) {
-          let doneConverted = done ? dayjs(done, "DD/MM/YYYY") : null;
-
-          widthD =
-            doneIdx !== -1
-              ? doneIdx
-                ? (doneIdx - diff) * progress_bar_width_cell
-                : 1 * progress_bar_width_cell
-              : doneConverted >
-                dayjs(
-                  convertTwoWeeksDates[convertTwoWeeksDates.length - 1],
-                  "DD/MM/YYYY"
-                )
-              ? (convertedDates.length - startIdx) * progress_bar_width_cell
-              : 0;
-        }
-      }
-
-      return (
-        <div
-          data-date={task.dueDate}
-          key={task.id}
-          style={{ width: width, transform: `translateX(${position}px)` }}
-          className={classes.progressBarContainer}
-        >
-          <span className={classes.progressBar}>
-            <span className="date">
-              {dayjs(task.dueDate).locale("fr").format("dddd DD/MM/YYYY ")}
-            </span>
-          </span>
-          {doneDate ? (
-            <span
-              style={{ width: widthD }}
-              className={`${classes.progressBar} done-bar`}
-            >
-              {" "}
-            </span>
-          ) : null}
-        </div>
-      );
-    });
-    const tasksNb = projectTasks(projectID)?.length;
-
-    if (tasksNb > 1 && isProjectCollapsed(projectID))
-      return <div>{taskElements}</div>;
-
-    if (taskElements?.length) return <div>{taskElements?.shift()}</div>;
-  };
-
-  const renderSeeMoreTaskBtn = (projectID) => {
-    const renderActions = [];
-
-    const tasksNb = projectTasks(projectID)?.length;
-
-    if (tasksNb > 1 && !isProjectCollapsed(projectID)) {
-      renderActions.push(
-        <Tooltip key={`${projectID}-exp`} title="voir plus tache">
-          <button
-            onClick={() => setProjectToCollapse(projectID)}
-            className={classes.seeMoreBtn}
-          >
-            <CustomPlusIcon className={tasksStyles.icon} />
-          </button>
-        </Tooltip>
-      );
-    } else if (tasksNb > 1) {
-      renderActions.push(
-        <Tooltip key={`${projectID}-hid`} title="voir plus tache">
-          <button
-            onClick={() => setProjectToCollapse(undefined)}
-            className={classes.seeMoreBtn}
-          >
-            <CustomCancelIcon className={tasksStyles.icon} />
-          </button>
-        </Tooltip>
-      );
-    }
-
-    return renderActions;
-  };
+  }
 
   function rowContent(_index, row) {
     return (
-      <React.Fragment>
-        <TableCell
-          onClick={() =>
-            addProjectState.isFiltering && addForm
-              ? handleClickProject(row.id)
-              : handleNavigation(row.id)
-          }
-          key={_index}
-          className={classes.rowCell}
-          component="th"
-          scope="row"
-        >
-          <Tooltip key={_index} title={row?.projectCustomId}>
-            <p className={classes.projectName}>
-              <span
-                className="priority"
-                style={{
-                  backgroundColor: getPriorityColor(row.priority).code
-                }}
-              ></span>
-
-              {row?.projectCustomId}
-            </p>
-          </Tooltip>
-        </TableCell>
-        <TableCell
-          onClick={() =>
-            addProjectState.isFiltering && addForm
-              ? handleClickProject(row.id)
-              : handleNavigation(row.id)
-          }
-          key={_index + 1}
-          className={classes.rowCell}
-        >
-          <Tooltip title={row.manager.fullName} arrow>
-            {row.manager.image ? (
-              <div className={classes.managerContainer}>
-                <img
-                  className={classes.avatar}
-                  src={`${process.env.REACT_APP_SERVER_URL}${row.manager.image}`}
-                  alt={`manager ${row.manager.fullName} avatar`}
-                />
-              </div>
-            ) : (
-              <div className={classes.managerContainer}>
-                <span
-                  className={`${classes.avatar} ${
-                    colors[row.id % colors?.length]
-                  }`}
-                >
-                  {row.manager?.fullName[0]?.toUpperCase()}
-                  {row.manager?.fullName.split(" ")[1][0].toUpperCase()}
-                </span>
-              </div>
-            )}
-          </Tooltip>
-        </TableCell>
-        <TableCell
-          onClick={() =>
-            addProjectState.isFiltering && addForm
-              ? handleClickProject(row.id)
-              : handleNavigation(row.id)
-          }
-          key={_index + 2}
-          className={classes.rowCell}
-        >
-          <div className={classes.lots}>
-            {row.lots.map((content) => (
-              <p key={content} className={classes.lot} label={content}>
-                {content}
-              </p>
-            ))}
-          </div>
-        </TableCell>
-        <TableCell key={_index + 3} className={classes.rowCell}>
-          {row?.activePhase}
-        </TableCell>
-        <TableCell
-          onClick={() =>
-            addProjectState.isFiltering && addForm
-              ? handleClickProject(row.id)
-              : handleNavigation(row.id)
-          }
-          className={classes.rowCell}
-        >
-          {renderProjectTasks(row.id)}
-        </TableCell>
-        <TableCell
-          onClick={() =>
-            addProjectState.isFiltering && addForm
-              ? handleClickProject(row.id)
-              : handleNavigation(row.id)
-          }
-          key={_index + 4}
-          className={classes.rowCell}
-        >
-          {renderTasksStates(row.id)}
-        </TableCell>
-        <TableCell
-          onClick={() =>
-            addProjectState.isFiltering && addForm
-              ? handleClickProject(row.id)
-              : handleNavigation(row.id)
-          }
-          key={_index + 5}
-          className={classes.rowCell}
-        >
-          {renderTaskTimeLine(row.id)}
-        </TableCell>
-        <TableCell
-          sx={{ width: 60 }}
-          key={_index + 6}
-          className={classes.rowCell}
-        >
-          {renderSeeMoreTaskBtn(row.id)}
-        </TableCell>
-      </React.Fragment>
+      <ProjectLine
+        addForm={addForm}
+        row={row}
+        index={_index}
+        projectTasks={projectTasks}
+      />
     );
   }
 
@@ -448,7 +204,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       <TableRow
         key={_item.id}
         className={`row-data ${
-          _item?.requestsTreated === false ? "notTreatedRequest" : ""
+          _item?.requestsTreated === 'non traité' ? "notTreatedRequest" : ""
         }`}
         {...props}
       />
@@ -486,7 +242,10 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
             <ExportActions />
           </div>
         )}
-        <ActiveFilters />
+        <ActiveFilters
+          dailyFilter={dailyFilter}
+          disableDailyFilter={disableDailyFilter}
+        />
       </div>
       {/* // hereee */}
 
@@ -494,7 +253,9 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
         className={classes.table}
         data={projectList()}
         components={VirtuosoTableComponents}
-        fixedHeaderContent={ProjectListHeader}
+        fixedHeaderContent={() => (
+          <ProjectListHeader disableDailyFilter={disableDailyFilter} />
+        )}
         itemContent={rowContent}
         size="small"
       />

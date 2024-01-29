@@ -6,7 +6,7 @@ const initialState = {
   edit: false,
   twoWeeksList: [],
   twoWeeksListFiltered: [],
-  projectLog:[],
+  projectLog: []
 };
 
 const projectSlice = createSlice({
@@ -34,18 +34,28 @@ const projectSlice = createSlice({
     updateRequestList: (state, action) => {
       state.projectRequest.push(action.payload);
     },
-    removeRequestFromList:(state,action)=>{
-      state.projectRequest = state.projectRequest.filter(request => request.id !== action.payload)
+    removeRequestFromList: (state, action) => {
+      state.projectRequest = state.projectRequest.filter(
+        (request) => request.id !== action.payload
+      );
     },
-    updateProjectState:(state,action)=>{
-      state.projectDetails.state = action.payload
+    updateProjectState: (state, action) => {
+      state.projectDetails.state = action.payload;
     },
-    setProjectLog:(state,action)=>{
-      state.projectLog = action.payload
+    setProjectLog: (state, action) => {
+      state.projectLog = action.payload;
     },
-    updateFileRequestList:(state,action)=>{
-      const requestIdx = state.projectRequest.map(request=>request.id).indexOf(parseInt(action.payload.requestID))
-      state.projectRequest[requestIdx].file  = action.payload.urls
+    updateFileRequestList: (state, action) => {
+      const requestIdx = state.projectRequest
+        .map((request) => request.id)
+        .indexOf(parseInt(action.payload.requestID));
+      if (action.payload.upload) {
+        state.projectRequest[requestIdx].file = action.payload.urls;
+      } else {
+        state.projectRequest[requestIdx].file = state.projectRequest[
+          requestIdx
+        ].file.filter((file) => file !== action.payload.file);
+      }
     }
   }
 });

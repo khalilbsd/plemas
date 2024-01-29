@@ -242,3 +242,60 @@
 {"projectID":18,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"11/12/2023","hours":1}
 {"projectID":19,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"11/12/2023","hours":0}
 {"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"11/12/2023","hours":3}
+{"projectID":1253,"taskName":"reprise escalier béton et vérif escalier bois","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"08/01/2024","oldValues":"","newValues":""}
+{"projectID":1105,"taskName":"note de calcul","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"10/01/2024","oldState":"abandoned","newState":"doing"}
+{"projectID":3407,"taskName":null,"requestName":"fdffdg","email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"23/01/2024"}
+{"projectID":3603,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"23/01/2024"}
+{"projectID":3603,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"23/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"23/01/2024"}
+{"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"23/01/2024","intervenantsNames":"k"}
+{"projectID":3604,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"23/01/2024"}
+{"projectID":3604,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"23/01/2024","managerEmail":"khalil.bensaid@tunsa.org"}
+{"projectID":3574,"taskName":"Ferraillage fondation","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3605,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3605,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalil.bensaid@tunsa.org"}
+{"projectID":3384,"taskName":"Reprise coffrage","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3475,"taskName":"maj demande bls","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3603,"taskName":"fdsfdf","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3598,"taskName":"Ferraillage","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3480,"taskName":"Coffrage EXE","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"24/01/2024","oldValues":"","newValues":""}
+{"projectID":3606,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3606,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":3607,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3607,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"24/01/2024"}
+{"projectID":3608,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"24/01/2024","managerEmail":"khalilbensaid98@itsolution-tn.tn"}
+{"projectID":25,"taskName":"Détail Qt charpente","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"26/01/2024","oldValues":"","newValues":""}
+{"projectID":16,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":2}
+{"projectID":18,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":1}
+{"projectID":20,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":2}
+{"projectID":23,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":1}
+{"projectID":27,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"26/01/2024","hours":2}
+{"projectID":10,"taskName":"Coffrage ferraillage et note de calcul","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"26/01/2024","oldValues":"","newValues":""}
+{"projectID":2,"taskName":null,"requestName":"merci de le faire","email":"houssem.badr@gmail.com","action":"REQUEST_CREATION","code":102,"action_date":"26/01/2024"}
+{"projectID":7,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_PROJECT","code":104,"action_date":"26/01/2024","intervenantsNames":"hb@concerto-pr.com"}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_PROJECT","code":104,"action_date":"26/01/2024","intervenantsNames":"hb@concerto-pr.com"}
+{"projectID":11,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_PROJECT","code":104,"action_date":"26/01/2024","intervenantsNames":"hb@concerto-pr.com"}
+{"projectID":7,"taskName":"Etude docs démarrage EXE","requestName":null,"email":"hb@concerto-pr.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"26/01/2024"}
+{"projectID":29,"taskName":"Reprise IFC puis coffrage","requestName":null,"email":"hb@concerto-pr.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"26/01/2024"}
+{"projectID":7,"taskName":"Etude docs démarrage EXE","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"26/01/2024","date":"26/01/2024","hours":0}
+{"projectID":29,"taskName":"Reprise IFC puis coffrage","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"26/01/2024","date":"26/01/2024","hours":8}
+{"projectID":29,"taskName":"Etude docs et reprise DDC voir note","requestName":null,"email":"hb@concerto-pr.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"29/01/2024"}
+{"projectID":29,"taskName":"Ferraillage fondation","requestName":null,"email":"hb@concerto-pr.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"29/01/2024"}
+{"projectID":7,"taskName":"Etude docs démarrage EXE","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":1}
+{"projectID":29,"taskName":"Etude docs et reprise DDC voir note","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":1}
+{"projectID":29,"taskName":"Reprise IFC puis coffrage","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":1}
+{"projectID":29,"taskName":"Ferraillage fondation","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":4}
+{"projectID":7,"taskName":"Etude docs démarrage EXE","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":-1}
+{"projectID":29,"taskName":"Etude docs et reprise DDC voir note","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":1}
+{"projectID":29,"taskName":"Reprise IFC puis coffrage","requestName":null,"email":"hb@concerto-pr.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/01/2024","date":"29/01/2024","hours":4}
+{"projectID":21,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":2}
+{"projectID":22,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":2}
+{"projectID":23,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":1}
+{"projectID":24,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":4}
+{"projectID":25,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":0}
+{"projectID":26,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":0}
+{"projectID":27,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":0}
+{"projectID":28,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":0}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":0}
+{"projectID":30,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/01/2024","hours":0}
