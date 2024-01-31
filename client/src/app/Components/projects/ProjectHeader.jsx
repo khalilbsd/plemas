@@ -12,7 +12,7 @@ import {
 } from "../../../store/api/projects.api";
 import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
 import { setProjectList } from "../../../store/reducers/manage.reducer";
-import { setProject } from "../../../store/reducers/project.reducer";
+import { setProject, setProjectRequests } from "../../../store/reducers/project.reducer";
 import { setProjectTask } from "../../../store/reducers/task.reducer";
 import faChevronDown from "../../public/svgs/light/chevron-down.svg";
 import faSearch from "../../public/svgs/light/magnifying-glass.svg";
@@ -20,6 +20,8 @@ import faCancel from "../../public/svgs/light/xmark.svg";
 import { notify } from "../notification/notification";
 import ProjectInfo from "./ProjectInfo";
 import { projectDetails } from "./style";
+import {useNavigate} from 'react-router-dom'
+import { useGetProjectRequestMutation } from "../../../store/api/requests.api";
 const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
@@ -31,7 +33,10 @@ const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
   const [getProjectList] = useGetProjectListMutation();
   const [getProjectByID] = useGetProjectByIDMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
+  const [getProjectRequest] =
+  useGetProjectRequestMutation();
 
+  const navigate = useNavigate()
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -73,7 +78,7 @@ const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
         const res = await getProjectTasks(value.id).unwrap();
         dispatch(setProjectTask(res?.intervenants));
       } catch (error) {
-        console.log(error);
+
         notify(NOTIFY_ERROR, error?.data?.message);
       }
     }
@@ -83,13 +88,24 @@ const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
         const data = await getProjectByID(value.id).unwrap();
         dispatch(setProject(data?.project));
       } catch (error) {
-        console.log(error);
+
+        notify(NOTIFY_ERROR, error?.data?.message);
+      }
+    }
+    async function loadRequests() {
+
+      try {
+        const res = await getProjectRequest(value.id).unwrap();
+        dispatch(setProjectRequests(res?.requests));
+      } catch (error) {
         notify(NOTIFY_ERROR, error?.data?.message);
       }
     }
 
     loadProjects();
     loadProjectTasks();
+    loadRequests();
+
   };
 
   const getSearchProjectList = () => {

@@ -89,30 +89,30 @@ const taskSlice = createSlice({
 
       const hours = Math.round((percent * DAILY_HOURS_VALUE) / 100);
 
-      // sum of hours in the daily
-      const tasksHoursSum = Object.values(state.dailyLogDevisions.tasks).reduce(
-        (accumulator, currentValue) => accumulator + currentValue.value,
-        0
-      );
-      const projectHoursSum = Object.values(
-        state.dailyLogDevisions.projects
-      ).reduce(
-        (accumulator, currentValue) => accumulator + currentValue.value,
-        0
-      );
-      const hoursSum = tasksHoursSum + projectHoursSum;
+      // // sum of hours in the daily
+      // const tasksHoursSum = Object.values(state.dailyLogDevisions.tasks).reduce(
+      //   (accumulator, currentValue) => accumulator + currentValue.value,
+      //   0
+      // );
+      // const projectHoursSum = Object.values(
+      //   state.dailyLogDevisions.projects
+      // ).reduce(
+      //   (accumulator, currentValue) => accumulator + currentValue.value,
+      //   0
+      // );
+      // const hoursSum = tasksHoursSum + projectHoursSum;
 
-      // difference between old or and new value
+      // // difference between old or and new value
 
-      const diff = hours - state.dailyLogDevisions[type][id].value;
+      // const diff = hours - state.dailyLogDevisions[type][id].value;
 
-      // if (
-      // hours > state.dailyLogDevisions[type][id].value &&
-      // hoursSum + diff > DAILY_HOURS_VALUE
-      // ) {
-      // // Block the process if adding the new value exceeds the limit
-      // return;
-      // }
+      // // if (
+      // // hours > state.dailyLogDevisions[type][id].value &&
+      // // hoursSum + diff > DAILY_HOURS_VALUE
+      // // ) {
+      // // // Block the process if adding the new value exceeds the limit
+      // // return;
+      // // }
 
       const taskKeys = Object.keys(state.dailyLogDevisions.tasks).filter(
         (key) => {
@@ -144,13 +144,13 @@ const taskSlice = createSlice({
           tasksTotalChangedValues += state.dailyLogDevisions.tasks[key].value;
         }
       });
-      // let rest = 0
-      // let rest = DAILY_HOURS_VALUE - hours;
+
       let rest =
         DAILY_HOURS_VALUE -
         (hours + projectsTotalChangedValues + tasksTotalChangedValues);
       const nbOfEntries = projectKeys.length + taskKeys.length;
       let negativeRest = 0;
+
       if (rest < 0) {
         let nbOfChangedEntriesProjects = 0;
         let nbOfChangedEntriesTasks = 0;
@@ -170,14 +170,15 @@ const taskSlice = createSlice({
 
       taskKeys.forEach((key) => {
         if (!state.dailyLogDevisions.tasks[key].changed) {
-          console.log("not changed rest task ",rest);
+
           state.dailyLogDevisions.tasks[key].value =
             rest > 0 ? Math.round(rest / nbOfEntries) : 0;
         } else if (rest < 0) {
           if ((state.dailyLogDevisions.tasks[key]?.value + negativeRest) > 0) {
             state.dailyLogDevisions.tasks[key].value += negativeRest;
 
-          }else{
+          }
+          else{
             state.dailyLogDevisions.tasks[key].value = 0
           }
         }
@@ -185,11 +186,11 @@ const taskSlice = createSlice({
 
       projectKeys.forEach((key) => {
         if (!state.dailyLogDevisions.projects[key].changed) {
-          console.log("not changed rest project",rest);
+
           state.dailyLogDevisions.projects[key].value =
             rest > 0 ? Math.round(rest / nbOfEntries) : 0;
         } else if (rest < 0) {
-          if ((state.dailyLogDevisions.tasks[key]?.value + negativeRest) > 0) {
+          if ((state.dailyLogDevisions.projects[key]?.value + negativeRest) > 0) {
             state.dailyLogDevisions.projects[key].value += negativeRest;
 
           }else{
