@@ -716,7 +716,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   // projects for project manager :  (only the projects that at least have one single task in progress)
   if (req.user.isSuperUser || req.user.role === PROJECT_MANAGER_ROLE) {
 
-    let obj = {};
+    let obj = {"state":TASK_STATE_DOING};
     if (req.user.role === PROJECT_MANAGER_ROLE) {
       obj.manager = req.user.id;
     }
