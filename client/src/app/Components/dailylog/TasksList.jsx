@@ -37,7 +37,7 @@ const TasksList = ({
   const hourDivision = useGetStateFromStore("task", "dailyLogDevisions");
   const managedProjects = useGetStateFromStore("task", "dailyProjectManager");
 
-  const [assignHoursInTask] = useAssignHoursInTaskMutation();
+  const [assignHoursInTask,{isLoading:savingHours}] = useAssignHoursInTaskMutation();
   const [assignManagerHoursBulk] = useAssignManagerHoursBulkMutation();
   const dispatch = useDispatch();
 
@@ -80,7 +80,7 @@ const TasksList = ({
   return (
     <div className={`${classes.card} collapsed`}>
       <div className={`${classesDetails.actions} top`}>
-        <button onClick={handleSaveHours}>
+        <button onClick={handleSaveHours} disabled={savingHours}>
           <ReactSVG src={faSave} />
           <span className="text">Sauvegarder</span>
         </button>
