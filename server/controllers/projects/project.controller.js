@@ -119,11 +119,9 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
 
   const dates = calculateDates(3);
 
-
   let tasks = await getProjectsTasksBulk(
     projectsList.map((project) => project.id)
   );
-
 
   const indexMap = {};
   tasks.forEach((task, index) => {
@@ -356,7 +354,6 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
     details.state === TASK_STATE_DOING &&
     project.dueDate
   ) {
-
     details.dueDate = null;
     project.dueDate = null;
   }
@@ -738,10 +735,10 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     const managedHours = await InterventionHour.findOne({
       where: { projectID: project.id, date: moment(date) }
     });
-
     if (managedHours) {
-      if (hours === managedHours.nbHours) continue;
-      managedHours.nbHours = hours;
+      if (hours === managedHours.hours) continue;
+      managedHours.hours = hours;
+      await managedHours.save();
     } else {
       await InterventionHour.create({
         hours: hours,
@@ -750,7 +747,11 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
       });
     }
 
-    project.managerHours += hours;
+    project.managerHours =
+      project.managerHours > hours
+        ? project.managerHours - hours
+        : project.managerHours + hours;
+
     await project.save();
     await takeNote(
       ACTION_NAME_ASSIGN_PROJECT_MANAGER_HOURS,

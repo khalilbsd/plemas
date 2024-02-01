@@ -37,6 +37,7 @@ const ProjectDetails = () => {
 
 
     async function loadProject() {
+
       try {
         const data = await getProjectByID(projectID).unwrap();
         dispatch(setProject(data?.project));
@@ -58,7 +59,7 @@ const ProjectDetails = () => {
     }, 500);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [projectID]);
 
   const handleOpenTaskAdd = () => {
     setOpenAddTask(true);

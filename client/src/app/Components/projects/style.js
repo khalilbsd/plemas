@@ -366,6 +366,9 @@ export const projectDetails = createUseStyles({
       border: "none",
       "&.cancel": {
         backgroundColor: "var(--toastify-color-error)"
+      },
+      '&[disabled]':{
+        opacity:0.7
       }
     },
     "&.fw button": {

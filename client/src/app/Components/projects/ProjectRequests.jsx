@@ -319,6 +319,7 @@ const ProjectRequests = () => {
 
   useEffect(() => {
     async function loadRequests() {
+      console.log(projectID);
       try {
         const res = await getProjectRequest(projectID).unwrap();
         dispatch(setProjectRequests(res?.requests));
@@ -327,7 +328,7 @@ const ProjectRequests = () => {
       }
     }
     loadRequests();
-  }, [dispatch, projectID, getProjectRequest]);
+  }, [projectID]);
 
   const openAddRequest = () => {
     setAddRequest(true);
