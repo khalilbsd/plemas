@@ -155,9 +155,7 @@ const ProjectList = ({ addForm, handleForm }) => {
 
     return projectTasksList[0]?.tasks
       .filter((task) => {
-        // if (dailyFilter) {
-        //   return task.state === TASK_STATE_DOING_ORG;
-        // }
+
         return filterTaskState.length
           ? filterTaskState.includes(
               TASK_STATE_TRANSLATION.filter((t) => t.label === task.state)[0]
@@ -168,8 +166,7 @@ const ProjectList = ({ addForm, handleForm }) => {
         if (!dailyFilter) return true
        let ta =dayjs(a.dueDate).startOf("day").locale("en-gb").diff(dayjs(new Date()).startOf("day"), 'days')
        let tb =dayjs(b.dueDate).startOf("day").locale("en-gb").diff(dayjs(new Date()).startOf("day"), 'days')
-      //  let tb =dayjs(b.dueDate).startOf("day").diff(dayjs(new Date()).startOf("day"), 'days').locale("en-gb")
-      // console.log('and 'Math.abs(ta) - Math.abs(tb));
+
        return Math.abs(ta) - Math.abs(tb)
       })
 

@@ -1,7 +1,7 @@
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
 import {
@@ -36,8 +36,8 @@ const TasksList = ({
   const classesDetails = projectDetails();
   const hourDivision = useGetStateFromStore("task", "dailyLogDevisions");
   const managedProjects = useGetStateFromStore("task", "dailyProjectManager");
-
-  const [assignHoursInTask,{isLoading:savingHours}] = useAssignHoursInTaskMutation();
+  const [savingHours, setSavingHours] = useState(false)
+  const [assignHoursInTask,] = useAssignHoursInTaskMutation();
   const [assignManagerHoursBulk] = useAssignManagerHoursBulkMutation();
   const dispatch = useDispatch();
 
@@ -53,6 +53,7 @@ const TasksList = ({
   };
 
   const handleSaveHours = async () => {
+    setSavingHours(true)
     try {
       await assignHoursInTask({
         date: historyDate,
@@ -65,8 +66,12 @@ const TasksList = ({
       }).unwrap();
 
       notify(NOTIFY_SUCCESS, "mise a jour des heurs a terminé");
+      setTimeout(() => {
+        setSavingHours(false)
+      }, 1000);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
+      setSavingHours(false)
     }
   };
 
