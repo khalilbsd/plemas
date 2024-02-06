@@ -28,14 +28,12 @@ import {
 } from "../controllers/users/lib.js";
 import { config } from "../environment.config.js";
 
-import { readFile } from 'fs/promises';
+import { readFile } from "fs/promises";
 
-var db =[]
-var userDb =[]
-
+var db = [];
+var userDb = [];
 
 function getTableByName(tableName) {
-
   return db.filter(
     (table) => table.name.toLowerCase() === tableName && table.type === "table"
   )[0];
@@ -75,23 +73,37 @@ function determineIfCodeCustomized(code, customID) {
   return false;
 }
 
-async function runLotMigration(lotList, createdProjectId, verbose) {
+async function runLotMigration(createdProjectsList, verbose) {
   if (verbose) {
-    console.info("Project created now creating the projectLots");
+    console.info("Projects created now creating the projectLots list");
   }
   try {
-    let lots = lotList.split(";");
+    const projectsTable = getTableByName("projet");
+    let listToBulk = [];
+    for (const idx in projectsTable.data) {
+      let project = projectsTable.data[idx];
+      if (project.lots) {
+        let lots = project.lots.split(";");
+        let createdProject = createdProjectsList.filter(
+          (p) =>
+            p.customId === project.designation.replace("-", "_") &&
+            p.code === extractProjectCode(project.code)
+        )[0];
 
-    let lotData = {};
-    lots.forEach(async (lot) => {
-      lotData = await Lot.findOne({
-        where: { name: lot }
-      });
-      await ProjectLots.create({
-        projectID: createdProjectId,
-        lotID: lotData?.id
-      });
-    });
+        for (const lIdx in lots) {
+          let lotData = await Lot.findOne({
+            where: { name: lots[lIdx] }
+          });
+          listToBulk.push({
+            projectID: createdProject.id,
+            lotID: lotData?.id
+          });
+        }
+      }
+    }
+
+    await ProjectLots.bulkCreate(listToBulk);
+    // console.log("lots list to created",listToBulk);
   } catch (error) {
     console.error(`migration lots failed: ${error}`);
   }
@@ -111,17 +123,29 @@ function determineTaskState(status) {
       return TASK_STATE_ABANDONED;
   }
 }
-async function runTaskMigration(createdProjectId, originalProjectId, verbose) {
+async function runTaskMigration(createdProjectList, verbose) {
   try {
     let taskTable = getTableByName("tacheprojet").data;
+    let projectTable = getTableByName("projet").data;
     //gather all the tasks of that project
-    let projectTasks = taskTable.filter(
-      (task) => task.projet === originalProjectId
-    );
-    let task = {};
-    for (const idx in projectTasks) {
-      let taskEntry = projectTasks[idx];
-      task = {
+    let tasksBulk=[]
+
+
+    for (const idx in createdProjectList) {
+      const createdProject = createdProjectList[idx];
+      const originalProjectId = projectTable.filter(
+        (p) =>
+          p.designation.replace("-", "_") === createdProject.customId &&
+          extractProjectCode(p.code) === createdProject.code
+      )[0]?.Oid;
+
+      let projectTasks = taskTable.filter(
+        (task) => task.projet === originalProjectId
+      );
+
+      for (const tIdx in projectTasks){
+      let taskEntry = projectTasks[tIdx];
+      let task = {
         name: taskEntry.libelle,
         startDate: resetTime(taskEntry.datesDebut),
         dueDate: resetTime(taskEntry.datesEcheance),
@@ -135,25 +159,28 @@ async function runTaskMigration(createdProjectId, originalProjectId, verbose) {
             : null,
         isVerified: parseInt(taskEntry.etatTache) === 2 ? true : false,
         totalHours: 0,
-        state: determineTaskState(taskEntry.etatTache)
-      };
-      if (verbose) {
-        console.info("creating task", task.name);
-      }
-      const newTask = await Task.create({ ...task });
-      if (verbose) {
-        console.info(
-          `creating link between task ${newTask.id} and the project ${createdProjectId}`
-        );
-      }
-
-      await Intervenant.create({
-        projectID: createdProjectId,
-        taskID: newTask.id,
+        state: determineTaskState(taskEntry.etatTache),
+        meta:JSON.stringify({
+          projectID: createdProject.id,
+        taskID: taskEntry.Oid,
         intervenantID: await searchForUserId(taskEntry.utilisateur, null)
-      });
+        })
+      };
+      tasksBulk.push(task);
+
     }
 
+  }
+  let intervenantBulk =[]
+  const createdTasks = await Task.bulkCreate(tasksBulk)
+  for (const ctIdx in createdTasks){
+    let task = createdTasks[ctIdx]
+    let intervenant = JSON.parse(task.meta)
+    intervenant.taskID =  task.id
+    intervenantBulk.push(intervenant)
+
+  }
+    await Intervenant.bulkCreate(intervenantBulk)
     return;
   } catch (error) {
     console.error(`migration task failed: ${error}`);
@@ -167,7 +194,6 @@ async function searchForUserId(userUUID, defaultID) {
     // finding the user with uuid
     const user = userTable.filter((entry) => entry.Oid === userUUID)[0];
     if (!user?.email) return defaultID;
-
 
     const searched = await getUserByEmail(user?.email);
     if (!searched) return defaultID;
@@ -185,11 +211,15 @@ async function runProjectsMigration(verbose) {
     }
 
     const projectsTable = getTableByName("projet");
-    console.log(config.admin_email)
+
     const admin = await User.findOne({ where: { email: config.admin_email } }); //
     let instance = {};
     let manager = null;
-    projectsTable?.data.forEach(async (project) => {
+    let projectsList = [];
+    let prevPhaseList = [];
+    for (const idx in projectsTable?.data) {
+      let project = projectsTable?.data[idx];
+      console.log(admin);
       manager = await searchForUserId(project.utilisateur, admin.id);
       instance = {
         code: extractProjectCode(project.code),
@@ -203,39 +233,40 @@ async function runProjectsMigration(verbose) {
         managerHours: 0,
         state: determineProjectState(project.etatProjet),
         phaseID: parseInt(project.natureProjet) + 1,
+
         isCodeCustomized: determineIfCodeCustomized(
           project.code,
           project.designation
         )
       };
+      // let projectInstance = Project.build({...instance})
 
-      const createdProject = await Project.create({ ...instance });
       if (project.phaseP) {
         const prevPhaseInfo = projectsTable?.data.filter(
           (p) => p.Oid === project.phaseP
         )[0];
-        const prevPhase = await Project.findOne({
-          where: {
-            code: extractProjectCode(prevPhaseInfo.code),
-            customId: prevPhaseInfo.designation.replace("-", "_")
-          }
-        });
-        createdProject.prevPhase = prevPhase? prevPhase.id:null;
-        createdProject.save();
+        let obj = {
+          code: extractProjectCode(prevPhaseInfo.code),
+          customId: prevPhaseInfo.designation.replace("-", "_")
+        };
+        instance.prevPhaseTmp = JSON.stringify(obj);
+        prevPhaseList.push({ project: project.Oid, phaseP: project.phaseP });
       }
+      projectsList.push({ ...instance });
+    }
+    // BULK creation
+    const createdList = await Project.bulkCreate(projectsList);
+    // console.log(createdList,"createdList");
 
-      // LOTS MIGRATION
-      if (project.lots) {
-        runLotMigration(project.lots, createdProject.id, verbose);
-      }
-      //running TASK migrations along side the intervenant migration
-      runTaskMigration(createdProject.id, project.Oid, verbose);
-    });
+    //Previous Phase CODE will be handled as a hook in the model instance
+    runLotMigration(createdList, verbose);
+    //running TASK migrations along side the intervenant migration
 
-      console.info("Migration finished successfully");
+    runTaskMigration(createdList, verbose);
 
+    console.info("Migration finished successfully");
   } catch (error) {
-    console.error(`migration projects failed: ${error}`);
+    console.log(`migration projects failed: ${error}`);
   }
 }
 
@@ -295,8 +326,6 @@ async function runUserMMigration(verbose) {
   try {
     let entry = {};
 
-
-
     for (const idx in userDb) {
       entry = userDb[idx];
       const user = await getUserByEmail(entry.email);
@@ -331,21 +360,21 @@ async function runUserMMigration(verbose) {
 
       creatingUserProfile(createdUser, entry, verbose);
 
-      console.log("User migrated successfully")
+      console.log("User migrated successfully");
     }
   } catch (error) {
     console.error(`user migration failed: ${error}`);
   }
 }
 
-
-
 async function importJSON(filePath) {
   try {
-    const jsonData = await readFile(filePath, 'utf-8');
+    const jsonData = await readFile(filePath, "utf-8");
     return JSON.parse(jsonData);
   } catch (error) {
-    console.error(`Error importing JSON file from ${filePath}: ${error.message}`);
+    console.error(
+      `Error importing JSON file from ${filePath}: ${error.message}`
+    );
     throw error;
   }
 }
@@ -359,17 +388,19 @@ const helpOptionIndex = process.argv.indexOf("--help");
 
 // console.log(switcher)
 
-if (helpOptionIndex !== -1){
-  console.log("welcome to the migration script")
-  console.log("Usage: npm run migrate-data-v2 [db|users] file path -- [--verbose]");
-}else{
+if (helpOptionIndex !== -1) {
+  console.log("welcome to the migration script");
+  console.log(
+    "Usage: npm run migrate-data-v2 [db|users] file path -- [--verbose]"
+  );
+} else {
   switch (switcher) {
     case "db":
-      if (filePath && filePath !== '--') {
+      if (filePath && filePath !== "--") {
         try {
-          const data = await importJSON(filePath)
+          const data = await importJSON(filePath);
           //setting the database to db variable for general access
-          db = data
+          db = data;
           console.log(`Running projects migration `);
           runProjectsMigration(verboseOptionIndex !== -1 ? true : false);
         } catch (error) {
@@ -381,14 +412,13 @@ if (helpOptionIndex !== -1){
       break;
     case "users":
       try {
-        const data = await importJSON(filePath)
-          //setting the database to db variable for general access
-          userDb = data
-          console.log(`Running users migration`);
-          runUserMMigration(verboseOptionIndex !== -1 ? true : false);
+        const data = await importJSON(filePath);
+        //setting the database to db variable for general access
+        userDb = data;
+        console.log(`Running users migration`);
+        runUserMMigration(verboseOptionIndex !== -1 ? true : false);
       } catch (error) {
         console.error(error);
-
       }
 
       break;
@@ -396,9 +426,3 @@ if (helpOptionIndex !== -1){
       console.error("invalid action ");
   }
 }
-
-
-
-
-
-

@@ -59,6 +59,10 @@ const Project = database.define(
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: TASK_STATE_DOING
+    },
+    prevPhaseTmp: {
+      type: DataTypes.STRING,
+      allowNull: false
     }
   },
   {
@@ -67,6 +71,21 @@ const Project = database.define(
       beforeUpdate: (instance, options) => {
         // Capture the old values before the update
         instance.oldValues = { ...instance._previousDataValues };
+      },
+      afterBulkCreate: async (instances, options) => {
+        const projects = instances.filter((project) => project.prevPhaseTmp);
+        for (const idx in projects) {
+          let project = projects[idx];
+          let phase = JSON.parse(project.prevPhaseTmp);
+          const prevPhase = await Project.findOne({
+            where: {
+              code: phase.code,
+              customId: phase.customId
+            }
+          });
+          project.prevPhase = prevPhase? prevPhase.id:null;
+          project.save();
+        }
       }
     }
   }
