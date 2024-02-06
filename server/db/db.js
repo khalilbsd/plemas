@@ -21,8 +21,8 @@ const sequelize = new Sequelize(
     logging: (sql, timing) => {
       // You can use your custom logger here
 
-      logger.info(`SQL Query: ${sql}`);
-      logger.info(`Execution Time: ${Number(timing)}ms`);
+      // logger.info(`SQL Query: ${sql}`);
+      // logger.info(`Execution Time: ${Number(timing)}ms`);
     }
   }
 );

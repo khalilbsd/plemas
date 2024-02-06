@@ -11,7 +11,9 @@ import {
   UserProfile
 } from "../db/relations.js";
 // prettier-ignore
-import userDb from "./users.db.json"  with { type: "json" };
+// import db from "./i2s_midgard.json"  with { type: "json" };
+// prettier-ignore
+// import userDb from "./users.db.json"  with { type: "json" };
 import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
@@ -28,14 +30,12 @@ import {
 } from "../controllers/users/lib.js";
 import { config } from "../environment.config.js";
 
-import { readFile } from 'fs/promises';
 
-var db =[]
+let db ={}
 
 
 
 function getTableByName(tableName) {
-
   return db.filter(
     (table) => table.name.toLowerCase() === tableName && table.type === "table"
   )[0];
@@ -98,7 +98,7 @@ async function runLotMigration(lotList, createdProjectId, verbose) {
 }
 
 function determineTaskState(status) {
-  switch (parseInt(status)) {
+  switch (status) {
     case 1:
       return TASK_STATE_DOING;
     case 2:
@@ -166,14 +166,14 @@ async function searchForUserId(userUUID, defaultID) {
     const userTable = getTableByName("utilisateur")?.data;
     // finding the user with uuid
     const user = userTable.filter((entry) => entry.Oid === userUUID)[0];
-    if (!user?.email) return defaultID;
+    if (!user) return defaultID;
     //searching for the user in the provided file
-    // const userEmail = userDb.filter((entry) => {
-    //   return entry.email === user.email;
-    // })[0];
-    // if (!userEmail) return defaultID;
+    const userEmail = userDb.filter((entry) => {
+      return entry.name.toLowerCase() === user?.nom?.toLowerCase();
+    })[0];
+    if (!userEmail) return defaultID;
 
-    const searched = await getUserByEmail(user?.email);
+    const searched = await getUserByEmail(userEmail?.email);
     if (!searched) return defaultID;
     return searched.id;
   } catch (error) {
@@ -340,18 +340,6 @@ async function runUserMMigration(verbose) {
   }
 }
 
-
-
-async function importJSON(filePath) {
-  try {
-    const jsonData = await readFile(filePath, 'utf-8');
-    return JSON.parse(jsonData);
-  } catch (error) {
-    console.error(`Error importing JSON file from ${filePath}: ${error.message}`);
-    throw error;
-  }
-}
-
 // console.info(process.argv[3]);
 const switcher = process.argv[3];
 const filePath = process.argv[4];
@@ -362,20 +350,13 @@ const helpOptionIndex = process.argv.indexOf("--help");
 
 if (helpOptionIndex !== -1){
   console.log("welcome to the migration script")
-  console.log("Usage: npm run migrate-data-v2 [db|users] file path -- [--verbose]");
+  console.log("Usage: npm run migrate-data-v2 [db|users] -- [--verbose]");
 }else{
   switch (switcher) {
     case "db":
-      if (filePath && filePath !== '--') {
-        try {
-          const data = await importJSON(filePath)
-          //setting the database to db variable for general access
-          db = data
-          console.log(`Running projects migration `);
-          runProjectsMigration(verboseOptionIndex !== -1 ? true : false);
-        } catch (error) {
-
-        }
+      if (db) {
+        console.log(`Running projects migration `);
+        runProjectsMigration(verboseOptionIndex !== -1 ? true : false);
       } else {
         console.error("File doesn't exist");
       }

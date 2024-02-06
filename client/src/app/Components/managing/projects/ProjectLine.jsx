@@ -324,7 +324,7 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
                 }`}
               >
                 {row.manager?.fullName[0]?.toUpperCase()}
-                {row.manager?.fullName.split(" ")[1][0].toUpperCase()}
+                {row.manager?.fullName?.split(" ")[1][0]?.toUpperCase()}
               </span>
             </div>
           )}

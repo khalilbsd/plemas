@@ -314,3 +314,5 @@
 {"projectID":3605,"taskName":null,"requestName":null,"email":"khalil.bensaid@tunsa.org","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/02/2024","hours":1}
 {"projectID":3604,"taskName":null,"requestName":null,"email":"khalil.bensaid@tunsa.org","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/02/2024","hours":5}
 {"projectID":3605,"taskName":null,"requestName":null,"email":"khalil.bensaid@tunsa.org","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/02/2024","hours":3}
+{"projectID":20386,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"06/02/2024","oldValues":"2, ","newValues":"61, "}
+{"projectID":20386,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE_MANAGER","code":120,"action_date":"06/02/2024","newManager":"aridhimoez@gmail.com","oldManager":"houssem.badr@gmail.com"}
