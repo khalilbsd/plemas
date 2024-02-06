@@ -185,7 +185,7 @@ async function runProjectsMigration(verbose) {
     }
 
     const projectsTable = getTableByName("projet");
-
+    console.log(config.admin_email)
     const admin = await User.findOne({ where: { email: config.admin_email } }); //
     let instance = {};
     let manager = null;
@@ -220,7 +220,7 @@ async function runProjectsMigration(verbose) {
             customId: prevPhaseInfo.designation.replace("-", "_")
           }
         });
-        createdProject.prevPhase = prevPhase.id;
+        createdProject.prevPhase = prevPhase? prevPhase.id:null;
         createdProject.save();
       }
 
@@ -357,6 +357,7 @@ const filePath = process.argv[4];
 const verboseOptionIndex = process.argv.indexOf("--verbose");
 const helpOptionIndex = process.argv.indexOf("--help");
 
+// console.log(switcher)
 
 if (helpOptionIndex !== -1){
   console.log("welcome to the migration script")
