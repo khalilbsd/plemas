@@ -13,7 +13,7 @@
     "chronos": "concurrently \"npm run start.client\" \"npm run start.server\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate-data":"cd server && node ./scripts/syncDB.js",
-    "migrate-data-v2":"cd server && node ./scripts/syncDBFromJSON.js",
+    "migrate-data-v2":"cd server && node ./scripts/syncDBFromJSON.js --prod",
     "migrate-data-v2.dev":"cd server && node  ./scripts/syncDBFromJSON.js --dev",
     "migrate-data-test":"cd server && node ./scripts/syncDB.test.js"
   },

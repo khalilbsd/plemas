@@ -23,7 +23,23 @@ const sequelize = new Sequelize(
 
       // logger.info(`SQL Query: ${sql}`);
       // logger.info(`Execution Time: ${Number(timing)}ms`);
-    }
+    },
+    dialectOptions: {
+      connectTimeout: 600000, // Adjust based on your requirements (60 seconds in this example)
+    },
+    // pool: {
+    //   max: 100000,
+    //   min: 0,
+    //   acquire: 30000,
+    //   idle: 100000,
+    // },
+
+    //   retry: {
+    //     max: 10, // Number of times to retry connecting
+    //   },
+
+
+
   }
 );
 
