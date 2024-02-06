@@ -43,6 +43,22 @@ Use the following scripts to manage your Chronos project:
    ```bash
    npm run chronos
 
+## Migration  Dev:
+1. User Migration
+   ```bash
+   cd chronos
+   npm run  migrate-data-v2.dev users
+2. Data migration
+   ```bash
+   npm run  migrate-data-v2.dev db
+## Migration  prod:
+1. User Migration
+   ```bash
+   cd chronos
+   npm run  migrate-data-v2 users
+2. Data migration
+   ```bash
+   npm run  migrate-data-v2 db
 ## License
 This project is licensed under the ISC License.
 

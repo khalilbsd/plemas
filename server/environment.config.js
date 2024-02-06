@@ -33,5 +33,7 @@ export const config = {
     db_name:process.env.DB_NAME,
     db_password:process.env.DB_PASSWORd,
     file_limit_size : process.env.FILE_LIMIT_SIZE,
-    db_log:process.env.DB_LOG
+    db_log:process.env.DB_LOG ,
+    admin_email :process.env.ADMIN_EMAIL,
+    defaultPassword :process.env.DEFAULT_PASSWORD
 }

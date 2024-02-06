@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import database from "../../db/db.js";
 import logger from "../../log/config.js";
+import { INTERVENANT_ROLE } from "../../constants/constants.js";
 
 const User = database.define(
   "users",
@@ -16,7 +17,7 @@ const User = database.define(
     },
     role: {
       type: DataTypes.STRING,
-      defaultValue: "employee",
+      defaultValue: INTERVENANT_ROLE,
       allowNull: false
     },
     isSuperUser: {

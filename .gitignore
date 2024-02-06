@@ -3,3 +3,4 @@ combined.log
 /server/log/*.log
 *.log
 /server/tracking/tracking.txt
+/server/scripts/i2s_midgard.json
