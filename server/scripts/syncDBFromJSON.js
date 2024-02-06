@@ -11,7 +11,7 @@ import {
   UserProfile
 } from "../db/relations.js";
 // prettier-ignore
-import userDb from "./users.db.json"  with { type: "json" };
+// import userDb from "./users.db.json"  with { type: "json" };
 import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
@@ -31,7 +31,7 @@ import { config } from "../environment.config.js";
 import { readFile } from 'fs/promises';
 
 var db =[]
-
+var userDb =[]
 
 
 function getTableByName(tableName) {
@@ -167,11 +167,7 @@ async function searchForUserId(userUUID, defaultID) {
     // finding the user with uuid
     const user = userTable.filter((entry) => entry.Oid === userUUID)[0];
     if (!user?.email) return defaultID;
-    //searching for the user in the provided file
-    // const userEmail = userDb.filter((entry) => {
-    //   return entry.email === user.email;
-    // })[0];
-    // if (!userEmail) return defaultID;
+
 
     const searched = await getUserByEmail(user?.email);
     if (!searched) return defaultID;
@@ -299,6 +295,8 @@ async function runUserMMigration(verbose) {
   try {
     let entry = {};
 
+
+
     for (const idx in userDb) {
       entry = userDb[idx];
       const user = await getUserByEmail(entry.email);
@@ -374,17 +372,24 @@ if (helpOptionIndex !== -1){
           console.log(`Running projects migration `);
           runProjectsMigration(verboseOptionIndex !== -1 ? true : false);
         } catch (error) {
-
+          console.error(error);
         }
       } else {
         console.error("File doesn't exist");
       }
       break;
     case "users":
+      try {
+        const data = await importJSON(filePath)
+          //setting the database to db variable for general access
+          userDb = data
+          console.log(`Running users migration`);
+          runUserMMigration(verboseOptionIndex !== -1 ? true : false);
+      } catch (error) {
+        console.error(error);
 
-    console.log(`Running users migration`);
+      }
 
-      runUserMMigration(verboseOptionIndex !== -1 ? true : false);
       break;
     default:
       console.error("invalid action ");
