@@ -39,6 +39,11 @@ const Task = database.define(
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: TASK_STATE_DOING
+    },
+    meta:{
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     }
   },
   {
