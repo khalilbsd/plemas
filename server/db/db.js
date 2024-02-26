@@ -16,13 +16,13 @@ const sequelize = new Sequelize(
   config.db_user,
   config.db_password,
   {
-    host: "localhost",
+    host: config.db_host,
+    port: config.db_port,
     dialect: "mysql",
     logging: (sql, timing) => {
       // You can use your custom logger here
-
-      // logger.info(`SQL Query: ${sql}`);
-      // logger.info(`Execution Time: ${Number(timing)}ms`);
+      logger.info(`SQL Query: ${sql}`);
+      logger.info(`Execution Time: ${Number(timing)}ms`);
     },
     dialectOptions: {
       connectTimeout: 600000, // Adjust based on your requirements (60 seconds in this example)
