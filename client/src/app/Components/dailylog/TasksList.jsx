@@ -25,6 +25,7 @@ import { notify } from "../notification/notification";
 import { projectDetails } from "../projects/style";
 import TaskItem from "./TaskItem";
 import { CustomPlusIcon  } from "../icons";
+import useIsUserCanAccess from "../../../hooks/access";
 const TasksList = ({
   handleJoinable,
   joinable,
@@ -37,6 +38,8 @@ const TasksList = ({
   const classesDetails = projectDetails();
   const hourDivision = useGetStateFromStore("task", "dailyLogDevisions");
   const managedProjects = useGetStateFromStore("task", "dailyProjectManager");
+  const { isSuperUser, isManager } = useIsUserCanAccess();
+
   const [savingHours, setSavingHours] = useState(false);
   const [assignHoursInTask] = useAssignHoursInTaskMutation();
   const [assignManagerHoursBulk] = useAssignManagerHoursBulkMutation();
@@ -127,7 +130,7 @@ const TasksList = ({
         aujourd'hui.
       </div> */}
       <div className={classes.scrollView}>
-        {
+        {(isSuperUser ||  isManager)&&
           <div className={classes.taskList}>
             <h2 className={classes.sectionTitle}>vos projet</h2>
             {managedProjects.map((project, idx) => (
