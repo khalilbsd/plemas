@@ -32,7 +32,7 @@ const Task = database.define(
       defaultValue: false
     },
     totalHours: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: true
     },
     state: {

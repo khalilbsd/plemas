@@ -360,3 +360,190 @@
 {"projectID":32,"taskName":null,"requestName":"added by client: \r\nplease consider add ...... ","email":"hb@concerto-pr.com","action":"REQUEST_CREATION","code":102,"action_date":"28/02/2024"}
 {"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"29/02/2024","intervenantsNames":"wocigos422@trackden.com"}
 {"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"khalilbensaid98@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"29/02/2024","intervenantsNames":"gayahe4754@grassdev.com"}
+{"projectID":17,"taskName":"Note de calcul ","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"29/02/2024","oldValues":"","newValues":""}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"29/02/2024","oldState":"blocked","newState":"doing"}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"29/02/2024","oldValues":"","newValues":""}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":"Note de calcul ","requestName":null,"email":"houssem.badr@gmail.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"DELETE_INTERVENANT","code":105,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"DELETE_INTERVENANT","code":105,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_CREATION","code":101,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_PROJECT","code":104,"action_date":"29/02/2024","intervenantsNames":"houssem.badr@gmail.com"}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"29/02/2024"}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":1}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"28/02/2024","hours":0}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"28/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":1}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0.4}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.31666666666666665}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"test  tche 2 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"29/02/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":2.4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":4}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.8}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0.316667}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":31,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}
+{"projectID":32,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"29/02/2024","hours":0}

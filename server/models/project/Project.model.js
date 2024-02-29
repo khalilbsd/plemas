@@ -26,6 +26,7 @@ const Project = database.define(
     },
     dueDate: {
       type: DataTypes.DATE,
+      defaultValue:null,
       allowNull: true
     },
     priority: {
@@ -41,7 +42,7 @@ const Project = database.define(
       allowNull: false
     },
     managerHours: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue: 0
     },

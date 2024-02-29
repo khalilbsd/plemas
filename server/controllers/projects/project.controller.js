@@ -714,6 +714,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
   const projectsKeys = Object.keys(projectsHours);
   await isAllProjectsAreValid(projectsKeys, next);
 
+
   for (const idx in projectsKeys) {
     let userId;
 
@@ -731,9 +732,10 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     if (!user)
       return next(new ElementNotFound("le chef projet est introuvable"));
 
-    const hours = Math.round(
-      parseInt(projectsHours[projectsKeys[idx]].value) / 60
-    );
+    const hours =projectsHours[projectsKeys[idx]].value / 60
+    // const hours = Math.round(
+    //   parseInt(projectsHours[projectsKeys[idx]].value) / 60
+    // );
     if (isNaN(hours) || hours < 0)
       return next(
         new AppError("le nombre des heurs doit être un chiffre positif ", 400)
@@ -743,8 +745,9 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     const managedHours = await InterventionHour.findOne({
       where: { projectID: project.id, date: moment(date) },
     });
+
     if (managedHours) {
-      if (hours === managedHours.hours) continue;
+      // if (hours === managedHours.hours) continue;
       managedHours.hours = hours;
       await managedHours.save();
     } else {
@@ -754,6 +757,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
         date: moment(date),
       });
     }
+    // console.log("khall");
 
     project.managerHours =
       project.managerHours > hours

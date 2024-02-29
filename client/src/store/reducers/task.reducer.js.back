@@ -89,9 +89,32 @@ const taskSlice = createSlice({
       const { id, type, percent } = action.payload;
 
       const hours = Math.round((percent * DAILY_HOURS_VALUE) / 100);
-      //  first i need to calcule the rest
-      //first i need to  mark out one i changed
-      // return
+
+      // // sum of hours in the daily
+      // const tasksHoursSum = Object.values(state.dailyLogDevisions.tasks).reduce(
+      //   (accumulator, currentValue) => accumulator + currentValue.value,
+      //   0
+      // );
+      // const projectHoursSum = Object.values(
+      //   state.dailyLogDevisions.projects
+      // ).reduce(
+      //   (accumulator, currentValue) => accumulator + currentValue.value,
+      //   0
+      // );
+      // const hoursSum = tasksHoursSum + projectHoursSum;
+
+      // // difference between old or and new value
+
+      // const diff = hours - state.dailyLogDevisions[type][id].value;
+
+      // // if (
+      // // hours > state.dailyLogDevisions[type][id].value &&
+      // // hoursSum + diff > DAILY_HOURS_VALUE
+      // // ) {
+      // // // Block the process if adding the new value exceeds the limit
+      // // return;
+      // // }
+      //determine which one i have moved a project or a task
       let taskKeys = [];
       let projectKeys = [];
       if (type === "tasks") {
@@ -99,17 +122,17 @@ const taskSlice = createSlice({
           (key) => parseInt(key) !== id
         );
       } else {
-        taskKeys = Object.keys(state.dailyLogDevisions.tasks);
+        taskKeys = state.dailyLogDevisions.tasks;
       }
       if (type === "projects") {
         projectKeys = Object.keys(state.dailyLogDevisions.projects).filter(
           (key) => parseInt(key) !== id
         );
       } else {
-        projectKeys = Object.keys(state.dailyLogDevisions.projects);
+        projectKeys = state.dailyLogDevisions.projects;
       }
 
-      // total of changed values meaining that i'm searching for the list of projects or tasks that have been changed to be  bale to calcule the rest
+      // total of changed values meaining that i'm searching for the list of projects or tasks that have been changed
       let projectsTotalChangedValues = 0;
       let tasksTotalChangedValues = 0;
 
@@ -124,32 +147,62 @@ const taskSlice = createSlice({
           tasksTotalChangedValues += state.dailyLogDevisions.tasks[key].value;
         }
       });
-      // calculating rest
+
       let rest =
         DAILY_HOURS_VALUE -
         (hours + projectsTotalChangedValues + tasksTotalChangedValues);
+      const nbOfEntries = projectKeys.length + taskKeys.length;
+      let negativeRest = 0;
 
-      if (rest <= 0) {
-
-        return;
+      if (rest < 0) {
+        let nbOfChangedEntriesProjects = 0;
+        let nbOfChangedEntriesTasks = 0;
+        projectKeys.forEach((key) => {
+          if (state.dailyLogDevisions.projects[key].changed) {
+            nbOfChangedEntriesProjects += 1;
+          }
+        });
+        taskKeys.forEach((key) => {
+          if (state.dailyLogDevisions.tasks[key].changed) {
+            nbOfChangedEntriesTasks += 1;
+          }
+        });
+        negativeRest =
+          rest / (nbOfChangedEntriesProjects + nbOfChangedEntriesTasks);
       }
 
+      taskKeys.forEach((key) => {
+        if (!state.dailyLogDevisions.tasks[key].changed) {
+          state.dailyLogDevisions.tasks[key].value =
+            rest > 0 ? Math.round(rest / nbOfEntries) : 0;
+        } else if (rest < 0) {
+          if (state.dailyLogDevisions.tasks[key]?.value + negativeRest > 0) {
+            state.dailyLogDevisions.tasks[key].value += negativeRest;
+          } else {
+            state.dailyLogDevisions.tasks[key].value = 0;
+          }
+        }
+      });
 
+      projectKeys.forEach((key) => {
+        if (!state.dailyLogDevisions.projects[key].changed) {
+          state.dailyLogDevisions.projects[key].value =
+            rest > 0 ? Math.round(rest / nbOfEntries) : 0;
+        } else if (rest < 0) {
+          if (state.dailyLogDevisions.projects[key]?.value + negativeRest > 0) {
+            state.dailyLogDevisions.projects[key].value += negativeRest;
+          } else {
+            state.dailyLogDevisions.projects[key].value = 0;
+          }
+        }
+      });
+      //determine the max between projects and tasks except for itself
 
-      const nbOfEntries = projectKeys.length + taskKeys.length; // one them doens't contain the selected line
-      // let negativeRest = 0;
-      taskKeys.filter(key=>!state.dailyLogDevisions.tasks[key].changed).forEach((key) => {
+      if (!state.dailyLogDevisions[type][id].changed) {
+        state.dailyLogDevisions[type][id].changed = true;
+      }
 
-          state.dailyLogDevisions.tasks[key].value =  Math.round(rest / nbOfEntries) ;
-
-      })
-      projectKeys.filter(key=>!state.dailyLogDevisions.projects[key].changed).forEach((key) => {
-        state.dailyLogDevisions.projects[key].value =  Math.round(rest / nbOfEntries) ;
-      })
-      state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
-        state.dailyLogDevisions[type][id].value = hours;
-
-
+      state.dailyLogDevisions[type][id].value = hours;
     },
 
     hideDailyTask: (state, action) => {

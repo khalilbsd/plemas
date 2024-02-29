@@ -1,7 +1,9 @@
 import { Grid } from "@mui/material";
+import Backdrop from '@mui/material/Backdrop';
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import {
   NOTIFY_ERROR,
   NOTIFY_SUCCESS,
@@ -10,6 +12,7 @@ import {
 } from "../../constants/constants";
 import useIsUserCanAccess from "../../hooks/access";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
+import useGetUserInfo from "../../hooks/user";
 import {
   useCreateProjectMutation,
   useGetProjectListMutation
@@ -24,15 +27,11 @@ import {
 } from "../../store/reducers/manage.reducer";
 import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
 import { containsOnlySpaces } from "../../store/utils";
+import LoadingWithProgress from "../Components/loading/LoadingWithProgress";
 import ProjectList from "../Components/managing/projects/ProjectList";
 import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import { projectsStyles } from "../Components/managing/style";
 import { notify } from "../Components/notification/notification";
-import LoadingWithProgress from "../Components/loading/LoadingWithProgress";
-import Backdrop from '@mui/material/Backdrop';
-import { useNavigate } from "react-router";
-import useGetAuthenticatedUser from "../../hooks/authenticated";
-import useGetUserInfo from "../../hooks/user";
 
 const initialError = {
   filedName: undefined,

@@ -409,7 +409,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   if (!userTasks || !date)
     return next(new MissingParameter("les  tache et les heurs sont requis"));
 
-  console.log(userTasks, date);
+  // console.log(userTasks, date);
   // return
   // check if all projects are valid  you never know
   const entries = Object.values(userTasks);
@@ -427,7 +427,8 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
 
   for (const idx in interventionIDs) {
     entry = userTasks[interventionIDs[idx]];
-    hours = Math.round(parseInt(entry.value) / 60);
+    // hours = Math.round(parseInt(entry.value) / 60);
+    hours = entry.value / 60;
     const intervention = await Intervenant.findByPk(interventionIDs[idx]);
     if (!intervention)
       return next(
@@ -440,17 +441,21 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       where: { interventionID: intervention.id, date: moment(date) }
     });
 
-    if (parseInt(entry.value) === intervention.nbHours && interventionHours)
+    if (entry.value === intervention.nbHours && interventionHours){
+
       continue;
-    if (parseInt(entry.value) < 0)
+
+    }
+    if (entry.value < 0)
       return next(new AppError("le nombres des heures doit être positive"));
 
     if (interventionHours) {
       task.totalHours = task.totalHours
         ? task.totalHours + (hours - interventionHours.hours)
         : hours;
-      intervention.nbHours =
+        intervention.nbHours =
         intervention.nbHours + (hours - interventionHours.hours);
+
       // intervention.nbHours = hours;
     } else {
       task.totalHours = task.totalHours ? task.totalHours + hours : hours;
