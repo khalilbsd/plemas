@@ -21,8 +21,11 @@ const sequelize = new Sequelize(
     dialect: "mysql",
     logging: (sql, timing) => {
       // You can use your custom logger here
-      logger.info(`SQL Query: ${sql}`);
-      logger.info(`Execution Time: ${Number(timing)}ms`);
+      if (config.env_dev){
+        logger.info(`SQL Query: ${sql}`);
+        logger.info(`Execution Time: ${Number(timing)}ms`);
+
+      }
     },
     dialectOptions: {
       connectTimeout: 600000, // Adjust based on your requirements (60 seconds in this example)

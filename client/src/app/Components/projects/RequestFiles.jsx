@@ -9,7 +9,7 @@ import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
 import axios from "../../../store/api/base.js";
 import {
   useDeleteFileFromRequestOrTasksMutation,
-  useUploadFileToProjectRequestMutation
+  useUploadFileToProjectRequestMutation,
 } from "../../../store/api/requests.api.js";
 import { updateFileRequestList } from "../../../store/reducers/project.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
@@ -24,7 +24,7 @@ import useGetStateFromStore from "../../../hooks/manage/getStateFromStore.js";
 import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
 import faClose from "../../public/svgs/light/xmark.svg";
 const RequestFiles = (props) => {
-  const { files, requestID, isCreator } = props;
+  const { files, requestID } = props;
   const { projectID } = useParams();
   const [openFolder, setOpenFolder] = useState(false);
   const fileInputRef = useRef(null);
@@ -35,6 +35,8 @@ const RequestFiles = (props) => {
   const { user } = useGetAuthenticatedUser();
 
   const project = useGetStateFromStore("project", "projectDetails");
+  const { isProjectEditable, isUserEligibleToEdit } =
+    useGetStateFromStore("project", "projectAccess");
 
   const [uploadFileToProjectRequest] = useUploadFileToProjectRequestMutation();
   const [deleteFileFromRequestOrTasks] =
@@ -50,7 +52,7 @@ const RequestFiles = (props) => {
       isDownloadingRef.current = true;
       const fileName = url.substr(url.indexOf("-") + 1);
       const res = await axios.get(url, {
-        responseType: "blob"
+        responseType: "blob",
       });
 
       fileDownload(res.data, fileName);
@@ -74,15 +76,14 @@ const RequestFiles = (props) => {
         projectID,
         requestID,
         body: {
-          file: file
-        }
+          file: file,
+        },
       }).unwrap();
 
       notify(NOTIFY_SUCCESS, res.message);
-      dispatch(updateFileRequestList({ requestID, file: file ,upload: false }));
+      dispatch(updateFileRequestList({ requestID, file: file, upload: false }));
 
       handleClose();
-
     } catch (error) {
       notify(NOTIFY_ERROR, error);
     }
@@ -93,7 +94,7 @@ const RequestFiles = (props) => {
     // const file = files[0];
     for (const file in files) {
       if (file[file]?.size > 10 * 1024 * 1024) {
-        notify(NOTIFY_ERROR, "Le fichier est trop grande");
+        notify(NOTIFY_ERROR, "Le fichier est trop volumineux");
         return;
       }
     }
@@ -113,10 +114,12 @@ const RequestFiles = (props) => {
       const res = await uploadFileToProjectRequest({
         projectID,
         requestID,
-        body: formData
+        body: formData,
       }).unwrap();
       notify(NOTIFY_SUCCESS, res?.message);
-      dispatch(updateFileRequestList({ requestID, urls: res.files ,upload: true }));
+      dispatch(
+        updateFileRequestList({ requestID, urls: res.files, upload: true })
+      );
 
       handleClose();
     } catch (error) {
@@ -128,11 +131,11 @@ const RequestFiles = (props) => {
   const filesList = files.map((file, key) => (
     <div className={classes.fileContainer} key={key}>
       {(isSuperUser ||
-       ( isManager && project?.managerDetails?.email === user?.email)) && (
-          <button className="delete-btn" onClick={() => handleDelete(file)}>
-            <ReactSVG src={faClose} />
-          </button>
-        )}
+        (isManager && project?.managerDetails?.email === user?.email)) && (
+        <button className="delete-btn" onClick={() => handleDelete(file)}>
+          <ReactSVG src={faClose} />
+        </button>
+      )}
       <div
         onClick={(e) =>
           handleDownload(
@@ -174,10 +177,13 @@ const RequestFiles = (props) => {
         <div className={classes.filesList}>
           {files && filesList}
 
-          {(isCreator ||
-            isSuperUser ||
-            (isManager && project?.managerDetails?.email === user?.email)) && (
-            <div className={`${classes.fileItem} add`} onClick={handleUpload}>
+          {(isUserEligibleToEdit  && isProjectEditable ) && (
+            <div
+              className={`${classes.fileItem}  ${
+                !files.length ? "empty-add" : "add"
+              }`}
+              onClick={handleUpload}
+            >
               <ReactSVG src={faPlus} /> <span>Ajouter un document</span>
               <input
                 ref={fileInputRef}

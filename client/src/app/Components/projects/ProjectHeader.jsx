@@ -10,6 +10,7 @@ import {
   useGetProjectByIDMutation,
   useGetProjectListMutation
 } from "../../../store/api/projects.api";
+import { useGetProjectRequestMutation } from "../../../store/api/requests.api";
 import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
 import { setProjectList } from "../../../store/reducers/manage.reducer";
 import { setProject, setProjectRequests } from "../../../store/reducers/project.reducer";
@@ -20,8 +21,6 @@ import faCancel from "../../public/svgs/light/xmark.svg";
 import { notify } from "../notification/notification";
 import ProjectInfo from "./ProjectInfo";
 import { projectDetails } from "./style";
-import {useNavigate} from 'react-router-dom'
-import { useGetProjectRequestMutation } from "../../../store/api/requests.api";
 const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
@@ -36,7 +35,7 @@ const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
   const [getProjectRequest] =
   useGetProjectRequestMutation();
 
-  const navigate = useNavigate()
+
   const dispatch = useDispatch();
 
   useEffect(() => {

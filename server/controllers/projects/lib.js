@@ -1,5 +1,11 @@
 import moment from "moment";
-import { TASK_STATE_TRANSLATION } from "../../constants/constants.js";
+import {
+  PROJECT_MANAGER_ROLE,
+  STATE_ABANDONED,
+  STATE_DONE,
+  SUPERUSER_ROLE,
+  TASK_STATE_TRANSLATION,
+} from "../../constants/constants.js";
 import { Phase, Project } from "../../db/relations.js";
 import logger from "../../log/config.js";
 
@@ -25,8 +31,13 @@ export const generateProjectCustomID = (
  */
 export const isCodeValid = async (code, phaseName) => {
   try {
-    const phase = await Phase.findOne({ where: { name: phaseName },attributes:['id'] });
-    const project = await Project.findOne({ where: { code,phaseID:phase.id } });
+    const phase = await Phase.findOne({
+      where: { name: phaseName },
+      attributes: ["id"],
+    });
+    const project = await Project.findOne({
+      where: { code, phaseID: phase.id },
+    });
 
     if (project) return false;
     return true;
@@ -107,16 +118,15 @@ function getProjectLots(lots) {
  * @returns array of objects with reduced info
  */
 
-export function isAllRequestsTreated(requests){
-    if(!requests.length) return '-'
-    // let res =true
-    for (const idx in requests){
-      if (!requests[idx].state) return 'non traité'
-    }
+export function isAllRequestsTreated(requests) {
+  if (!requests.length) return "-";
+  // let res =true
+  for (const idx in requests) {
+    if (!requests[idx].state) return "non traité";
+  }
 
-    return 'traité'
+  return "traité";
 }
-
 
 export const serializeProject = (projects) => {
   const list = [];
@@ -125,10 +135,12 @@ export const serializeProject = (projects) => {
       id: element.id,
       code: element.code,
       activePhase: element.phase?.name,
-      state:TASK_STATE_TRANSLATION.filter(state=>state.value === element.state)[0].label,
+      state: TASK_STATE_TRANSLATION.filter(
+        (state) => state.value === element.state
+      )[0].label,
       manager: {
         image: element.managerDetails.UserProfile.image,
-        fullName: `${element.managerDetails.UserProfile.name} ${element.managerDetails.UserProfile.lastName}`
+        fullName: `${element.managerDetails.UserProfile.name} ${element.managerDetails.UserProfile.lastName}`,
       },
       projectName: element.name,
       projectCustomId: element.customId,
@@ -136,8 +148,8 @@ export const serializeProject = (projects) => {
       phaseStatus: "tasks in progress",
       lots: getProjectLots(element.projectLots),
       priority: element.priority,
-      requestsTreated : isAllRequestsTreated(element.requests),
-      createdAt : element.createdAt
+      requestsTreated: isAllRequestsTreated(element.requests),
+      createdAt: element.createdAt,
     });
   });
 
@@ -154,7 +166,6 @@ export const serializeProject = (projects) => {
 //   }else{
 //     endDate = new Date(ending)
 //   }
-
 
 //   const dateList = [];
 
@@ -184,20 +195,24 @@ export const serializeProject = (projects) => {
 //   return formattedDateList;
 // }
 
-
-export function calculateDates(nbWeeks, starting = null, ending = null, locale = 'fr-FR') {
-  const currentDate = !starting ? moment() : moment(starting, 'DD/MM/YYYY');
+export function calculateDates(
+  nbWeeks,
+  starting = null,
+  ending = null,
+  locale = "fr-FR"
+) {
+  const currentDate = !starting ? moment() : moment(starting, "DD/MM/YYYY");
   let endDate;
 
   if (!ending) {
-    endDate = moment().add(nbWeeks * 7, 'days');
+    endDate = moment().add(nbWeeks * 7, "days");
   } else {
-    endDate = moment(ending, 'DD/MM/YYYY');
+    endDate = moment(ending, "DD/MM/YYYY");
   }
 
   const dateList = [];
 
-  while (currentDate.isSameOrBefore(endDate, 'day')) {
+  while (currentDate.isSameOrBefore(endDate, "day")) {
     let item = { date: currentDate.clone() };
 
     if (currentDate.day() !== 0 && currentDate.day() !== 6) {
@@ -207,23 +222,50 @@ export function calculateDates(nbWeeks, starting = null, ending = null, locale =
     }
 
     dateList.push(item);
-    currentDate.add(1, 'day');
+    currentDate.add(1, "day");
   }
 
   const formattedDateList = dateList.map((item) => {
-    const dayNames = new Intl.DateTimeFormat("fr-FR", { weekday: "long" }).format(item.date);
-    const dateStr = item.date.format('DD/MM/YYYY', locale);
+    const dayNames = new Intl.DateTimeFormat("fr-FR", {
+      weekday: "long",
+    }).format(item.date);
+    const dateStr = item.date.format("DD/MM/YYYY", locale);
     return { date: `${dayNames} ${dateStr}`, weekend: item.weekend };
   });
 
   return formattedDateList;
 }
 
-export async function isProjectExist(projectID){
-
+export async function isProjectExist(projectID) {
   const project = await Project.findByPk(projectID);
-  if (!project) return null
+  if (!project) return null;
 
-  return true
+  return true;
+}
 
+export function isProjectInProgress(projectState) {
+  return ![STATE_ABANDONED, STATE_DONE].includes(projectState);
+}
+
+export function getHighestCode(projects) {
+  const codeList = projects.map((project) => project.code);
+  return Math.max(...codeList);
+}
+
+export function checkUserAsProjectManager(user, projectManager) {
+  // console.log(user,projectManager);
+  // console.log(user);
+  if (user.role === SUPERUSER_ROLE && user.isSuperUser) return true;
+
+  if (user.role === PROJECT_MANAGER_ROLE && projectManager === user.id)
+    return true;
+
+  return false;
+}
+
+
+export function checkIfUserIsAnIntervenant(user, projectIntervenants) {
+  return projectIntervenants
+    .map(({ intervenantID }) => intervenantID)
+    .includes(user.id);
 }

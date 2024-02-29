@@ -5,8 +5,8 @@ import { useDispatch } from "react-redux";
 import {
   NOTIFY_ERROR,
   NOTIFY_SUCCESS,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING
+  STATE_BLOCKED,
+  STATE_DOING
 } from "../../constants/constants";
 import useIsUserCanAccess from "../../hooks/access";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
@@ -31,6 +31,8 @@ import { notify } from "../Components/notification/notification";
 import LoadingWithProgress from "../Components/loading/LoadingWithProgress";
 import Backdrop from '@mui/material/Backdrop';
 import { useNavigate } from "react-router";
+import useGetAuthenticatedUser from "../../hooks/authenticated";
+import useGetUserInfo from "../../hooks/user";
 
 const initialError = {
   filedName: undefined,
@@ -73,6 +75,8 @@ const ManageProjects = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [getProjectList, { isLoading }] = useGetProjectListMutation();
+  const user = useGetUserInfo();
+  // const {  isManager } = useIsUserCanAccess();
   const [addProjectForm, setAddProjectForm] = useState(false);
   const [loadingCreatedProject, setLoadingCreatedProject] = useState(false);
   const codeRef = useRef();
@@ -108,18 +112,28 @@ const ManageProjects = () => {
         dispatch(
           filterProjectsList({
             flag: true,
-            value: TASK_STATE_DOING,
+            value: STATE_DOING,
             attribute: "state"
           })
         );
         dispatch(
           filterProjectsList({
             flag: true,
-            value: TASK_STATE_BLOCKED,
+            value: STATE_BLOCKED,
             attribute: "state"
           })
         );
-        dispatch(filterByTaskStatus(TASK_STATE_DOING));
+        dispatch(filterByTaskStatus(STATE_DOING));
+
+          if (isManager && user.profile.name && user.profile.lastName){
+            dispatch(
+              filterProjectsList({
+                flag: true,
+                value: `${user?.profile?.name} ${user?.profile?.lastName}`,
+                attribute: "manager.fullName"
+              })
+            );
+          }
       }
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
@@ -131,7 +145,7 @@ const ManageProjects = () => {
     loadProjects();
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user,isManager]);
 
   const handleOpenAddForm = () => {
     if (addProjectForm) {

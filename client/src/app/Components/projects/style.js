@@ -872,8 +872,14 @@ export const projectTaskDetails = createUseStyles({
       }
     }
   },
+  popUp:{
+    '& h2':{
+      textAlign:'center'
+    }
+  },
   filesList: {
-    width: "100%",
+    minWidth: 300,
+    minHeight: 300,
     display: "flex",
     flexWrap: "wrap",
     gap:10
@@ -938,11 +944,40 @@ export const projectTaskDetails = createUseStyles({
         color: "var(--white)"
       }
     },
+    '&.empty-add':{
+      margin: 'auto',
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      width: 250,
+      maxHeight: 'unset',
+      height: 250,
+      gap: 20,
+      fontSize: 22,
+      color: '#c7c7c7',
+      "& svg": {
+        width: 50,
+        height: 50,
+        fill: "var(--light-green)",
+        padding:20,
+        border: '5px dashed #c7c7c7',
+        borderRadius:'100%'
+      },
+      '&:hover':{
+        color:'white',
+
+        '& svg':{
+          fill:'white',
+          borderColor:'white'
+        }
+      }
+    },
     "&.add": {
       height: 40,
       width: "100%",
       backgroundColor: "var(--light-green)",
-
+      alignSelf: 'flex-end',
       color: "var(--white)",
       "&.requests": {
         width: "50%",

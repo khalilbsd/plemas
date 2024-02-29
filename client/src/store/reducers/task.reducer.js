@@ -293,6 +293,7 @@ const taskSlice = createSlice({
         action.payload.value;
     },
     updateInterventionUploadedFile: (state, action) => {
+
       const taskIdx = state.projectTasks
         .map((task) => task.id)
         .indexOf(parseInt(action.payload.taskID));

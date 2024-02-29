@@ -53,16 +53,19 @@ const ExportActions = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportableData = useMemo(() => {
+
     return projects.map((item) => ({
       ID: item.id,
       Code: item.code,
-      Phase: item.activePhase,
-      "Etat du projet": item.state,
       "Nom  du projet": item.projectName,
       "ID complet du projet": item.projectCustomId,
-      "Liste des taches": getProjectTasks(item.id),
-      // "Etat du projet": item.phaseStatus,
+      Phase: item.activePhase,
+      "Etat du projet": item.state,
+      "Chef de projet":item?.manager?.fullName,
       Priority: item.priority,
+      "Liste des taches": getProjectTasks(item.id),
+
+      // "Etat du projet": item.phaseStatus,
       "Requête traité": item.requestsTreated
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps

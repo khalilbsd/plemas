@@ -10,7 +10,7 @@ import { ReactSVG } from "react-svg";
 import {
   NOTIFY_ERROR,
   TASK_STATE_TRANSLATION,
-  progress_bar_width_cell
+  progress_bar_width_cell,
 } from "../../../../constants/constants";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { useFilterProjectsTasksByDatesMutation } from "../../../../store/api/tasks.api";
@@ -20,7 +20,7 @@ import {
   filterProjectsList,
   popTaskStateFromFilter,
   setProjectTaskListFiltered,
-  setProjectTasksDateFilter
+  setProjectTasksDateFilter,
 } from "../../../../store/reducers/manage.reducer";
 import { setTwoWeeksDatesListFiltered } from "../../../../store/reducers/project.reducer";
 import faArrowRight from "../../../public/svgs/light/arrow-right.svg";
@@ -35,16 +35,16 @@ const init = {
   state: "",
   phase: "",
   lots: "",
-  taskState: ""
+  taskState: "",
 };
 
 const dateFilterInit = {
   open: false,
   startDate: dayjs(new Date()).locale("en-gb"),
-  endDate: dayjs().locale("en-gb").add(21, "day")
+  endDate: dayjs().locale("en-gb").add(15, "day"),
 };
 
-const ProjectListHeader = ({disableDailyFilter}) => {
+const ProjectListHeader = ({ disableDailyFilter }) => {
   const [selected, setSelected] = useState(init);
   const classes = projectsStyles();
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
@@ -56,8 +56,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
   const projects = useGetStateFromStore("manage", "projectsList");
   const dispatch = useDispatch();
   const [dateFilter, setDateFilter] = useState(dateFilterInit);
-  const [filterProjectsTasksByDates] =
-    useFilterProjectsTasksByDatesMutation();
+  const [filterProjectsTasksByDates] = useFilterProjectsTasksByDatesMutation();
   // const [filters, setFilters] = useState(filtersInit);
 
   const selectStates = () => {
@@ -102,9 +101,8 @@ const ProjectListHeader = ({disableDailyFilter}) => {
     projects.forEach((project) => {
       let exist = list.filter((item) => item === project.activePhase);
       if (!exist.length) {
-        if (project.activePhase){
+        if (project.activePhase) {
           list.push(project.activePhase);
-
         }
       }
     });
@@ -113,7 +111,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
 
   const handleChangeManager = (event) => {
     const {
-      target: { value,checked }
+      target: { value, checked },
     } = event;
     setSelected({ ...selected, manager: value });
     //disableDailyFilter()
@@ -122,20 +120,20 @@ const ProjectListHeader = ({disableDailyFilter}) => {
         flag: true,
         value: value,
         attribute: "manager.fullName",
-        popFilter:!checked?true:false
+        popFilter: !checked ? true : false,
       })
     );
   };
 
   const handleChangeFilter = (event) => {
     const {
-      target: { value, name ,checked}
+      target: { value, name, checked },
     } = event;
     //disableDailyFilter()
 
     setSelected({
       ...selected,
-      [name]:value
+      [name]: value,
     });
 
     dispatch(
@@ -143,14 +141,14 @@ const ProjectListHeader = ({disableDailyFilter}) => {
         flag: true,
         value: value,
         attribute: name,
-        popFilter:!checked?true:false
+        popFilter: !checked ? true : false,
       })
     );
   };
 
   const applyDateFilter = async () => {
-      //disabling daily filter
-      dispatch(changeDailyFilter(false));
+    //disabling daily filter
+    dispatch(changeDailyFilter(false));
 
     const projectIds = projects.map((project) => project.id);
     //disableDailyFilter()
@@ -160,7 +158,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
         projects: projectIds,
         start: dateFilter.startDate.format("DD/MM/YYYY"),
         end: dateFilter.endDate.format("DD/MM/YYYY"),
-        nbWeeks: dateFilter.endDate.diff(dateFilter.startDate, "week")
+        nbWeeks: dateFilter.endDate.diff(dateFilter.startDate, "week"),
       }).unwrap();
 
       dispatch(setTwoWeeksDatesListFiltered(res.dates));
@@ -168,7 +166,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
       dispatch(
         setProjectTasksDateFilter({
           start: dateFilter.startDate.format("DD/MM/YYYY"),
-          end: dateFilter.endDate.format("DD/MM/YYYY")
+          end: dateFilter.endDate.format("DD/MM/YYYY"),
         })
       );
       hideDatesFilter();
@@ -179,17 +177,15 @@ const ProjectListHeader = ({disableDailyFilter}) => {
 
   const handleChangeTaskState = (event) => {
     const {
-      target: { value, name ,checked}
+      target: { value, name, checked },
     } = event;
     //disableDailyFilter()
 
     setSelected({ ...selected, [name]: value });
-    if (checked){
+    if (checked) {
       dispatch(filterByTaskStatus(value));
-
-    }else{
-    dispatch(popTaskStateFromFilter(value));
-
+    } else {
+      dispatch(popTaskStateFromFilter(value));
     }
   };
 
@@ -201,11 +197,11 @@ const ProjectListHeader = ({disableDailyFilter}) => {
   };
 
   const handleFilterStartDateChange = (startDate) => {
-    if (dateFilter.endDate.diff(startDate, "day") > 21) {
+    if (dateFilter.endDate.diff(startDate, "day") > 15) {
       setDateFilter({
         ...dateFilter,
         startDate: startDate,
-        endDate: startDate.add(21, "day")
+        endDate: startDate.add(15, "day"),
       });
     }
   };
@@ -217,7 +213,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
       );
       setDateFilter({
         ...dateFilter,
-        endDate: dateFilter.startDate.add(21, "day")
+        endDate: dateFilter.startDate.add(15, "day"),
       });
       return;
     }
@@ -232,7 +228,6 @@ const ProjectListHeader = ({disableDailyFilter}) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const phase = useMemo(() => selectPhases(), [projects]);
 
-
   const columns = [
     {
       headerName: "Nom du projet",
@@ -244,7 +239,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
       items: states,
       title: "Filtre par état du projet",
       handler: handleChangeFilter,
-      filterWidth: 200
+      filterWidth: 200,
     },
     {
       headerName: "CP",
@@ -256,19 +251,18 @@ const ProjectListHeader = ({disableDailyFilter}) => {
       handler: handleChangeManager,
       items: managers,
       ref: selected.manager,
-      filterWidth: 300
+      filterWidth: 300,
     },
     {
       headerName: "Lots",
       field: "lots",
       filter: true,
       type: "lots",
-      ref: selected.lot,
+      ref: selected.lots,
       title: "Filtre par lot",
-
       items: lots,
       handler: handleChangeFilter,
-      width: 51
+      width: 51,
     },
     {
       headerName: "Phase",
@@ -276,17 +270,17 @@ const ProjectListHeader = ({disableDailyFilter}) => {
       title: "Filtre par phase",
 
       filter: true,
-      width: 65,
+      width: 50,
       type: "activePhase",
       ref: selected.phase,
       items: phase,
-      handler: handleChangeFilter
+      handler: handleChangeFilter,
     },
     {
-      headerName: " ",
+      headerName: "Taches",
       field: "tasks",
-      width: sideBarCollapsed ? 200 : 100,
-      filter: false
+      width: sideBarCollapsed ? 250 : 100,
+      filter: false,
     },
     {
       headerName: "Status",
@@ -295,8 +289,8 @@ const ProjectListHeader = ({disableDailyFilter}) => {
       width: 65,
       type: "taskState",
       items: TASK_STATE_TRANSLATION.map((state) => state.value),
-      handler: handleChangeTaskState
-    }
+      handler: handleChangeTaskState,
+    },
   ];
 
   const getDates = () => {
@@ -331,7 +325,9 @@ const ProjectListHeader = ({disableDailyFilter}) => {
                   }`}
                   key={index}
                 >
-                  <Tooltip title={date}><span>{date[0].toUpperCase()}</span></Tooltip>
+                  <Tooltip title={date}>
+                    <span>{date[0].toUpperCase()}</span>
+                  </Tooltip>
                 </p>
               </div>
             ))}
@@ -359,7 +355,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
                     // minDate={dayjs().subtract(7, "day")}
                     maxDate={dateFilter.endDate}
                     slotProps={{
-                      textField: { variant: "standard", size: "small" }
+                      textField: { variant: "standard", size: "small" },
                     }}
                     onChange={(newValue) =>
                       handleFilterStartDateChange(newValue)
@@ -376,7 +372,7 @@ const ProjectListHeader = ({disableDailyFilter}) => {
                     value={dateFilter.endDate}
                     maxDate={dateFilter.endDate}
                     slotProps={{
-                      textField: { variant: "standard", size: "small" }
+                      textField: { variant: "standard", size: "small" },
                     }}
                     onChange={(newValue) => handleFilterEndDateChange(newValue)}
                   />

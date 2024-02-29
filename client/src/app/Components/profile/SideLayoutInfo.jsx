@@ -293,9 +293,10 @@ const SideLayoutInfo = () => {
                   variant="outlined"
                   size="small"
                   name="phone"
+                  type="number"
                   inputProps={{
-                    inputMode: "numeric",
-                    pattern: "[0-9]",
+                    inputMode: "number",
+                    pattern: '[0-9]*',
                     maxLength: 8
                   }}
                   defaultValue={profile.phone}

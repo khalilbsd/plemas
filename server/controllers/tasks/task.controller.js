@@ -22,10 +22,10 @@ import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
-  TASK_STATE_ABANDONED,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
-  TASK_STATE_DONE,
+  STATE_ABANDONED,
+  STATE_BLOCKED,
+  STATE_DOING,
+  STATE_DONE,
   TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
@@ -104,7 +104,7 @@ export const createTask = catchAsync(async (req, res, next) => {
   const project = await Project.findByPk(projectID);
   if (!project) return next(new ElementNotFound("le projet est introuvable"));
   if (!req.user.isSuperUser) {
-    if (![TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(project.state))
+    if (![STATE_DOING, STATE_BLOCKED].includes(project.state))
       return next(
         new AppError(
           `vous ne pouvez pas créer de tâches car le projet est déjà ${
@@ -137,7 +137,8 @@ export const createTask = catchAsync(async (req, res, next) => {
         400
       )
     );
-  if (data.startDate < project.startDate)
+
+  if (data.startDate <  moment(project.startDate).startOf('day'))
     return next(
       new AppError(
         "la date de début de la tâche ne peut pas être antérieure à la date de début du projet"
@@ -608,7 +609,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
       {
         model: Task,
         where: {
-          state: TASK_STATE_DOING
+          state: STATE_DOING
         },
         as: "task"
       }
@@ -640,7 +641,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
         },
         {
           model: Task,
-          where: { state: TASK_STATE_DOING },
+          where: { state: STATE_DOING },
           as: "task"
         }
       ]
@@ -675,7 +676,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
       },
       {
         model: Task,
-        where: { state: TASK_STATE_DOING },
+        where: { state: STATE_DOING },
         as: "task"
       }
     ]
@@ -716,7 +717,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   // projects for project manager :  (only the projects that at least have one single task in progress)
   if (req.user.isSuperUser || req.user.role === PROJECT_MANAGER_ROLE) {
 
-    let obj = {"state":TASK_STATE_DOING};
+    let obj = {"state":STATE_DOING};
     if (req.user.role === PROJECT_MANAGER_ROLE) {
       obj.manager = req.user.id;
     }
@@ -730,7 +731,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
           include: [
             {
               model: Task,
-              where: { state: TASK_STATE_DOING }
+              where: { state: STATE_DOING }
             }
           ]
         }
@@ -859,17 +860,17 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
       (state) => state.label === req.body.state
     )[0].value;
   }
-  if (data.state === TASK_STATE_BLOCKED) {
-    project.state = TASK_STATE_BLOCKED;
+  if (data.state === STATE_BLOCKED) {
+    project.state = STATE_BLOCKED;
     await project.save();
     data.blockedDate = moment(new Date(), "DD/MM/YYYY");
   }
 
-  if (data.state === TASK_STATE_DONE) {
+  if (data.state === STATE_DONE) {
     data.doneDate = moment(new Date(), "DD/MM/YYYY");
     data.blockedDate = null;
   }
-  if (data.state === TASK_STATE_DOING || data.state === TASK_STATE_ABANDONED) {
+  if (data.state === STATE_DOING || data.state === STATE_ABANDONED) {
     data.doneDate = null;
     data.blockedDate = null;
   }

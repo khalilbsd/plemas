@@ -8,7 +8,7 @@ import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants.js";
 import axios from "../../../store/api/base.js";
 import {
   useDeleteFileFromTaskMutation,
-  useUploadFileToTaskMutation
+  useUploadFileToTaskMutation,
 } from "../../../store/api/tasks.api.js";
 import { updateInterventionUploadedFile } from "../../../store/reducers/task.reducer.js";
 import faEmptyFolder from "../../public/svgs/light/folder-open.svg";
@@ -19,8 +19,6 @@ import faPlus from "../../public/svgs/solid/plus.svg";
 
 import PopUp from "../PopUp/PopUp.jsx";
 
-import useIsUserCanAccess from "../../../hooks/access.js";
-import useGetAuthenticatedUser from "../../../hooks/authenticated.js";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore.js";
 import { notify } from "../notification/notification.js";
 import { projectTaskDetails } from "./style.js";
@@ -29,13 +27,17 @@ const TaskFiles = ({
   interventions,
   taskID,
   intervenantList,
-  isProjectManager
+  isProjectManager,
 }) => {
   const [openFolder, setOpenFolder] = useState(false);
   const isDownloadingRef = useRef(false);
-  const { user } = useGetAuthenticatedUser();
-  const { isSuperUser, isManager } = useIsUserCanAccess();
-  const project = useGetStateFromStore("project", "projectDetails");
+  // const { user } = useGetAuthenticatedUser();
+  // const { isSuperUser, isManager } = useIsUserCanAccess();
+  // const project = useGetStateFromStore("project", "projectDetails");
+  const { isProjectEditable ,isUserEligibleToEdit,isUserAnIntervenant } = useGetStateFromStore(
+    "project",
+    "projectAccess"
+  );
 
   const { projectID } = useParams();
   const classes = projectTaskDetails();
@@ -65,7 +67,7 @@ const TaskFiles = ({
       const fileName = url.substr(url.indexOf("-") + 1);
 
       const res = await axios.get(url, {
-        responseType: "blob"
+        responseType: "blob",
       });
       fileDownload(res.data, fileName);
       isDownloadingRef.current = false;
@@ -87,8 +89,8 @@ const TaskFiles = ({
         taskID,
         body: {
           interventionID: intervention.id,
-          file: file
-        }
+          file: file,
+        },
       }).unwrap();
       //updating the list of files
       dispatch(
@@ -97,7 +99,7 @@ const TaskFiles = ({
           attribute: "file",
           file: res.file,
           intervenantID: res.interventionID,
-          upload: false
+          upload: false,
         })
       );
       handleClose();
@@ -112,7 +114,7 @@ const TaskFiles = ({
     const file = files[0];
 
     if (file?.size > 10 * 1024 * 1024) {
-      notify(NOTIFY_ERROR, "Le fichier est trop grande");
+      notify(NOTIFY_ERROR, "Le fichier est trop volumineux");
       return;
     }
 
@@ -126,18 +128,20 @@ const TaskFiles = ({
     try {
       const formData = new FormData();
       formData.append("file", file);
+
       const res = await uploadFileToTask({
         projectID,
         taskID,
-        body: formData
+        body: formData,
       }).unwrap();
+
       dispatch(
         updateInterventionUploadedFile({
           taskID,
           attribute: "file",
           file: res.file,
           intervenantID: res.interventionID,
-          upload: true
+          upload: true,
         })
       );
       notify(NOTIFY_SUCCESS, res?.message);
@@ -147,14 +151,18 @@ const TaskFiles = ({
     }
   };
 
+  const isDocumentsNull =
+    !attachedFiles.length || !JSON.parse(attachedFiles[0].file).length;
+
+  console.log(attachedFiles);
+  // const isUserAnIntervenant =
   const filesList = attachedFiles.map((item, idx) => {
     const elements = [];
     const files = item.file ? JSON.parse(item.file) : [];
     files.forEach((file, key) => {
       elements.push(
         <div className={classes.fileContainer} key={key}>
-          {(isSuperUser ||
-            (isManager && project?.managerDetails?.email === user?.email)) && (
+          {isUserEligibleToEdit && (
             <button
               className="delete-btn"
               onClick={() => handleDelete(item, file)}
@@ -197,13 +205,16 @@ const TaskFiles = ({
 
   return (
     <div className="project-details-page-task-file-list">
-      <PopUp open={openFolder} handleClose={handleClose} title={`Documents`}>
+      <PopUp className={classes.popUp} open={openFolder} handleClose={handleClose} title={`Documents`}>
         <div className={classes.filesList}>
           {filesList}
-          {(isSuperUser ||
-            (isProjectManager && isManager) ||
-            intervenantList.includes(user?.email)) && (
-            <div className={`${classes.fileItem} add`} onClick={handleUpload}>
+          {((isUserEligibleToEdit || isUserAnIntervenant) && isProjectEditable ) && (
+            <div
+              className={`${classes.fileItem}  ${
+                isDocumentsNull ? "empty-add" : "add"
+              }`}
+              onClick={handleUpload}
+            >
               <ReactSVG src={faPlus} /> <span>Ajouter un fichier</span>
               <input
                 ref={fileInputRef}
@@ -217,21 +228,13 @@ const TaskFiles = ({
         </div>
       </PopUp>
       <button className={classes.taskFileBtn} onClick={handleOpen}>
-        {attachedFiles.length === 0 ? (
+        {isDocumentsNull ? (
           <>
             <ReactSVG src={faEmptyFolder} /> <span>Pas de document</span>
           </>
         ) : (
           <>
-            {JSON.parse(attachedFiles[0].file).length ? (
-              <>
-                <ReactSVG src={faFolders} /> <span>Voir les documents</span>
-              </>
-            ) : (
-              <>
-                <ReactSVG src={faEmptyFolder} /> <span>Pas de document</span>
-              </>
-            )}
+            <ReactSVG src={faFolders} /> <span>Voir les documents</span>
           </>
         )}
       </button>

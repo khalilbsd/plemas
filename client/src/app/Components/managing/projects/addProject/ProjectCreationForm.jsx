@@ -6,7 +6,7 @@ import {
   MenuItem,
   Select,
   Skeleton,
-  TextField
+  TextField,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -20,13 +20,13 @@ import {
   useGenerateProjectCodeMutation,
   useGetLotsMutation,
   useGetPhasesMutation,
-  useGetPotentielManagersMutation
+  useGetPotentielManagersMutation,
 } from "../../../../../store/api/projects.api";
 import {
   setAddProjectCode,
   setLot,
   setPhases,
-  setPotentielManagers
+  setPotentielManagers,
 } from "../../../../../store/reducers/manage.reducer";
 import faSave from "../../../../public/svgs/light/floppy-disk.svg";
 import faClose from "../../../../public/svgs/light/xmark.svg";
@@ -37,6 +37,7 @@ import SelectLot from "../SelectLot";
 import LinkProject from "./LinkProject";
 import PriorityField from "./PriorityField";
 import SearchProjectCode from "./SearchProjectCode";
+import useGetAuthenticatedUser from "../../../../../hooks/authenticated";
 
 const ProjectCreationForm = ({
   handleClose,
@@ -46,12 +47,12 @@ const ProjectCreationForm = ({
   errorMessage,
   setNewProject,
   newProject,
-  loading
+  loading,
   //   addForm
 }) => {
   const projectState = useGetStateFromStore("manage", "addProject");
   const colors = useGetStateFromStore("userInfo", "avatarColors");
-
+  const { user } = useGetAuthenticatedUser();
   // const codeRef = useRef();
   const classes = projectsStyles();
   const externalClasses = addUserFormStyles();
@@ -85,52 +86,66 @@ const ProjectCreationForm = ({
       }
     }
 
+    if (formOpen) {
+      loadProjectCodeSuggestion();
+      loadPhasesAndLots();
+      // loadPotentielManagers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, formOpen]);
+
+  useEffect(() => {
     async function loadPotentielManagers() {
       try {
         const data = await getPotentielManagers().unwrap();
         dispatch(setPotentielManagers(data.users));
+        // setting the current user as manager
+        const currentUserAsManager = data?.users.filter(
+          (manager) => manager.email === user?.email
+        )[0];
+
+        setNewProject({
+          ...newProject,
+          ["manager"]: {
+            ...newProject["manager"],
+            value: currentUserAsManager?.id,
+          },
+        });
       } catch (e) {
         handleClose();
         notify(NOTIFY_ERROR, e?.data?.message);
       }
     }
     if (formOpen) {
-      loadProjectCodeSuggestion();
-      loadPhasesAndLots();
       loadPotentielManagers();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    dispatch,
-    formOpen
-  ]);
-
+  }, [formOpen, user,dispatch]);
 
   const handleDataChange = (e) => {
     setNewProject({
       ...newProject,
-      [e.target.name]: { ...newProject[e.target.name], value: e.target.value }
+      [e.target.name]: { ...newProject[e.target.name], value: e.target.value },
     });
   };
 
   const handlePriority = (selectedPriority) => {
     setNewProject({
       ...newProject,
-      priority: { ...newProject.priority, value: selectedPriority }
+      priority: { ...newProject.priority, value: selectedPriority },
     });
   };
 
   const handleLotChange = (event) => {
     const {
-      target: { value }
+      target: { value },
     } = event;
 
     setNewProject({
       ...newProject,
       lot: {
         ...newProject.lot,
-        value: typeof value === "string" ? value.split(",") : value
-      }
+        value: typeof value === "string" ? value.split(",") : value,
+      },
     });
   };
 
@@ -139,7 +154,6 @@ const ProjectCreationForm = ({
       return errorMessage;
     }
   };
-
 
   return !projectState.lots.length ||
     !projectState.phases.length ||
@@ -197,7 +211,11 @@ const ProjectCreationForm = ({
           />
         </Grid>
         <Grid item xs={12} sm={12} md={4} lg={2}>
-          <LocalizationProvider dateAdapter={AdapterDayjs} error>
+          <LocalizationProvider
+            dateAdapter={AdapterDayjs}
+            adapterLocale="en-gb"
+            error
+          >
             <DatePicker
               onError={() => getErrorMessage("startDate")?.error}
               className={externalClasses.inputs}
@@ -207,8 +225,8 @@ const ProjectCreationForm = ({
                 textField: {
                   helperText:
                     getErrorMessage("startDate")?.error &&
-                    getErrorMessage("startDate")?.message
-                }
+                    getErrorMessage("startDate")?.message,
+                },
               }}
               defaultValue={newProject.startDate.value}
               onChange={(newValue) =>
@@ -216,8 +234,8 @@ const ProjectCreationForm = ({
                   ...newProject,
                   startDate: {
                     ...newProject.startDate,
-                    value: dayjs(newValue).format("DD/MM/YYYY")
-                  }
+                    value: dayjs(newValue).format("DD/MM/YYYY"),
+                  },
                 })
               }
             />
@@ -249,7 +267,7 @@ const ProjectCreationForm = ({
                   <div className={classes.manager}>
                     {manager.image ? (
                       <img
-                      alt="avatar"
+                        alt="avatar"
                         src={`${process.env.REACT_APP_SERVER_URL}${manager.image}`}
                         className={classes.avatar}
                       />

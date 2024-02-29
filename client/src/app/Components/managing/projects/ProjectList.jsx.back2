@@ -11,8 +11,8 @@ import { DataGrid, GridActionsCellItem, frFR } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
 import {
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
+  STATE_BLOCKED,
+  STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
@@ -392,7 +392,7 @@ const ProjectList = ({ addForm, handleForm, loadingProjectList }) => {
       return addProjectState.projectsListFiltered;
     }
     return projects.filter((project) =>
-      [TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(project.state)
+      [STATE_DOING, STATE_BLOCKED].includes(project.state)
     );
   };
 

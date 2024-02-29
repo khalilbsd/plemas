@@ -16,8 +16,8 @@ import {
   PROJECT_MANAGER_ROLE,
   REQUEST_STATES_NOT_TREATED,
   REQUEST_STATES_TREATED,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
+  STATE_BLOCKED,
+  STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../constants/constants.js";
 import { Project, Request, User, UserProfile } from "../../db/relations.js";
@@ -60,7 +60,7 @@ export const createRequest = catchAsync(async (req, res, next) => {
   const project = await Project.findByPk(data.projectID);
   if (!project) return next(new ElementNotFound("Projet introuvable"));
   if (!req.user.isSuperUser){
-    if (![TASK_STATE_DOING,TASK_STATE_BLOCKED].includes(project.state)) return next(new AppError(`vous ne pouvez pas créer des requêtes car le projet est déjà ${TASK_STATE_TRANSLATION.filter(state=>state.value === project.state)[0].label}`))
+    if (![STATE_DOING,STATE_BLOCKED].includes(project.state)) return next(new AppError(`vous ne pouvez pas créer des requêtes car le projet est déjà ${TASK_STATE_TRANSLATION.filter(state=>state.value === project.state)[0].label}`))
   }
   data.creatorID = req.user.id;
   logger.info(
