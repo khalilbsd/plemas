@@ -411,7 +411,7 @@ const ProjectRequests = () => {
   return (
     <div className={classesDetails.card}>
       <div className={`${classesDetails.cardTitle}`}>
-        {(isProjectEditable  &&  isUserAClient ) && (
+        {(isProjectEditable  &&  (isUserAClient || isSuperUser) ) && (
           <button onClick={openAddRequest}>
             <span className="text">Requetes et informations</span>
             <ReactSVG className="icon-container" src={faAdd} />
