@@ -40,7 +40,8 @@ const ProjectDetails = () => {
 
       try {
         const data = await getProjectByID(projectID).unwrap();
-        dispatch(setProject(data?.project));
+        // dispatch(setProject(data?.project));
+        dispatch(setProject(data));
         const res = await getProjectTasks(projectID).unwrap();
         dispatch(setProjectTask(res?.intervenants));
       } catch (error) {

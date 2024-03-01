@@ -4,7 +4,7 @@ import moment from "moment/moment.js";
 
 const InterventionHour = database.define("interventionHour", {
     hours:{
-        type:DataTypes.INTEGER,
+        type:DataTypes.FLOAT,
         allowNull:false,
         defaultValue:0
     },

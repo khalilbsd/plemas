@@ -14,7 +14,8 @@ export const styles = createUseStyles({
       color: "var(--white)",
       fontSize: 16,
       fontWeight: 500,
-      textTransform: "capitalize",
+      // textTransform: "capitalize",
+
       outline: "none",
       border: "none",
       transition: "all 0.3s ease-in-out",

@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import database from "../../db/db.js";
-import { TASK_STATE_DOING } from "../../constants/constants.js";
+import { STATE_DOING } from "../../constants/constants.js";
 
 const Task = database.define(
   "task",
@@ -32,13 +32,13 @@ const Task = database.define(
       defaultValue: false
     },
     totalHours: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: true
     },
     state: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: TASK_STATE_DOING
+      defaultValue: STATE_DOING
     },
     meta:{
       type: DataTypes.STRING,

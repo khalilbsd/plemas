@@ -4,8 +4,8 @@ import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
 import {
   FILTER_TITLES,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING
+  STATE_BLOCKED,
+  STATE_DOING
 } from "../../../../../constants/constants";
 import useGetStateFromStore from "../../../../../hooks/manage/getStateFromStore";
 import {
@@ -85,7 +85,7 @@ const ActiveFilters = ({ dailyFilter, disableDailyFilter }) => {
                       .filter((val) => {
                         return showProjectFilterTypes
                           ? true
-                          : ![TASK_STATE_BLOCKED, TASK_STATE_DOING].includes(
+                          : ![STATE_BLOCKED, STATE_DOING].includes(
                               val
                             );
                       })
@@ -102,7 +102,7 @@ const ActiveFilters = ({ dailyFilter, disableDailyFilter }) => {
           ))}
         {taskFilters
           .filter((tf) => {
-            return showProjectFilterTypes ? true : tf !== TASK_STATE_DOING;
+            return showProjectFilterTypes ? true : tf !== STATE_DOING;
           })
           .map((filter, key) => (
             <li key={key}>

@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import database from "../../db/db.js";
-import { TASK_STATE_DOING } from "../../constants/constants.js";
+import { STATE_DOING } from "../../constants/constants.js";
 
 const Project = database.define(
   "projects",
@@ -26,6 +26,7 @@ const Project = database.define(
     },
     dueDate: {
       type: DataTypes.DATE,
+      defaultValue:null,
       allowNull: true
     },
     priority: {
@@ -41,7 +42,7 @@ const Project = database.define(
       allowNull: false
     },
     managerHours: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue: 0
     },
@@ -58,11 +59,12 @@ const Project = database.define(
     state: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: TASK_STATE_DOING
+      defaultValue: STATE_DOING
     },
     prevPhaseTmp: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true,
+      defaultValue:null
     }
   },
   {

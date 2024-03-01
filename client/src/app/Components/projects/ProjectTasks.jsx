@@ -4,7 +4,7 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridRowEditStopReasons,
-  GridRowModes
+  GridRowModes,
 } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import React, { useRef, useState } from "react";
@@ -15,10 +15,10 @@ import {
   NOTIFY_ERROR,
   NOTIFY_SUCCESS,
   TASK_STATES,
-  TASK_STATE_ABANDONED,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DONE,
-  TASK_STATE_TRANSLATION
+  STATE_ABANDONED,
+  STATE_BLOCKED,
+  STATE_DONE,
+  TASK_STATE_TRANSLATION,
 } from "../../../constants/constants";
 import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
@@ -26,12 +26,12 @@ import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useAssociateToTaskMutation,
   useGetProjectTasksMutation,
-  useUpdateTaskMutation
+  useUpdateTaskMutation,
 } from "../../../store/api/tasks.api";
 import { updateProjectState } from "../../../store/reducers/project.reducer";
 import {
   setProjectTask,
-  updateSpecificTaskAttribute
+  updateSpecificTaskAttribute,
 } from "../../../store/reducers/task.reducer";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -45,7 +45,7 @@ import {
   CustomCheckIcon,
   CustomEditIcon,
   CustomJoinIcon,
-  CustomSaveIcon
+  CustomSaveIcon,
 } from "../icons";
 import { notify } from "../notification/notification";
 import ProjectIntervenant from "./ProjectIntervenant";
@@ -57,6 +57,10 @@ const ProjectTasks = ({ openAddTask }) => {
   const dispatch = useDispatch();
   const tasks = useGetStateFromStore("task", "projectTasks");
   const project = useGetStateFromStore("project", "projectDetails");
+  const { isProjectEditable, isUserEligibleToEdit,isUserAnIntervenant } = useGetStateFromStore(
+    "project",
+    "projectAccess"
+  );
 
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
@@ -76,7 +80,7 @@ const ProjectTasks = ({ openAddTask }) => {
 
       const associated = await associateToTask({
         body: { taskID },
-        projectID
+        projectID,
       }).unwrap();
       notify(NOTIFY_SUCCESS, associated.message);
       setReloadingIntervenants(true);
@@ -114,7 +118,7 @@ const ProjectTasks = ({ openAddTask }) => {
   const handleCancelClick = (id) => () => {
     setRowModesModel({
       ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true }
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
   };
 
@@ -128,17 +132,14 @@ const ProjectTasks = ({ openAddTask }) => {
         return;
       }
       let obj = {};
-      if (
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email)
-      ) {
+      if (isUserEligibleToEdit) {
         obj = { ...newRow };
       }
       obj.state = newRow.state;
       const res = await updateTask({
         body: obj,
         taskID: newRow.id,
-        projectID: projectID
+        projectID: projectID,
       }).unwrap();
       const updatedRow = { ...newRow, isNew: false };
       notify(NOTIFY_SUCCESS, res?.message);
@@ -147,8 +148,7 @@ const ProjectTasks = ({ openAddTask }) => {
         let task = tasks.filter((item) => item.id === parseInt(newRow.id))[0];
         if (
           task.state !== newRow.state &&
-          (newRow.state === TASK_STATE_BLOCKED ||
-            task.state === TASK_STATE_BLOCKED)
+          (newRow.state === STATE_BLOCKED || task.state === STATE_BLOCKED)
         )
           dispatch(
             updateProjectState(
@@ -180,7 +180,7 @@ const ProjectTasks = ({ openAddTask }) => {
       await updateTask({
         body: { isVerified: true },
         taskID,
-        projectID
+        projectID,
       }).unwrap();
 
       notify(NOTIFY_SUCCESS, "Tache verifier");
@@ -188,7 +188,7 @@ const ProjectTasks = ({ openAddTask }) => {
         updateSpecificTaskAttribute({
           taskID,
           attribute: "isVerified",
-          value: true
+          value: true,
         })
       );
     } catch (error) {
@@ -202,24 +202,20 @@ const ProjectTasks = ({ openAddTask }) => {
       format: "DD/MM/YYYY",
       type: "date",
       width: 120,
-      editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
+      editable: isUserEligibleToEdit && isProjectEditable,
 
       valueGetter: (params) => {
         return dayjs(params.row.startDate).locale("en-gb").toDate();
-      }
+      },
     },
     {
       field: "dueDate",
       headerName: "Échéance",
       type: "date",
       width: 120,
-      editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
+      editable: isUserEligibleToEdit && isProjectEditable,
       valueGetter: (params) =>
-        dayjs(params.row.dueDate).locale("en-gb").toDate()
+        dayjs(params.row.dueDate).locale("en-gb").toDate(),
     },
 
     {
@@ -229,14 +225,12 @@ const ProjectTasks = ({ openAddTask }) => {
       minWidth: 200,
       field: "name",
       headerName: "Taches",
-      editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
+      editable: isUserEligibleToEdit && isProjectEditable,
       renderCell: ({ row }) => (
         <Tooltip title={row.name} arrow placement="top">
           <span className={classes.tacheDescription}>{row.name}</span>
         </Tooltip>
-      )
+      ),
     },
     {
       filterable: false,
@@ -257,7 +251,7 @@ const ProjectTasks = ({ openAddTask }) => {
             intervenantList={emailsList}
           />
         );
-      }
+      },
     },
     {
       filterable: false,
@@ -276,21 +270,21 @@ const ProjectTasks = ({ openAddTask }) => {
             taskIntervenants={params.row.intervenants}
           />
         );
-      }
+      },
     },
     {
       filterable: false,
       field: "state",
       headerName: "État",
       width: 150,
-      editable: true,
+      editable: (isUserEligibleToEdit || isUserAnIntervenant) && isProjectEditable,
       type: "singleSelect",
       valueOptions: ({ row }) => {
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
         );
         if (!isSuperUser && !isManager && emailsList?.includes(user?.email))
-          return TASK_STATES.filter((state) => state !== TASK_STATE_ABANDONED);
+          return TASK_STATES.filter((state) => state !== STATE_ABANDONED);
         return TASK_STATES;
       },
       // editable:false,
@@ -300,7 +294,7 @@ const ProjectTasks = ({ openAddTask }) => {
           (state) => state?.value === params.row?.state
         )[0]?.label;
         const date =
-          params.row?.state === TASK_STATE_BLOCKED
+          params.row?.state === STATE_BLOCKED
             ? params.row?.blockedDate
             : params.row?.doneDate;
 
@@ -310,13 +304,13 @@ const ProjectTasks = ({ openAddTask }) => {
             {date ? `le ${dayjs(date).format("DD/MM/YYYY")}` : ""}
           </span>
         );
-      }
+      },
     },
     {
       field: "totalHours",
       headerName: "Heures",
       width: 70,
-      valueGetter: (params) => `${params.row.totalHours || 0}`
+      valueGetter: (params) => `${params.row.totalHours || 0}`,
     },
 
     {
@@ -329,28 +323,15 @@ const ProjectTasks = ({ openAddTask }) => {
         const renderActions = [];
         // if (!user?.email)
         //   return [<Skeleton className={classes.joinBtnSkeleton} />];
-        if (!isSuperUser && !project.isProjectRunning) return renderActions;
+        if ((!isUserEligibleToEdit || !isProjectEditable)) return renderActions;
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
         );
 
-        // if (!emailsList?.includes(user?.email)) {
-        //   renderActions.push(
-        //     <GridActionsCellItem
-        //       data-task-id={row.id}
-        //       icon={<CustomJoinIcon className={classes.icon} />}
-        //       label="Joindre tache"
-        //       className="textPrimary"
-        //       onClick={joinTask}
-        //       color="inherit"
-        //     />
-        //   );
-        // }
         if (
-          (isSuperUser ||
-            (isManager && user?.email === project?.managerDetails?.email)) &&
+          (isUserEligibleToEdit && isProjectEditable ) &&
           !row.isVerified &&
-          project.state === TASK_STATE_DONE
+          project.state === STATE_DONE
         ) {
           renderActions.push(
             <GridActionsCellItem
@@ -358,7 +339,7 @@ const ProjectTasks = ({ openAddTask }) => {
               icon={<CustomCheckIcon className={classes.icon} />}
               label="Vérifier"
               sx={{
-                color: "primary.main"
+                color: "primary.main",
               }}
               onClick={handleVerifyClick}
             />
@@ -372,7 +353,7 @@ const ProjectTasks = ({ openAddTask }) => {
               icon={<CustomSaveIcon className={classes.icon} />}
               label="Save"
               sx={{
-                color: "primary.main"
+                color: "primary.main",
               }}
               onClick={handleSaveClick(id)}
             />,
@@ -387,7 +368,7 @@ const ProjectTasks = ({ openAddTask }) => {
         } else if (
           isSuperUser ||
           (emailsList?.includes(user?.email) &&
-            TASK_STATE_ABANDONED !== row.state) ||
+            STATE_ABANDONED !== row.state) ||
           (isManager && user?.email === project?.managerDetails?.email)
         ) {
           renderActions.push(
@@ -405,7 +386,7 @@ const ProjectTasks = ({ openAddTask }) => {
         }
         if (
           !emailsList.includes(user?.email) &&
-          TASK_STATE_ABANDONED !== row.state &&
+          STATE_ABANDONED !== row.state &&
           user?.role !== CLIENT_ROLE
         ) {
           renderActions.push(
@@ -421,14 +402,13 @@ const ProjectTasks = ({ openAddTask }) => {
         }
 
         return renderActions;
-      }
-    }
+      },
+    },
   ];
 
   const getRowClassName = (params) => {
-    return TASK_STATE_ABANDONED === params.row.state
-      ? isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email)
+    return STATE_ABANDONED === params.row.state
+      ? isUserEligibleToEdit
         ? ""
         : "blocked"
       : "";
@@ -440,10 +420,7 @@ const ProjectTasks = ({ openAddTask }) => {
 
   return (
     <div className={classesDetails.card}>
-      {(isSuperUser ||
-        (isManager &&
-          user?.email === project?.managerDetails?.email &&
-          project.isProjectRunning)) && (
+      { (isUserEligibleToEdit && isProjectEditable) && (
         <div className={`${classesDetails.cardTitle}`}>
           <button onClick={openAddTask}>
             <span className="text">Tache</span>
@@ -463,15 +440,15 @@ const ProjectTasks = ({ openAddTask }) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 100
-            }
-          }
+              pageSize: 100,
+            },
+          },
         }}
         className={classes.list}
         getRowClassName={getRowClassName}
         slots={{
           columnMenu: CustomDataGridHeaderColumnMenu,
-          noRowsOverlay: CustomNoRowsOverlay
+          noRowsOverlay: CustomNoRowsOverlay,
         }}
         editMode="row"
         rowModesModel={rowModesModel}
@@ -485,7 +462,7 @@ const ProjectTasks = ({ openAddTask }) => {
         isCellEditable={(params) =>
           isSuperUser ||
           (isManager && user?.email === project?.managerDetails?.email) ||
-          ![TASK_STATE_ABANDONED].includes(params.row.state)
+          ![STATE_ABANDONED].includes(params.row.state)
         }
       />
     </div>

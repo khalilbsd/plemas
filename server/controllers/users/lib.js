@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { getRSAPublicKey } from "../../Utils/utils.js";
 import { User, UserProfile } from "../../db/relations.js";
 import { config } from "../../environment.config.js";
+import { PROJECT_MANAGER_ROLE, SUPERUSER_ROLE } from "../../constants/constants.js";
 
 //static routes
 
@@ -122,3 +123,11 @@ export const getUserByEmail = async (
 
   return null;
 };
+
+
+/**
+ * this will detemrine if the user is either a superuser or project Manager
+ */
+export function  isUserManagement (user){
+    return ((user.isSuperUser && user.role === SUPERUSER_ROLE )|| user.role === PROJECT_MANAGER_ROLE) ;
+}

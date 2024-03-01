@@ -2,10 +2,10 @@ import "../db/relations.js";
 import excel from "exceljs";
 import { Intervenant, Lot, Phase, Project, ProjectLots, Task } from "../db/relations.js";
 import {
-  TASK_STATE_ABANDONED,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
-  TASK_STATE_DONE
+  STATE_ABANDONED,
+  STATE_BLOCKED,
+  STATE_DOING,
+  STATE_DONE
 } from "../constants/constants.js";
 import moment from "moment";
 
@@ -13,13 +13,13 @@ const determineProjectState = (stateNB) => {
   const tempState = Math.floor(Math.random() * 3) +1
   switch (tempState) {
     case 1:
-      return TASK_STATE_DOING;
+      return STATE_DOING;
     case 2:
-      return TASK_STATE_DONE;
+      return STATE_DONE;
     case 3:
-      return TASK_STATE_BLOCKED
+      return STATE_BLOCKED
     default:
-      return TASK_STATE_ABANDONED;
+      return STATE_ABANDONED;
   }
 };
 const determineTaskState = (stateNB) => {
@@ -27,17 +27,17 @@ const determineTaskState = (stateNB) => {
 
   switch (tempState) {
     case 1:
-      return TASK_STATE_DOING;
+      return STATE_DOING;
 
     case 3:
-      return TASK_STATE_BLOCKED;
+      return STATE_BLOCKED;
     case 4:
-      return TASK_STATE_DONE;
+      return STATE_DONE;
     case 5:
-      return TASK_STATE_ABANDONED;
+      return STATE_ABANDONED;
 
     default:
-      return TASK_STATE_DOING;
+      return STATE_DOING;
   }
 };
 

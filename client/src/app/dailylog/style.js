@@ -161,5 +161,15 @@ export const dailyLogStyle = createUseStyles({
         height: 22
       }
     }
+  },
+  openPickerIcon:{
+    height:18,
+    width:18,
+    borderRadius:'100%',
+    backgroundColor:'var(--light-green)',
+    padding:3,
+    fill:'white !important'
+
+
   }
 });

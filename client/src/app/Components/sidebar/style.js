@@ -40,7 +40,10 @@ export const styles = createUseStyles({
       padding: "20px 0",
       flexDirection: "column",
       justifyContent: "space-between",
+      borderTopLeftRadius: 0,
+      borderBottomLeftRadius: 0,
       borderRadius: 30,
+      // borderRadius: 30,
       // background: "rgb(10,82,59)",
       // background: 'linear-gradient(315deg, rgba(10,82,59,1) 0%, rgba(23,145,127,1) 100%)'
       background:

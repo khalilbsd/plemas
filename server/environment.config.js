@@ -10,7 +10,7 @@ if (process.argv.includes("--prod")) {
 
 
 export const config = {
-    port : process.env.PORT,
+    env_dev: process.argv.includes("--prod"),
     port:process.env.PORT,
     salt_rounds_bcrypt:process.env.SALT_ROUNDS_BCRYPT,
     jwt_secret:process.env.JWT_SECRET,

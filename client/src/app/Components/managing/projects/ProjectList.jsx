@@ -13,8 +13,8 @@ import "dayjs/locale/fr";
 import { useDispatch } from "react-redux";
 import { TableVirtuoso } from "react-virtuoso";
 import {
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
+  STATE_BLOCKED,
+  STATE_DOING,
   TASK_STATE_TRANSLATION
 } from "../../../../constants/constants";
 import useIsUserCanAccess from "../../../../hooks/access";
@@ -54,7 +54,7 @@ const ProjectList = ({ addForm, handleForm }) => {
     dispatch(
       filterProjectsList({
         flag: true,
-        value: TASK_STATE_DOING,
+        value: STATE_DOING,
         attribute: "state",
         popFilter: true
       })
@@ -62,12 +62,12 @@ const ProjectList = ({ addForm, handleForm }) => {
     dispatch(
       filterProjectsList({
         flag: true,
-        value: TASK_STATE_BLOCKED,
+        value: STATE_BLOCKED,
         attribute: "state",
         popFilter: true
       })
     );
-    dispatch(popTaskStateFromFilter(TASK_STATE_DOING));
+    dispatch(popTaskStateFromFilter(STATE_DOING));
   };
   const projectList = () => {
     let listPastTodayDate = [];
@@ -236,7 +236,7 @@ const ProjectList = ({ addForm, handleForm }) => {
                 </>
               )}
             </div>
-            <ExportActions />
+            <ExportActions pdfProjectList={projectList()} projectTasksPDf={projectTasks} />
           </div>
         )}
         <ActiveFilters

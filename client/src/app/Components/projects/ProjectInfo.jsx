@@ -22,11 +22,11 @@ import {
   NOTIFY_ERROR,
   NOTIFY_SUCCESS,
   REQUEST_STATES_TREATED,
-  TASK_STATE_ABANDONED,
-  TASK_STATE_ABANDONED_ORG,
-  TASK_STATE_DOING_ORG,
-  TASK_STATE_DONE,
-  TASK_STATE_DONE_ORG,
+  STATE_ABANDONED,
+  STATE_ABANDONED_ORG,
+  STATE_DOING_ORG,
+  STATE_DONE,
+  STATE_DONE_ORG,
   TASK_STATE_TRANSLATION
 } from "../../../constants/constants";
 import { SUPERUSER_ROLE } from "../../../constants/roles";
@@ -169,8 +169,8 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
           delete data.state;
         } else {
           if (
-            project.state === TASK_STATE_DONE_ORG &&
-            data.state === TASK_STATE_DOING_ORG
+            project.state === STATE_DONE_ORG &&
+            data.state === STATE_DOING_ORG
           ) {
             data.clearDueDate = true;
           }
@@ -186,7 +186,7 @@ const ProjectInfo = ({ loading, open, handleClose }) => {
           projectID: project.id,
           body: {
             action: TASK_STATE_TRANSLATION.filter(
-              (state) => state.value === TASK_STATE_ABANDONED
+              (state) => state.value === STATE_ABANDONED
             )[0].label
           }
         }).unwrap();
@@ -209,7 +209,7 @@ const isShouldCheckProjectIntegrity =()=>{
     )
     return true
 
-  if (project.state === TASK_STATE_DOING_ORG && (editedProject.state === TASK_STATE_DONE_ORG ||editedProject.state === TASK_STATE_ABANDONED_ORG )) {
+  if (project.state === STATE_DOING_ORG && (editedProject.state === STATE_DONE_ORG ||editedProject.state === STATE_ABANDONED_ORG )) {
     return true
   }
   return false
@@ -355,7 +355,7 @@ const isShouldCheckProjectIntegrity =()=>{
             label="Abandoner le projet"
           />
           <div className={classes.warning}>
-            {tasks.filter((task) => task.state !== TASK_STATE_DONE).length >
+            {tasks.filter((task) => task.state !== STATE_DONE).length >
               0 && (
               <p>
                 Veuillez noter que certaines tâches n'ont pas encore été
@@ -364,7 +364,7 @@ const isShouldCheckProjectIntegrity =()=>{
             )}
             {tasks.map(
               (task, idx) =>
-                task.state !== TASK_STATE_DONE && (
+                task.state !== STATE_DONE && (
                   <p
                     key={idx}
                     className={`${classes.unfinished} ${
@@ -531,12 +531,12 @@ const isShouldCheckProjectIntegrity =()=>{
                       id="project-state-simple-select"
                       size="small"
                       fullWidth
-                      value={editedProject.state ? editedProject.state===TASK_STATE_ABANDONED_ORG?"":  editedProject.state: ""}
+                      value={editedProject.state ? editedProject.state===STATE_ABANDONED_ORG?"":  editedProject.state: ""}
                       label="Etat du  project"
                       name="state"
                       onChange={handleChange}
                     >
-                      {TASK_STATE_TRANSLATION.filter(state=>state.label !== TASK_STATE_ABANDONED_ORG).map((trans, idx) => (
+                      {TASK_STATE_TRANSLATION.filter(state=>state.label !== STATE_ABANDONED_ORG).map((trans, idx) => (
                         <MenuItem key={idx} value={trans.label}>
                           {trans.value}
                         </MenuItem>
@@ -699,7 +699,7 @@ const isShouldCheckProjectIntegrity =()=>{
                         <p className="manager-name">
                           {project.managerDetails?.UserProfile?.name}
                           {project.managerDetails?.UserProfile?.lastName}
-                          &nbsp; {project.managerHours}H
+                          &nbsp; {parseFloat(project.managerHours).toFixed(1)}H
                           <br />
                           <span className="email">
                             {project.managerDetails?.email}
@@ -735,7 +735,7 @@ const isShouldCheckProjectIntegrity =()=>{
                   <div className={classes.data}>
                     <p className="label">
                       Total des heures des intervenant:{" "}
-                      {project.projectNbHours ? project.projectNbHours : 0}h{" "}
+                      {project.projectNbHours ? parseFloat(project.projectNbHours).toFixed(1) : 0}h{" "}
                     </p>
                   </div>
 

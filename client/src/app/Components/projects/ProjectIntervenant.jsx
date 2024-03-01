@@ -50,14 +50,8 @@ function AddIntervenant(props) {
     useAddIntervenantsMutation();
   const [addIntervenantToTask] = useAddIntervenantToTaskMutation();
   const externalProjectClasses = projectsStyles();
-  const handleChange = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setIntervenants(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+  const handleChange = (value) => {
+    setIntervenants(value);
   };
 
   const handleClose = () => {
@@ -149,6 +143,10 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const { user } = useGetAuthenticatedUser();
   const project = useGetStateFromStore("project", "projectDetails");
+  const { isProjectEditable, isUserEligibleToEdit } = useGetStateFromStore(
+    "project",
+    "projectAccess"
+  );
   const { projectID } = useParams();
 
   const colors = useGetStateFromStore("userInfo", "avatarColors");
@@ -335,8 +333,7 @@ const ProjectIntervenant = ({ taskIntervenants, taskId }) => {
                 );
               })}
             </AvatarGroup>
-            {((isManager && project?.managerDetails?.email === user?.email) ||
-              isSuperUser) && (
+            {(isProjectEditable && isUserEligibleToEdit) && (
               <>
                 <button onClick={openAddIntervenant}>
                   <ReactSVG src={faAdd} />

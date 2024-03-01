@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useGetStateFromStore from "./manage/getStateFromStore";
-import { TASK_STATE_BLOCKED, TASK_STATE_DOING } from "../constants/constants";
+import { STATE_BLOCKED, STATE_DOING } from "../constants/constants";
 
 function useShowProjectFiltersWhenDailyIsActive() {
   const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
@@ -21,8 +21,8 @@ function useShowProjectFiltersWhenDailyIsActive() {
       );
       if (ActiveFilterTypes[stateIdx]?.value?.length === 2) {
         if (
-          ActiveFilterTypes[stateIdx]?.value?.includes(TASK_STATE_BLOCKED) &&
-          ActiveFilterTypes[stateIdx]?.value?.includes(TASK_STATE_DOING)
+          ActiveFilterTypes[stateIdx]?.value?.includes(STATE_BLOCKED) &&
+          ActiveFilterTypes[stateIdx]?.value?.includes(STATE_DOING)
         )
           setShow(false);
         return;

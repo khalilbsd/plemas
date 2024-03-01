@@ -16,10 +16,10 @@ import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
-  TASK_STATE_ABANDONED,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
-  TASK_STATE_DONE
+  STATE_ABANDONED,
+  STATE_BLOCKED,
+  STATE_DOING,
+  STATE_DONE
 } from "../constants/constants.js";
 import {
   encryptPassword,
@@ -55,13 +55,13 @@ function determineProjectState(state) {
   if (!state) return 1;
   switch (parseInt(state)) {
     case 1:
-      return TASK_STATE_DOING;
+      return STATE_DOING;
     case 2:
-      return TASK_STATE_DONE;
+      return STATE_DONE;
     case 3:
-      return TASK_STATE_ABANDONED;
+      return STATE_ABANDONED;
     default:
-      return TASK_STATE_DOING;
+      return STATE_DOING;
   }
 }
 
@@ -112,15 +112,15 @@ async function runLotMigration(createdProjectsList, verbose) {
 function determineTaskState(status) {
   switch (parseInt(status)) {
     case 1:
-      return TASK_STATE_DOING;
+      return STATE_DOING;
     case 2:
-      return TASK_STATE_DONE;
+      return STATE_DONE;
     case 3:
-      return TASK_STATE_BLOCKED;
+      return STATE_BLOCKED;
     case 4:
-      return TASK_STATE_DONE;
+      return STATE_DONE;
     default:
-      return TASK_STATE_ABANDONED;
+      return STATE_ABANDONED;
   }
 }
 async function runTaskMigration(createdProjectList, verbose) {
@@ -154,7 +154,7 @@ async function runTaskMigration(createdProjectList, verbose) {
             ? resetTime(taskEntry.datesFin)
             : null,
         doneDate:
-          determineTaskState(taskEntry.etatTache) === TASK_STATE_DONE
+          determineTaskState(taskEntry.etatTache) === STATE_DONE
             ? resetTime(taskEntry.datesFin)
             : null,
         isVerified: parseInt(taskEntry.etatTache) === 2 ? true : false,

@@ -36,7 +36,7 @@ const Logout = () => {
           la session est terminée avec succès.
         </p>
         <p className={classes.text}>
-          Vous avez fait du excellent travail aujourd'hui, à bientôt !
+        A bientôt !
         </p>
       </div>
     </div>

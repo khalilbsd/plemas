@@ -6,7 +6,7 @@ import {
   MalformedObjectId,
   MissingParameter,
   UnAuthorized,
-  UnknownError
+  UnknownError,
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
@@ -20,10 +20,10 @@ import {
   PROJECT_MANAGER_ROLE,
   PROJECT_PHASE_STATUS_IN_PROGRESS,
   SUPERUSER_ROLE,
-  TASK_STATE_ABANDONED,
-  TASK_STATE_BLOCKED,
-  TASK_STATE_DOING,
-  TASK_STATE_DONE
+  STATE_ABANDONED,
+  STATE_BLOCKED,
+  STATE_DOING,
+  STATE_DONE,
 } from "../../constants/constants.js";
 import {
   Lot,
@@ -32,16 +32,20 @@ import {
   Request,
   Task,
   User,
-  UserProfile
+  UserProfile,
 } from "../../db/relations.js";
 import logger from "../../log/config.js";
 import Project from "../../models/project/Project.model.js";
 import Intervenant from "../../models/tasks/Intervenant.model.js";
 import {
   calculateDates,
+  checkIfUserIsAnIntervenant,
+  checkUserAsProjectManager,
   generateProjectCustomID,
+  getHighestCode,
   isCodeValid,
-  serializeProject
+  isProjectInProgress,
+  serializeProject,
 } from "./lib.js";
 import { isLotsValid } from "./lot.controller.js";
 import { getPhaseByName } from "./phase.controller.js";
@@ -51,6 +55,7 @@ import { findObjectDifferences } from "../../Utils/utils.js";
 import { getProjectsTasksBulk } from "../tasks/task.controller.js";
 import { isAllProjectsAreValid } from "../tasks/lib.js";
 import InterventionHour from "../../models/tasks/interventionHours.model.js";
+import { isUserManagement } from "../users/lib.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -59,18 +64,18 @@ import InterventionHour from "../../models/tasks/interventionHours.model.js";
 export const getAllProjects = catchAsync(async (req, res, next) => {
   let projects = [];
   const objectQuery = {};
-  if (req.user.role === PROJECT_MANAGER_ROLE) {
-    // objectQuery.manager = req.user.id;
-    objectQuery[Op.or] = [{ manager: req.user.id }];
-  }
+  // if (req.user.role === PROJECT_MANAGER_ROLE) {
+  // // objectQuery.manager = req.user.id;
+  // objectQuery[Op.or] = [{ manager: req.user.id }];
+  // }
   if (
-    req.user.role === PROJECT_MANAGER_ROLE ||
+    // req.user.role === PROJECT_MANAGER_ROLE ||
     req.user.role === INTERVENANT_ROLE
     // (req.user.role !== SUPERUSER_ROLE && !req.user.isSuperUser)
   ) {
     let interventions = await Intervenant.findAll({
       where: { intervenantID: req.user.id },
-      attributes: ["projectID"]
+      attributes: ["projectID"],
     });
     let projectIds = [];
     interventions.forEach((project) => {
@@ -92,7 +97,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     include: [
       {
         model: ProjectLots,
-        include: [Lot]
+        include: [Lot],
       },
       {
         model: User,
@@ -101,23 +106,23 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
         include: [
           {
             model: UserProfile,
-            attributes: ["image", "name", "lastName"]
-          }
-        ]
+            attributes: ["image", "name", "lastName"],
+          },
+        ],
       },
       {
-        model: Phase
+        model: Phase,
       },
       {
-        model: Request
-      }
-    ]
+        model: Request,
+      },
+    ],
   });
 
   const projectsList = serializeProject(projects);
   // projectsList.sort((a, b) => b.code - a.code);
 
-  const dates = calculateDates(3);
+  const dates = calculateDates(2);
 
   let tasks = await getProjectsTasksBulk(
     projectsList.map((project) => project.id)
@@ -163,7 +168,7 @@ export const getAllProjects = catchAsync(async (req, res, next) => {
     status: "success",
     projects: projectsList,
     dates: dates,
-    projectsTasks: tasks
+    projectsTasks: tasks,
   });
 });
 
@@ -175,7 +180,9 @@ export const addProject = catchAsync(async (req, res, next) => {
 
   if (!data.name || !data.startDate || !data.manager || !data.code)
     return next(
-      new MissingParameter("name or start date or manager or code is missing")
+      new MissingParameter(
+        "le nom, la date de début , le responsable et le code sont obligatoire"
+      )
     );
   // checking the code:
 
@@ -185,11 +192,7 @@ export const addProject = catchAsync(async (req, res, next) => {
   const isValidCode = await isCodeValid(data.code, data.phase);
 
   if (!isValidCode)
-    return next(
-      new MalformedObjectId(
-        "Project already exists with that code: did you mean to create a phase?"
-      )
-    );
+    return next(new MalformedObjectId("un autre projet a déjà ce code"));
 
   if (!data.phase || !data.lot.length)
     return next(new MalformedObjectId("lots and phase are mandatory"));
@@ -238,13 +241,13 @@ export const addProject = catchAsync(async (req, res, next) => {
       const isProjectLotExists = await ProjectLots.findOne({
         where: {
           projectID: newProject.id,
-          lotID: lotID
-        }
+          lotID: lotID,
+        },
       });
       if (!isProjectLotExists) {
         await ProjectLots.create({
           projectID: newProject.id,
-          lotID: isAllLotsValid[lotID]
+          lotID: isAllLotsValid[lotID],
         });
       }
     }
@@ -254,9 +257,9 @@ export const addProject = catchAsync(async (req, res, next) => {
         {
           model: User,
           as: "managerDetails",
-          attributes: ["email"]
-        }
-      ]
+          attributes: ["email"],
+        },
+      ],
     });
     //saving tracking
     await takeNote(
@@ -271,15 +274,15 @@ export const addProject = catchAsync(async (req, res, next) => {
       newProject.id,
       {
         extraProps: {
-          managerEmail: newProject.managerDetails.email
-        }
+          managerEmail: newProject.managerDetails.email,
+        },
       }
     );
 
     return res.status(200).json({
       status: "success",
       message: "project created successfully",
-      projectPhase: newProject
+      projectPhase: newProject,
     });
   } catch (error) {
     logger.error(error);
@@ -319,9 +322,9 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
       {
         model: User,
         as: "managerDetails",
-        attributes: ["email"]
-      }
-    ]
+        attributes: ["email"],
+      },
+    ],
   });
 
   if (!project) return next(new ElementNotFound("Projet introuvable"));
@@ -351,7 +354,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
   if (
     details.state !== project.state &&
-    details.state === TASK_STATE_DOING &&
+    details.state === STATE_DOING &&
     project.dueDate
   ) {
     details.dueDate = null;
@@ -361,31 +364,31 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   //flag the project as done
   // if the project is not already done
   if (details.dueDate && !project.dueDate && !details.clearDueDate) {
-    details.state = TASK_STATE_DONE;
+    details.state = STATE_DONE;
     let taskIds = await Intervenant.findAll({
       where: { projectID: req.params.projectID },
-      attributes: ["taskID"]
+      attributes: ["taskID"],
     });
     let ids = [];
     taskIds.forEach(({ taskID }) =>
       !ids.includes(taskID) ? ids.push(taskID) : null
     );
-    await Task.update({ state: TASK_STATE_DONE }, { where: { id: ids } });
+    await Task.update({ state: STATE_DONE }, { where: { id: ids } });
     details.dueDate = moment(details.dueDate, "DD/MM/YYYY");
   } else {
     if (details.dueDate && details.clearDueDate) {
-      details.state = TASK_STATE_DOING;
+      details.state = STATE_DOING;
       details.dueDate = null;
     }
   }
 
-  if ([TASK_STATE_ABANDONED, TASK_STATE_DONE].includes(details.state)) {
+  if ([STATE_ABANDONED, STATE_DONE].includes(details.state)) {
     details.dueDate = moment(new Date(), "DD/MM/YYYY");
-    if (TASK_STATE_ABANDONED === details.state) {
-      abandonProject(TASK_STATE_ABANDONED, project.id);
+    if (STATE_ABANDONED === details.state) {
+      abandonProject(STATE_ABANDONED, project.id);
     }
-    if (TASK_STATE_DONE === details.state) {
-      abandonProject(TASK_STATE_DONE, project.id);
+    if (STATE_DONE === details.state) {
+      abandonProject(STATE_DONE, project.id);
     }
   }
 
@@ -402,7 +405,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
       const [lot, created] = await ProjectLots.findOrCreate({
         // where:  { lotID: lt.id, projectID: req.params.projectID }})
-        where: queryObjectPL
+        where: queryObjectPL,
       });
     }
 
@@ -414,9 +417,9 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
       include: [
         {
           model: Lot,
-          attributes: ["name"]
-        }
-      ]
+          attributes: ["name"],
+        },
+      ],
     });
     projectLots.forEach(async (pl) => {
       if (!details.lots?.includes(pl.lot.name)) {
@@ -431,9 +434,9 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
       {
         model: User,
         as: "managerDetails",
-        attributes: ["email"]
-      }
-    ]
+        attributes: ["email"],
+      },
+    ],
   });
 
   const differences = findObjectDifferences(
@@ -451,8 +454,8 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   await takeNote(ACTION_NAME_PROJECT_UPDATE, req.user.email, project.id, {
     extraProps: {
       oldValues: oldValuesString,
-      newValues: newValuesString
-    }
+      newValues: newValuesString,
+    },
   });
   if (details.manager && details.manager !== project.oldValues.manager) {
     await takeNote(
@@ -462,14 +465,14 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
       {
         extraProps: {
           newManager: project.managerDetails.email,
-          oldManager: oldManager
-        }
+          oldManager: oldManager,
+        },
       }
     );
   }
   return res.status(200).json({
     status: "success",
-    message: "Les détails des projets ont été mis à jour"
+    message: "Les détails des projets ont été mis à jour",
   });
 });
 
@@ -481,21 +484,21 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
   if (currentYear.toString().length !== 4)
     return next(new UnknownError("quelque chose n'a pas fonctionné"));
   var code = undefined;
-  if (type !== "old") {
-    const latestProjectCode = await Project.max("code");
-    if (!latestProjectCode) {
-      code = (parseInt(currentYear) % 1000) * 1000;
-    } else {
-      code = latestProjectCode + 1;
-    }
-  }
-  //get the latest project code which is not customized
-
-  //projects List
+  //  projects List
 
   const projectList = await Project.findAll({
-    attributes: ["id", "code", "name", "customId"]
+    attributes: ["id", "code", "name", "customId"],
   });
+
+  if (type !== "old") {
+    const latestProjectCode = projectList.filter(({ code }) => !isNaN(code));
+
+    if (!latestProjectCode.length) {
+      code = (parseInt(currentYear) % 1000) * 1000;
+    } else {
+      code = getHighestCode(latestProjectCode) + 1;
+    }
+  }
 
   // convert projects List :
   projectList.forEach((project) => {
@@ -505,26 +508,29 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     validCode: code,
-    existantProjects: projectList
+    existantProjects: projectList,
   });
 });
 
 export const checkProjectCode = catchAsync(async (req, res, next) => {
   const code = req.body.code;
 
-  if (!code) return next(new MissingParameter("code is mandatory parameter"));
+  if (!code) return next(new MissingParameter("Le code est obligatoire"));
 
   if (`${code}`.length !== 5)
     return res.status(400).json({
       status: "failed",
-      message: "code is not valid",
+      message: "Code non valide ",
       isValid: false,
-      code
+      code,
     });
 
-  return res
-    .status(200)
-    .json({ status: "succuss", message: "code is valid", isValid: true, code });
+  return res.status(200).json({
+    status: "succuss",
+    message: "code est valide",
+    isValid: true,
+    code,
+  });
 });
 
 export const getProjectsInPhase = catchAsync(async (req, res, next) => {
@@ -533,27 +539,27 @@ export const getProjectsInPhase = catchAsync(async (req, res, next) => {
   //verify if phase is exists
   const phaseDetails = await Phase.findOne({ where: { name: phase } });
   if (!phaseDetails)
-    return next(new ElementNotFound("phase does't not exists"));
+    return next(new ElementNotFound("phase n'existe pas n'existe pas"));
   //get all the projects that are active in that phase
   const projects = await Project.findAll({
     include: [
       {
         // model: ProjectPhase,
-        where: { phaseID: phaseDetails.id }
-      }
-    ]
+        where: { phaseID: phaseDetails.id },
+      },
+    ],
   });
   if (!projects.length)
     return res.status(200).json({
       status: "info",
-      message: `there is no active projects in the phase ${phase}`,
-      projects: []
+      message: `il n'y a pas de projet actif dans la phase ${phase}`,
+      projects: [],
     });
 
   return res.status(200).json({
     status: "info",
-    message: `the list of projects in the ${phase} has been updated`,
-    projects
+    message: `la liste des projets de la phase ${phase} a été mise à jour`,
+    projects,
   });
 });
 
@@ -574,7 +580,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
       {
         model: ProjectLots,
         attributes: ["lotID"],
-        include: [{ model: Lot, attributes: ["name"] }]
+        include: [{ model: Lot, attributes: ["name"] }],
       },
       {
         model: Project,
@@ -582,9 +588,9 @@ export const getProjectById = catchAsync(async (req, res, next) => {
         include: [
           {
             model: Phase,
-            attributes: ["name"]
-          }
-        ]
+            attributes: ["name"],
+          },
+        ],
       },
       {
         model: User,
@@ -593,9 +599,9 @@ export const getProjectById = catchAsync(async (req, res, next) => {
         include: [
           {
             model: UserProfile,
-            attributes: ["name", "lastName", "image"]
-          }
-        ]
+            attributes: ["name", "lastName", "image"],
+          },
+        ],
       },
       {
         model: User,
@@ -604,26 +610,26 @@ export const getProjectById = catchAsync(async (req, res, next) => {
         include: [
           {
             model: UserProfile,
-            attributes: ["name", "lastName", "image"]
-          }
-        ]
+            attributes: ["name", "lastName", "image"],
+          },
+        ],
       },
       {
         model: Phase,
-        attributes: ["name", "abbreviation"]
+        attributes: ["name", "abbreviation"],
       },
       {
-        model: Intervenant
-      }
-    ]
+        model: Intervenant,
+      },
+    ],
   });
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
   // chekc if the user has access to the project
+
   if (
-    !req.user.isSuperUser &&
-    req.user.role !== CLIENT_ROLE &&
-    project.manager !== req.user.id
+    !checkUserAsProjectManager(req.user, project.manager) && !isUserManagement(req.user) &&
+    req.user.role !== CLIENT_ROLE
   ) {
     const projectIntervenants = project.intervenants.map(
       (entry) => entry.intervenantID
@@ -633,16 +639,16 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   }
 
   const projectHours = await Intervenant.sum("nbHours", {
-    where: { projectID: project.id }
+    where: { projectID: project.id },
   });
 
   const result = project.toJSON();
 
   let taskIds = await Intervenant.findAll({
     where: {
-      projectID: project.id
+      projectID: project.id,
     },
-    attributes: ["taskID"]
+    attributes: ["taskID"],
   });
   let ids = [];
 
@@ -651,41 +657,43 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   });
 
   result.projectNbHours = projectHours;
-  result.isProjectRunning = [TASK_STATE_DOING, TASK_STATE_BLOCKED].includes(
-    project.state
-  );
+  // result.isProjectRunning = [STATE_DOING, STATE_BLOCKED].includes(
+  //   project.state
+  // );
 
   const taskStates = await Task.findAll({
     where: {
       id: ids,
-      state: [
-        TASK_STATE_BLOCKED,
-        TASK_STATE_DOING,
-        TASK_STATE_DONE,
-        TASK_STATE_ABANDONED
-      ]
+      state: [STATE_BLOCKED, STATE_DOING, STATE_DONE, STATE_ABANDONED],
       //check if
     },
     attributes: ["state", [sequelize.fn("COUNT", sequelize.col("*")), "nb"]],
-    group: "state"
+    group: "state",
   });
 
   const taskStatus = taskStates.map((item) => item.toJSON());
-  // if (taskStatus.length) {
-  //   let blockedNbr = taskStatus.filter(
-  //     ({ state }) => state === TASK_STATE_BLOCKED
-  //   )[0]?.nb;
-  //   if (blockedNbr) {
-  //     result.state = TASK_STATE_BLOCKED;
-  //   }
 
-  // } else {
-  //   result.state = TASK_STATE_DOING;
-  // }
+  const isProjectEditable = isProjectInProgress(project.state);
 
-  return res
-    .status(200)
-    .json({ status: "success", project: result, taskStatus });
+  const isUserEligibleToEdit = checkUserAsProjectManager(
+    req.user,
+    project.manager
+  );
+
+  const isUserAnIntervenant = checkIfUserIsAnIntervenant(
+    req.user,
+    project.intervenants
+  );
+  const isUserAClient = req.user.role === CLIENT_ROLE;
+  return res.status(200).json({
+    status: "success",
+    project: result,
+    taskStatus,
+    isProjectEditable,
+    isUserEligibleToEdit,
+    isUserAnIntervenant,
+    isUserAClient,
+  });
 });
 
 /**
@@ -706,6 +714,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
   const projectsKeys = Object.keys(projectsHours);
   await isAllProjectsAreValid(projectsKeys, next);
 
+
   for (const idx in projectsKeys) {
     let userId;
 
@@ -723,9 +732,10 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     if (!user)
       return next(new ElementNotFound("le chef projet est introuvable"));
 
-    const hours = Math.round(
-      parseInt(projectsHours[projectsKeys[idx]].value) / 60
-    );
+    const hours =projectsHours[projectsKeys[idx]].value / 60
+    // const hours = Math.round(
+    //   parseInt(projectsHours[projectsKeys[idx]].value) / 60
+    // );
     if (isNaN(hours) || hours < 0)
       return next(
         new AppError("le nombre des heurs doit être un chiffre positif ", 400)
@@ -733,19 +743,21 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
 
     //  affecting hours per date
     const managedHours = await InterventionHour.findOne({
-      where: { projectID: project.id, date: moment(date) }
+      where: { projectID: project.id, date: moment(date) },
     });
+
     if (managedHours) {
-      if (hours === managedHours.hours) continue;
+      // if (hours === managedHours.hours) continue;
       managedHours.hours = hours;
       await managedHours.save();
     } else {
       await InterventionHour.create({
         hours: hours,
         projectID: project.id,
-        date: moment(date)
+        date: moment(date),
       });
     }
+    // console.log("khall");
 
     project.managerHours =
       project.managerHours > hours
@@ -759,8 +771,8 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
       project.id,
       {
         extraProps: {
-          hours: hours
-        }
+          hours: hours,
+        },
       }
     );
   }
@@ -826,18 +838,16 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
 
   if (!project) return next(new ElementNotFound(`Project was not found`));
   let actionState =
-    req.body.action === TASK_STATE_ABANDONED
-      ? TASK_STATE_ABANDONED
-      : TASK_STATE_DOING;
+    req.body.action === STATE_ABANDONED ? STATE_ABANDONED : STATE_DOING;
   abandonProject(actionState, project.id);
   project.state = actionState;
   await project.save();
 
   return res.status(200).json({
     message:
-      actionState === TASK_STATE_ABANDONED
+      actionState === STATE_ABANDONED
         ? "projet abandonné avec ses tâches"
-        : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".'
+        : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".',
   });
 });
 
@@ -845,9 +855,9 @@ const abandonProject = async (action, projectID) => {
   try {
     let taskIds = await Intervenant.findAll({
       where: {
-        projectID: projectID
+        projectID: projectID,
       },
-      attributes: ["taskID"]
+      attributes: ["taskID"],
     });
     if (taskIds.length) {
       let ids = [];
@@ -855,16 +865,16 @@ const abandonProject = async (action, projectID) => {
         if (!ids.includes(taskID)) ids.push(taskID);
       });
       let obj = {
-        state: action
+        state: action,
       };
-      if (action === TASK_STATE_DONE)
+      if (action === STATE_DONE)
         obj.doneDate = moment(new Date(), "DD/MM/YYYY");
 
       await Task.update(obj, {
         where: {
-          id: ids
+          id: ids,
           //check if
-        }
+        },
       });
     }
   } catch (error) {

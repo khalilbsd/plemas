@@ -10,11 +10,17 @@ import { ReactSVG } from "react-svg";
 import * as XLSX from "xlsx";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import faExportIcon from "../../../public/svgs/light/file-export.svg";
-import { CustomExcelFile, CustomFileCsvFile } from "../../icons";
+import { CustomExcelFile, CustomFileCsvFile, CustomPDFFile } from "../../icons";
 import { projectsStyles } from "../style";
 import useOutsideAlerter from "../../../../hooks/outsideClick";
+// import pdf from  'pdfjs'
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 
-const ExportActions = () => {
+// Register fonts with pdfMake
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+const ExportActions = ({pdfProjectList,projectTasksPDf}) => {
   const [showList, setShowList] = useState(false);
   const classes = projectsStyles();
   const projects = useGetStateFromStore("manage", "projectsList");
@@ -25,12 +31,11 @@ const ExportActions = () => {
     setShowList((prev) => !prev);
   };
 
-
-  const hideExportOptions =()=>{
-    if (showList){
-      setShowList(false )
+  const hideExportOptions = () => {
+    if (showList) {
+      setShowList(false);
     }
-  }
+  };
 
   useOutsideAlerter(listRef, () => hideExportOptions());
 
@@ -56,17 +61,63 @@ const ExportActions = () => {
     return projects.map((item) => ({
       ID: item.id,
       Code: item.code,
-      Phase: item.activePhase,
-      "Etat du projet": item.state,
       "Nom  du projet": item.projectName,
       "ID complet du projet": item.projectCustomId,
-      "Liste des taches": getProjectTasks(item.id),
-      // "Etat du projet": item.phaseStatus,
+      Phase: item.activePhase,
+      "Etat du projet": item.state,
+      "Chef de projet": item?.manager?.fullName,
       Priority: item.priority,
-      "Requête traité": item.requestsTreated
+      "Liste des taches": getProjectTasks(item.id),
+
+      // "Etat du projet": item.phaseStatus,
+      "Requête traité": item.requestsTreated,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
+
+  console.log(pdfProjectList);
+  const handleExportPdf = async () => {
+    const documentDefinition = {
+      defaultStyle: {
+        fontSize: 9,
+        bold: true,
+      },
+      content: [
+        {
+          table: {
+            headerRows: 1,
+            body: [
+              [
+                "Code",
+                "Nom du projet",
+                "ID complet du projet",
+                "Phase",
+                "Etat du projet",
+                "Chef de projet",
+                "Priority",
+                "Liste des taches",
+                "Requête traité",
+              ],
+              ...pdfProjectList.map((item) => [
+                item.code,
+                item.projectName,
+                item.projectCustomId,
+                item.activePhase,
+                item.state,
+                item.manager?.fullName,
+                item.priority,
+                projectTasksPDf(item.id).map(task=>task.name).toString(),
+                item.requestsTreated,
+              ]),
+            ],
+          },
+        },
+      ],
+    };
+
+    // Create and download the PDF
+    pdfMake.createPdf(documentDefinition).download("exported_data.pdf");
+  };
 
   const handleExcelDownload = () => {
     const worksheet = XLSX.utils.json_to_sheet(exportableData);
@@ -97,6 +148,15 @@ const ExportActions = () => {
                   <CustomExcelFile className="list-icon" />
                 </ListItemIcon>
                 <ListItemText primary="Format excel" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleExportPdf}>
+                <ListItemIcon>
+                  {/* <InboxIcon /> */}
+                  <CustomPDFFile className="list-icon" />
+                </ListItemIcon>
+                <ListItemText primary="Format PDF" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>

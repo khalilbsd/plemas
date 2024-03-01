@@ -62,7 +62,7 @@ const ResetNotAuthUser = ({ handleSuccess, handleFailure }) => {
           </Grid>
           <Grid item xs={12} md={12} lg={12}>
             <button type="submit" className={classes.emailSendBtn}>
-              réinitialiser le mot de passe
+              Réinitialiser le mot de passe
             </button>
           </Grid>
         </Grid>

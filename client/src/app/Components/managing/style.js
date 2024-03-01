@@ -353,13 +353,13 @@ export const projectsStyles = createUseStyles({
       backgroundColor: "var(--app-bg-color)",
     },
     "&.done-bar": {
-      backgroundColor: "var(--dark-green)",
+      backgroundColor: "var(--light-green)",
       position: "absolute",
       left: 0,
       top: 0,
       height: 20,
 
-      padding: 0,
+      // padding: 0,
     },
     "&.blocked-bar": {
       padding: 0,
@@ -638,7 +638,7 @@ export const projectsStyles = createUseStyles({
     },
   },
   intevDialog: {
-    width: 300,
+    width: 400,
   },
   multipleUsers: {
     marginBottom: "5px !important",

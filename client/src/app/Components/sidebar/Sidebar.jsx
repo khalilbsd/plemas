@@ -116,7 +116,7 @@ const SidebarComponent = () => {
             icon={<ReactSVG src={faLogout} className={classes.linkIcon} />}
             component={<Link to="/logout" />}
           >
-            Se déconnecté
+           Se déconnecter
           </MenuItem>
         </Menu>
       </div>

@@ -2,11 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   projectDetails: {},
+  projectAccess: {
+    isProjectEditable: false,
+    isUserEligibleToEdit: false,
+    isUserAnIntervenant: false,
+    isUserAClient: false,
+  },
   projectRequest: [],
   edit: false,
   twoWeeksList: [],
   twoWeeksListFiltered: [],
-  projectLog: []
+  projectLog: [],
 };
 
 const projectSlice = createSlice({
@@ -14,7 +20,14 @@ const projectSlice = createSlice({
   initialState,
   reducers: {
     setProject: (state, action) => {
-      state.projectDetails = action.payload;
+      state.projectDetails = action.payload.project;
+      state.projectAccess = {
+        isProjectEditable: action.payload.isProjectEditable,
+        isUserEligibleToEdit: action.payload.isUserEligibleToEdit,
+        isUserAnIntervenant: action.payload.isUserAnIntervenant,
+        isUserAClient:action.payload.isUserAClient
+
+      };
     },
     setEditProject: (state, action) => {
       state.edit = action.payload;
@@ -56,8 +69,8 @@ const projectSlice = createSlice({
           requestIdx
         ].file.filter((file) => file !== action.payload.file);
       }
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -71,7 +84,7 @@ export const {
   updateProjectState,
   setProjectLog,
   updateFileRequestList,
-  setTwoWeeksDatesListFiltered
+  setTwoWeeksDatesListFiltered,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

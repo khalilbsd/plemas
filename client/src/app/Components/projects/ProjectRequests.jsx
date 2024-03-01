@@ -58,6 +58,10 @@ const ProjectRequests = () => {
   const dispatch = useDispatch();
   const { projectID } = useParams();
   const project = useGetProjectRequestMutation("project", "projectDetails");
+  const { isProjectEditable, isUserEligibleToEdit,isUserAClient } = useGetStateFromStore(
+    "project",
+    "projectAccess"
+  );
   const classesDetails = projectDetails();
   const taskStyles = projectTaskDetails();
 
@@ -184,7 +188,7 @@ const ProjectRequests = () => {
       // width: descriptionWidth,
       flex: 1,
       minWidth: 200,
-      editable: true,
+      editable: isSuperUser || isUserAClient,
       filterable: false
     },
     {
@@ -242,9 +246,8 @@ const ProjectRequests = () => {
       headerName: "État",
       type: "singleSelect",
       valueOptions: REQUEST_STATES_LABELS,
-      editable:
-        isSuperUser ||
-        (isManager && user?.email === project?.managerDetails?.email),
+      editable:isUserEligibleToEdit
+      ,
       width: 160,
       renderCell: (params) => {
         const status =
@@ -328,6 +331,8 @@ const ProjectRequests = () => {
       }
     }
     loadRequests();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectID]);
 
   const openAddRequest = () => {
@@ -406,7 +411,7 @@ const ProjectRequests = () => {
   return (
     <div className={classesDetails.card}>
       <div className={`${classesDetails.cardTitle}`}>
-        {(isSuperUser || project.isProjectRunning) && (
+        {(isProjectEditable  &&  isUserAClient ) && (
           <button onClick={openAddRequest}>
             <span className="text">Requetes et informations</span>
             <ReactSVG className="icon-container" src={faAdd} />

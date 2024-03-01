@@ -7,7 +7,7 @@ import { ReactSVG } from "react-svg";
 import {
   DAILY_HOURS_VALUE,
   NOTIFY_ERROR,
-  NOTIFY_SUCCESS
+  NOTIFY_SUCCESS,
 } from "../../../constants/constants";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import { useAssignManagerHoursBulkMutation } from "../../../store/api/projects.api";
@@ -15,7 +15,7 @@ import { useAssignHoursInTaskMutation } from "../../../store/api/tasks.api";
 import {
   hideDailyProject,
   hideDailyTask,
-  updateDailyHours
+  updateDailyHours,
 } from "../../../store/reducers/task.reducer";
 import { dailyLogStyle } from "../../dailylog/style";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
@@ -24,20 +24,24 @@ import faClose from "../../public/svgs/light/xmark.svg";
 import { notify } from "../notification/notification";
 import { projectDetails } from "../projects/style";
 import TaskItem from "./TaskItem";
+import { CustomPlusIcon  } from "../icons";
+import useIsUserCanAccess from "../../../hooks/access";
 const TasksList = ({
   handleJoinable,
   joinable,
   tasks,
   handleDateChange,
   historyDate,
-  joinDisabled
+  joinDisabled,
 }) => {
   const classes = dailyLogStyle();
   const classesDetails = projectDetails();
   const hourDivision = useGetStateFromStore("task", "dailyLogDevisions");
   const managedProjects = useGetStateFromStore("task", "dailyProjectManager");
-  const [savingHours, setSavingHours] = useState(false)
-  const [assignHoursInTask,] = useAssignHoursInTaskMutation();
+  const { isSuperUser, isManager } = useIsUserCanAccess();
+
+  const [savingHours, setSavingHours] = useState(false);
+  const [assignHoursInTask] = useAssignHoursInTaskMutation();
   const [assignManagerHoursBulk] = useAssignManagerHoursBulkMutation();
   const dispatch = useDispatch();
 
@@ -53,25 +57,25 @@ const TasksList = ({
   };
 
   const handleSaveHours = async () => {
-    setSavingHours(true)
+    setSavingHours(true);
     try {
       await assignHoursInTask({
         date: historyDate,
-        userTasks: hourDivision?.tasks
+        userTasks: hourDivision?.tasks,
       }).unwrap();
 
       await assignManagerHoursBulk({
         date: historyDate,
-        projectsHours: hourDivision?.projects
+        projectsHours: hourDivision?.projects,
       }).unwrap();
 
       notify(NOTIFY_SUCCESS, "mise a jour des heurs a terminé");
       setTimeout(() => {
-        setSavingHours(false)
+        setSavingHours(false);
       }, 1000);
     } catch (error) {
       notify(NOTIFY_ERROR, error?.data?.message);
-      setSavingHours(false)
+      setSavingHours(false);
     }
   };
 
@@ -102,11 +106,21 @@ const TasksList = ({
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
           <DatePicker
             // className={classes.datePicker}
+
+            OpenPickerIcon={<CustomPlusIcon />}
             label="Date"
+            value={historyDate}
             defaultValue={historyDate}
             minDate={dayjs().subtract(7, "day")}
             maxDate={dayjs()}
-            slotProps={{ textField: { variant: "standard", size: "small" } }}
+            slots={{openPickerIcon:()=><CustomPlusIcon className={classes.openPickerIcon} />}}
+            slotProps={{
+              textField: { variant: "standard", size: "small", readOnly: true },
+              tabs: {
+                dateIcon: <CustomPlusIcon />,
+
+              },
+            }}
             onChange={(newValue) => handleDateChange(newValue)}
           />
         </LocalizationProvider>
@@ -116,7 +130,7 @@ const TasksList = ({
         aujourd'hui.
       </div> */}
       <div className={classes.scrollView}>
-        {
+        {(isSuperUser ||  isManager)&&
           <div className={classes.taskList}>
             <h2 className={classes.sectionTitle}>vos projet</h2>
             {managedProjects.map((project, idx) => (

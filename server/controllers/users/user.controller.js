@@ -4,14 +4,14 @@ import {
   AppError,
   ElementNotFound,
   MalformedObjectId,
-  MissingParameter
+  MissingParameter,
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import {
   CLIENT_ROLE,
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
-  SUPERUSER_ROLE
+  SUPERUSER_ROLE,
 } from "../../constants/constants.js";
 import { UserProfile } from "../../db/relations.js";
 import { config } from "../../environment.config.js";
@@ -25,7 +25,7 @@ import {
   encryptPassword,
   getUserByEmail,
   serializeProfile,
-  serializeUser
+  serializeUser,
 } from "./lib.js";
 
 /*
@@ -41,7 +41,7 @@ export const getAll = catchAsync(async (req, res, next) => {
       "isBanned",
       "active",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
     ],
     include: [
       {
@@ -52,10 +52,10 @@ export const getAll = catchAsync(async (req, res, next) => {
           "poste",
           "phone",
           "address",
-          "hireDate"
-        ]
-      }
-    ]
+          "hireDate",
+        ],
+      },
+    ],
   });
   // console.log(users);
   const simplifiedUsers = users.map((user) => {
@@ -67,7 +67,7 @@ export const getAll = catchAsync(async (req, res, next) => {
       createdAt,
       updatedAt,
       isBanned,
-      active
+      active,
     } = user.toJSON();
     const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
     const { name, lastName, poste, phone, address, hireDate } =
@@ -86,7 +86,7 @@ export const getAll = catchAsync(async (req, res, next) => {
       poste,
       phone,
       address,
-      hireDate
+      hireDate,
     };
   });
 
@@ -97,15 +97,15 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
   const users = await User.findAll({
     where: {
       isBanned: false,
-      [Op.or]: [{ role: SUPERUSER_ROLE }, { role: PROJECT_MANAGER_ROLE }]
+      [Op.or]: [{ role: SUPERUSER_ROLE }, { role: PROJECT_MANAGER_ROLE }],
     },
     attributes: ["id", "email"],
     include: [
       {
         model: UserProfile,
-        attributes: ["name", "lastName", "image", "poste"]
-      }
-    ]
+        attributes: ["name", "lastName", "image", "poste"],
+      },
+    ],
   });
   // console.log(users);
   const simplifiedUsers = users.map((user) => {
@@ -118,7 +118,7 @@ export const getPotentielProjectManager = catchAsync(async (req, res, next) => {
       lastName,
       name,
       image,
-      poste
+      poste,
     };
   });
 
@@ -135,11 +135,11 @@ export const getPotentielIntervenants = catchAsync(async (req, res, next) => {
 export const projectPotentialIntervenants = async (projectID) => {
   const objectQuery = {
     isBanned: false,
-    role: { [Op.ne]: CLIENT_ROLE }
+    role: { [Op.ne]: CLIENT_ROLE },
   };
   const existingIntervenants = await Intervenant.findAll({
     where: { projectID: projectID, intervenantID: { [Op.not]: null } },
-    attributes: ["intervenantID"]
+    attributes: ["intervenantID"],
   });
 
   if (existingIntervenants) {
@@ -148,7 +148,7 @@ export const projectPotentialIntervenants = async (projectID) => {
       list.push(inter.intervenantID);
     });
     objectQuery.id = {
-      [Op.notIn]: list
+      [Op.notIn]: list,
     };
   }
 
@@ -158,9 +158,9 @@ export const projectPotentialIntervenants = async (projectID) => {
     include: [
       {
         model: UserProfile,
-        attributes: ["name", "lastName", "image", "poste"]
-      }
-    ]
+        attributes: ["name", "lastName", "image", "poste"],
+      },
+    ],
   });
   const simplifiedUsers = users.map((user) => {
     const { id, email } = user.toJSON();
@@ -172,7 +172,7 @@ export const projectPotentialIntervenants = async (projectID) => {
       lastName,
       name,
       image,
-      poste
+      poste,
     };
   });
 
@@ -194,7 +194,7 @@ export const addUser = catchAsync(async (req, res, next) => {
   const isUserExist = await getUserByEmail(newUser.email);
   if (isUserExist) {
     logger.error(`a user with the email " ${newUser.email} " already exists`);
-    return res.status(403).json({ message: "user already exists" });
+    return res.status(403).json({ message: "utilisateur déjà existant" });
     // next(new AppError("user already exists", 403));
   }
   // password encryption
@@ -207,6 +207,9 @@ export const addUser = catchAsync(async (req, res, next) => {
 
     newUser.token = token;
   }
+  //check role
+
+  newUser.isSuperUser = newUser.role === SUPERUSER_ROLE;
 
   const user = await User.create({ ...newUser });
   if (!user)
@@ -239,7 +242,7 @@ export const addUser = catchAsync(async (req, res, next) => {
         subject: `Account Verification Link (valid for ${
           config.verify_token_expires_in / 60000
         } min)`,
-        args: { url }
+        args: { url },
       });
     } catch (error) {
       console.log(error);
@@ -261,7 +264,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 export const createUserProfile = async (info, user, next) => {
   if (!user || !info) return null;
   const isNameLastNameExists = await UserProfile.findOne({
-    where: { name: info.name, lastName: info.lastName }
+    where: { name: info.name, lastName: info.lastName },
   });
   if (isNameLastNameExists) {
     await user.destroy();
@@ -293,7 +296,7 @@ export const getUserInfo = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     user: serializeUser(user),
-    profile: serializeProfile(user.UserProfile)
+    profile: serializeProfile(user.UserProfile),
   });
 });
 
@@ -319,7 +322,7 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   const newProfile = req.body;
 
   const user = await User.findOne({
-    where: { email: newProfile.email || req.user.email }
+    where: { email: newProfile.email || req.user.email },
   });
   if (!user) {
     const errorMsg = `the user : ${newProfile.email} is not found`;
@@ -337,7 +340,7 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   await userProfile.save();
   return res.status(200).json({
     status: "success",
-    message: "le profil de l'utilisateur a été mis à jour avec succès"
+    message: "le profil de l'utilisateur a été mis à jour avec succès",
   });
 });
 /**
@@ -382,7 +385,7 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     message: "l'image de profil a été mise à jour avec succès",
-    url
+    url,
   });
 });
 
@@ -403,8 +406,8 @@ export const authenticateUserWithToken = catchAsync(async (req, res, next) => {
       token: token,
       active: false,
       isBanned: false,
-      password: null
-    }
+      password: null,
+    },
   });
 
   if (!user) return next(new ElementNotFound("aucun utilisateur de ce type"));
@@ -432,7 +435,7 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
       SUPERUSER_ROLE,
       INTERVENANT_ROLE,
       PROJECT_MANAGER_ROLE,
-      CLIENT_ROLE
+      CLIENT_ROLE,
     ].includes(role)
   )
     return next(new ElementNotFound("le rôle n'existent pas"));
@@ -451,7 +454,7 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
 
   return res.status(200).json({
     status: "success",
-    message: "The user role has been updated successfully "
+    message: "The user role has been updated successfully ",
   });
 });
 
@@ -489,6 +492,6 @@ export const unBanUser = catchAsync(async (req, res, next) => {
 
   return res.status(200).json({
     state: "success",
-    message: `l'utilisateur ${email} a été débanni`
+    message: `l'utilisateur ${email} a été débanni`,
   });
 });
