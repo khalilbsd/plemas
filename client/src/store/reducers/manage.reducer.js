@@ -209,10 +209,9 @@ const manageSlice = createSlice({
                 );
 
                 // Check if the intersection is equal to the original nestedValue array
-                return (
-                  JSON.stringify(intersection.sort()) ===
-                  JSON.stringify(nestedValue.sort())
-                );
+                const isExactMatch = JSON.stringify(intersection.sort()) === JSON.stringify(filterAttribute.value.sort()) &&
+                JSON.stringify(nestedValue.sort()) === JSON.stringify(filterAttribute.value.sort());
+                return isExactMatch;
               } else {
                 return filterAttribute.value.some((filterVal) => {
                   const regex = new RegExp(filterVal, "i");

@@ -75,7 +75,7 @@ const ExportActions = ({pdfProjectList,projectTasksPDf}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
 
-  console.log(pdfProjectList);
+  // console.log(pdfProjectList);
   const handleExportPdf = async () => {
     const documentDefinition = {
       defaultStyle: {

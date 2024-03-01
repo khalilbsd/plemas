@@ -7,52 +7,25 @@ import { NOTIFY_ERROR } from "../../../constants/constants";
 import useIsUserCanAccess from "../../../hooks/access";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
-  useGetProjectByIDMutation,
   useGetProjectListMutation
 } from "../../../store/api/projects.api";
-import { useGetProjectRequestMutation } from "../../../store/api/requests.api";
-import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
 import { setProjectList } from "../../../store/reducers/manage.reducer";
-import { setProject, setProjectRequests } from "../../../store/reducers/project.reducer";
-import { setProjectTask } from "../../../store/reducers/task.reducer";
 import faChevronDown from "../../public/svgs/light/chevron-down.svg";
 import faSearch from "../../public/svgs/light/magnifying-glass.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
 import { notify } from "../notification/notification";
 import ProjectInfo from "./ProjectInfo";
 import { projectDetails } from "./style";
-const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
+import useLoadProjects from "../../../hooks/services/fetchers/loadProjects.fetch.service";
+const ProjectHeader = ({ loading, openLogTab, trackingRef ,changeProject }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
   const { isSuperUser } = useIsUserCanAccess();
-
   const classes = projectDetails();
   const [details, setDetails] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
-  const [getProjectList] = useGetProjectListMutation();
-  const [getProjectByID] = useGetProjectByIDMutation();
-  const [getProjectTasks] = useGetProjectTasksMutation();
-  const [getProjectRequest] =
-  useGetProjectRequestMutation();
+  useLoadProjects([toggleSearch,projectList.length],toggleSearch && !projectList.length)
 
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    async function loadProjects() {
-      try {
-        const data = await getProjectList().unwrap();
-        dispatch(
-          setProjectList({ projects: data.projects, tasks: data.projectsTasks })
-        );
-      } catch (error) {
-        notify(NOTIFY_ERROR, error?.data?.message);
-      }
-    }
-    if (toggleSearch && !projectList.length) {
-      loadProjects();
-    }
-  }, [toggleSearch, getProjectList, projectList.length, dispatch]);
 
   const openDetails = () => {
     setDetails(true);
@@ -72,39 +45,7 @@ const ProjectHeader = ({ loading, openLogTab, closeLogTab, trackingRef }) => {
   };
 
   const handleChangeSearch = (value) => {
-    async function loadProjectTasks() {
-      try {
-        const res = await getProjectTasks(value.id).unwrap();
-        dispatch(setProjectTask(res?.intervenants));
-      } catch (error) {
-
-        notify(NOTIFY_ERROR, error?.data?.message);
-      }
-    }
-
-    async function loadProjects() {
-      try {
-        const data = await getProjectByID(value.id).unwrap();
-        dispatch(setProject(data?.project));
-      } catch (error) {
-
-        notify(NOTIFY_ERROR, error?.data?.message);
-      }
-    }
-    async function loadRequests() {
-
-      try {
-        const res = await getProjectRequest(value.id).unwrap();
-        dispatch(setProjectRequests(res?.requests));
-      } catch (error) {
-        notify(NOTIFY_ERROR, error?.data?.message);
-      }
-    }
-
-    loadProjects();
-    loadProjectTasks();
-    loadRequests();
-
+    if (value?.id)changeProject(value.id)
   };
 
   const getSearchProjectList = () => {

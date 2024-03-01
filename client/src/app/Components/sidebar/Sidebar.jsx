@@ -1,11 +1,11 @@
 import React from "react";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Logo from "../../public/svgs/Kairos logo_3.svg";
 import { getRolesBasedUrls } from "../../routes/urls";
 import { styles } from "./style";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { ReactSVG } from "react-svg";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import useGetUserInfo from "../../../hooks/user";
@@ -15,12 +15,12 @@ import faLogout from "../../public/svgs/light/right-from-bracket.svg";
 const SidebarComponent = () => {
   const classes = styles();
   // const [collapse, setCollapse] = useState(true);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const user = useGetUserInfo();
-  const collapse = useGetStateFromStore('sidebar','collapsed')
+  const collapse = useGetStateFromStore("sidebar", "collapsed");
   const handleCollapse = () => {
     // setCollapse(!collapse);
-    dispatch(toggleSideBarStatus())
+    dispatch(toggleSideBarStatus());
   };
 
   return (
@@ -45,22 +45,7 @@ const SidebarComponent = () => {
             <ReactSVG src={faBars} className="bars-icon" />
           </button>
         </div>
-        {/* <div className={classes.profile}>
-          <div className={classes.profileImageContainer}>
-          <img
-                src={`${process.env.REACT_APP_SERVER_URL}${user?.profile?.image}`}
-                className={classes.profileImage}
-              />
-          </div>
-          <div className={classes.username}>
-            <h3 className="name">
-            {user?.profile?.name} {user?.profile?.lastName}
-            </h3>
-            <p className="role">
-              {user?.user?.role}
-            </p>
-          </div>
-        </div> */}
+
         <Menu>
           <MenuItem
             icon={
@@ -80,14 +65,14 @@ const SidebarComponent = () => {
               </div>
             }
             className={classes.profile}
-            component={<Link to="/profile/me" />}
+            component={<NavLink to="/profile/me" />}
           >
             <div className={classes.username}>
               <h3 className="name">
                 {user?.profile?.name} {user?.profile?.lastName}
               </h3>
               <p className="role">
-                {user?.profile?.poste?user?.profile?.poste:""}
+                {user?.profile?.poste ? user?.profile?.poste : ""}
               </p>
             </div>
           </MenuItem>
@@ -100,9 +85,15 @@ const SidebarComponent = () => {
                     key={key}
                     className={classes.link}
                     icon={<ReactSVG src={icon} className={classes.linkIcon} />}
-                    component={<Link to={path} />}
+                    component={
+                      <NavLink
+                        className={({ isActive }) =>
+                          isActive ? "active" : "inactive"
+                        }
+                        to={path}
+                      ></NavLink>
+                    }
                   >
-
                     {title}
                   </MenuItem>
                 )
@@ -114,9 +105,9 @@ const SidebarComponent = () => {
           <MenuItem
             className={`${classes.link} logout`}
             icon={<ReactSVG src={faLogout} className={classes.linkIcon} />}
-            component={<Link to="/logout" />}
+            component={<NavLink to="/logout" />}
           >
-           Se déconnecter
+            Se déconnecter
           </MenuItem>
         </Menu>
       </div>

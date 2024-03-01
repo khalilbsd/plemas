@@ -558,3 +558,52 @@
 {"projectID":7142,"taskName":"Etude Doc","requestName":null,"email":"ssengineering.tn@gmail.com","action":"TASK_CREATION","code":101,"action_date":"26/02/2024"}
 {"projectID":7142,"taskName":"Etude Doc","requestName":null,"email":"ssengineering.tn@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"26/02/2024","intervenantsNames":"d"}
 {"projectID":7142,"taskName":"Etude Doc","requestName":null,"email":"ssengineering.tn@gmail.com","action":"TASK_UPDATE","code":111,"action_date":"26/02/2024","oldValues":"","newValues":""}
+{"projectID":9,"taskName":"Coffrage et ferraillage","requestName":null,"email":"houssem.badr@gmail.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"01/03/2024"}
+{"projectID":22,"taskName":"Etude docs","requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"01/03/2024","intervenantsNames":"hb@concerto-pr.com"}
+{"projectID":20,"taskName":"réponse ribal","requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"01/03/2024","intervenantsNames":"wocigos422@trackden.com"}
+{"projectID":20,"taskName":"réponse ribal","requestName":null,"email":"wocigos422@trackden.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"29/02/2024","hours":3.683333333333333}
+{"projectID":10,"taskName":null,"requestName":null,"email":"wocigos422@trackden.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":4}
+{"projectID":29,"taskName":null,"requestName":null,"email":"wocigos422@trackden.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0.16666666666666666}
+{"projectID":17,"taskName":null,"requestName":"test ","email":"gayahe4754@grassdev.com","action":"REQUEST_CREATION","code":102,"action_date":"01/03/2024"}
+{"projectID":17,"taskName":null,"requestName":"sffsfsf","email":"gayahe4754@grassdev.com","action":"REQUEST_UPDATE","code":112,"action_date":"01/03/2024","oldValues":"test , ","newValues":"sffsfsf, "}
+{"projectID":17,"taskName":null,"requestName":"sffsfsffsdfdfsdf","email":"gayahe4754@grassdev.com","action":"REQUEST_UPDATE","code":112,"action_date":"01/03/2024","oldValues":"sffsfsf, ","newValues":"sffsfsffsdfdfsdf, "}
+{"projectID":14,"taskName":null,"requestName":null,"email":"gayahe4754@grassdev.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/03/2024","oldValues":"blocked, ","newValues":"doing, "}
+{"projectID":14,"taskName":"Quantités que surface vente","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_UPDATE","code":111,"action_date":"01/03/2024","oldValues":"","newValues":""}
+{"projectID":14,"taskName":"Quantités que surface vente","requestName":null,"email":"gayahe4754@grassdev.com","action":"INTERVENANT_JOINED_TASK","code":119,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"Khalil","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"Khalil","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"01/03/2024","intervenantsNames":"g"}
+{"projectID":14,"taskName":"chef projet","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"chef projet","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"01/03/2024","intervenantsNames":"g"}
+{"projectID":14,"taskName":"Meduim","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"Meduim","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANTS_BULK_TASK","code":117,"action_date":"01/03/2024","intervenantsNames":"gayahe4754@grassdev.com, houssem.badr@gmail.com, khalilbensaid98@gmail.com, wocigos422@trackden.com, "}
+{"projectID":14,"taskName":"houssem tache ","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"houssem tache ","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"01/03/2024","intervenantsNames":"g"}
+{"projectID":14,"taskName":"houssem tache ","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANTS_BULK_TASK","code":117,"action_date":"01/03/2024","intervenantsNames":"houssem.badr@gmail.com, khalilbensaid98@gmail.com, "}
+{"projectID":14,"taskName":"techa 1 ","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"techa 1 ","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANTS_BULK_TASK","code":117,"action_date":"01/03/2024","intervenantsNames":"gayahe4754@grassdev.com, houssem.badr@gmail.com, khalilbensaid98@gmail.com, "}
+{"projectID":9,"taskName":"Coffrage et ferraillage","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"01/03/2024","hours":2}
+{"projectID":14,"taskName":"houssem tache ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"01/03/2024","hours":0}
+{"projectID":14,"taskName":"techa 1 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"01/03/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":4}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":2}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":9,"taskName":"Coffrage et ferraillage","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"29/02/2024","hours":0}
+{"projectID":14,"taskName":"houssem tache ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"29/02/2024","hours":0}
+{"projectID":14,"taskName":"techa 1 ","requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_INTERVENANT_HOURS","code":109,"action_date":"01/03/2024","date":"29/02/2024","hours":0}
+{"projectID":1,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":2,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":10,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":4}
+{"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":0}
+{"projectID":29,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ASSIGN_PROJECT_MANAGER_HOURS","code":108,"action_date":"01/03/2024","hours":4}
+{"projectID":31,"taskName":null,"requestName":null,"email":"sivak61988@wuzak.com","action":"PROJECT_CREATION","code":100,"action_date":"01/03/2024"}
+{"projectID":31,"taskName":null,"requestName":null,"email":"sivak61988@wuzak.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"01/03/2024","managerEmail":"sivak61988@wuzak.com"}
+{"projectID":31,"taskName":"test tache","requestName":null,"email":"sivak61988@wuzak.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":31,"taskName":"test tache","requestName":null,"email":"sivak61988@wuzak.com","action":"ADD_INTERVENANTS_BULK_TASK","code":117,"action_date":"01/03/2024","intervenantsNames":"hb@concerto-pr.com, houssem.badr@gmail.com, "}
+{"projectID":31,"taskName":null,"requestName":"j'ai une belle requête","email":"sivak61988@wuzak.com","action":"REQUEST_CREATION","code":102,"action_date":"01/03/2024"}
+{"projectID":9,"taskName":null,"requestName":null,"email":"sivak61988@wuzak.com","action":"PROJECT_UPDATE","code":110,"action_date":"01/03/2024","oldValues":"blocked, ","newValues":"doing, "}
+{"projectID":14,"taskName":"Khalil test ","requestName":null,"email":"gayahe4754@grassdev.com","action":"TASK_CREATION","code":101,"action_date":"01/03/2024"}
+{"projectID":14,"taskName":"Khalil test ","requestName":null,"email":"gayahe4754@grassdev.com","action":"ADD_INTERVENANT_TASK","code":118,"action_date":"01/03/2024","intervenantsNames":"p"}

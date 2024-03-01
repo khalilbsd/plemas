@@ -106,7 +106,7 @@ const ProjectCreationForm = ({
 
         setNewProject({
           ...newProject,
-          ["manager"]: {
+          "manager": {
             ...newProject["manager"],
             value: currentUserAsManager?.id,
           },
@@ -119,7 +119,8 @@ const ProjectCreationForm = ({
     if (formOpen) {
       loadPotentielManagers();
     }
-  }, [formOpen, user,dispatch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formOpen, user,dispatch,user?.email]);
 
   const handleDataChange = (e) => {
     setNewProject({
@@ -241,7 +242,7 @@ const ProjectCreationForm = ({
             />
           </LocalizationProvider>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={4}>
+        {newProject.manager.value &&<Grid item xs={12} sm={12} md={4} lg={4}>
           <FormControl
             fullWidth
             required
@@ -298,7 +299,7 @@ const ProjectCreationForm = ({
               </FormHelperText>
             )}
           </FormControl>
-        </Grid>
+        </Grid>}
 
         <Grid item xs={12} sm={12} md={4} lg={2}>
           {/* phase selector */}

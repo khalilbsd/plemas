@@ -496,7 +496,17 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
     if (!latestProjectCode.length) {
       code = (parseInt(currentYear) % 1000) * 1000;
     } else {
-      code = getHighestCode(latestProjectCode) + 1;
+
+      let latestDigits = currentYear.toString().slice(-2)
+      let greatesCode = getHighestCode(latestProjectCode)
+      if (greatesCode.toString().slice(0,2) === latestDigits){
+        code = greatesCode + 1;
+      }else{
+        code = (parseInt(currentYear) % 1000) * 1000;
+      }
+
+
+
     }
   }
 

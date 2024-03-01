@@ -1,7 +1,7 @@
 import { Box } from '@mui/system'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import useGetAuthenticatedUser from '../../hooks/authenticated'
 import useIsPathValid from '../../hooks/path'
 import { toggleSideBar } from '../../store/reducers/sidebar.reducer'
@@ -30,10 +30,10 @@ const PageNotFound = () => {
       <div className='number'>404</div>
       <div className='message'>Opps ! page non trouvée. vous pouvez aller sur votre page
     {" "}
-      <Link to='/'>
+      <NavLink to='/'>
 
       d'accueil
-      </Link>
+      </NavLink>
       </div>
       </Box>
     </div>

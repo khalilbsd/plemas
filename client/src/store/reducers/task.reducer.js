@@ -128,28 +128,35 @@ const taskSlice = createSlice({
       let rest =
         DAILY_HOURS_VALUE -
         (hours + projectsTotalChangedValues + tasksTotalChangedValues);
-
+      //console.log(rest ,"my hours ",hours," prject chanegd ",projectsTotalChangedValues," tasksTotalChangedValues ",tasksTotalChangedValues);
+      let flagZero = false
       if (rest <= 0) {
-
-        return;
+      //   state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
+      // state.dailyLogDevisions[type][id].value = hours;
+      flagZero = true
+      }else{
+        flagZero = false
       }
-
-
 
       const nbOfEntries = projectKeys.length + taskKeys.length; // one them doens't contain the selected line
       // let negativeRest = 0;
-      taskKeys.filter(key=>!state.dailyLogDevisions.tasks[key].changed).forEach((key) => {
+      taskKeys
+        .filter((key) => !state.dailyLogDevisions.tasks[key].changed)
+        .forEach((key) => {
 
-          state.dailyLogDevisions.tasks[key].value =  Math.round(rest / nbOfEntries) ;
-
-      })
-      projectKeys.filter(key=>!state.dailyLogDevisions.projects[key].changed).forEach((key) => {
-        state.dailyLogDevisions.projects[key].value =  Math.round(rest / nbOfEntries) ;
-      })
+          state.dailyLogDevisions.tasks[key].value =flagZero ? 0 : Math.round(
+            rest / nbOfEntries
+          );
+        });
+      projectKeys
+        .filter((key) => !state.dailyLogDevisions.projects[key].changed)
+        .forEach((key) => {
+          state.dailyLogDevisions.projects[key].value = flagZero ? 0  :Math.round(
+            rest / nbOfEntries
+          );
+        });
       state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
-        state.dailyLogDevisions[type][id].value = hours;
-
-
+      state.dailyLogDevisions[type][id].value = flagZero ?  hours + rest : hours;
     },
 
     hideDailyTask: (state, action) => {

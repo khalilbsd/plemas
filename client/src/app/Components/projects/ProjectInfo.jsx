@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import {
   NOTIFY_ERROR,
@@ -652,12 +652,12 @@ const isShouldCheckProjectIntegrity =()=>{
                 {project.prevPhase && (
                   <>
                     Phase lié <br />
-                    <Link
+                    <NavLink
                       to={`/projects/${project?.prevPhase}`}
                       target="_blank"
                     >
                       {project?.project.name} {project?.project?.phase?.name}
-                    </Link>
+                    </NavLink>
                   </>
                 )}
               </Grid>

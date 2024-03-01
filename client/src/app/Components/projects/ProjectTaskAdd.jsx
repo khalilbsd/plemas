@@ -13,11 +13,11 @@ import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
 import {
   useCreateTaskMutation,
-  useGetTaskPotentialIntervenantsMutation
+  useGetTaskPotentialIntervenantsMutation,
 } from "../../../store/api/tasks.api";
 import {
   setTaskCreationPotentielIntervenants,
-  updateProjectTask
+  updateProjectTask,
 } from "../../../store/reducers/task.reducer";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
 import faClose from "../../public/svgs/light/xmark.svg";
@@ -34,15 +34,15 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
     "task",
     "taskPotentielIntervenants"
   );
-  const project = useGetStateFromStore("project","projectDetails")
+  const project = useGetStateFromStore("project", "projectDetails");
   const { projectID } = useParams();
   const dispatch = useDispatch();
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(false);
   const [task, setTask] = useState({
     name: "",
     startDate: dayjs(new Date()),
     dueDate: dayjs(new Date()),
-    intervenants: []
+    intervenants: [],
   });
 
   const [getTaskPotentialIntervenants] =
@@ -61,21 +61,17 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
     }
 
     loadTaskPotentialIntervenants();
-  }, [dispatch,getTaskPotentialIntervenants,projectID]);
+  }, [dispatch, getTaskPotentialIntervenants, projectID]);
 
   const handleChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
-  const handleIntervenantsChange = (event) => {
-    const {
-      target: { value }
-    } = event;
+  const handleIntervenantsChange = (value) => {
+    console.log(value);
     setTask({
       ...task,
-      intervenants:
-        // On autofill we get a stringified value.
-        typeof value === "string" ? value.split(",") : value
+      intervenants: value,
     });
   };
 
@@ -84,7 +80,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
       name: "",
       startDate: dayjs(new Date()),
       dueDate: dayjs(new Date()),
-      intervenants: []
+      intervenants: [],
     });
     closeAddTask();
   };
@@ -94,9 +90,9 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
 
     try {
       const data = { ...task };
-      if (!data.name || containsOnlySpaces(data.name)){
-        setError(true)
-        return
+      if (!data.name || containsOnlySpaces(data.name)) {
+        setError(true);
+        return;
       }
       data.startDate = dayjs(data.startDate);
       data.dueDate = dayjs(data.dueDate);
@@ -107,6 +103,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
         );
         return;
       }
+
       if (data.intervenants.length) {
         data.intervenants = data.intervenants.map((user) => user.email);
       } else {
@@ -115,6 +112,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
 
       data.startDate = data.startDate.format("DD/MM/YYYY");
       data.dueDate = data.dueDate.format("DD/MM/YYYY");
+      console.log(data);
       const res = await createTask({ body: data, projectID }).unwrap();
       notify(NOTIFY_SUCCESS, res?.message);
       dispatch(updateProjectTask(res.task));
@@ -150,7 +148,7 @@ const ProjectTaskAdd = ({ closeAddTask }) => {
               label="Tache"
               required
               error={error}
-              helperText={error?"le nom de la tâche est obligatoire":""}
+              helperText={error ? "le nom de la tâche est obligatoire" : ""}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={4} lg={2}>

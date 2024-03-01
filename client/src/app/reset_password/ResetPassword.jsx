@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import useGetAuthenticatedUser from "../../hooks/authenticated";
 import Loading from "../Components/loading/Loading";
@@ -36,10 +36,10 @@ const ResetPassword = () => {
     <div className={classes.resetPasswordPage}>
       <Box className={classes.box}>
         {!user?.isAuthenticated && (
-          <Link to="/login" className={classes.goBack}>
+          <NavLink to="/login" className={classes.goBack}>
             <ReactSVG src={faChevronLeft} className={classes.goBackIcon} />{" "}
             Se connecter
-          </Link>
+          </NavLink>
         )}
         {!isReseted && !isVerified ? (
           <>
@@ -91,7 +91,7 @@ const ResetPassword = () => {
             Votre mot de passe a été réinitialisé.
               {user?.isAuthenticated ? (
                 <span>
-                   Vous pouvez choisir de vous <Link to="/logout">déconnecter </Link> ou de poursuivre votre navigation
+                   Vous pouvez choisir de vous <NavLink to="/logout">déconnecter </NavLink> ou de poursuivre votre navigation
 
                 </span>
               ) : (
