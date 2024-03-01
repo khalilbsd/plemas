@@ -298,7 +298,7 @@ export const projectsStyles = createUseStyles({
     minWidth: progress_bar_width_cell,
     height: progress_bar_width_cell,
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
   },
   dateTitle: {
     // lineHeight: "40px",
