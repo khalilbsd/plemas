@@ -134,7 +134,7 @@ const TaskFiles = ({
         taskID,
         body: formData,
       }).unwrap();
-
+        console.log("dispatch upadting for the uploaded file ");
       dispatch(
         updateInterventionUploadedFile({
           taskID,
@@ -154,7 +154,6 @@ const TaskFiles = ({
   const isDocumentsNull =
     !attachedFiles.length || !JSON.parse(attachedFiles[0].file).length;
 
-  console.log(attachedFiles);
   // const isUserAnIntervenant =
   const filesList = attachedFiles.map((item, idx) => {
     const elements = [];
