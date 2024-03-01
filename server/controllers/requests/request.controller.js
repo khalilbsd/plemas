@@ -131,8 +131,8 @@ export const updateRequest = catchAsync(async (req, res, next) => {
         new UnAuthorized("Vous n’êtes pas le créateur de cette requête")
       );
   }
-  if (req.user.role === PROJECT_MANAGER_ROLE && project.manager !== req.user.id)
-    return next(new UnAuthorized("Vous n’êtes pas le  chef de ce projet"));
+  // if (req.user.role === PROJECT_MANAGER_ROLE && project.manager !== req.user.id)
+  //   return next(new UnAuthorized("Vous n’êtes pas le  chef de ce projet"));
 
   const oldState = request.state;
   await request.update({ ...req.body });

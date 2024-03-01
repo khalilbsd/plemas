@@ -31,11 +31,11 @@ const ProjectUserLists = ({
   multipleValue
 }) => {
   const colors = useGetStateFromStore("userInfo", "avatarColors");
-
+  // console.log(list);
   if (multiple)
     return (
       <FormControl className={externalClass.multipleUsers}>
-        <InputLabel id={`multiple-chip-${label}`}>{label}</InputLabel>
+
         <Autocomplete
         multiple
         id={`multiple-${label}`}
@@ -43,12 +43,17 @@ const ProjectUserLists = ({
         getOptionLabel={(option) => `${option.name} ${option.lastName}`}
         defaultValue={[]}
         // value={multipleValue}
-        onChange={(event,value)=>handleChange(value)}
+        onChange={(event,value)=>{
+          event.stopPropagation()
+          console.log(value);
+          handleChange(value)
+        }}
         filterSelectedOptions
-        renderOption={(event,user,state)=>{
-
+        renderOption={(props,user,state,ownerState)=>{
+          // console.log(event.onClick);
+          // console.log(ownerState);
           return (
-            <MenuItem key={state.index} value={user} onClick={event.onClick}>
+            <MenuItem key={state.index} value={JSON.stringify(user)} {...props}>
 
             <div className={externalClass.manager}>
             {user?.image ? (
@@ -64,7 +69,7 @@ const ProjectUserLists = ({
                 }`}
               >
                 {user?.name && user?.lastName
-                  ? `${user?.name[0].toUpperCase()} ${user?.lastName[0].toUpperCase()}`
+                  ? `${user?.name[0].toUpperCase()}${user?.lastName[0].toUpperCase()}`
                   : `${user.email[0]}`}
               </span>
             )}

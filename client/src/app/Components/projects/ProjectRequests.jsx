@@ -188,7 +188,7 @@ const ProjectRequests = () => {
       // width: descriptionWidth,
       flex: 1,
       minWidth: 200,
-      editable: isSuperUser || isUserAClient,
+      editable: true,
       filterable: false
     },
     {
@@ -411,7 +411,7 @@ const ProjectRequests = () => {
   return (
     <div className={classesDetails.card}>
       <div className={`${classesDetails.cardTitle}`}>
-        {(isProjectEditable  &&  (isUserAClient || isSuperUser) ) && (
+        {isProjectEditable  && (
           <button onClick={openAddRequest}>
             <span className="text">Requetes et informations</span>
             <ReactSVG className="icon-container" src={faAdd} />

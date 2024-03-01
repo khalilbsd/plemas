@@ -1,7 +1,7 @@
 import { Grid, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useEffect, useRef, useState } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { NavLink, Navigate, useNavigate, useParams } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import {
@@ -110,7 +110,7 @@ useEffect(() => {
             {!isReset?"Please type in you new password and re-confirm it":
               <span>
                 Congratulation you've reset you password successfully. please be careful with  your credentials.
-                You'll be redirected to the login page in {counter} seconds. if something went wrong you can use this <Link to="/login">link</Link>
+                You'll be redirected to the login page in {counter} seconds. if something went wrong you can use this <NavLink to="/login">link</NavLink>
               </span>
             }
           </h3>
@@ -170,7 +170,7 @@ useEffect(() => {
               </div>
           <h2 className={classes.titleAction}>Oopps! Something happened</h2>
           <h3 className={classes.errorText}>{password.message}</h3>
-          <Link to='/login'>Go to login</Link>
+          <NavLink to='/login'>Go to login</NavLink>
         </Box>
       )}
 

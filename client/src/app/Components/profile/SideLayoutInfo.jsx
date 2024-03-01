@@ -4,7 +4,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import useGetUserInfo from "../../../hooks/user";
 import { useUpdateUserProfileMutation } from "../../../store/api/users.api";
@@ -248,12 +248,12 @@ const SideLayoutInfo = () => {
                 </Grid>
                 {edit && (
                   <Grid sx={{ textAlign: "right" }} item xs={12} sm={6} lg={6}>
-                    <Link
+                    <NavLink
                       className={classes.changePasswordBtn}
                       to="/settings/account/change-password"
                     >
-                      Changer mon mot de passe
-                    </Link>
+                     Modifier le mot de passe
+                    </NavLink>
                   </Grid>
                 )}
               </Grid>

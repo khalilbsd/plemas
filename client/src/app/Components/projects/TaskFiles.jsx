@@ -191,9 +191,6 @@ const TaskFiles = ({
               </span>
             </Tooltip>
 
-            {/* <Link to={`${process.env.REACT_APP_SERVER_URL}${item.file}`}  rel="noopener noreferrer"target="_blank"   download="Example-PDF-document"> */}
-            {/* <span> {file.split('-')[1]}</span> */}
-            {/* </Link> */}
           </div>
         </div>
       );

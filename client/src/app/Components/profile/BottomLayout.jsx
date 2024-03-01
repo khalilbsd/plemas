@@ -1,6 +1,6 @@
 import { Grid, TextField } from "@mui/material";
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import useGetUserInfo from "../../../hooks/user";
 import { useUpdateUserProfileMutation } from "../../../store/api/users.api";
@@ -115,12 +115,12 @@ const BottomLayout = () => {
                       <span className={classes.labels}>Password</span>
                     </Grid>
                     <Grid sx={{ textAlign: "right" }} item xs={4} sm={4} lg={4}>
-                      <Link
+                      <NavLink
                         className={classes.changePasswordBtn}
                         to="/auth/change-password"
                       >
                         Change
-                      </Link>
+                      </NavLink>
                     </Grid>
                   </Grid>
                 </Grid>

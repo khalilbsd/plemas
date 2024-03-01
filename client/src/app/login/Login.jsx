@@ -2,7 +2,7 @@ import { Box, Button, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useLoginUserMutation } from "../../store/api/auth/authentification.js";
 import { setCredentials } from "../../store/reducers/auth.js";
@@ -115,7 +115,7 @@ const Login = () => {
               />
             </Grid>
             <Grid item xs={12} md={12} lg={12}>
-              <Link className={classes.resetLink} to={"/reset-password"}>Mot de passe oublié ?</Link>
+              <NavLink className={classes.resetLink} to={"/reset-password"}>Mot de passe oublié ?</NavLink>
             </Grid>
             <Grid item xs={12} lg={12} md={12}>
               <Button className={classes.loginBtn} type="submit" variant="outlined">

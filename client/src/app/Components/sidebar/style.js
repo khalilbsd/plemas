@@ -115,14 +115,14 @@ export const styles = createUseStyles({
       textTransform:'none'
     },
     fontSize: 14,
-    transition: "0.3s all ease-in-out",
+    // transition: "0.3s all ease-in-out",
     marginTop: 5,
     "& a": {
       padding: "15px 0",
       borderRadius: "0.75rem",
-      transition: "0.3s all ease-in-out"
+      // transition: "0.3s all ease-in-out"
     },
-    "& a:hover": {
+    "& a:hover, a.active": {
       backgroundColor: "var(--light-green) !important",
       borderLeft: "15px solid var(--white)"
     }

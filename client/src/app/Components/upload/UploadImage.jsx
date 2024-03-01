@@ -35,7 +35,7 @@ const UploadImage = ({ email, userImage, previewImage, handleImage }) => {
     }
 
     if (file?.size > 5 * 1024 * 1024) {
-      notify(NOTIFY_ERROR, "L'image est trop grande");
+      notify(NOTIFY_ERROR, "L'image est trop volumineuse");
       return
     }
     await getBase64(file);
