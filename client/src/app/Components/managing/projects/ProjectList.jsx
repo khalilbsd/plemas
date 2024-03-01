@@ -236,7 +236,7 @@ const ProjectList = ({ addForm, handleForm }) => {
                 </>
               )}
             </div>
-            <ExportActions />
+            <ExportActions pdfProjectList={projectList()} projectTasksPDf={projectTasks} />
           </div>
         )}
         <ActiveFilters

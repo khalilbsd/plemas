@@ -11,6 +11,7 @@ import { ReactComponent as FaPlus } from "../../public/svgs/light/plus.svg";
 import { ReactComponent as FaArrowDown } from "../../public/svgs/light/chevron-down.svg";
 import { ReactComponent as FaExcelFile } from "../../public/svgs/light/file-excel.svg";
 import { ReactComponent as FaCsvFile } from "../../public/svgs/light/file-csv.svg";
+import { ReactComponent as FaPDFFile } from "../../public/svgs/light/file-pdf.svg";
 
 
 
@@ -18,6 +19,9 @@ import { ReactComponent as FaCsvFile } from "../../public/svgs/light/file-csv.sv
 
 export const CustomExcelFile = ({ className }) => (
   <FaExcelFile className={className} /> // Customize the width and height as needed
+);
+export const CustomPDFFile = ({ className }) => (
+  <FaPDFFile className={className} /> // Customize the width and height as needed
 );
 export const CustomFileCsvFile = ({ className }) => (
   <FaCsvFile className={className} /> // Customize the width and height as needed

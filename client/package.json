@@ -28,6 +28,8 @@
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "path-to-regexp": "^6.2.1",
+    "pdfjs": "^2.5.3",
+    "pdfmake": "^0.2.9",
     "react": "^18.2.0",
     "react-csv": "^2.2.2",
     "react-dom": "^18.2.0",
