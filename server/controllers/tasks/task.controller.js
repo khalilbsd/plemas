@@ -744,7 +744,6 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
     });
 
 
-console.log(managedProjects);
 
 managedProjects = managedProjects.filter(project=>project.intervenants.lengths)
     for (const idx in managedProjects){
