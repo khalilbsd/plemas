@@ -699,11 +699,11 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   }
 
   joinableTasks = joinableTasks.concat(possibleTasks);
-  console.log(
-    "i'm watching -------------------------",
-    joinableTasks.length,
-    joinableTasks
-  );
+  // console.log(
+  //   "i'm watching -------------------------",
+  //   joinableTasks.length,
+  //   joinableTasks
+  // );
 
   for (const index in myTasks) {
     let interventionHours = await InterventionHour.findOne({
@@ -722,7 +722,15 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   // projects for project manager :  (only the projects that at least have one single task in progress)
   if (req.user.isSuperUser || req.user.role === PROJECT_MANAGER_ROLE) {
 
-    let obj = {"state":STATE_DOING};
+    // let obj = {"state":STATE_DOING};
+    let obj = {[Op.or]:[
+      {"state":STATE_DOING},
+      {"state":STATE_BLOCKED}
+    ]};
+
+
+
+
     if (req.user.role === PROJECT_MANAGER_ROLE) {
       obj.manager = req.user.id;
     }
@@ -742,6 +750,10 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
         }
       ]
     });
+
+
+    // console.log(managedProjects);
+    managedProjects = managedProjects.filter(project=>project.intervenants.length)
 
     for (const idx in managedProjects){
       let dailyHours = await InterventionHour.findOne({

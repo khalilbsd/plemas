@@ -57,10 +57,8 @@ const ProjectTasks = ({ openAddTask }) => {
   const dispatch = useDispatch();
   const tasks = useGetStateFromStore("task", "projectTasks");
   const project = useGetStateFromStore("project", "projectDetails");
-  const { isProjectEditable, isUserEligibleToEdit,isUserAnIntervenant } = useGetStateFromStore(
-    "project",
-    "projectAccess"
-  );
+  const { isProjectEditable, isUserEligibleToEdit, isUserAnIntervenant } =
+    useGetStateFromStore("project", "projectAccess");
 
   const [associateToTask] = useAssociateToTaskMutation();
   const [getProjectTasks] = useGetProjectTasksMutation();
@@ -277,7 +275,8 @@ const ProjectTasks = ({ openAddTask }) => {
       field: "state",
       headerName: "État",
       width: 150,
-      editable: (isUserEligibleToEdit || isUserAnIntervenant) && isProjectEditable,
+      editable:
+        (isUserEligibleToEdit || isUserAnIntervenant) && isProjectEditable,
       type: "singleSelect",
       valueOptions: ({ row }) => {
         const emailsList = row.intervenants?.map(
@@ -323,13 +322,14 @@ const ProjectTasks = ({ openAddTask }) => {
         const renderActions = [];
         // if (!user?.email)
         //   return [<Skeleton className={classes.joinBtnSkeleton} />];
-        if ((!isUserEligibleToEdit || !isProjectEditable)) return renderActions;
+        if (!isUserEligibleToEdit || !isProjectEditable) return renderActions;
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
         );
 
         if (
-          (isUserEligibleToEdit && isProjectEditable ) &&
+          isUserEligibleToEdit &&
+          isProjectEditable &&
           !row.isVerified &&
           project.state === STATE_DONE
         ) {
@@ -420,7 +420,7 @@ const ProjectTasks = ({ openAddTask }) => {
 
   return (
     <div className={classesDetails.card}>
-      { (isUserEligibleToEdit && isProjectEditable) && (
+      {isUserEligibleToEdit && isProjectEditable && (
         <div className={`${classesDetails.cardTitle}`}>
           <button onClick={openAddTask}>
             <span className="text">Tache</span>
@@ -431,6 +431,7 @@ const ProjectTasks = ({ openAddTask }) => {
 
       <DataGrid
         // apiRef={dataGridRef}
+
         ref={dataGridRef}
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         autoHeight
@@ -458,7 +459,15 @@ const ProjectTasks = ({ openAddTask }) => {
         pageSizeOptions={[100]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
-        sx={{ "--DataGrid-overlayHeight": "180px" }}
+        sx={{
+          "--DataGrid-overlayHeight": "180px",
+          // '& .MuiDataGrid-row:hover': {
+          //   cursor: 'pointer'
+          // },
+          "& .MuiDataGrid-row *:hover": {
+            cursor: "pointer !important",
+          },
+        }}
         isCellEditable={(params) =>
           isSuperUser ||
           (isManager && user?.email === project?.managerDetails?.email) ||
