@@ -744,8 +744,9 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
     });
 
 
+    managedProjects = managedProjects.filter(project=>project.intervenants.length)
 
-managedProjects = managedProjects.filter(project=>project.intervenants.lengths)
+
     for (const idx in managedProjects){
       let dailyHours = await InterventionHour.findOne({
         where: { projectID: managedProjects[idx].id, date: history }
