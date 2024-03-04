@@ -507,7 +507,10 @@ const ProjectRequests = () => {
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
         autoHeight
-        sx={{ "--DataGrid-overlayHeight": "200px" }}
+        sx={{ "--DataGrid-overlayHeight": "200px",
+        "& .MuiDataGrid-row *:hover": {
+          cursor: "pointer !important",
+        }, }}
       />
     </div>
   );
