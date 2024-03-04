@@ -699,11 +699,11 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   }
 
   joinableTasks = joinableTasks.concat(possibleTasks);
-  console.log(
-    "i'm watching -------------------------",
-    joinableTasks.length,
-    joinableTasks
-  );
+  // console.log(
+  //   "i'm watching -------------------------",
+  //   joinableTasks.length,
+  //   joinableTasks
+  // );
 
   for (const index in myTasks) {
     let interventionHours = await InterventionHour.findOne({
@@ -743,6 +743,10 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
       ]
     });
 
+
+console.log(managedProjects);
+
+managedProjects = managedProjects.filter(project=>project.intervenants.lengths)
     for (const idx in managedProjects){
       let dailyHours = await InterventionHour.findOne({
         where: { projectID: managedProjects[idx].id, date: history }
