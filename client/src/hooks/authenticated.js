@@ -6,7 +6,7 @@ import decode from "jwt-decode";
 const initialState = {
   isAuthenticated: false,
   user: null,
-  loading: true
+  loading: true,
 };
 
 const cookies = new Cookies();
@@ -23,7 +23,7 @@ function useGetAuthenticatedUser() {
           ...prevUser,
           isAuthenticated: false,
           user: null,
-          loading: false
+          loading: false,
         }));
         dispatch(logout());
         return;
@@ -35,21 +35,21 @@ function useGetAuthenticatedUser() {
           ...prevUser,
           isAuthenticated: true,
           user: storedUser,
-          loading: false
+          loading: false,
         }));
       } else {
         setUser((prevUser) => ({
           ...prevUser,
           isAuthenticated: false,
           user: null,
-          loading: false
+          loading: false,
         }));
         dispatch(logout());
       }
     }
 
     getUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetchFlag]); // Listen for changes in refetchFlag
 
   // Define the refetch function

@@ -49,16 +49,16 @@ import {
   CustomEditIcon,
   CustomSaveIcon
 } from "../icons";
+import AddBtn from "../managing/AddBtn.jsx";
 import { notify } from "../notification/notification";
 import RequestFiles from "./RequestFiles";
 import { projectDetails, projectTaskDetails } from "./style";
-import AddBtn from "../managing/AddBtn.jsx";
 
 const ProjectRequests = () => {
   const dispatch = useDispatch();
   const { projectID } = useParams();
   const project = useGetProjectRequestMutation("project", "projectDetails");
-  const { isProjectEditable, isUserEligibleToEdit,isUserAClient } = useGetStateFromStore(
+  const { isProjectEditable, isUserEligibleToEdit } = useGetStateFromStore(
     "project",
     "projectAccess"
   );

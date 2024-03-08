@@ -2,7 +2,7 @@ import { Grid, Skeleton } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
-import useFetchDailyLog from "../../hooks/services/fetchers/dailyLog.fetch.service";
+import useFetchDailyLog from "../../services/fetchers/dailyLog.fetch.service"
 import JoinableTasks from "../Components/dailylog/JoinableTasks";
 import TasksList from "../Components/dailylog/TasksList";
 import { dailyLogStyle } from "./style";

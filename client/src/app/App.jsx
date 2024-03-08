@@ -5,7 +5,7 @@ import { anonymousUrls, getRolesBasedUrls, publicUrls } from "./routes/urls";
 
 import { ToastContainer } from "react-toastify";
 import useRenderLocation from "../hooks/location";
-import useFetchAuthenticatedUser from "../hooks/services/fetchers/authenticatedUser.fetch.service";
+import useFetchAuthenticatedUser from "../services/fetchers/authenticatedUser.fetch.service";
 import Loading from "./Components/loading/Loading";
 import Sidebar from "./Components/sidebar/Sidebar";
 import Anonymous from "./routes/Anonymous";

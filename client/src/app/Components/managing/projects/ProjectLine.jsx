@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import {
   TASK_STATE_TRANSLATION,
-  progress_bar_width_cell
+  progress_bar_width_cell,
 } from "../../../../constants/constants";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
 import { setLinkedProject } from "../../../../store/reducers/manage.reducer";
@@ -24,18 +24,14 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const addProjectState = useGetStateFromStore("manage", "addProject");
-  const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
 
-  const isAnyFilterWindowActive = useCheckFilterWindowActive()
+  const isAnyFilterWindowActive = useCheckFilterWindowActive();
   const colors = useGetStateFromStore("userInfo", "avatarColors");
   const [projectToCollapse, setProjectToCollapse] = useState(undefined);
   const WeeksDatesListFiltered = useGetStateFromStore(
     "project",
     "twoWeeksListFiltered"
   );
-
-
-
 
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
 
@@ -84,9 +80,7 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         </p>
       );
     const taskInfoElement = tasksNb ? (
-      projectTasks(projectID)?.
-
-      map((task) => {
+      projectTasks(projectID)?.map((task) => {
         return (
           <div key={task.id} className={classes.taskStates}>
             <Tooltip key={task.id} title={task?.name}>
@@ -278,7 +272,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
+            : !isAnyFilterWindowActive
+            ? handleNavigation(row.id)
+            : null
         }
         key={index}
         className={classes.rowCell}
@@ -290,7 +286,7 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
             <span
               className="priority"
               style={{
-                backgroundColor: getPriorityColor(row.priority).code
+                backgroundColor: getPriorityColor(row.priority).code,
               }}
             ></span>
 
@@ -302,7 +298,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
+            : !isAnyFilterWindowActive
+            ? handleNavigation(row.id)
+            : null
         }
         key={index + 1}
         className={classes.rowCell}
@@ -334,7 +332,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
+            : !isAnyFilterWindowActive
+            ? handleNavigation(row.id)
+            : null
         }
         key={index + 2}
         className={classes.rowCell}
@@ -354,7 +354,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
+            : !isAnyFilterWindowActive
+            ? handleNavigation(row.id)
+            : null
         }
         className={classes.rowCell}
       >
@@ -364,7 +366,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
+            : !isAnyFilterWindowActive
+            ? handleNavigation(row.id)
+            : null
         }
         key={index + 4}
         className={classes.rowCell}
@@ -375,7 +379,9 @@ const ProjectLine = ({ index, row, addForm, projectTasks }) => {
         onClick={() =>
           addProjectState.isFiltering && addForm
             ? handleClickProject(row.id)
-            : !isAnyFilterWindowActive? handleNavigation(row.id) : null
+            : !isAnyFilterWindowActive
+            ? handleNavigation(row.id)
+            : null
         }
         key={index + 5}
         className={classes.rowCell}

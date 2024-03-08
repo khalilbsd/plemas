@@ -1,15 +1,15 @@
 import { useDispatch } from "react-redux";
-import { useGetProjectByIDMutation } from "../../../store/api/projects.api";
-import { useGetProjectTasksMutation } from "../../../store/api/tasks.api";
-import { useGetProjectRequestMutation } from "../../../store/api/requests.api";
+import { useGetProjectByIDMutation } from "../../store/api/projects.api";
+import { useGetProjectTasksMutation } from "../../store/api/tasks.api";
+import { useGetProjectRequestMutation } from "../../store/api/requests.api";
 import { useEffect } from "react";
-import { setProjectTask } from "../../../store/reducers/task.reducer";
-import { notify } from "../../../app/Components/notification/notification";
-import { NOTIFY_ERROR } from "../../../constants/constants";
+import { setProjectTask } from "../../store/reducers/task.reducer";
+import { notify } from "../../app/Components/notification/notification";
+import { NOTIFY_ERROR } from "../../constants/constants";
 import {
   setProject,
   setProjectRequests,
-} from "../../../store/reducers/project.reducer";
+} from "../../store/reducers/project.reducer";
 
 function useLoadSpecificProject(id) {
   const [getProjectByID, { isLoading: loadingProjectById }] =
@@ -33,7 +33,7 @@ function useLoadSpecificProject(id) {
     async function loadProject() {
       try {
         const data = await getProjectByID(id).unwrap();
-        console.log("will be setting this data project ",data.project);
+        console.log("will be setting this data project ", data.project);
 
         dispatch(setProject(data));
       } catch (error) {
@@ -48,12 +48,12 @@ function useLoadSpecificProject(id) {
         notify(NOTIFY_ERROR, error?.data?.message);
       }
     }
-    if (id){
-        loadProject();
-        loadProjectTasks();
-        loadRequests();
+    if (id) {
+      loadProject();
+      loadProjectTasks();
+      loadRequests();
     }
-    }, [dispatch, getProjectByID, getProjectRequest, getProjectTasks, id]);
+  }, [dispatch, getProjectByID, getProjectRequest, getProjectTasks, id]);
 
   return { loadingProjectById, loadingProjectTasks, loadingProjectRequets };
 }

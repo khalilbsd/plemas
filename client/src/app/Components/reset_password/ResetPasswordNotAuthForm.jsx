@@ -16,6 +16,7 @@ import { styles } from "./styles";
 import faSadFace from '../../public/svgs/light/face-sad-tear.svg';
 
 import faResetPassword from "../../public/svgs/solid/badge-check.svg";
+import useVerifyPasswordToken from "../../../services/fetchers/verifyresetPasswordToken.fetch.service";
 
 
 const ResetPasswordNotAuthForm = () => {
@@ -27,27 +28,26 @@ const ResetPasswordNotAuthForm = () => {
   const navigate = useNavigate();
   const [isReset, setIsReset] = useState(false)
   const [counter, setCounter] = useState(5)
-  const [verifyResetPasswordToken, { isLoading }] =
-    useVerifyResetPasswordTokenMutation();
   const [resetPasswordWithToken, { isLoading: loadingReset }] =
-    useResetPasswordWithTokenMutation();
+  useResetPasswordWithTokenMutation();
   const [password, setPasswordError] = useState({
     error: false,
     message: ""
   });
+  const isLoading = useVerifyPasswordToken(setPasswordError)
   // const [first, setfirst] = useState(second)
 
-  useEffect(() => {
-    async function verifyToken() {
-      try {
-        await verifyResetPasswordToken(params.token).unwrap();
-      } catch (error) {
-        console.log(error);
-        setPasswordError({ error: true, message: error?.data?.message });
-      }
-    }
-    verifyToken();
-  });
+  // useEffect(() => {
+  //   async function verifyToken() {
+  //     try {
+  //       await verifyResetPasswordToken(params.token).unwrap();
+  //     } catch (error) {
+  //       console.log(error);
+  //       setPasswordError({ error: true, message: error?.data?.message });
+  //     }
+  //   }
+  //   verifyToken();
+  // });
 
 //counter logic
 useEffect(() => {

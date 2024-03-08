@@ -1,22 +1,16 @@
 import { Grid } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { NOTIFY_ERROR } from "../../constants/constants";
 import useOutsideAlerter from "../../hooks/outsideClick";
+import useLoadSpecificProject from "../../services/fetchers/loadProjectById.fetch.service";
 import {
-  useGetProjectByIDMutation,
-  useProjectGetLogMutation,
+  useProjectGetLogMutation
 } from "../../store/api/projects.api";
-import { useGetProjectTasksMutation } from "../../store/api/tasks.api";
 import {
-  setProject,
-  setProjectLog,
+  setProjectLog
 } from "../../store/reducers/project.reducer";
-import {
-  clearProjectTasks,
-  setProjectTask,
-} from "../../store/reducers/task.reducer";
 import Loading from "../Components/loading/Loading";
 import { notify } from "../Components/notification/notification";
 import ProjectHeader from "../Components/projects/ProjectHeader";
@@ -25,7 +19,6 @@ import ProjectRequests from "../Components/projects/ProjectRequests";
 import ProjectTaskAdd from "../Components/projects/ProjectTaskAdd";
 import ProjectTasks from "../Components/projects/ProjectTasks";
 import { projectDetails } from "../Components/projects/style";
-import useLoadSpecificProject from "../../hooks/services/fetchers/loadProjectById.fetch.service";
 
 const ProjectDetails = () => {
   const classes = projectDetails();
