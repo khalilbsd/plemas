@@ -653,3 +653,10 @@
 {"projectID":14,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"04/03/2024","oldValues":"doing, ","newValues":"blocked, "}
 {"projectID":14,"taskName":"Quantités que surface vente","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"04/03/2024","oldState":"doing","newState":"blocked"}
 {"projectID":17,"taskName":"Note de calcul dalle","requestName":null,"email":"houssem.badr@gmail.com","action":"TASK_STATE_CHANGED","code":114,"action_date":"04/03/2024","oldState":"blocked","newState":"done"}
+{"projectID":48,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"11/03/2024"}
+{"projectID":48,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"11/03/2024","managerEmail":"houssem.badr@gmail.com"}
+{"projectID":49,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_CREATION","code":100,"action_date":"11/03/2024"}
+{"projectID":49,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"ADD_PROJECT_MANAGER","code":106,"action_date":"11/03/2024","managerEmail":"houssem.badr@gmail.com"}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"11/03/2024","oldValues":"doing, ","newValues":"done, "}
+{"projectID":17,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"11/03/2024","oldValues":"done, ","newValues":"doing, "}
+{"projectID":20,"taskName":null,"requestName":null,"email":"houssem.badr@gmail.com","action":"PROJECT_UPDATE","code":110,"action_date":"11/03/2024","oldValues":"","newValues":""}

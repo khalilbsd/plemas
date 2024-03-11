@@ -385,9 +385,9 @@ const ProjectTasks = ({ openAddTask }) => {
           );
         }
         if (
-          !emailsList.includes(user?.email) &&
+          (isUserEligibleToEdit || isUserAnIntervenant) &&
           STATE_ABANDONED !== row.state &&
-          user?.role !== CLIENT_ROLE
+          isProjectEditable
         ) {
           renderActions.push(
             <GridActionsCellItem

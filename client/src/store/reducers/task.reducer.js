@@ -129,13 +129,13 @@ const taskSlice = createSlice({
         DAILY_HOURS_VALUE -
         (hours + projectsTotalChangedValues + tasksTotalChangedValues);
       //console.log(rest ,"my hours ",hours," prject chanegd ",projectsTotalChangedValues," tasksTotalChangedValues ",tasksTotalChangedValues);
-      let flagZero = false
+      let flagZero = false;
       if (rest <= 0) {
-      //   state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
-      // state.dailyLogDevisions[type][id].value = hours;
-      flagZero = true
-      }else{
-        flagZero = false
+        //   state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
+        // state.dailyLogDevisions[type][id].value = hours;
+        flagZero = true;
+      } else {
+        flagZero = false;
       }
 
       const nbOfEntries = projectKeys.length + taskKeys.length; // one them doens't contain the selected line
@@ -143,20 +143,19 @@ const taskSlice = createSlice({
       taskKeys
         .filter((key) => !state.dailyLogDevisions.tasks[key].changed)
         .forEach((key) => {
-
-          state.dailyLogDevisions.tasks[key].value =flagZero ? 0 : Math.round(
-            rest / nbOfEntries
-          );
+          state.dailyLogDevisions.tasks[key].value = flagZero
+            ? 0
+            : Math.round(rest / nbOfEntries);
         });
       projectKeys
         .filter((key) => !state.dailyLogDevisions.projects[key].changed)
         .forEach((key) => {
-          state.dailyLogDevisions.projects[key].value = flagZero ? 0  :Math.round(
-            rest / nbOfEntries
-          );
+          state.dailyLogDevisions.projects[key].value = flagZero
+            ? 0
+            : Math.round(rest / nbOfEntries);
         });
       state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
-      state.dailyLogDevisions[type][id].value = flagZero ?  hours + rest : hours;
+      state.dailyLogDevisions[type][id].value = flagZero ? hours + rest : hours;
     },
 
     hideDailyTask: (state, action) => {
@@ -244,24 +243,30 @@ const taskSlice = createSlice({
         action.payload.value;
     },
     updateInterventionUploadedFile: (state, action) => {
-      const taskIdx = state.projectTasks
-        .map((task) => task.id)
-        .indexOf(parseInt(action.payload.taskID));
+      try {
+        const taskIdx = state.projectTasks
+          .map((task) => task.id)
+          .indexOf(parseInt(action.payload.taskID));
 
-      const intervIdx = state.projectTasks[taskIdx].intervenants
-        .map((interv) => interv.id)
-        .indexOf(action.payload.intervenantID);
+        const intervIdx = state.projectTasks[taskIdx].intervenants
+          .map((interv) => interv.id)
+          .indexOf(action.payload.intervenantID);
 
-      let obj = JSON.parse(
-        state.projectTasks[taskIdx].intervenants[intervIdx].file
-      );
-      if (action.payload.upload) {
-        obj.push(action.payload.file);
-      } else {
-        obj = obj.filter((file) => file !== action.payload.file);
+
+        let obj = state.projectTasks[taskIdx].intervenants[intervIdx].file
+          ? JSON.parse(state.projectTasks[taskIdx].intervenants[intervIdx].file)
+          : [];
+
+        if (action.payload.upload) {
+          obj.push(action.payload.file);
+        } else {
+          obj = obj.filter((file) => file !== action.payload.file);
+        }
+        state.projectTasks[taskIdx].intervenants[intervIdx].file =
+          JSON.stringify(obj);
+      } catch (error) {
+        console.log(error);
       }
-      state.projectTasks[taskIdx].intervenants[intervIdx].file =
-        JSON.stringify(obj);
     },
     // setUserPotentialTasks: (state, action) => {
     // }

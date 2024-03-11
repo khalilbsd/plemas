@@ -187,7 +187,7 @@ export const addProject = catchAsync(async (req, res, next) => {
   // checking the code:
 
   if (data.code.toString().length !== 5)
-    return next(new MalformedObjectId("code is not valid"));
+    return next(new MalformedObjectId("Code non valide"));
 
   const isValidCode = await isCodeValid(data.code, data.phase);
 
@@ -288,7 +288,7 @@ export const addProject = catchAsync(async (req, res, next) => {
     logger.error(error);
     console.log(error);
     // await transaction.rollback();
-    return next(new UnknownError("Internal server error "));
+    return next(new UnknownError("something went wrong"));
   }
 });
 
@@ -491,22 +491,20 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
   });
 
   if (type !== "old") {
-    const latestProjectCode = projectList.filter(({ code }) => !isNaN(code));
+    const latestProjectCode = projectList.filter(
+      ({ code, isCodeCustomized }) => !isNaN(code) && !isCodeCustomized
+    );
 
     if (!latestProjectCode.length) {
       code = (parseInt(currentYear) % 1000) * 1000;
     } else {
-
-      let latestDigits = currentYear.toString().slice(-2)
-      let greatesCode = getHighestCode(latestProjectCode)
-      if (greatesCode.toString().slice(0,2) === latestDigits){
-        code = greatesCode + 1;
-      }else{
-        code = (parseInt(currentYear) % 1000) * 1000;
-      }
-
-
-
+      // let latestDigits = currentYear.toString().slice(-2)
+      // let greatesCode = getHighestCode(latestProjectCode)
+      code = getHighestCode(latestProjectCode) + 1;
+      // if (greatesCode.toString().slice(0,2) === latestDigits){
+      // }else{
+      // code = (parseInt(currentYear) % 1000) * 1000;
+      // }
     }
   }
 
@@ -638,7 +636,8 @@ export const getProjectById = catchAsync(async (req, res, next) => {
   // chekc if the user has access to the project
 
   if (
-    !checkUserAsProjectManager(req.user, project.manager) && !isUserManagement(req.user) &&
+    !checkUserAsProjectManager(req.user, project.manager) &&
+    !isUserManagement(req.user) &&
     req.user.role !== CLIENT_ROLE
   ) {
     const projectIntervenants = project.intervenants.map(
@@ -724,7 +723,6 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
   const projectsKeys = Object.keys(projectsHours);
   await isAllProjectsAreValid(projectsKeys, next);
 
-
   for (const idx in projectsKeys) {
     let userId;
 
@@ -742,7 +740,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     if (!user)
       return next(new ElementNotFound("le chef projet est introuvable"));
 
-    const hours =projectsHours[projectsKeys[idx]].value / 60
+    const hours = projectsHours[projectsKeys[idx]].value / 60;
     // const hours = Math.round(
     //   parseInt(projectsHours[projectsKeys[idx]].value) / 60
     // );

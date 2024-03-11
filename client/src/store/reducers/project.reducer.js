@@ -20,7 +20,7 @@ const projectSlice = createSlice({
   initialState,
   reducers: {
     setProject: (state, action) => {
-      console.log("inside the reducer will be setting the project ");
+
       state.projectDetails = action.payload.project;
       state.projectAccess = {
         isProjectEditable: action.payload.isProjectEditable,

@@ -332,7 +332,7 @@ export const updateProfile = catchAsync(async (req, res, next) => {
 
   const userProfile = await UserProfile.findOne({ where: { userId: user.id } });
   if (!userProfile) {
-    const errorMsg = `UserProfile for user ${newProfile.email} is not found`;
+    const errorMsg = `le profile de l'utlisateur ${newProfile.email} est introuvable`;
     logger.error(errorMsg);
     return next(new ElementNotFound(errorMsg));
   }
@@ -353,13 +353,13 @@ export const updateProfileImage = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
-    const errorMsg = `the user : ${req.body.email} is not found`;
+    const errorMsg = `l'utlisateur : ${req.body.email} est inrouvable`;
     logger.error(errorMsg);
     return next(new ElementNotFound(errorMsg));
   }
   const userProfile = await UserProfile.findOne({ where: { userId: user.id } });
   if (!userProfile) {
-    const errorMsg = `UserProfile for user ${newProfile.email} is not found`;
+    const errorMsg = `le  profile de l'utilisateur ${newProfile.email} est inrouvable`;
     logger.error(errorMsg);
     return next(new ElementNotFound(errorMsg));
   }

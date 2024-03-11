@@ -29,7 +29,7 @@ import ProjectLine from "./ProjectLine";
 import ProjectListHeader from "./ProjectListHeader";
 import LinkProject from "./addProject/LinkProject";
 import ActiveFilters from "./filter/ActiveFilters";
-import useCheckActiveFilters from "../../../../hooks/activeFilters";
+import useCheckActiveFilters from "../../../../hooks/filter/activeFilters";
 import useCheckProjectFiltersOnly from "../../../../hooks/onlyProjectFilters";
 
 const ProjectList = ({ addForm, handleForm }) => {

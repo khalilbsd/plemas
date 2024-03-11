@@ -783,7 +783,7 @@ export const getTaskPotentialIntervenants = catchAsync(
   async (req, res, next) => {
     const { projectID } = req.params;
 
-    if (!projectID) return next(new MissingParameter(" projet sont requise"));
+    if (!projectID) return next(new MissingParameter("les projets sont requise"));
     const project = await Project.findByPk(projectID);
     if (!project) return next(new ElementNotFound("le projet est introuvable"));
     const projectIntervenants = await projectIntervenantList(projectID);

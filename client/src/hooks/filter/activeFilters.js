@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useGetStateFromStore from "./manage/getStateFromStore";
+import useGetStateFromStore from "../manage/getStateFromStore";
 
 function useCheckActiveFilters() {
   const [active, setActive] = useState(false);

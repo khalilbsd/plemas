@@ -524,6 +524,11 @@ const ManagingUsers = () => {
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
           disableRowSelectionOnClick
+          sx={{
+            "& .MuiDataGrid-row .MuiDataGrid-cell:hover": {
+              cursor: "pointer !important",
+            },
+          }}
         />
       </Grid>
       {/* <ToastContainer

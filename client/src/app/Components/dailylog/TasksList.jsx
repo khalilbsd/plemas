@@ -26,6 +26,7 @@ import { projectDetails } from "../projects/style";
 import TaskItem from "./TaskItem";
 import { CustomPlusIcon  } from "../icons";
 import useIsUserCanAccess from "../../../hooks/access";
+import { Tooltip } from "@mui/material";
 const TasksList = ({
   handleJoinable,
   joinable,
@@ -69,7 +70,7 @@ const TasksList = ({
         projectsHours: hourDivision?.projects,
       }).unwrap();
 
-      notify(NOTIFY_SUCCESS, "mise a jour des heurs a terminé");
+      notify(NOTIFY_SUCCESS, "Mise à jour des heures effectuées ");
       setTimeout(() => {
         setSavingHours(false);
       }, 1000);
@@ -89,15 +90,19 @@ const TasksList = ({
   return (
     <div className={`${classes.card} collapsed`}>
       <div className={`${classesDetails.actions} top`}>
+      <Tooltip title={"Sauvegarder"}>
         <button onClick={handleSaveHours} disabled={savingHours}>
           <ReactSVG src={faSave} />
-          <span className="text">Sauvegarder</span>
+
         </button>
+        </Tooltip>
         {!joinDisabled && (
+          <Tooltip title={!joinable ? "Ajouter" : "Fermer"}>
           <button onClick={handleJoinable}>
             {!joinable ? <ReactSVG src={faAdd} /> : <ReactSVG src={faClose} />}
-            <span className="text">{!joinable ? "Ajouter" : "Fermer"}</span>
+
           </button>
+          </Tooltip>
         )}
       </div>
       <div className={classes.sectionHeader}>
@@ -113,13 +118,13 @@ const TasksList = ({
             defaultValue={historyDate}
             minDate={dayjs().subtract(7, "day")}
             maxDate={dayjs()}
-            slots={{openPickerIcon:()=><CustomPlusIcon className={classes.openPickerIcon} />}}
+            // slots={{openPickerIcon:()=><CustomPlusIcon className={classes.openPickerIcon} />}}
             slotProps={{
               textField: { variant: "standard", size: "small", readOnly: true },
-              tabs: {
-                dateIcon: <CustomPlusIcon />,
+              // tabs: {
+                // dateIcon: <CustomPlusIcon />,
 
-              },
+              // },
             }}
             onChange={(newValue) => handleDateChange(newValue)}
           />

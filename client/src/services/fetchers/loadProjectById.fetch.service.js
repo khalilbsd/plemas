@@ -33,7 +33,7 @@ function useLoadSpecificProject(id) {
     async function loadProject() {
       try {
         const data = await getProjectByID(id).unwrap();
-        console.log("will be setting this data project ", data.project);
+
 
         dispatch(setProject(data));
       } catch (error) {

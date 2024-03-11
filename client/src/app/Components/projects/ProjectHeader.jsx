@@ -10,11 +10,13 @@ import faCancel from "../../public/svgs/light/xmark.svg";
 import useLoadProjects from "../../../services/fetchers/loadProjects.fetch.service";
 import ProjectInfo from "./ProjectInfo";
 import { projectDetails } from "./style";
+import { useNavigate } from "react-router";
 const ProjectHeader = ({ loading, openLogTab, trackingRef ,changeProject }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
   const { isSuperUser } = useIsUserCanAccess();
   const classes = projectDetails();
+  const navigate = useNavigate()
   const [details, setDetails] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
   useLoadProjects([toggleSearch,projectList.length],toggleSearch && !projectList.length)
@@ -38,7 +40,11 @@ const ProjectHeader = ({ loading, openLogTab, trackingRef ,changeProject }) => {
   };
 
   const handleChangeSearch = (value) => {
-    if (value?.id)changeProject(value.id)
+    // if (value?.id)changeProject(value.id)
+    if (value?.id){
+      changeProject(value.id)
+      navigate(`/projects/${value.id}`)
+    }
   };
 
   const getSearchProjectList = () => {

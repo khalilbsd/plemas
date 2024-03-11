@@ -194,6 +194,7 @@ const manageSlice = createSlice({
         (project) => {
           return state.addProject.filterType.every((filterAttribute) => {
             const nestedProperty = filterAttribute.type.split(".");
+            //nested value is the value of filter type from the project
             const nestedValue = nestedProperty.reduce(
               (obj, key) => (obj && obj[key] ? obj[key] : null),
               project
@@ -204,14 +205,23 @@ const manageSlice = createSlice({
               // If filter value is an array, check if any element matches
               //inserting here lots CONTAINS_ONLY
               if (filterAttribute.type === "lots") {
-                const intersection = filterAttribute.value.filter((val) =>
-                  nestedValue.includes(val)
-                );
+                let matchWithoutOr = false;
+                let matchWith = false;
+                if (filterAttribute.value.includes("GO&CM")) {
+                  matchWith =
+                    JSON.stringify(nestedValue.sort()) ===
+                    JSON.stringify(["GO", "CM"].sort());
+                }
+                matchWithoutOr = filterAttribute.value
+                  .filter((val) => val !== "GO&CM")
+                  .some(
+                    (val) =>
+                      nestedValue.includes(val) &&
+                      filterAttribute.value.filter((val) => val !== "GO&CM")
+                        .length === nestedValue.length
+                  );
 
-                // Check if the intersection is equal to the original nestedValue array
-                const isExactMatch = JSON.stringify(intersection.sort()) === JSON.stringify(filterAttribute.value.sort()) &&
-                JSON.stringify(nestedValue.sort()) === JSON.stringify(filterAttribute.value.sort());
-                return isExactMatch;
+                return matchWithoutOr || matchWith;
               } else {
                 return filterAttribute.value.some((filterVal) => {
                   const regex = new RegExp(filterVal, "i");
