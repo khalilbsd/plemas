@@ -64,11 +64,12 @@ const TasksList = ({
         date: historyDate,
         userTasks: hourDivision?.tasks,
       }).unwrap();
-
-      await assignManagerHoursBulk({
-        date: historyDate,
-        projectsHours: hourDivision?.projects,
-      }).unwrap();
+      if (isSuperUser || isManager){
+        await assignManagerHoursBulk({
+          date: historyDate,
+          projectsHours: hourDivision?.projects,
+        }).unwrap();
+      }
 
       notify(NOTIFY_SUCCESS, "Mise à jour des heures effectuées ");
       setTimeout(() => {
