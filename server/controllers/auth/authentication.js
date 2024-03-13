@@ -256,7 +256,7 @@ export const changeUserEmail = catchAsync(async (req, res, next) => {
   }
   return res
     .status(200)
-    .json({ message: "email  a été modifiée et lui envoyer un email" });
+    .json({ message: "Email a été envoyer" });
 });
 
 export const checkUserPassword = catchAsync(async (req, res, next) => {

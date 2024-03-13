@@ -1,27 +1,22 @@
 import { Grid, Skeleton, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
 import { ReactSVG } from "react-svg";
-import { NOTIFY_ERROR } from "../../../constants/constants";
 import useIsUserCanAccess from "../../../hooks/access";
 import useGetStateFromStore from "../../../hooks/manage/getStateFromStore";
-import {
-  useGetProjectListMutation
-} from "../../../store/api/projects.api";
-import { setProjectList } from "../../../store/reducers/manage.reducer";
 import faChevronDown from "../../public/svgs/light/chevron-down.svg";
 import faSearch from "../../public/svgs/light/magnifying-glass.svg";
 import faCancel from "../../public/svgs/light/xmark.svg";
-import { notify } from "../notification/notification";
+import useLoadProjects from "../../../services/fetchers/loadProjects.fetch.service";
 import ProjectInfo from "./ProjectInfo";
 import { projectDetails } from "./style";
-import useLoadProjects from "../../../hooks/services/fetchers/loadProjects.fetch.service";
+import { useNavigate } from "react-router";
 const ProjectHeader = ({ loading, openLogTab, trackingRef ,changeProject }) => {
   const project = useGetStateFromStore("project", "projectDetails");
   const projectList = useGetStateFromStore("manage", "projectsList");
   const { isSuperUser } = useIsUserCanAccess();
   const classes = projectDetails();
+  const navigate = useNavigate()
   const [details, setDetails] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
   useLoadProjects([toggleSearch,projectList.length],toggleSearch && !projectList.length)
@@ -45,7 +40,11 @@ const ProjectHeader = ({ loading, openLogTab, trackingRef ,changeProject }) => {
   };
 
   const handleChangeSearch = (value) => {
-    if (value?.id)changeProject(value.id)
+    // if (value?.id)changeProject(value.id)
+    if (value?.id){
+      changeProject(value.id)
+      navigate(`/projects/${value.id}`)
+    }
   };
 
   const getSearchProjectList = () => {

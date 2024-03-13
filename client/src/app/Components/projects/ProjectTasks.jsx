@@ -309,7 +309,7 @@ const ProjectTasks = ({ openAddTask }) => {
       field: "totalHours",
       headerName: "Heures",
       width: 70,
-      valueGetter: (params) => `${params.row.totalHours || 0}`,
+      valueGetter: (params) => `${Math.round(params.row.totalHours) || 0}`,
     },
 
     {
@@ -385,9 +385,9 @@ const ProjectTasks = ({ openAddTask }) => {
           );
         }
         if (
-          !emailsList.includes(user?.email) &&
+          (isUserEligibleToEdit || isUserAnIntervenant) &&
           STATE_ABANDONED !== row.state &&
-          user?.role !== CLIENT_ROLE
+          isProjectEditable
         ) {
           renderActions.push(
             <GridActionsCellItem

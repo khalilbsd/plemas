@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { DAILY_HOURS_VALUE } from "../../constants/constants";
+import {  calculateTotalValuesForChangedItems, getPorjectAndTasksKeys, getUnChangedItems } from "./lib";
 
 const initialState = {
   projectTasks: [],
@@ -10,8 +11,10 @@ const initialState = {
   dailyLogDevisions: {
     tasks: {},
     projects: {},
+    rest: 0,
   },
   dailyProjectManager: [],
+  dailyProjectManagerWithoutOngoingTasks: [],
 };
 
 const taskSlice = createSlice({
@@ -36,6 +39,8 @@ const taskSlice = createSlice({
       state.userPotentialTasks = action.payload.joinableTasks;
       // set the initial value of the dailyLog devision
       state.dailyProjectManager = action.payload.dailyProjectManager;
+      state.dailyProjectManagerWithoutOngoingTasks =
+        action.payload.managedProjectsWithoutOngoingTasks;
       // state.dailyLogDevisions.projects = action.payload.managedProjectHours;
 
       // we need to check if the user has submitted somehours today or not
@@ -85,78 +90,46 @@ const taskSlice = createSlice({
       });
     },
     updateDailyHours: (state, action) => {
-      //extraction of data from payload
+      try {
+         //extraction of data from payload
+
       const { id, type, percent } = action.payload;
 
       const hours = Math.round((percent * DAILY_HOURS_VALUE) / 100);
-      //  first i need to calcule the rest
-      //first i need to  mark out one i changed
-      // return
-      let taskKeys = [];
-      let projectKeys = [];
-      if (type === "tasks") {
-        taskKeys = Object.keys(state.dailyLogDevisions.tasks).filter(
-          (key) => parseInt(key) !== id
-        );
-      } else {
-        taskKeys = Object.keys(state.dailyLogDevisions.tasks);
-      }
-      if (type === "projects") {
-        projectKeys = Object.keys(state.dailyLogDevisions.projects).filter(
-          (key) => parseInt(key) !== id
-        );
-      } else {
-        projectKeys = Object.keys(state.dailyLogDevisions.projects);
-      }
-
+      let { taskKeys, projectKeys } = getPorjectAndTasksKeys(
+        state.dailyLogDevisions.projects,
+        state.dailyLogDevisions.tasks,
+        type,
+        id
+      );
       // total of changed values meaining that i'm searching for the list of projects or tasks that have been changed to be  bale to calcule the rest
-      let projectsTotalChangedValues = 0;
-      let tasksTotalChangedValues = 0;
-
-      projectKeys.forEach((key) => {
-        if (state.dailyLogDevisions.projects[key].changed) {
-          projectsTotalChangedValues +=
-            state.dailyLogDevisions.projects[key].value;
-        }
-      });
-      taskKeys.forEach((key) => {
-        if (state.dailyLogDevisions.tasks[key].changed) {
-          tasksTotalChangedValues += state.dailyLogDevisions.tasks[key].value;
-        }
-      });
+      let projectsTotalChangedValues = calculateTotalValuesForChangedItems(projectKeys,state.dailyLogDevisions.projects);
+      let tasksTotalChangedValues = calculateTotalValuesForChangedItems(taskKeys,state.dailyLogDevisions.tasks);
       // calculating rest
-      let rest =
-        DAILY_HOURS_VALUE -
-        (hours + projectsTotalChangedValues + tasksTotalChangedValues);
-      //console.log(rest ,"my hours ",hours," prject chanegd ",projectsTotalChangedValues," tasksTotalChangedValues ",tasksTotalChangedValues);
-      let flagZero = false
-      if (rest <= 0) {
-      //   state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
-      // state.dailyLogDevisions[type][id].value = hours;
-      flagZero = true
-      }else{
-        flagZero = false
-      }
+      let rest = DAILY_HOURS_VALUE - (hours + projectsTotalChangedValues + tasksTotalChangedValues);
+
 
       const nbOfEntries = projectKeys.length + taskKeys.length; // one them doens't contain the selected line
       // let negativeRest = 0;
-      taskKeys
-        .filter((key) => !state.dailyLogDevisions.tasks[key].changed)
+      getUnChangedItems(taskKeys,state.dailyLogDevisions.tasks).forEach((key) => {
+          state.dailyLogDevisions.tasks[key].value = rest <= 0
+            ? 0
+            : Math.round(rest / nbOfEntries);
+        });
+        getUnChangedItems(projectKeys,state.dailyLogDevisions.projects)
         .forEach((key) => {
+          state.dailyLogDevisions.projects[key].value = rest <= 0
+            ? 0
+            : Math.round(rest / nbOfEntries);
+        });
 
-          state.dailyLogDevisions.tasks[key].value =flagZero ? 0 : Math.round(
-            rest / nbOfEntries
-          );
-        });
-      projectKeys
-        .filter((key) => !state.dailyLogDevisions.projects[key].changed)
-        .forEach((key) => {
-          state.dailyLogDevisions.projects[key].value = flagZero ? 0  :Math.round(
-            rest / nbOfEntries
-          );
-        });
-      state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
-      state.dailyLogDevisions[type][id].value = flagZero ?  hours + rest : hours;
+      // state.dailyLogDevisions[type][id].changed = hours > 0 ? true : false;
+      state.dailyLogDevisions[type][id].changed = true;
+      state.dailyLogDevisions[type][id].value = rest <=0 ? hours + rest : hours;
+      state.dailyLogDevisions.rest = rest;
+      } catch (error) {
+          console.log(error);
+      }
     },
 
     hideDailyTask: (state, action) => {
@@ -167,54 +140,118 @@ const taskSlice = createSlice({
       state.userGeneralTasks = state.userGeneralTasks.filter(
         (task) => task.id !== action.payload.id
       );
-      state.userPotentialTasks.push(task);
 
-      const taskLength = Object.keys(state.dailyLogDevisions.tasks).length;
+      state.userPotentialTasks.push(task);
+      const oldDailyValue = state.dailyLogDevisions.tasks[action.payload.id].value
+      const taskLength = Object.keys(state.dailyLogDevisions.tasks).length - 1;
       // const projectLength = Object.keys(
       //   state.dailyLogDevisions.projects
       // ).length;
-      const projectLength = state.dailyProjectManager.length;
+      const projectLength = Object.keys(state.dailyLogDevisions.projects).length;
       const nbOfEntries = projectLength + taskLength;
       // const portion =
       //   DAILY_HOURS_VALUE / (nbOfEntries - 1) - DAILY_HOURS_VALUE / nbOfEntries;
-      const portion = DAILY_HOURS_VALUE / nbOfEntries;
+      const portion = oldDailyValue / nbOfEntries;
       delete state.dailyLogDevisions.tasks[action.payload.id];
       Object.keys(state.dailyLogDevisions.tasks).map(
         (key) =>
-          (state.dailyLogDevisions.tasks[key].value = Math.floor(portion))
+          // (state.dailyLogDevisions.tasks[key].value = Math.floor(portion))
+          (state.dailyLogDevisions.tasks[key].value = state.dailyLogDevisions.tasks[key].value+ portion)
       );
       Object.keys(state.dailyLogDevisions.projects).map(
         (key) =>
-          (state.dailyLogDevisions.projects[key].value = Math.floor(portion))
+          // (state.dailyLogDevisions.projects[key].value = Math.floor(portion))
+          (state.dailyLogDevisions.projects[key].value = state.dailyLogDevisions.projects[key].value + portion)
       );
     },
 
     hideDailyProject: (state, action) => {
+      const project = state.dailyProjectManager.filter(
+        (p) => p.id === action.payload
+      )[0];
+
+
+      //removng project from ongoig list to the nongoing
+      state.dailyProjectManagerWithoutOngoingTasks.push(project);
+
       state.dailyProjectManager = state.dailyProjectManager.filter(
-        (p) => p.id !== action.payload.id
+        (p) => p.id !== action.payload
       );
+        //start the calculation
+        // getting the old values for the input :
+      const oldDailyValue = state.dailyLogDevisions.projects[action.payload].value
 
       const taskLength = Object.keys(state.dailyLogDevisions.tasks).length;
       // const projectLength = Object.keys(
       //   state.dailyLogDevisions.projects
       // ).length;
-      const projectLength = state.dailyProjectManager.length;
+      const projectLength = Object.keys(state.dailyLogDevisions.projects).length  -1 ;
 
       const nbOfEntries = projectLength + taskLength;
       // const portion =
       //   DAILY_HOURS_VALUE / nbOfEntries - DAILY_HOURS_VALUE / nbOfEntries;
-      const portion = DAILY_HOURS_VALUE / nbOfEntries;
+      // const portion = DAILY_HOURS_VALUE / nbOfEntries;
+      const portion = oldDailyValue / nbOfEntries;
 
-      delete state.dailyLogDevisions.projects[action.payload.id];
+      delete state.dailyLogDevisions.projects[action.payload];
 
       Object.keys(state.dailyLogDevisions.tasks).map(
         (key) =>
-          (state.dailyLogDevisions.tasks[key].value = Math.floor(portion))
+          // (state.dailyLogDevisions.tasks[key].value = Math.floor(portion))
+          (state.dailyLogDevisions.tasks[key].value = state.dailyLogDevisions.tasks[key].value +portion)
       );
       Object.keys(state.dailyLogDevisions.projects).map(
         (key) =>
-          (state.dailyLogDevisions.projects[key].value = Math.floor(portion))
+          // (state.dailyLogDevisions.projects[key].value = Math.floor(portion))
+          (state.dailyLogDevisions.projects[key].value = state.dailyLogDevisions.projects[key].value +portion)
       );
+    },
+    updateDaiyProjects: (state, action) => {
+      const id = action.payload;
+      //clearing up the list
+      const project = state.dailyProjectManagerWithoutOngoingTasks.filter(
+        (p) => p.id === id
+      )[0];
+
+      state.dailyProjectManager.push(project);
+      state.dailyProjectManagerWithoutOngoingTasks =
+        state.dailyProjectManagerWithoutOngoingTasks.filter((p) => p.id !== id);
+      // creating the dailylog devision so the user can manager the hours directly without refreshing the page
+      //check if all  the tasks and projects are chanegd
+      let changed = true;
+
+      Object.keys(state.dailyLogDevisions).forEach((key) => {
+        Object.keys(state.dailyLogDevisions[key]).forEach((subKey) => {
+          if (!state.dailyLogDevisions[key][subKey].changed) {
+            changed = false;
+          }
+        });
+      });
+
+      let value = 0;
+      if (!changed) {
+        // recalculate the rest
+        let nbOfEntries =
+          Object.keys(state.dailyLogDevisions.tasks).length +
+          Object.keys(state.dailyLogDevisions.projects).length;
+
+        const portion = DAILY_HOURS_VALUE / (nbOfEntries + 1);
+        console.log("new rest will be ", portion);
+        Object.keys(state.dailyLogDevisions).forEach((key) => {
+          Object.keys(state.dailyLogDevisions[key]).forEach((subKey) => {
+            return (state.dailyLogDevisions[key][subKey].value = portion);
+          });
+        });
+        // console.log("nb of entries ",nbOfEntries);
+        value = portion;
+        console.log("value of portion after calculating");
+      }
+
+      state.dailyLogDevisions.projects[id] = {
+        changed: false,
+        projectID: id,
+        value: value,
+      };
     },
 
     updateUserPotentialTasks: (state, action) => {
@@ -244,24 +281,29 @@ const taskSlice = createSlice({
         action.payload.value;
     },
     updateInterventionUploadedFile: (state, action) => {
-      const taskIdx = state.projectTasks
-        .map((task) => task.id)
-        .indexOf(parseInt(action.payload.taskID));
+      try {
+        const taskIdx = state.projectTasks
+          .map((task) => task.id)
+          .indexOf(parseInt(action.payload.taskID));
 
-      const intervIdx = state.projectTasks[taskIdx].intervenants
-        .map((interv) => interv.id)
-        .indexOf(action.payload.intervenantID);
+        const intervIdx = state.projectTasks[taskIdx].intervenants
+          .map((interv) => interv.id)
+          .indexOf(action.payload.intervenantID);
 
-      let obj = JSON.parse(
-        state.projectTasks[taskIdx].intervenants[intervIdx].file
-      );
-      if (action.payload.upload) {
-        obj.push(action.payload.file);
-      } else {
-        obj = obj.filter((file) => file !== action.payload.file);
+        let obj = state.projectTasks[taskIdx].intervenants[intervIdx].file
+          ? JSON.parse(state.projectTasks[taskIdx].intervenants[intervIdx].file)
+          : [];
+
+        if (action.payload.upload) {
+          obj.push(action.payload.file);
+        } else {
+          obj = obj.filter((file) => file !== action.payload.file);
+        }
+        state.projectTasks[taskIdx].intervenants[intervIdx].file =
+          JSON.stringify(obj);
+      } catch (error) {
+        console.log(error);
       }
-      state.projectTasks[taskIdx].intervenants[intervIdx].file =
-        JSON.stringify(obj);
     },
     // setUserPotentialTasks: (state, action) => {
     // }
@@ -281,7 +323,7 @@ export const {
   updateDailyHours,
   hideDailyTask,
   hideDailyProject,
-
+  updateDaiyProjects,
   // setUserGeneralTasks,
   // setUserPotentialTasks
 } = taskSlice.actions;

@@ -2,18 +2,18 @@ import { Grid, Skeleton } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
-import useFetchDailyLog from "../../hooks/services/fetchers/dailyLog.fetch.service";
-import JoinableTasks from "../Components/dailylog/JoinableTasks";
+import useFetchDailyLog from "../../services/fetchers/dailyLog.fetch.service";
+import LayoutAppendables from "../Components/dailylog/LayoutAppendables";
 import TasksList from "../Components/dailylog/TasksList";
 import { dailyLogStyle } from "./style";
 const DailyLog = () => {
   const classes = dailyLogStyle();
   const generalTasks = useGetStateFromStore("task", "userGeneralTasks");
   const [history, setHistory] = useState(dayjs(new Date()));
-  const {isLoading:loadingTasks} = useFetchDailyLog(history)
+  const { isLoading: loadingTasks } = useFetchDailyLog(history);
   const [openJoinableTasks, setOpenJoinableTasks] = useState(false);
 
-  const [disableJoin, setDisableJoin] = useState(false);
+  // const [disableJoin, setDisableJoin] = useState(false);
 
   const handleOpenJoinableTasks = () => {
     setOpenJoinableTasks((pevState) => !pevState);
@@ -26,9 +26,9 @@ const DailyLog = () => {
         .isSame(dayjs(new Date()).startOf("day").locale("en-gb"))
     ) {
       setOpenJoinableTasks(false);
-      setDisableJoin(true);
+      // setDisableJoin(true);
     } else {
-      setDisableJoin(false);
+      // setDisableJoin(false);
     }
     setHistory(date);
   };
@@ -48,7 +48,7 @@ const DailyLog = () => {
           <div className={classes.usersTasks}>
             {!loadingTasks ? (
               <TasksList
-                joinDisabled={disableJoin}
+                // joinDisabled={disableJoin}
                 historyDate={history}
                 handleDateChange={handleDate}
                 tasks={generalTasks || []}
@@ -69,17 +69,11 @@ const DailyLog = () => {
           lg={openJoinableTasks ? 5 : 0}
           sx={{ height: "100%" }}
         >
-          <div
-            className={`${classes.card} taskList ${
-              openJoinableTasks ? "collapsed" : "hidden"
-            } `}
-          >
-            <h2 className={classes.sectionTitle}>
-              les tâches auxquelles vous pouvez participer{" "}
-            </h2>
 
-            {openJoinableTasks && <JoinableTasks open={openJoinableTasks} />}
-          </div>
+            {openJoinableTasks && (
+              <LayoutAppendables open={openJoinableTasks} />
+            )}
+
         </Grid>
       </Grid>
     </div>

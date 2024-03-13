@@ -14,7 +14,7 @@ RUN npm install
 
 # Copy the rest of the application
 # if you find the copy commented out that means that we're using volumes mounting to simulate prod env
-#COPY . .
+COPY . .
 
 
 EXPOSE 3000

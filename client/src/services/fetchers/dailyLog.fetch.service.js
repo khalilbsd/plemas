@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { notify } from "../../../app/Components/notification/notification";
-import { NOTIFY_ERROR } from "../../../constants/constants";
-import { useGetDailyLogTasksMutation } from "../../../store/api/tasks.api";
-import { setUserDailyTasks } from "../../../store/reducers/task.reducer";
+import { notify } from "../../app/Components/notification/notification";
+import { NOTIFY_ERROR } from "../../constants/constants";
+import { useGetDailyLogTasksMutation } from "../../store/api/tasks.api";
+import { setUserDailyTasks } from "../../store/reducers/task.reducer";
 
 const useFetchDailyLog = (history) => {
   const [getDailyLogTasks, { isLoading }] = useGetDailyLogTasksMutation();
@@ -20,8 +20,9 @@ const useFetchDailyLog = (history) => {
           setUserDailyTasks({
             allTasks: res.allTasks,
             joinableTasks: res.joinableTasks,
-            dailyProjectManager: res.managedProjects,
+            dailyProjectManager: res.managedProjectsWithOngoingTasks,
             managedProjectHours: res.managedProjectHours,
+            managedProjectsWithoutOngoingTasks:res.managedProjectsWithoutOngoingTasks
           })
         );
       } catch (error) {

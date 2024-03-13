@@ -4,39 +4,23 @@ import Tooltip from "@mui/material/Tooltip";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import React, { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
 import { ReactSVG } from "react-svg";
 import {
-  NOTIFY_ERROR,
   TASK_STATE_TRANSLATION,
   progress_bar_width_cell,
 } from "../../../../constants/constants";
+import useSelectFilterItems from "../../../../hooks/filter/filterItems";
+import useDateFilter from "../../../../hooks/filter/handlers/datesFilter";
+import useChangeFilter from "../../../../hooks/filter/handlers/main";
 import useGetStateFromStore from "../../../../hooks/manage/getStateFromStore";
-import { useFilterProjectsTasksByDatesMutation } from "../../../../store/api/tasks.api";
-import {
-  changeDailyFilter,
-  filterByTaskStatus,
-  filterProjectsList,
-  popTaskStateFromFilter,
-  setProjectTaskListFiltered,
-  setProjectTasksDateFilter,
-} from "../../../../store/reducers/manage.reducer";
-import { setTwoWeeksDatesListFiltered } from "../../../../store/reducers/project.reducer";
 import faArrowRight from "../../../public/svgs/light/arrow-right.svg";
 import faFilter from "../../../public/svgs/light/filter.svg";
 import PopUp from "../../PopUp/PopUp";
-import { notify } from "../../notification/notification";
 import { projectsStyles } from "../style";
 import ProjectHeadColumnFilter from "./filter/ProjectHeadColumnFilter";
 
-const init = {
-  manager: "",
-  state: "",
-  phase: "",
-  lots: "",
-  taskState: "",
-};
+const init = { manager: "", state: "", phase: "", lots: "", taskState: "" };
 
 const dateFilterInit = {
   open: false,
@@ -44,189 +28,33 @@ const dateFilterInit = {
   endDate: dayjs().locale("en-gb").add(15, "day"),
 };
 
-const ProjectListHeader = ({ disableDailyFilter }) => {
+const ProjectListHeader = () => {
   const [selected, setSelected] = useState(init);
   const classes = projectsStyles();
+  const { states, lots, managers, phase } = useSelectFilterItems();
   const twoWeeksDates = useGetStateFromStore("project", "twoWeeksList");
   const WeeksDatesListFiltered = useGetStateFromStore(
     "project",
     "twoWeeksListFiltered"
   );
   const sideBarCollapsed = useGetStateFromStore("sidebar", "collapsed");
-  const projects = useGetStateFromStore("manage", "projectsList");
-  const dispatch = useDispatch();
   const [dateFilter, setDateFilter] = useState(dateFilterInit);
-  const [filterProjectsTasksByDates] = useFilterProjectsTasksByDatesMutation();
-  // const [filters, setFilters] = useState(filtersInit);
 
-  const selectStates = () => {
-    const list = [];
-    projects.forEach((project) => {
-      let exist = list.filter((item) => item === project.state);
-      if (!exist.length) {
-        list.push(project.state);
-      }
-    });
-    return list;
+  const {
+    handleChangeFilter,
+    handleChangeManager,
+    handleChangeTaskState,
+    handleFilterStartDateChange,
+    handleFilterEndDateChange,
+  } = useChangeFilter(setSelected, selected, setDateFilter, dateFilter);
+  const hideDatesFilter = () => {
+    setDateFilter({ ...dateFilter, open: false });
   };
-  const selectManagers = () => {
-    const list = [];
-    projects.forEach((project) => {
-      let exist = list.filter(
-        (item) => item.fullName === project.manager.fullName
-      );
-      if (!exist.length) {
-        list.push(project.manager);
-      }
-    });
-    return list;
-  };
-
-  const selectLots = () => {
-    function getDifferentLots(list1, list2) {
-      return list2.filter((element) => !list1.includes(element));
-    }
-    var list = [];
-    projects.forEach((project) => {
-      if (!project.lots.every((lot) => list.includes(lot))) {
-        const lotsToAdd = getDifferentLots(list, project.lots);
-        list = list.concat(lotsToAdd);
-      }
-    });
-    return list;
-  };
-
-  const selectPhases = () => {
-    const list = [];
-    projects.forEach((project) => {
-      let exist = list.filter((item) => item === project.activePhase);
-      if (!exist.length) {
-        if (project.activePhase) {
-          list.push(project.activePhase);
-        }
-      }
-    });
-    return list;
-  };
-
-  const handleChangeManager = (event) => {
-    const {
-      target: { value, checked },
-    } = event;
-    setSelected({ ...selected, manager: value });
-    //disableDailyFilter()
-    dispatch(
-      filterProjectsList({
-        flag: true,
-        value: value,
-        attribute: "manager.fullName",
-        popFilter: !checked ? true : false,
-      })
-    );
-  };
-
-  const handleChangeFilter = (event) => {
-    const {
-      target: { value, name, checked },
-    } = event;
-    //disableDailyFilter()
-
-    setSelected({
-      ...selected,
-      [name]: value,
-    });
-
-    dispatch(
-      filterProjectsList({
-        flag: true,
-        value: value,
-        attribute: name,
-        popFilter: !checked ? true : false,
-      })
-    );
-  };
-
-  const applyDateFilter = async () => {
-    //disabling daily filter
-    dispatch(changeDailyFilter(false));
-
-    const projectIds = projects.map((project) => project.id);
-    //disableDailyFilter()
-
-    try {
-      const res = await filterProjectsTasksByDates({
-        projects: projectIds,
-        start: dateFilter.startDate.format("DD/MM/YYYY"),
-        end: dateFilter.endDate.format("DD/MM/YYYY"),
-        nbWeeks: dateFilter.endDate.diff(dateFilter.startDate, "week"),
-      }).unwrap();
-
-      dispatch(setTwoWeeksDatesListFiltered(res.dates));
-      dispatch(setProjectTaskListFiltered(res.tasks));
-      dispatch(
-        setProjectTasksDateFilter({
-          start: dateFilter.startDate.format("DD/MM/YYYY"),
-          end: dateFilter.endDate.format("DD/MM/YYYY"),
-        })
-      );
-      hideDatesFilter();
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
-  };
-
-  const handleChangeTaskState = (event) => {
-    const {
-      target: { value, name, checked },
-    } = event;
-    //disableDailyFilter()
-
-    setSelected({ ...selected, [name]: value });
-    if (checked) {
-      dispatch(filterByTaskStatus(value));
-    } else {
-      dispatch(popTaskStateFromFilter(value));
-    }
-  };
+  const applyDateFilter = useDateFilter(dateFilter, hideDatesFilter);
 
   const showDatesFilter = () => {
     setDateFilter({ ...dateFilter, open: true });
   };
-  const hideDatesFilter = () => {
-    setDateFilter({ ...dateFilter, open: false });
-  };
-
-  const handleFilterStartDateChange = (startDate) => {
-    if (dateFilter.endDate.diff(startDate, "day") > 15) {
-      setDateFilter({
-        ...dateFilter,
-        startDate: startDate,
-        endDate: startDate.add(15, "day"),
-      });
-    }
-  };
-  const handleFilterEndDateChange = (endDate) => {
-    if (endDate.isBefore(dateFilter.startDate)) {
-      notify(
-        NOTIFY_ERROR,
-        "la date de fin du filtre ne peut être antérieure à la date de début."
-      );
-      setDateFilter({
-        ...dateFilter,
-        endDate: dateFilter.startDate.add(15, "day"),
-      });
-      return;
-    }
-    setDateFilter({ ...dateFilter, endDate: endDate });
-  };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const managers = useMemo(() => selectManagers(), [projects]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const states = useMemo(() => selectStates(), [projects]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const lots = useMemo(() => selectLots(), [projects]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const phase = useMemo(() => selectPhases(), [projects]);
 
   const columns = [
     {
@@ -268,7 +96,6 @@ const ProjectListHeader = ({ disableDailyFilter }) => {
       headerName: "Phase",
       field: "activePhase",
       title: "Filtre par phase",
-
       filter: true,
       width: 50,
       type: "activePhase",

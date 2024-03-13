@@ -704,6 +704,7 @@ export const projectsStyles = createUseStyles({
 
       "&:hover": {
         backgroundColor: "var(--app-bg-color) !important",
+        cursor:'pointer'
       },
       "&.active": {
         backgroundColor: "var(--pastel-green) !important",

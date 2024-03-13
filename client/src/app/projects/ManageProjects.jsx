@@ -1,37 +1,23 @@
 import { Grid } from "@mui/material";
-import Backdrop from '@mui/material/Backdrop';
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import {
-  NOTIFY_ERROR,
-  NOTIFY_SUCCESS,
-  STATE_BLOCKED,
-  STATE_DOING
-} from "../../constants/constants";
 import useIsUserCanAccess from "../../hooks/access";
 import useGetStateFromStore from "../../hooks/manage/getStateFromStore";
 import useGetUserInfo from "../../hooks/user";
-import {
-  useCreateProjectMutation,
-  useGetProjectListMutation
-} from "../../store/api/projects.api";
+import useCreateProject from "../../services/creators/createProject.create.service";
+import useLoadProjects from "../../services/fetchers/loadProjects.fetch.service";
 import {
   clearAddProjectState,
-  filterByTaskStatus,
   filterProjectsList,
   setLinkedProject,
-  setLinkingProject,
-  setProjectList
+  setLinkingProject
 } from "../../store/reducers/manage.reducer";
-import { setTwoWeeksDatesList } from "../../store/reducers/project.reducer";
 import { containsOnlySpaces } from "../../store/utils";
-import LoadingWithProgress from "../Components/loading/LoadingWithProgress";
 import ProjectList from "../Components/managing/projects/ProjectList";
 import ProjectCreationForm from "../Components/managing/projects/addProject/ProjectCreationForm";
 import { projectsStyles } from "../Components/managing/style";
-import { notify } from "../Components/notification/notification";
 
 const initialError = {
   filedName: undefined,
@@ -73,78 +59,19 @@ const newProjectInitialState = {
 const ManageProjects = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const [getProjectList, { isLoading }] = useGetProjectListMutation();
   const user = useGetUserInfo();
-  // const {  isManager } = useIsUserCanAccess();
+  const classes = projectsStyles();
   const [addProjectForm, setAddProjectForm] = useState(false);
-  const [loadingCreatedProject, setLoadingCreatedProject] = useState(false);
+
   const codeRef = useRef();
   const [errorMessage, setErrorMessage] = useState(initialError);
   const [newProject, setNewProject] = useState(newProjectInitialState);
   const { isFiltering } = useGetStateFromStore("manage", "addProject");
-
   const projectState = useGetStateFromStore("manage", "addProject");
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const dailyFilter = useGetStateFromStore("manage", "projectListDailyFilter");
-  const [creatingProject, setCreatingProject] = useState(false);
-  //ADD hooks
-  const [createProject] = useCreateProjectMutation();
-
-  async function loadProjects() {
-    try {
-      const data = await getProjectList().unwrap();
-
-      dispatch(
-        setProjectList({ projects: data.projects, tasks: data.projectsTasks })
-      );
-      dispatch(setTwoWeeksDatesList(data.dates));
-      if (!isFiltering && addProjectForm && !dailyFilter) {
-        dispatch(
-          filterProjectsList({
-            flag: false,
-            value: "",
-            attribute: "projectCustomId"
-          })
-        );
-      }
-      if (dailyFilter) {
-        dispatch(
-          filterProjectsList({
-            flag: true,
-            value: STATE_DOING,
-            attribute: "state"
-          })
-        );
-        dispatch(
-          filterProjectsList({
-            flag: true,
-            value: STATE_BLOCKED,
-            attribute: "state"
-          })
-        );
-        dispatch(filterByTaskStatus(STATE_DOING));
-
-          if (isManager && user.profile.name && user.profile.lastName){
-            dispatch(
-              filterProjectsList({
-                flag: true,
-                value: `${user?.profile?.name} ${user?.profile?.lastName}`,
-                attribute: "manager.fullName"
-              })
-            );
-          }
-      }
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data?.message);
-    }
-  }
-  useEffect(() => {
-    // if (!projectList.length){
-
-    loadProjects();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user,isManager]);
+  const loadedProjects  = useLoadProjects([user,isManager],true,true,{addProjectForm})
+  const {creatingProject ,submitProject} = useCreateProject()
 
   const handleOpenAddForm = () => {
     if (addProjectForm) {
@@ -177,7 +104,7 @@ const ManageProjects = () => {
     setAddProjectForm((prevState) => !prevState);
   };
 
-  const classes = projectsStyles();
+
 
   //adding the project
   const handleSubmitProject = async () => {
@@ -227,58 +154,19 @@ const ManageProjects = () => {
       }
     }
 
-    try {
-      setCreatingProject(true);
-      const {
-        // code: { value: codeValue },
-        name: { value: nameValue },
-        startDate: { value: startDateValue },
-        manager: { value: managerValue },
-        priority: { value: priorityValue },
-        phase: { value: phaseValue },
-        lot: { value: lotValue }
-      } = newProject;
-
-      const project = {
-        code: codeRef.current.value || projectState.code,
-        name: nameValue,
-        startDate: startDateValue,
-        manager: managerValue,
-        priority: priorityValue,
-        phase: phaseValue,
-        lot: lotValue,
-        active: true,
-        prevPhase: projectState.linkedProjectID
-          ? projectState.linkedProjectID
-          : null
-      };
-
-      if (projectState.customCode !== projectState.code) {
-        project.isCodeCustomized = true;
-      } else {
-        project.isCodeCustomized = false;
-      }
-      const data = await createProject(project).unwrap();
-      setLoadingCreatedProject(true)
-      notify(NOTIFY_SUCCESS, data.message);
-      handleOpenAddForm();
-      setTimeout(() => {
-        setCreatingProject(false);
-      }, 300);
-      dispatch(clearAddProjectState());
-      loadProjects();
-      setNewProject(newProjectInitialState);
-      setTimeout(() => {
-        navigate(`/projects/${data.projectPhase.id}`);
-      }, 5000);
-      setLoadingCreatedProject(false);
-
-    } catch (error) {
-      notify(NOTIFY_ERROR, error?.data.message);
-      setCreatingProject(false);
-      setLoadingCreatedProject(false);
-
+    const projectCode= codeRef.current.value || projectState.code
+    const data =  await submitProject({newProject,projectCode,projectState})
+    if (data){
+        handleOpenAddForm();
+        dispatch(clearAddProjectState());
+        loadedProjects.refetch()
+        setNewProject(newProjectInitialState);
+        setTimeout(() => {
+          navigate(`/projects/${data.projectPhase.id}`);
+        }, 500);
     }
+
+
   };
 
   return (
@@ -296,19 +184,19 @@ const ManageProjects = () => {
               setNewProject={setNewProject}
               newProject={newProject}
             />
-            {loadingCreatedProject&&
+            {/* {loadingCreatedProject&&
             <Backdrop
             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={true}
           >
             <LoadingWithProgress/>
           </Backdrop>
-            }
+            } */}
           </Grid>
         )}
         <Grid item xs={12} lg={12} sx={{ height: "100%" }}>
           <ProjectList
-            loadingProjectList={isLoading}
+            loadingProjectList={loadedProjects.isLoading}
             addForm={addProjectForm}
             handleForm={handleOpenAddForm}
           />

@@ -202,13 +202,13 @@ export const uploadFileToRequest = catchAsync(async (req, res, next) => {
   const { projectID, requestID } = req.params;
   if (!projectID) return next(new MissingParameter("le projet est requis"));
   const project = await Project.findByPk(projectID);
-  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+  if (!project) return next(new ElementNotFound("le projet est introuvable"));
 
   if (!requestID) return next(new MissingParameter("la requete est requis"));
   const request = await Request.findByPk(requestID);
   if (!request) return next(new ElementNotFound("requete est introuvable"));
   if (!req.user.isSuperUser && (req.user.role !== PROJECT_MANAGER_ROLE && project.manager !== req.user.id)&&(request.creatorID !== req.user.id ))
-    return AppError("cette demande ne vous appartient pas ");
+    return AppError("cette requete ne vous appartient pas ");
 
   let url;
   if (!req.files.length)

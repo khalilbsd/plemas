@@ -3,7 +3,7 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridRowEditStopReasons,
-  GridRowModes
+  GridRowModes,
 } from "@mui/x-data-grid";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -16,7 +16,7 @@ import {
   NOTIFY_SUCCESS,
   REQUEST_STATES_LABELS,
   REQUEST_STATES_NOT_TREATED,
-  REQUEST_STATE_TRANSLATION
+  REQUEST_STATE_TRANSLATION,
 } from "../../../constants/constants";
 import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
@@ -25,12 +25,12 @@ import {
   useCreateProjectRequestMutation,
   useDeleteProjectRequestMutation,
   useGetProjectRequestMutation,
-  useUpdateProjectRequestMutation
+  useUpdateProjectRequestMutation,
 } from "../../../store/api/requests.api";
 import {
   removeRequestFromList,
   setProjectRequests,
-  updateRequestList
+  updateRequestList,
 } from "../../../store/reducers/project.reducer";
 import { containsOnlySpaces } from "../../../store/utils";
 import faSave from "../../public/svgs/light/floppy-disk.svg";
@@ -47,18 +47,17 @@ import {
   CustomCancelIcon,
   CustomDeleteIcon,
   CustomEditIcon,
-  CustomSaveIcon
+  CustomSaveIcon,
 } from "../icons";
+import AddBtn from "../managing/AddBtn.jsx";
 import { notify } from "../notification/notification";
 import RequestFiles from "./RequestFiles";
 import { projectDetails, projectTaskDetails } from "./style";
-import AddBtn from "../managing/AddBtn.jsx";
 
 const ProjectRequests = () => {
   const dispatch = useDispatch();
   const { projectID } = useParams();
-  const project = useGetProjectRequestMutation("project", "projectDetails");
-  const { isProjectEditable, isUserEligibleToEdit,isUserAClient } = useGetStateFromStore(
+  const { isProjectEditable, isUserEligibleToEdit } = useGetStateFromStore(
     "project",
     "projectAccess"
   );
@@ -70,13 +69,14 @@ const ProjectRequests = () => {
   const [addRequest, setAddRequest] = useState(false);
   const [files, setFiles] = useState([]);
   const { user } = useGetAuthenticatedUser();
-  const { isSuperUser, isManager } = useIsUserCanAccess();
+  const { isSuperUser } = useIsUserCanAccess();
   const [creatingRequest, setCreatingRequest] = useState(false);
   // const [error, setError] = useState(false)
   const [requestToDelete, setRequestToDelete] = useState(undefined);
   const [checkDelete, setCheckDelete] = useState(false);
   const requests = useGetStateFromStore("project", "projectRequest");
   const dataGridRef = useRef();
+
 
   const [getProjectRequest, { isLoading: loadingRequests }] =
     useGetProjectRequestMutation();
@@ -108,7 +108,7 @@ const ProjectRequests = () => {
     try {
       const res = await deleteProjectRequest({
         projectID,
-        requestID: requestToDelete
+        requestID: requestToDelete,
       }).unwrap();
       dispatch(removeRequestFromList(requestToDelete));
       notify(NOTIFY_SUCCESS, res.message);
@@ -121,7 +121,7 @@ const ProjectRequests = () => {
   const handleCancelClick = (id) => () => {
     setRowModesModel({
       ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true }
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
   };
 
@@ -131,12 +131,12 @@ const ProjectRequests = () => {
         state: REQUEST_STATE_TRANSLATION.filter(
           (state) => state.label === newRow.state
         )[0]?.value,
-        description: newRow.description
+        description: newRow.description,
       };
       const res = await updateProjectRequest({
         projectID,
         requestID: newRow.id,
-        body
+        body,
       }).unwrap();
 
       const updatedRow = { ...res.request, isNew: false };
@@ -179,7 +179,7 @@ const ProjectRequests = () => {
         return `${dayjs(params.row.createdAt)
           .locale("en-gb")
           .format("DD/MM/YYYY")}`;
-      }
+      },
     },
     {
       field: "description",
@@ -189,7 +189,7 @@ const ProjectRequests = () => {
       flex: 1,
       minWidth: 200,
       editable: true,
-      filterable: false
+      filterable: false,
     },
     {
       field: "file",
@@ -205,7 +205,7 @@ const ProjectRequests = () => {
             requestID={row.id}
           />
         );
-      }
+      },
     },
     {
       field: "creatorID",
@@ -238,7 +238,7 @@ const ProjectRequests = () => {
             </p>
           </div>
         );
-      }
+      },
     },
 
     {
@@ -246,8 +246,7 @@ const ProjectRequests = () => {
       headerName: "État",
       type: "singleSelect",
       valueOptions: REQUEST_STATES_LABELS,
-      editable:isUserEligibleToEdit
-      ,
+      editable: isUserEligibleToEdit,
       width: 160,
       renderCell: (params) => {
         const status =
@@ -257,7 +256,7 @@ const ProjectRequests = () => {
             {params.row.state}
           </span>
         );
-      }
+      },
     },
     {
       field: "actions",
@@ -268,13 +267,14 @@ const ProjectRequests = () => {
       getActions: ({ id, row }) => {
         const renderActions = [];
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-        if (isInEditMode) {
+
+        if (isInEditMode && isProjectEditable) {
           renderActions.push(
             <GridActionsCellItem
               icon={<CustomSaveIcon className={taskStyles.icon} />}
               label="Enregistrer"
               sx={{
-                color: "primary.main"
+                color: "primary.main",
               }}
               onClick={handleSaveClick(id)}
             />,
@@ -288,9 +288,8 @@ const ProjectRequests = () => {
           );
         } else {
           if (
-            isSuperUser ||
-            (isManager && user.email === project?.managerDetails?.email) ||
-            user?.email === row.requestCreator?.email
+           ( isUserEligibleToEdit ||
+            user?.email === row.requestCreator?.email) && isProjectEditable
           ) {
             renderActions.push(
               <GridActionsCellItem
@@ -302,7 +301,7 @@ const ProjectRequests = () => {
               />
             );
           }
-          if (isSuperUser) {
+          if (isSuperUser && isProjectEditable) {
             renderActions.push(
               <GridActionsCellItem
                 icon={<CustomDeleteIcon className={taskStyles.icon} />}
@@ -316,13 +315,13 @@ const ProjectRequests = () => {
         }
 
         return renderActions;
-      }
-    }
+      },
+    },
   ];
 
   useEffect(() => {
     async function loadRequests() {
-      console.log(projectID);
+
       try {
         const res = await getProjectRequest(projectID).unwrap();
         dispatch(setProjectRequests(res?.requests));
@@ -332,7 +331,7 @@ const ProjectRequests = () => {
     }
     loadRequests();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectID]);
 
   const openAddRequest = () => {
@@ -411,7 +410,7 @@ const ProjectRequests = () => {
   return (
     <div className={classesDetails.card}>
       <div className={`${classesDetails.cardTitle}`}>
-        {isProjectEditable  && (
+        {isProjectEditable && (
           <button onClick={openAddRequest}>
             <span className="text">Requetes et informations</span>
             <ReactSVG className="icon-container" src={faAdd} />
@@ -426,6 +425,7 @@ const ProjectRequests = () => {
         // icon={faSave}
         // btnText="Ajouter"
         loading={creatingRequest}
+        className={classesDetails.popUpContent}
       >
         <TextField
           label="Information"
@@ -487,7 +487,7 @@ const ProjectRequests = () => {
         }
         slots={{
           columnMenu: CustomDataGridHeaderColumnMenu,
-          noRowsOverlay: CustomNoRowsOverlay
+          noRowsOverlay: CustomNoRowsOverlay,
         }}
         rows={requests}
         columns={columns}
@@ -499,18 +499,20 @@ const ProjectRequests = () => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 100
-            }
-          }
+              pageSize: 100,
+            },
+          },
         }}
         pageSizeOptions={[100]}
         disableRowSelectionOnClick
         onProcessRowUpdateError={(error) => notify(NOTIFY_ERROR, error.message)}
         autoHeight
-        sx={{ "--DataGrid-overlayHeight": "200px",
-        "& .MuiDataGrid-row *:hover": {
-          cursor: "pointer !important",
-        }, }}
+        sx={{
+          "--DataGrid-overlayHeight": "200px",
+          "& .MuiDataGrid-row *:hover": {
+            cursor: "pointer !important",
+          },
+        }}
       />
     </div>
   );
