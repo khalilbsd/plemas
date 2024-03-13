@@ -8,7 +8,7 @@ services:
     volumes:
      - ./client:/kairos/client
     ports:
-      - "9993:3000"
+      - "9993:80"
     # command: npm i && npm run start:dev
     command:  npm run start:dev
     restart: always
