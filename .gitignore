@@ -7,6 +7,6 @@ combined.log
 /server/scripts/i2s_midgard.json
 server/tracking/tracking.txt
 server/uploads/files/*
+server/uploads/images/*
+server/tracking/*
 
-
-server/tracking/tracking.txt
