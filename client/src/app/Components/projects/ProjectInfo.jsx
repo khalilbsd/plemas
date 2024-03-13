@@ -699,7 +699,7 @@ const isShouldCheckProjectIntegrity =()=>{
                         <p className="manager-name">
                           {project.managerDetails?.UserProfile?.name}
                           {project.managerDetails?.UserProfile?.lastName}
-                          &nbsp; {parseFloat(project.managerHours).toFixed(1)}H
+                          &nbsp; {Math.round(project.managerHours)}H
                           <br />
                           <span className="email">
                             {project.managerDetails?.email}
@@ -735,7 +735,8 @@ const isShouldCheckProjectIntegrity =()=>{
                   <div className={classes.data}>
                     <p className="label">
                       Total des heures des intervenant:{" "}
-                      {project.projectNbHours ? parseFloat(project.projectNbHours).toFixed(1) : 0}h{" "}
+                      {/* {project.projectNbHours ? parseFloat(project.projectNbHours).toFixed(1) : 0}h{" "} */}
+                      {project.projectNbHours ? Math.round(project.projectNbHours) : 0}h{" "}
                     </p>
                   </div>
 

@@ -309,7 +309,7 @@ const ProjectTasks = ({ openAddTask }) => {
       field: "totalHours",
       headerName: "Heures",
       width: 70,
-      valueGetter: (params) => `${params.row.totalHours || 0}`,
+      valueGetter: (params) => `${Math.round(params.row.totalHours) || 0}`,
     },
 
     {
