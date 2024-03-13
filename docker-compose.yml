@@ -21,6 +21,29 @@ services:
       REACT_APP_API_URL: http://midgard.org:5000/api
       REACT_APP_SERVER_URL: http://midgard.org:5000
       REACT_APP_DOMAIN: midgard.org
+
+  #  cma  web container
+  kairos_client_cma_web:
+    container_name: kairos_client_cma_web_local
+    build:
+      context: ./client/.
+      dockerfile: Dockerfile
+    # volumes:
+    #  - ./client:/kairos/client
+    ports:
+      - "3001:3000"
+    # command: npm i && npm run start:dev
+    command:  npm run start:dev
+    restart: always
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      default:
+    environment:
+      REACT_APP_API_URL: http://midgard.org:5001/api
+      REACT_APP_SERVER_URL: http://midgard.org:5001
+      REACT_APP_DOMAIN: midgard.org
   kairos_node_server:
     container_name: kairos_node_server_local
     build:
@@ -38,6 +61,31 @@ services:
     environment:
       DB_HOST: mysql_db
       DB_PORT: 3306
+    networks:
+      default:
+
+
+  # cma container
+  kairos_node_server_cma:
+    container_name: kairos_cma_node_server_local
+    build:
+      context: ./server/.
+      dockerfile: Dockerfile
+    # volumes:
+      # - ./server:/kairos/server
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    ports:
+      - "5001:5000"
+    command: "npm run start:dev"
+    restart: always
+    environment:
+      DB_HOST: mysql_db
+      DB_PORT: 3306
+      LMS_HOST: midgard.org:3001
+      SERVER_URL: http://midgard:5001
+      DB_NAME: chronos1
     networks:
       default:
   mysql_db:

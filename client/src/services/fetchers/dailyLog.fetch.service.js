@@ -20,8 +20,9 @@ const useFetchDailyLog = (history) => {
           setUserDailyTasks({
             allTasks: res.allTasks,
             joinableTasks: res.joinableTasks,
-            dailyProjectManager: res.managedProjects,
+            dailyProjectManager: res.managedProjectsWithOngoingTasks,
             managedProjectHours: res.managedProjectHours,
+            managedProjectsWithoutOngoingTasks:res.managedProjectsWithoutOngoingTasks
           })
         );
       } catch (error) {

@@ -3,7 +3,7 @@ import {
   AppError,
   ElementNotFound,
   MissingParameter,
-  UnAuthorized
+  UnAuthorized,
 } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { Intervenant, Project, User, UserProfile } from "../../db/relations.js";
@@ -26,7 +26,7 @@ import {
   STATE_BLOCKED,
   STATE_DOING,
   STATE_DONE,
-  TASK_STATE_TRANSLATION
+  TASK_STATE_TRANSLATION,
 } from "../../constants/constants.js";
 import { projectIntervenantList } from "./intervenant.controller.js";
 import { projectPotentialIntervenants } from "../users/user.controller.js";
@@ -57,14 +57,14 @@ export const getProjectTasks = catchAsync(async (req, res, next) => {
             include: [
               {
                 model: UserProfile,
-                attributes: ["name", "lastName", "image"]
-              }
-            ]
-          }
-        ]
-      }
+                attributes: ["name", "lastName", "image"],
+              },
+            ],
+          },
+        ],
+      },
     ],
-    order: [["dueDate", "DESC"]]
+    order: [["dueDate", "DESC"]],
   });
 
   tasks = tasks.map((task) => {
@@ -78,7 +78,7 @@ export const getProjectTasks = catchAsync(async (req, res, next) => {
   });
 
   return res.status(200).json({
-    intervenants: tasks
+    intervenants: tasks,
   });
 });
 /*
@@ -138,7 +138,7 @@ export const createTask = catchAsync(async (req, res, next) => {
       )
     );
 
-  if (data.startDate <  moment(project.startDate).startOf('day'))
+  if (data.startDate < moment(project.startDate).startOf("day"))
     return next(
       new AppError(
         "la date de début de la tâche ne peut pas être antérieure à la date de début du projet"
@@ -148,18 +148,18 @@ export const createTask = catchAsync(async (req, res, next) => {
   const task = await Task.create({ ...data });
   let message = "la tâche a été créée avec succès";
   await takeNote(ACTION_NAME_TASK_CREATION, req.user.email, project.id, {
-    taskName: task.name
+    taskName: task.name,
   });
   let intervenantsNames = "";
   if (req.body.intervenants) {
     for (const idx in req.body.intervenants) {
       const user = await User.findOne({
-        where: { email: req.body.intervenants[idx] }
+        where: { email: req.body.intervenants[idx] },
       });
       await Intervenant.create({
         intervenantID: user.id,
         projectID: projectID,
-        taskID: task.id
+        taskID: task.id,
       });
       intervenantsNames = intervenantsNames.concat(user.email, ", ");
     }
@@ -173,8 +173,8 @@ export const createTask = catchAsync(async (req, res, next) => {
         {
           taskName: task.name,
           extraProps: {
-            intervenantsNames: intervenantsNames
-          }
+            intervenantsNames: intervenantsNames,
+          },
         }
       );
     } else if (req.body.intervenants) {
@@ -185,15 +185,15 @@ export const createTask = catchAsync(async (req, res, next) => {
         {
           taskName: task.name,
           extraProps: {
-            intervenantsNames: intervenantsNames[0]
-          }
+            intervenantsNames: intervenantsNames[0],
+          },
         }
       );
     }
   } else {
     await Intervenant.create({
       projectID: projectID,
-      taskID: task.id
+      taskID: task.id,
     });
   }
   await task.reload({
@@ -208,13 +208,13 @@ export const createTask = catchAsync(async (req, res, next) => {
             include: [
               {
                 model: UserProfile,
-                attributes: ["name", "lastName", "image"]
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                attributes: ["name", "lastName", "image"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
   task.state = TASK_STATE_TRANSLATION.filter(
     (state) => state.value === task.state
@@ -249,7 +249,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
   ) {
     //check if there is an empty intervention
     const empty = await Intervenant.findOne({
-      where: { intervenantID: { [Op.eq]: null }, projectID, taskID }
+      where: { intervenantID: { [Op.eq]: null }, projectID, taskID },
     });
     if (empty) {
       empty.intervenantID = req.user.id;
@@ -267,20 +267,20 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
 
       return res.status(200).json({
         status: "success",
-        message: "vous avez été assigné à la tâche"
+        message: "vous avez été assigné à la tâche",
       });
     } else {
       const [intervenant, created] = await Intervenant.findOrCreate({
         where: {
           intervenantID: req.user.id,
           projectID: projectID,
-          taskID
+          taskID,
         },
         defaults: {
           projectID,
           taskID,
-          intervenantID: req.user.id
-        }
+          intervenantID: req.user.id,
+        },
       });
 
       if (created) {
@@ -302,7 +302,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       );
       return res.status(200).json({
         status: "success",
-        message: "vous avez été assigné à la tâche"
+        message: "vous avez été assigné à la tâche",
       });
     }
   }
@@ -325,7 +325,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
     }
 
     const empty = await Intervenant.findOne({
-      where: { intervenantID: { [Op.eq]: null }, projectID, taskID }
+      where: { intervenantID: { [Op.eq]: null }, projectID, taskID },
     });
     if (empty) {
       empty.intervenantID = user.id;
@@ -338,13 +338,13 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
     const [intervenant, created] = await Intervenant.findOrCreate({
       where: {
         intervenantID: user.id,
-        projectID: projectID
+        projectID: projectID,
       },
       defaults: {
         projectID,
         taskID,
-        intervenantID: user.id
-      }
+        intervenantID: user.id,
+      },
     });
 
     if (created) {
@@ -372,8 +372,8 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       {
         taskName: task.name,
         extraProps: {
-          intervenantsNames: intervenantsNames
-        }
+          intervenantsNames: intervenantsNames,
+        },
       }
     );
   } else if (emails.length) {
@@ -384,8 +384,8 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       {
         taskName: task.name,
         extraProps: {
-          intervenantsNames: emails[0]
-        }
+          intervenantsNames: emails[0],
+        },
       }
     );
   }
@@ -438,13 +438,11 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       );
     const task = await Task.findByPk(entry.taskID);
     const interventionHours = await InterventionHour.findOne({
-      where: { interventionID: intervention.id, date: moment(date) }
+      where: { interventionID: intervention.id, date: moment(date) },
     });
 
-    if (entry.value === intervention.nbHours && interventionHours){
-
+    if (entry.value === intervention.nbHours && interventionHours) {
       continue;
-
     }
     if (entry.value < 0)
       return next(new AppError("le nombres des heures doit être positive"));
@@ -453,7 +451,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       task.totalHours = task.totalHours
         ? task.totalHours + (hours - interventionHours.hours)
         : hours;
-        intervention.nbHours =
+      intervention.nbHours =
         intervention.nbHours + (hours - interventionHours.hours);
 
       // intervention.nbHours = hours;
@@ -477,7 +475,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       await InterventionHour.create({
         hours: hours,
         interventionID: intervention.id,
-        date: moment(date)
+        date: moment(date),
       });
     }
 
@@ -489,15 +487,15 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
         taskName: task.name,
         extraProps: {
           date: moment(date).format("DD/MM/YYYY"),
-          hours: interventionHours ? hours - oldHours : hours
-        }
+          hours: interventionHours ? hours - oldHours : hours,
+        },
       }
     );
   }
 
   res.status(200).json({
     status: "success",
-    message: "horaires de travail mis à jour avec succès"
+    message: "horaires de travail mis à jour avec succès",
   });
 });
 
@@ -609,16 +607,16 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
     include: [
       {
         model: Project,
-        attributes: ["id", "customId", "name"]
+        attributes: ["id", "customId", "name"],
       },
       {
         model: Task,
         where: {
-          state: STATE_DOING
+          state: STATE_DOING,
         },
-        as: "task"
-      }
-    ]
+        as: "task",
+      },
+    ],
   });
   //convert tasks data to json
   let myTasks = allTasksRaw.map((t) => t.toJSON()); // this includes all the tasks that i'm in intervenant which have taskID (means all  the tasks that i'm active in and are in progress)
@@ -636,20 +634,20 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
     const otherTasks = await Intervenant.findAll({
       where: {
         projectID: {
-          [Op.eq]: projectIds[idx]
-        }
+          [Op.eq]: projectIds[idx],
+        },
       },
       include: [
         {
           model: Project,
-          attributes: ["id", "customId", "name"]
+          attributes: ["id", "customId", "name"],
         },
         {
           model: Task,
           where: { state: STATE_DOING },
-          as: "task"
-        }
-      ]
+          as: "task",
+        },
+      ],
     });
 
     // console.log("--------------------------- parallelTasks",otherTasks.length,otherTasks)
@@ -662,8 +660,8 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   const watcherOnProjects = await Intervenant.findAll({
     where: {
       intervenantID: req.user.id,
-      taskID: null
-    }
+      taskID: null,
+    },
   });
   const watchingIds = watcherOnProjects
     .map((wp) => wp.projectID)
@@ -672,19 +670,19 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
   // for (const pIdx in watchingIds ){
   const possibleTasksRaw = await Intervenant.findAll({
     where: {
-      projectID: watchingIds
+      projectID: watchingIds,
     },
     include: [
       {
         model: Project,
-        attributes: ["id", "customId", "name"]
+        attributes: ["id", "customId", "name"],
       },
       {
         model: Task,
         where: { state: STATE_DOING },
-        as: "task"
-      }
-    ]
+        as: "task",
+      },
+    ],
   });
   // }
   // now we need to filter the tasks cause of the redundancy
@@ -707,7 +705,7 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
 
   for (const index in myTasks) {
     let interventionHours = await InterventionHour.findOne({
-      where: { interventionID: myTasks[index].id, date: history }
+      where: { interventionID: myTasks[index].id, date: history },
     });
     if (interventionHours) {
       myTasks[index].nbHours = interventionHours.hours;
@@ -718,18 +716,14 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
 
   let managedProjects = [];
   let managedProjectHours = {};
+  let managedProjectsWithoutOngoingTasks = [];
 
   // projects for project manager :  (only the projects that at least have one single task in progress)
   if (req.user.isSuperUser || req.user.role === PROJECT_MANAGER_ROLE) {
-
     // let obj = {"state":STATE_DOING};
-    let obj = {[Op.or]:[
-      {"state":STATE_DOING},
-      {"state":STATE_BLOCKED}
-    ]};
-
-
-
+    let obj = {
+      [Op.or]: [{ "state": STATE_DOING }, { "state": STATE_BLOCKED }],
+    };
 
     if (req.user.role === PROJECT_MANAGER_ROLE) {
       obj.manager = req.user.id;
@@ -744,46 +738,87 @@ export const getDailyTasks = catchAsync(async (req, res, next) => {
           include: [
             {
               model: Task,
-              where: { state: STATE_DOING }
-            }
-          ]
-        }
-      ]
+              where: { state: STATE_DOING },
+            },
+          ],
+        },
+      ],
     });
 
-
     // console.log(managedProjects);
-    managedProjects = managedProjects.filter(project=>project.intervenants.length)
 
-    for (const idx in managedProjects){
+    // managedProjectsWithoutOngoingTasks = managedProjects.filter(
+    //   (project) => !project.intervenants.length
+    // );
+
+    // managedProjects = managedProjects.filter(project=>{
+    //   return project.intervenants.length
+
+    // })
+
+    let tmp = [];
+    for (const idx in managedProjects) {
+      let project = managedProjects[idx];
+      const managerHoursInProject = await InterventionHour.findAll({
+        where: {
+          date: history,
+          projectID: project.id,
+        },
+        attributes: ["hours", "projectID", "date"],
+        include: [
+          {
+            model: Intervenant,
+
+            attributes: ["intervenantID", "projectID"],
+            include:[{
+              model:Project,
+              where:{
+                manager:req.user.id
+              }
+            }]
+            // where: {
+              // intervenantID: req.user.id,
+            // },
+          },
+        ],
+      });
+      console.log("managed hours for project",project.id,managerHoursInProject);
+      if (!managerHoursInProject.length && !project.intervenants.length) {
+        managedProjectsWithoutOngoingTasks.push(project);
+        continue;
+      }
+      tmp.push(project);
+    }
+
+    managedProjects = tmp;
+
+    for (const idx in managedProjects) {
       let dailyHours = await InterventionHour.findOne({
-        where: { projectID: managedProjects[idx].id, date: history }
-      })
+        where: { projectID: managedProjects[idx].id, date: history },
+      });
       if (dailyHours) {
         managedProjectHours[managedProjects[idx].id] = dailyHours.hours;
       } else {
         managedProjectHours[managedProjects[idx].id] = 0;
       }
-
     }
-
   }
 
-  return res
-    .status(200)
-    .json({
-      joinableTasks,
-      allTasks: myTasks,
-      managedProjectHours,
-      managedProjects
-    });
+  return res.status(200).json({
+    joinableTasks,
+    allTasks: myTasks,
+    managedProjectHours,
+    managedProjectsWithOngoingTasks: managedProjects,
+    managedProjectsWithoutOngoingTasks,
+  });
 });
 
 export const getTaskPotentialIntervenants = catchAsync(
   async (req, res, next) => {
     const { projectID } = req.params;
 
-    if (!projectID) return next(new MissingParameter("les projets sont requise"));
+    if (!projectID)
+      return next(new MissingParameter("les projets sont requise"));
     const project = await Project.findByPk(projectID);
     if (!project) return next(new ElementNotFound("le projet est introuvable"));
     const projectIntervenants = await projectIntervenantList(projectID);
@@ -797,7 +832,7 @@ export const getTaskPotentialIntervenants = catchAsync(
           email: worker?.user?.email,
           name: worker?.user?.UserProfile?.name,
           lastName: worker?.user?.UserProfile?.lastName,
-          image: worker?.user?.UserProfile?.image
+          image: worker?.user?.UserProfile?.image,
         };
       });
     }
@@ -816,7 +851,7 @@ export const getTaskPotentialIntervenants = catchAsync(
       //concat the two list to have full list of user that can be part of the project or not
       return res.status(200).json({
         status: "success",
-        potentials: potentialAndProjectIntervenants
+        potentials: potentialAndProjectIntervenants,
       });
     }
 
@@ -834,13 +869,13 @@ export const getTaskPotentialIntervenants = catchAsync(
               include: [
                 {
                   model: UserProfile,
-                  attributes: ["name", "lastName", "image"]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                  attributes: ["name", "lastName", "image"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
     if (!task) return next(new ElementNotFound("la tache est introuvable"));
     const { intervenants: taskIntervenants } = task;
@@ -853,7 +888,7 @@ export const getTaskPotentialIntervenants = catchAsync(
     return res.json({
       state: "success",
       taskID: task.id,
-      taskPotentials: filteredIntervenants
+      taskPotentials: filteredIntervenants,
     });
   }
 );
@@ -903,7 +938,7 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
       req.user.email,
       parseInt(projectID),
       {
-        taskName: task.name
+        taskName: task.name,
       }
     );
   } else if (data.state && data.state !== oldState) {
@@ -915,8 +950,8 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
         taskName: task.name,
         extraProps: {
           oldState: oldState,
-          newState: data.state
-        }
+          newState: data.state,
+        },
       }
     );
   } else {
@@ -940,8 +975,8 @@ export const updateTaskInfo = catchAsync(async (req, res, next) => {
         taskName: task.name,
         extraProps: {
           oldValues: oldValuesString,
-          newValues: newValuesString
-        }
+          newValues: newValuesString,
+        },
       }
     );
   }
@@ -965,10 +1000,9 @@ export const getProjectsTasksBulk = async (
   if (start && end) {
     filterDate.dueDate = {
       [Op.gte]: moment(start, "DD/MM/YYYY"),
-      [Op.lte]: moment(end, "DD/MM/YYYY")
+      [Op.lte]: moment(end, "DD/MM/YYYY"),
     };
-  }
-  else {
+  } else {
     // filterDate.dueDate = {
     //   [Op.gte]: today
     // };
@@ -983,7 +1017,7 @@ export const getProjectsTasksBulk = async (
         "dueDate",
         "state",
         "blockedDate",
-        "doneDate"
+        "doneDate",
       ],
       // order: [["dueDate", "DESC"]],
       where: filterDate,
@@ -992,10 +1026,10 @@ export const getProjectsTasksBulk = async (
           model: Intervenant,
           attributes: ["id"],
           where: {
-            projectID: projectsList[projIdx]
-          }
-        }
-      ]
+            projectID: projectsList[projIdx],
+          },
+        },
+      ],
     });
 
     projectTasks.sort(
@@ -1004,7 +1038,7 @@ export const getProjectsTasksBulk = async (
     );
     tasks.push({
       projectID: projectsList[projIdx],
-      tasks: projectTasks ? projectTasks : []
+      tasks: projectTasks ? projectTasks : [],
     });
   }
 
