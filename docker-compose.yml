@@ -10,7 +10,7 @@ services:
     ports:
       - "9993:80"
     # command: npm i && npm run start:dev
-    command:  npm run start:dev
+    command:  nginx -g daemon off
     restart: always
     depends_on:
       mysql_db:
@@ -33,7 +33,7 @@ services:
         condition: service_healthy
     ports:
       - "9995:5000"
-    command: "npm run start:dev"
+    command: "npm run start"
     restart: always
     environment:
       DB_HOST: mysql_db
