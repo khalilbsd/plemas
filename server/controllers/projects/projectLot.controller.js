@@ -1,4 +1,5 @@
 import { Lot, ProjectLots } from "../../db/relations.js";
+import { messages } from "../../i18n/messages.js";
 import logger from "../../log/config.js";
 import { isLotsValid } from "./lot.controller.js";
 
@@ -7,7 +8,7 @@ export const createProjectLot = async (projectID, lots) => {
     return {
       created: false,
       projectLot: false,
-      message: "project id and lot id are mandatory"
+      message: messages["project_and_lot_id_mandatory"]
     };
 
   try {
@@ -19,7 +20,7 @@ export const createProjectLot = async (projectID, lots) => {
       return {
         created: false,
         projectLot: false,
-        message: "lot doesn't exist"
+        message: messages["lot_not_found"]
       };
     }
 
@@ -34,7 +35,7 @@ export const createProjectLot = async (projectID, lots) => {
         return {
           created: false,
           projectLots: false,
-          message: "this project already have this lot assigned to "
+          message: messages["lot_already_assigned_to_project"]
         };
 
       const lot = await ProjectLots.create(
@@ -47,7 +48,8 @@ export const createProjectLot = async (projectID, lots) => {
     return {
       created: true,
       projectLots,
-      message: `lots have assigned to the project ${projectID}`
+      // message: `lots have assigned to the project ${projectID}`
+      message: messages["lots_assigned_to_project"]
     };
   } catch (error) {
     logger.error(error);

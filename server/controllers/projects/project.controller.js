@@ -56,6 +56,7 @@ import { getProjectsTasksBulk } from "../tasks/task.controller.js";
 import { isAllProjectsAreValid } from "../tasks/lib.js";
 import InterventionHour from "../../models/tasks/interventionHours.model.js";
 import { isUserManagement } from "../users/lib.js";
+import { messages } from "../../i18n/messages.js";
 
 /**
  * Get all the project that exists and in which phase is the project in
@@ -181,21 +182,21 @@ export const addProject = catchAsync(async (req, res, next) => {
   if (!data.name || !data.startDate || !data.manager || !data.code)
     return next(
       new MissingParameter(
-        "le nom, la date de début , le responsable et le code sont obligatoire"
+       messages['required_fields']
       )
     );
   // checking the code:
 
   if (data.code.toString().length !== 5)
-    return next(new MalformedObjectId("Code non valide"));
+    return next(new MalformedObjectId(messages.invalid_code));
 
   const isValidCode = await isCodeValid(data.code, data.phase);
 
   if (!isValidCode)
-    return next(new MalformedObjectId("un autre projet a déjà ce code"));
+    return next(new MalformedObjectId(messages.existing_project_code));
 
   if (!data.phase || !data.lot.length)
-    return next(new MalformedObjectId("lots and phase are mandatory"));
+    return next(new MalformedObjectId(messages["lots_and_phase_mandatory"]));
 
   const regexPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
   if (data.startDate) {
@@ -218,7 +219,7 @@ export const addProject = catchAsync(async (req, res, next) => {
   // check for phase:
   const phase = await getPhaseByName(data.phase);
 
-  if (!phase) return next(new ElementNotFound("we couldn't find phase"));
+  if (!phase) return next(new ElementNotFound(messages["phase_not_found"]));
 
   project.phaseID = phase.id;
 
@@ -234,7 +235,7 @@ export const addProject = catchAsync(async (req, res, next) => {
     // const projectLot = await createProjectLot(newProject.id, data.lot);
     const isAllLotsValid = await isLotsValid(data.lot);
     if (!isAllLotsValid) {
-      return next(new ElementNotFound("we couldn't find all the lots"));
+      return next(new ElementNotFound(messages["lots_not_found"]));
     }
 
     for (const lotID in isAllLotsValid) {
@@ -281,21 +282,21 @@ export const addProject = catchAsync(async (req, res, next) => {
 
     return res.status(200).json({
       status: "success",
-      message: "project created successfully",
+      message: messages["project_created_successfully"],
       projectPhase: newProject,
     });
   } catch (error) {
     logger.error(error);
     console.log(error);
     // await transaction.rollback();
-    return next(new UnknownError("something went wrong"));
+    return next(new UnknownError(messages["500"]));
   }
 });
 
 export const updateProjectDetails = catchAsync(async (req, res, next) => {
   const details = req.body;
   if (!details || !Object.keys(details).length)
-    return next(new MissingParameter("Des paramètres manquants"));
+    return next(new MissingParameter(messages.missing_parameters));
   let phase;
   if (details.phase || details.code) {
     const objectQuery = {
@@ -312,7 +313,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
     if (projectWithPhase)
       return next(
-        new AppError("un projet avec ce code et cette phase existe déjà", 403)
+        new AppError(messages.existing_project_with_code_and_phase, 403)
       );
   }
 
@@ -336,7 +337,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
 
   if (details.code && details.code.toString()?.length !== 5)
     return next(
-      new AppError("le code du projet doit contenir 5 caractères", 401)
+      new AppError(messages.project_code_length, 401)
     );
 
   if (details.phase) {
@@ -472,7 +473,7 @@ export const updateProjectDetails = catchAsync(async (req, res, next) => {
   }
   return res.status(200).json({
     status: "success",
-    message: "Les détails des projets ont été mis à jour",
+    message: messages.project_details_updated,
   });
 });
 
@@ -482,7 +483,7 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
   const currentYear = date.getFullYear();
 
   if (currentYear.toString().length !== 4)
-    return next(new UnknownError("quelque chose n'a pas fonctionné"));
+    return next(new UnknownError(messages.something_went_wrong));
   var code = undefined;
   //  projects List
 
@@ -523,19 +524,19 @@ export const generateProjectCode = catchAsync(async (req, res, next) => {
 export const checkProjectCode = catchAsync(async (req, res, next) => {
   const code = req.body.code;
 
-  if (!code) return next(new MissingParameter("Le code est obligatoire"));
+  if (!code) return next(new MissingParameter(messages.required_code));
 
   if (`${code}`.length !== 5)
     return res.status(400).json({
       status: "failed",
-      message: "Code non valide ",
+      message: messages.invalid_code,
       isValid: false,
       code,
     });
 
   return res.status(200).json({
     status: "succuss",
-    message: "code est valide",
+    message: messages.valid_code,
     isValid: true,
     code,
   });
@@ -547,7 +548,7 @@ export const getProjectsInPhase = catchAsync(async (req, res, next) => {
   //verify if phase is exists
   const phaseDetails = await Phase.findOne({ where: { name: phase } });
   if (!phaseDetails)
-    return next(new ElementNotFound("phase n'existe pas n'existe pas"));
+    return next(new ElementNotFound(messages.nonexistent_phase));
   //get all the projects that are active in that phase
   const projects = await Project.findAll({
     include: [
@@ -560,13 +561,13 @@ export const getProjectsInPhase = catchAsync(async (req, res, next) => {
   if (!projects.length)
     return res.status(200).json({
       status: "info",
-      message: `il n'y a pas de projet actif dans la phase ${phase}`,
+      message: messages.no_active_projects_in_phase,
       projects: [],
     });
 
   return res.status(200).json({
     status: "info",
-    message: `la liste des projets de la phase ${phase} a été mise à jour`,
+    message: messages.updated_projects_list_for_phase,
     projects,
   });
 });
@@ -632,7 +633,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
     ],
   });
 
-  if (!project) return next(new ElementNotFound(`Project was not found`));
+  if (!project) return next(new ElementNotFound(messages["project_not_found"]));
   // chekc if the user has access to the project
 
   if (
@@ -644,7 +645,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
       (entry) => entry.intervenantID
     );
     if (!projectIntervenants.includes(req.user.id))
-      return next(new UnAuthorized("vous ne faites pas partie de ce projet"));
+      return next(new UnAuthorized(messages.not_part_of_project));
   }
 
   const projectHours = await Intervenant.sum("nbHours", {
@@ -719,7 +720,7 @@ export const getProjectById = catchAsync(async (req, res, next) => {
 export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
   const { projectsHours, date } = req.body;
   if (!projectsHours || !date)
-    return next(new MissingParameter("les heurs des projets sont obligatoire"));
+    return next(new MissingParameter(messages.mandatory_project_hours));
   const projectsKeys = Object.keys(projectsHours);
   await isAllProjectsAreValid(projectsKeys, next);
 
@@ -730,7 +731,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
 
     if (req.user.role === PROJECT_MANAGER_ROLE) {
       if (req.user.id !== project.manager)
-        return next(new UnAuthorized("Vous n’êtes pas le chef du ce projet"));
+        return next(new UnAuthorized(messages.not_project_owner));
       userId = req.user.id;
     }
     if (req.user.isSuperUser && req.user.role === SUPERUSER_ROLE) {
@@ -738,7 +739,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     }
     const user = await User.findByPk(userId);
     if (!user)
-      return next(new ElementNotFound("le chef projet est introuvable"));
+      return next(new ElementNotFound(messages.project_owner_not_found));
 
     const hours = projectsHours[projectsKeys[idx]].value / 60;
     // const hours = Math.round(
@@ -746,7 +747,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
     // );
     if (isNaN(hours) || hours < 0)
       return next(
-        new AppError("le nombre des heurs doit être un chiffre positif ", 400)
+        new AppError(messages.positive_hours, 400)
       );
 
     //  affecting hours per date
@@ -787,7 +788,7 @@ export const assignManagerHoursBulk = catchAsync(async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ status: "success", message: "heurs renseigner avec succès" });
+    .json({ status: "success", message: messages.hours_recorded_successfully });
 });
 
 // export const assignManagerHours = catchAsync(async (req, res, next) => {
@@ -844,7 +845,7 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
   if (!projectID) return next(new MissingParameter("Missing project id"));
   const project = await Project.findByPk(projectID);
 
-  if (!project) return next(new ElementNotFound(`Project was not found`));
+  if (!project) return next(new ElementNotFound(messages["project_not_found"]));
   let actionState =
     req.body.action === STATE_ABANDONED ? STATE_ABANDONED : STATE_DOING;
   abandonProject(actionState, project.id);
@@ -854,8 +855,8 @@ export const abandonOrResumeProject = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     message:
       actionState === STATE_ABANDONED
-        ? "projet abandonné avec ses tâches"
-        : 'le projet a été rouvert et toutes les tâches sont revenues au statut "en cours".',
+        ? messages.abandoned_project_with_tasks
+        : messages.project_reopened_tasks_set_to_in_progress
   });
 });
 
@@ -896,7 +897,7 @@ export const getProjectTracking = catchAsync(async (req, res, next) => {
   if (!projectID) return next(new MissingParameter("Missing project id"));
   const project = await Project.findByPk(projectID);
 
-  if (!project) return next(new ElementNotFound(`Project was not found`));
+  if (!project) return next(new ElementNotFound(messages["project_not_found"]));
   const tracking = await getTracking(projectID);
 
   return res.status(200).json({ tracking });

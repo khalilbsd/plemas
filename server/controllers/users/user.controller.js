@@ -27,6 +27,7 @@ import {
   serializeProfile,
   serializeUser,
 } from "./lib.js";
+import { messages } from "../../i18n/messages.js";
 
 /*
 admin api to list all the users
@@ -186,7 +187,7 @@ export const addUser = catchAsync(async (req, res, next) => {
     logger.error("there is no data in the request: ADMIN REQUESTED");
     return res
       .status(500)
-      .json({ message: "quelque chose n'a pas fonctionné" });
+      .json({ message: messages.something_went_wrong});
   }
 
   const newUser = data.account;
@@ -454,7 +455,7 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
 
   return res.status(200).json({
     status: "success",
-    message: "The user role has been updated successfully ",
+    message: messages["user_role_updated_successfully"],
   });
 });
 
@@ -467,7 +468,7 @@ export const banUser = catchAsync(async (req, res, next) => {
   if (!email) return next(new MissingParameter("L'e-mail est obligatoire"));
 
   const user = await getUserByEmail(email, false, false);
-  if (!user) return next(new ElementNotFound("User not found"));
+  if (!user) return next(new ElementNotFound(messages["user_not_found"]));
   user.isBanned = true;
   user.save();
 

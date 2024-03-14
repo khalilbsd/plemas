@@ -21,11 +21,12 @@ import {
   getUserByEmail,
   serializeUser
 } from "../users/lib.js";
+import { messages } from "../../i18n/messages.js";
 
 export const login = catchAsync(async (req, res, next) => {
   const user = await getUserByEmail(req.body.email);
   if (!user) {
-    return next(new ElementNotFound("email ou le mot de passe est incorrect"));
+    return next(new ElementNotFound(messages["auth.login.message.non_valid_credentiels"]));
   }
   //maybe adding a blocking detecting algo
 
@@ -34,7 +35,7 @@ export const login = catchAsync(async (req, res, next) => {
   if (!user.password)
     return next(
       new UnknownError(
-        "ce compte n'est pas actif : veuillez vous référer à votre email pour l'email d'activation"
+       messages["inactive_account_refer_activation_email"]
       )
     );
 
@@ -60,18 +61,18 @@ export const login = catchAsync(async (req, res, next) => {
     });
   } else {
     return res.status(401).json({
-      message: "Invalid email or password",
+      message: messages["auth.login.message.non_valid_credentiels"],
       success: false
     });
   }
 });
 
 export const setUserPassword = catchAsync(async (req, res, next) => {
-  if (!req.body) return next(new AppError("something went wrong", 500));
+  if (!req.body) return next(new AppError(messages["500"], 500));
 
   const { isReseted, user } = await resetUserPassword(req, res);
 
-  if (!isReseted || !user) return next(new UnknownError("something wen wrong"));
+  if (!isReseted || !user) return next(new UnknownError(messages[500]));
 
   user.token = null;
   user.active = true;
@@ -79,7 +80,7 @@ export const setUserPassword = catchAsync(async (req, res, next) => {
   user.save();
   return res.status(200).json({
     status: "success",
-    message: "user password has been set and account activated"
+    message: messages["auth.set_user_password.success"]
   });
 });
 
@@ -130,22 +131,22 @@ const resetUserPassword = async (req, res, userEmail = null) => {
 export const passwordReset = catchAsync(async (req, res, next) => {
   const { password, confirmPassword } = req.body;
   if (!password || !confirmPassword)
-    return next(new MissingParameter("passwords don't match "));
+    return next(new MissingParameter(messages["auth.password.non_match"]));
 
   if (password !== confirmPassword)
-    return next(new AppError("passwords don't match", 500));
+    return next(new AppError(messages["auth.password.non_match"], 500));
 
   const { user, isReseted } = await resetUserPassword(req, res, req.user.email);
 
   if (!user || !isReseted)
-    return next(new UnknownError("something went wrong"));
+    return next(new UnknownError(messages["500"]));
 
   user.save();
   logger.info(`user ${req.user.email} changes his password successfully`);
 
   return res
     .status(200)
-    .json({ isChanged: true, message: "password changed  successfully" });
+    .json({ isChanged: true, message: messages["auth.password.changed.successfully"] });
 });
 export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   const { password, confirmPassword, token } = req.body;
@@ -164,14 +165,14 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   if (!resetReq)
     return next(
       new ElementNotFound(
-        "It seems that we didn't note this request. you can generate another request with the reset password page"
+       messages["reset_password_page.not_noted"]
       )
     );
 
   if (resetReq.expired)
     return next(
       new UnAuthorized(
-        "This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"
+       messages.request_already_fulfilled
       )
     );
 
@@ -193,10 +194,10 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   resetReq.expired = true;
 
   if (!password || !confirmPassword)
-    return next(new MissingParameter("passwords don't match "));
+    return next(new MissingParameter(messages["auth.password.non_match"]));
 
   if (password !== confirmPassword)
-    return next(new AppError("passwords don't match", 500));
+    return next(new AppError(messages["auth.password.non_match"], 500));
 
   const { user, isReseted } = await resetUserPassword(
     req,
@@ -205,7 +206,7 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   );
 
   if (!user || !isReseted)
-    return next(new UnknownError("something went wrong"));
+    return next(new UnknownError(messages["500"]));
 
   resetReq.save();
 
@@ -216,7 +217,7 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ isChanged: true, message: "password changed  successfully" });
+    .json({ isChanged: true, message: messages["auth.password.changed.successfully"] });
 });
 
 export const changeUserEmail = catchAsync(async (req, res, next) => {
@@ -229,7 +230,7 @@ export const changeUserEmail = catchAsync(async (req, res, next) => {
       )
     );
   const user = await User.findOne({ where: { email: oldEmail } });
-  if (!user) return next(new AppError("utilisateur introuvable", 400));
+  if (!user) return next(new AppError(messages["user_not_found_1"], 400));
   const isValid = await User.findOne({ where: { email: newEmail } });
   if (isValid) return next(new AppError("email existant", 400));
   user.email = newEmail;
@@ -256,14 +257,14 @@ export const changeUserEmail = catchAsync(async (req, res, next) => {
   }
   return res
     .status(200)
-    .json({ message: "Email a été envoyer" });
+    .json({ message: messages["email_sent"]});
 });
 
 export const checkUserPassword = catchAsync(async (req, res, next) => {
   // console.log(req.body);
   const currentPassword = req.body.currentPassword;
   if (!currentPassword)
-    return next(new AppError("no password has been specified", 400));
+    return next(new AppError(messages["no_password_specified"], 400));
 
   const user = await User.findOne({
     where: { email: req.user.email },
@@ -277,11 +278,11 @@ export const checkUserPassword = catchAsync(async (req, res, next) => {
   if (!isPasswordMatch)
     return res
       .status(403)
-      .json({ matched: false, message: "current password doesn't match" });
+      .json({ matched: false, message:messages["current_password_does_not_match"] });
 
   return res
     .status(200)
-    .json({ matched: true, message: "current password is true" });
+    .json({ matched: true, message: messages["current_password_is_true"]});
 });
 
 export const sendResetPasswordEmailToken = catchAsync(
@@ -289,7 +290,7 @@ export const sendResetPasswordEmailToken = catchAsync(
     const { email } = req.body;
     const user = await getUserByEmail(email, false);
 
-    if (!user) return next(new ElementNotFound("This email doesn't exist"));
+    if (!user) return next(new ElementNotFound(messages["email_not_found"]));
 
     //checking if the user has generated the maximum number of emails :
     const { rows, count } = await ResetPasswordToken.findAndCountAll({
@@ -304,12 +305,12 @@ export const sendResetPasswordEmailToken = catchAsync(
       );
       return res
         .status(400)
-        .json({ status: "failed", message: "you've exceeded the limit " });
+        .json({ status: "failed", message: messages["exceeded_limit"] });
     }
     //generating token
     const token = await createPasswordSetToken();
     if (!token)
-      return next(new AppError("something went wrong when generating email"));
+      return next(new AppError(messages["error_generating_email"]));
     //saving user token
     const passwordResetToken = await ResetPasswordToken.create({
       token: token,
@@ -317,7 +318,7 @@ export const sendResetPasswordEmailToken = catchAsync(
       userID: user.id
     });
     if (!passwordResetToken)
-      return next(new AppError("something went wrong when generating email"));
+      return next(new AppError(messages["error_generating_email"]));
     //expiring old tokens
     // console.log(rows);
     rows?.forEach((oldToken) => {
@@ -337,12 +338,12 @@ export const sendResetPasswordEmailToken = catchAsync(
     } catch (error) {
       logger.error(error);
       return next(
-        new AppError("we couldn't send the email! please try again later", 500)
+        new AppError(messages["email_not_sent"], 500)
       );
     }
     return res.status(200).json({
       status: "success",
-      message: "a reset password email has been sent"
+      message: messages["reset_password_email_sent"]
     });
   }
 );
@@ -350,26 +351,26 @@ export const sendResetPasswordEmailToken = catchAsync(
 export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
   const { token } = req.params;
 
-  if (!token) return next(new UnAuthorized("there is no token supplied"));
+  if (!token) return next(new UnAuthorized(messages["no_token_supplied"]));
 
   const isValidToken = /^[a-zA-Z0-9+/]+={0,2}$/.test(token);
 
   if (!isValidToken)
-    return next(new MalformedObjectId("token maybe malformed"));
+    return next(new MalformedObjectId(messages["token_may_be_malformed"]));
 
   const resetReq = await ResetPasswordToken.findOne({ where: { token } });
 
   if (!resetReq)
     return next(
       new ElementNotFound(
-        "It seems that we didn't note this request. you can generate another request with the reset password page"
+       messages["reset_password_page.not_noted"]
       )
     );
 
   if (resetReq.expired)
     return next(
       new UnAuthorized(
-        "This request is already fulfilled. If you find something wrong with this you can try again or contact the admin"
+       messages["request_already_fulfilled"]
       )
     );
 
@@ -378,7 +379,7 @@ export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
   if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone)
     return next(
       new UnAuthorized(
-        "This link has already expired. If you find something wrong with this you can try again or contact the admin"
+     messages["expired_link"]
       )
     );
 
@@ -402,5 +403,5 @@ export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ status: true, message: "this token is verified" });
+    .json({ status: true, message: messages["verified_token"] });
 });
