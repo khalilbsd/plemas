@@ -5,12 +5,12 @@ services:
     build:
       context: ./client/.
       dockerfile: Dockerfile
-    volumes:
-     - ./client:/kairos/client
+    # volumes:
+    #  - ./client:/kairos/client
     ports:
       - "9993:80"
     # command: npm i && npm run start:dev
-    command:  npm run start:dev
+    #command:  nginx -g daemon off
     restart: always
     depends_on:
       mysql_db:
@@ -26,18 +26,18 @@ services:
     build:
       context: ./server/.
       dockerfile: Dockerfile
-    volumes:
-      - ./server:/kairos/server
+    # volumes:
+    #   - ./server:/kairos/server
     depends_on:
       mysql_db:
         condition: service_healthy
     ports:
       - "9995:5000"
-    command: "npm run start:dev"
+    command: "npm run start"
     restart: always
     environment:
       DB_HOST: mysql_db
-      DB_PORT: 9996
+      DB_PORT: 3306
       SERVER_URL: http://196.179.204.249:9995
       LMS_HOST: 196.179.204.249:9993
     networks:

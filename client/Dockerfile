@@ -29,15 +29,21 @@ RUN npm install
 
 COPY . .
 
-RUN npm  build
+RUN npm run build
 
 #Stage 2
-FROM nginx:1.19.0
+
+FROM nginx:stable
 
 WORKDIR /usr/share/nginx/html
 
-RUN rm -rf ./*
+RUN rm -rf /usr/share/nginx/html/*
 
 COPY --from=builder /kairos/client/build .
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+
+EXPOSE 80
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
