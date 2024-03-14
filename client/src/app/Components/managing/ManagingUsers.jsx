@@ -150,14 +150,8 @@ const ManagingUsers = () => {
 
   const handleBanUser = async (e) => {
     try {
-      let resp;
-
       dispatch(updateUserInList(userToBan));
-      if (!e.target.checked) {
-        resp = await banUser({ email: userToBan.email }).unwrap();
-      } else {
-        resp = await unBanUser({ email: userToBan.email }).unwrap();
-      }
+      const resp = await banUser({ email: userToBan.email }).unwrap();
       closeConfirmBanUser();
       notify(NOTIFY_SUCCESS, resp?.message);
     } catch (error) {
@@ -193,9 +187,25 @@ const ManagingUsers = () => {
     }
   };
 
-  const handleConfirmBanUser = (ban, email) => {
-    setUserToBan({ email, ban });
-    setConfirmBanUser(true);
+  const handleConfirmBanUser = async (ban, email) => {
+    if (!ban){
+
+      try {
+        const  resp = await unBanUser({ email: email }).unwrap();
+        dispatch(updateUserInList({email,ban:false}));
+        notify(NOTIFY_SUCCESS,resp.message)
+
+      } catch (error) {
+        console.error(error)
+        notify(NOTIFY_ERROR,error?.data.message)
+      }
+
+    }else{
+      console.log("banning");
+      setUserToBan({ email, ban });
+      setConfirmBanUser(true);
+
+    }
   };
   const closeConfirmBanUser = () => {
     setConfirmBanUser(false);
@@ -266,17 +276,17 @@ const ManagingUsers = () => {
 
   //column for the header of the list
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
+    { field: "id", headerName: "ID", width: 10 },
     {
       field: "name",
       headerName: "Nom",
-      width: 200,
+      width: 150,
       editable: false
     },
     {
       field: "lastName",
       headerName: "Prénom",
-      width: 200,
+      width: 150,
       editable: false
     },
     {
@@ -288,7 +298,7 @@ const ManagingUsers = () => {
     {
       field: "role",
       headerName: "Role",
-      width: 150,
+      width: 130,
       editable: false,
       renderCell: (params) => {
         const { email, role } = params.row;
