@@ -35,6 +35,7 @@ import { takeNote } from "../../Utils/writer.js";
 import { findObjectDifferences, removeDuplicates } from "../../Utils/utils.js";
 import { calculateDates } from "../projects/lib.js";
 import { isAllProjectsAreValid, isAllTasksAreValid } from "./lib.js";
+import { messages } from "../../i18n/messages.js";
 
 /*
  * params [projectID] REQUIRED
@@ -107,11 +108,7 @@ export const createTask = catchAsync(async (req, res, next) => {
     if (![STATE_DOING, STATE_BLOCKED].includes(project.state))
       return next(
         new AppError(
-          `vous ne pouvez pas créer de tâches car le projet est déjà ${
-            TASK_STATE_TRANSLATION.filter(
-              (state) => state.value === project.state
-            )[0].label
-          }`
+         messages.cannot_create_tasks_project_closed
         )
       );
   }
@@ -119,12 +116,12 @@ export const createTask = catchAsync(async (req, res, next) => {
   if (!name || !startDate || !dueDate)
     return next(
       new MissingParameter(
-        "nome du tache/ date debut / data déchéance sont requis "
+       messages.task_name_date_required
       )
     );
   // details.startDate = moment(details.startDate, "DD/MM/YYYY");
   if (req.user === PROJECT_MANAGER_ROLE && project.manager !== req.user.id) {
-    return next(new UnAuthorized("vous n'est pas le chef de ce projet"));
+    return next(new UnAuthorized(messages.not_project_owner));
   }
 
   const data = req.body;
@@ -133,7 +130,7 @@ export const createTask = catchAsync(async (req, res, next) => {
   if (data.startDate > data.dueDate)
     return next(
       new AppError(
-        "la date d'échéance doit être supérieure à la date de début",
+       messages.task_end_date_after_start_date,
         400
       )
     );
@@ -141,7 +138,7 @@ export const createTask = catchAsync(async (req, res, next) => {
   if (data.startDate < moment(project.startDate).startOf("day"))
     return next(
       new AppError(
-        "la date de début de la tâche ne peut pas être antérieure à la date de début du projet"
+       messages.task_start_date_after_project_start_date
       )
     );
 
@@ -234,14 +231,14 @@ export const createTask = catchAsync(async (req, res, next) => {
 
 export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
-  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  if (!projectID) return next(new MissingParameter(messages.project_required));
   const project = await Project.findByPk(projectID);
-  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+  if (!project) return next(new ElementNotFound(messages.project_not_found));
 
   const { taskID } = req.body;
-  if (!taskID) return next(new MissingParameter("la tache est requis"));
+  if (!taskID) return next(new MissingParameter(messages.task_required));
   const task = await Task.findByPk(taskID);
-  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+  if (!task) return next(new ElementNotFound(messages.task_not_found));
 
   if (
     ![SUPERUSER_ROLE, PROJECT_MANAGER_ROLE].includes(req.user.role) ||
@@ -267,7 +264,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
 
       return res.status(200).json({
         status: "success",
-        message: "vous avez été assigné à la tâche",
+        message: messages.assigned_to_task,
       });
     } else {
       const [intervenant, created] = await Intervenant.findOrCreate({
@@ -302,17 +299,17 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
       );
       return res.status(200).json({
         status: "success",
-        message: "vous avez été assigné à la tâche",
+        message: messages.assigned_to_task,
       });
     }
   }
 
   const { emails } = req.body;
   if (!emails)
-    return next(new MissingParameter("la list des emails est requis"));
+    return next(new MissingParameter(messages.emails_list_required));
   if (!emails.length) {
     logger.info("nothing to do emails list is empty ");
-    return next(new AppError("aucun changement n'a été apporté", 304));
+    return next(new AppError(messages.no_changes_user_not_participant, 304));
   }
 
   let intervenantsNames = "";
@@ -392,7 +389,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ status: "success", message: "intervenants associé au tache" });
+    .json({ status: "success", message:messages.task_participants });
 });
 
 /*
@@ -407,7 +404,7 @@ export const associateIntervenantToTask = catchAsync(async (req, res, next) => {
 export const updateIntervenantHours = catchAsync(async (req, res, next) => {
   const { userTasks, date } = req.body;
   if (!userTasks || !date)
-    return next(new MissingParameter("les  tache et les heurs sont requis"));
+    return next(new MissingParameter(messages.mandatory_task_hours));
 
   // console.log(userTasks, date);
   // return
@@ -433,7 +430,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
     if (!intervention)
       return next(
         new ElementNotFound(
-          "l'intervenant n'est pas inclut dans cette tache du projet"
+          messages.participant_not_in_task
         )
       );
     const task = await Task.findByPk(entry.taskID);
@@ -445,7 +442,7 @@ export const updateIntervenantHours = catchAsync(async (req, res, next) => {
       continue;
     }
     if (entry.value < 0)
-      return next(new AppError("le nombres des heures doit être positive"));
+      return next(new AppError(messages.positive_hours_required));
 
     if (interventionHours) {
       task.totalHours = task.totalHours
@@ -818,9 +815,9 @@ export const getTaskPotentialIntervenants = catchAsync(
     const { projectID } = req.params;
 
     if (!projectID)
-      return next(new MissingParameter("les projets sont requise"));
+      return next(new MissingParameter(messages.project_required));
     const project = await Project.findByPk(projectID);
-    if (!project) return next(new ElementNotFound("le projet est introuvable"));
+    if (!project) return next(new ElementNotFound(messages.project_not_found));
     const projectIntervenants = await projectIntervenantList(projectID);
     // let intervenants = [];
     let serializedIntervenant = [];
@@ -836,13 +833,13 @@ export const getTaskPotentialIntervenants = catchAsync(
         };
       });
     }
-    // return next(new AppError("quelque chose n'a pas fonctionné"));
+    // return next(new AppError(messages["500"]));
 
     const { taskID } = req.body;
 
     const potentialIntervenants = await projectPotentialIntervenants(projectID);
     if (!potentialIntervenants)
-      return next(AppError("quelque chose n'a pas fonctionné"));
+      return next(AppError(messages["500"]));
     const potentialAndProjectIntervenants = serializedIntervenant.concat(
       potentialIntervenants
     );
@@ -895,13 +892,13 @@ export const getTaskPotentialIntervenants = catchAsync(
 
 export const updateTaskInfo = catchAsync(async (req, res, next) => {
   const { taskID, projectID } = req.params;
-  if (!taskID) return next(new MissingParameter("la tache est requise"));
-  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  if (!taskID) return next(new MissingParameter(messages.task_required));
+  if (!projectID) return next(new MissingParameter(messages.project_required));
   const project = await Project.findByPk(projectID);
-  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+  if (!project) return next(new ElementNotFound(messages.project_not_found));
 
   const task = await Task.findByPk(taskID);
-  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+  if (!task) return next(new ElementNotFound(messages.task_not_found));
   let data = {};
   if ([SUPERUSER_ROLE, PROJECT_MANAGER_ROLE].includes(req.user.role)) {
     data = req.body;
@@ -1052,7 +1049,7 @@ export const getProjectTasksBulkInDates = catchAsync(async (req, res, next) => {
   const { start, end, nbWeeks } = req.body;
   console.log(start, end, nbWeeks);
   if (!start || !end || nbWeeks === undefined)
-    return next(new MissingParameter("les dates de filtre est introuvable"));
+    return next(new MissingParameter(messages.filter_dates_not_found));
   const tasks = await getProjectsTasksBulk(projects, start, end);
 
   const dates = calculateDates(nbWeeks, start, end);

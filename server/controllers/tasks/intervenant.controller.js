@@ -23,12 +23,13 @@ import { config } from "../../environment.config.js";
 import { createMediaUrl } from "../../Utils/FileManager.js";
 import { deleteFile } from "../../Utils/utils.js";
 import path from "path";
+import { messages } from "../../i18n/messages.js";
 
 export const getAllIntervenants = catchAsync(async (req, res, next) => {
   const { projectID } = req.params;
-  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  if (!projectID) return next(new MissingParameter(messages.project_required));
   const projectExist = await Project.findByPk(projectID);
-  if (!projectExist) return next(new ElementNotFound("projet introuvable"));
+  if (!projectExist) return next(new ElementNotFound(messages.project_not_found));
 
   const intervenants = await projectIntervenantList(projectID);
 
@@ -83,29 +84,29 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
     req.user.role !== PROJECT_MANAGER_ROLE
   )
     return next(
-      new ForbiddenError("vous n'êtes pas autorisé à faire cette action")
+      new ForbiddenError(messages.not_authorized_action)
     );
 
   const { projectID } = req.params;
-  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  if (!projectID) return next(new MissingParameter(messages.project_required));
   const project = await Project.findByPk(projectID);
-  if (!project) return next(new ElementNotFound("projet introuvable"));
+  if (!project) return next(new ElementNotFound(messages.project_not_found));
 
   if (
     req.user.role === PROJECT_MANAGER_ROLE &&
     parseInt(project.manager) !== req.user.id
   ) {
-    return next(new UnAuthorized("vous n'êtes pas le chef de ce projet"));
+    return next(new UnAuthorized(messages.not_project_owner));
   }
   let intervenantsNames = "";
 
   const { emails } = req.body;
-  if (!emails) return next(new MissingParameter("Emails est requis"));
+  if (!emails) return next(new MissingParameter(messages.email_required));
 
   for (const email in emails) {
     const user = await getUserByEmail(emails[email]);
 
-    if (!user) return next(new ElementNotFound("utilisateur introuvable"));
+    if (!user) return next(new ElementNotFound(messages.user_not_found_1));
 
     logger.info(
       `adding the user as an intervenant to the project ${projectID}`
@@ -119,7 +120,7 @@ export const addIntervenantToProject = catchAsync(async (req, res, next) => {
     if (!intervenant) {
       logger.error(`failed to create`);
       return next(
-        new AppError("La création a échoué, veuillez réessayer plus tard ")
+        new AppError(messages.creation_failed_try_again)
       );
     }
     intervenantsNames = intervenantsNames.concat(user.email, ", ");
@@ -182,21 +183,21 @@ export const removeIntervenantFromProject = catchAsync(
     }
     //check if intervenant is a indeed withing this project
     const user = await User.findOne({ where: { email }, attributes: ["id"] });
-    if (!user) return next(new ElementNotFound("intervenant non trouvé"));
+    if (!user) return next(new ElementNotFound(messages.participant_not_found));
     const intervenant = await Intervenant.findOne({
       where: { projectID, intervenantID: user.id }
     });
     if (!intervenant)
       return next(
         new AppError(
-          "rien est change l'utilisateur n'est pas un intervenant dans ce projet",
+          messages.no_changes_user_not_participant,
           304
         )
       );
     // removing intervenant
     if (intervenant.nbHours > 0) {
       return next(
-        new AppError("Vous ne pouvez pas retirer cet intervenant", 304)
+        new AppError(messages.cannot_remove_participant, 304)
       );
     }
     await takeNote(ACTION_NAME_DELETE_INTERVENANT, req.user.email, project.id, {
@@ -215,13 +216,13 @@ export const removeIntervenantFromProject = catchAsync(
 
 export const uploadFileToTask = catchAsync(async (req, res, next) => {
   const { projectID, taskID } = req.params;
-  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  if (!projectID) return next(new MissingParameter(messages.project_required));
   const project = await Project.findByPk(projectID);
-  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+  if (!project) return next(new ElementNotFound(project.project_not_found));
 
-  if (!taskID) return next(new MissingParameter("la tache est requis"));
+  if (!taskID) return next(new MissingParameter(messages.task_required));
   const task = await Task.findByPk(taskID);
-  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+  if (!task) return next(new ElementNotFound(messages.task_not_found));
 
   let objSearch = {
     projectID,
@@ -236,15 +237,15 @@ export const uploadFileToTask = catchAsync(async (req, res, next) => {
     where: objSearch
   });
   if (!intervention)
-    return next(new AppError("vous ne faites pas partie de cette tâche ", 401));
+    return next(new AppError(messages.not_part_of_task, 401));
   let url;
 
   if (!req.files)
-    return next(new AppError("aucun fichier n'a été fourni", 422));
+    return next(new AppError(messages.no_files_provided, 422));
   //limit file  size    : 10 mo
   // for (const file in req.files)
   if (req.files[0].size > config.file_limit_size * 1024 * 1024)
-    return next(new AppError("le fichier dépasse la limite de 5MB", 400));
+    return next(new AppError(messages.file_size_exceeds_limit, 400));
 
   url = createMediaUrl(req.files[0]);
 
@@ -262,22 +263,22 @@ export const uploadFileToTask = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     interventionID: intervention.id,
-    message: "fichier attaché au tâche",
+    message: messages.file_attached_to_task,
     file: JSON.stringify(obj)
   });
 });
 export const deleteFileFromTask = catchAsync(async (req, res, next) => {
   const { projectID, taskID } = req.params;
-  if (!projectID) return next(new MissingParameter("le projet est requis"));
+  if (!projectID) return next(new MissingParameter(messages.project_required));
   const project = await Project.findByPk(projectID);
-  if (!project) return next(new ElementNotFound("let projet est introuvable"));
+  if (!project) return next(new ElementNotFound(messages.project_not_found));
 
-  if (!taskID) return next(new MissingParameter("la tache est requis"));
+  if (!taskID) return next(new MissingParameter(messages.task_required));
   const task = await Task.findByPk(taskID);
-  if (!task) return next(new ElementNotFound("la tache est introuvable"));
+  if (!task) return next(new ElementNotFound(messages.task_not_found));
 
   const intervention = await Intervenant.findByPk(req.body.interventionID);
-  if (!intervention) return next("vous ne faites pas partie de cette tâche ");
+  if (!intervention) return next(messages.not_part_of_task);
 
   //['item']
 
@@ -300,6 +301,6 @@ export const deleteFileFromTask = catchAsync(async (req, res, next) => {
     status: "success",
     interventionID: intervention.id,
     file:req.body.file,
-    message: "fichier lié a la tache supprimé",
+    message: messages.task_file_deleted
   });
 });

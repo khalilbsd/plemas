@@ -12,7 +12,7 @@ export const getAllPhases = catchAsync(async (req, res, next) => {
   const phases = await Phase.findAll(
    { attributes: ["name","abbreviation"]}
   );
-  if (!phases) return next(new AppError("Something went wrong", 500));
+  if (!phases) return next(new AppError(messages["500"], 500));
   return res.status(200).json({ status: "success", phases });
 });
 /*
@@ -44,7 +44,7 @@ export const addPhase = catchAsync(async (req, res, next) => {
   }
   console.log(phase);
   const newPhase = await Phase.create({ ...phase });
-  if (!newPhase) return next(new AppError("Something went wrong", 500));
+  if (!newPhase) return next(new AppError(messages["500"], 500));
   return res.status(200).json({ status: "success", phase: newPhase });
 });
 /*
@@ -55,7 +55,7 @@ export const addPhase = catchAsync(async (req, res, next) => {
 export const filterPhase = catchAsync(async (req, res, next) => {
 const filters= req.query
   const phases = await Phase.findAll({where:filters});
-  if (!phases) return next(new AppError("Something went wrong", 500));
+  if (!phases) return next(new AppError(messages["500"], 500));
   return res.status(200).json({ status: "success", phases });
 
 });

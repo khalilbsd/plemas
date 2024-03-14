@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import { AppError, MissingParameter } from "../../Utils/appError.js";
 import { catchAsync } from "../../Utils/catchAsync.js";
 import { Lot } from "../../db/relations.js";
+import { messages } from "../../i18n/messages.js";
 
 /*
  * an api to get all the lots
@@ -11,7 +12,7 @@ export const getAllLot = catchAsync(async (req, res, next) => {
 
     attributes: ["name"]
   });
-  if (!lots) return next(new AppError("Something went wrong", 500));
+  if (!lots) return next(new AppError(messages["500"], 500));
   return res.status(200).json({ status: "success", lots });
 });
 
