@@ -31,8 +31,9 @@ import LinkProject from "./addProject/LinkProject";
 import ActiveFilters from "./filter/ActiveFilters";
 import useCheckActiveFilters from "../../../../hooks/filter/activeFilters";
 import useCheckProjectFiltersOnly from "../../../../hooks/onlyProjectFilters";
+import LoadingProjectsSkeleton from "../../loading/LoadingProjectsSkeleton";
 
-const ProjectList = ({ addForm, handleForm }) => {
+const ProjectList = ({ addForm, handleForm ,loadingProjectList}) => {
   const classes = projectsStyles();
   const { isSuperUser, isManager } = useIsUserCanAccess();
   const isFiltersActive = useCheckActiveFilters();
@@ -245,17 +246,21 @@ const ProjectList = ({ addForm, handleForm }) => {
         />
       </div>
       {/* // hereee */}
-
-      <TableVirtuoso
-        className={classes.table}
-        data={projectList()}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={() => (
-          <ProjectListHeader disableDailyFilter={disableDailyFilter} />
-        )}
-        itemContent={rowContent}
-        size="small"
-      />
+                {
+                  !loadingProjectList?
+                  <TableVirtuoso
+                  className={classes.table}
+                  data={projectList()}
+                  components={VirtuosoTableComponents}
+                  fixedHeaderContent={() => (
+                    <ProjectListHeader disableDailyFilter={disableDailyFilter} />
+                    )}
+                    itemContent={rowContent}
+                    size="small"
+                    />
+                  :
+                  <LoadingProjectsSkeleton />
+                  }
     </div>
   );
 };

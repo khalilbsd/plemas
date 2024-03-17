@@ -219,7 +219,7 @@ async function runProjectsMigration(verbose) {
     let prevPhaseList = [];
     for (const idx in projectsTable?.data) {
       let project = projectsTable?.data[idx];
-      console.log(admin);
+
       manager = await searchForUserId(project.utilisateur, admin.id);
       instance = {
         code: extractProjectCode(project.code),
