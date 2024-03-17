@@ -7,7 +7,11 @@
   "scripts": {
     "start": "node server.js --prod",
     "start:dev": "nodemon --config nodemon.json server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate-data":"node ./scripts/syncDB.js",
+    "migrate-data-v2":"node ./scripts/syncDBFromJSON.js --prod",
+    "migrate-data-v2.dev":"node  ./scripts/syncDBFromJSON.js --dev",
+    "migrate-data-test":"node ./scripts/syncDB.test.js"
   },
   "repository": {
     "type": "git",
