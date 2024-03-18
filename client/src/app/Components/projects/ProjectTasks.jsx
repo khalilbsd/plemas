@@ -14,12 +14,12 @@ import { ReactSVG } from "react-svg";
 import {
   NOTIFY_ERROR,
   NOTIFY_SUCCESS,
-  TASK_STATES,
   STATE_ABANDONED,
   STATE_BLOCKED,
-  STATE_DONE,
-  TASK_STATE_TRANSLATION,
   STATE_DOING,
+  STATE_DONE,
+  TASK_STATES,
+  TASK_STATE_TRANSLATION,
 } from "../../../constants/constants";
 import useIsUserCanAccess from "../../../hooks/access";
 import useGetAuthenticatedUser from "../../../hooks/authenticated";
@@ -37,7 +37,6 @@ import {
 
 import Tooltip from "@mui/material/Tooltip";
 import { frFR } from "@mui/x-data-grid";
-import { CLIENT_ROLE } from "../../../constants/roles";
 import faAdd from "../../public/svgs/solid/plus.svg";
 import CustomNoRowsOverlay from "../NoRowOverlay/CustomNoRowsOverlay";
 import CustomDataGridHeaderColumnMenu from "../customDataGridHeader/CustomDataGridHeaderColumnMenu";

@@ -53,6 +53,7 @@ const useSelectFilterItems = () => {
     });
     return list;
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const managers = useMemo(() => selectManagers(), [projects]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const states = useMemo(() => selectStates(), [projects]);

@@ -5,8 +5,7 @@ import { NavLink, Navigate, useNavigate, useParams } from "react-router-dom";
 import { ReactSVG } from "react-svg";
 import { NOTIFY_ERROR, NOTIFY_SUCCESS } from "../../../constants/constants";
 import {
-  useResetPasswordWithTokenMutation,
-  useVerifyResetPasswordTokenMutation
+  useResetPasswordWithTokenMutation
 } from "../../../store/api/auth/authentification";
 import { styles as layoutStyles } from "../../reset_password/style";
 import Loading from "../loading/Loading";
@@ -15,8 +14,8 @@ import { styles } from "./styles";
 
 import faSadFace from '../../public/svgs/light/face-sad-tear.svg';
 
-import faResetPassword from "../../public/svgs/solid/badge-check.svg";
 import useVerifyPasswordToken from "../../../services/fetchers/verifyresetPasswordToken.fetch.service";
+import faResetPassword from "../../public/svgs/solid/badge-check.svg";
 
 
 const ResetPasswordNotAuthForm = () => {
@@ -35,21 +34,7 @@ const ResetPasswordNotAuthForm = () => {
     message: ""
   });
   const isLoading = useVerifyPasswordToken(setPasswordError)
-  // const [first, setfirst] = useState(second)
 
-  // useEffect(() => {
-  //   async function verifyToken() {
-  //     try {
-  //       await verifyResetPasswordToken(params.token).unwrap();
-  //     } catch (error) {
-  //       console.log(error);
-  //       setPasswordError({ error: true, message: error?.data?.message });
-  //     }
-  //   }
-  //   verifyToken();
-  // });
-
-//counter logic
 useEffect(() => {
   let interval;
 
