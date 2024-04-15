@@ -1,4 +1,10 @@
 export const messages = {
+    "user_account_updated":"Utilisateur mis à jour",
+    "email_is_missing":"l'email de l'utilisateur est obligatoire",
+    "provider_not_found":"le fournisseur introuvable",
+    "provider_updated":"fournisseur mis à jour",
+    "provider_deleted":"fournisseur supprimé",
+    "provider_exists":"le fournisseur existe déjà",
     "auth.login.message.non_valid_credentiels": "E-mail ou mot de passe invalide",
     "500": "Une erreur s'est produite",
     "auth.set_user_password.success": "Le mot de passe de l'utilisateur a été défini et le compte activé",

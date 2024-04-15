@@ -322,9 +322,13 @@ const ProjectTasks = ({ openAddTask }) => {
         const renderActions = [];
         // if (!user?.email)
         //   return [<Skeleton className={classes.joinBtnSkeleton} />];
-        if ((!isUserEligibleToEdit && !isUserAnIntervenant) || !isProjectEditable) return renderActions;
+        if (
+          (!isUserEligibleToEdit && !isUserAnIntervenant) ||
+          !isProjectEditable
+        )
+          return renderActions;
         //  check if task is going
-         const isTaksGoing = row?.state === STATE_DOING
+        const isTaksGoing = row?.state === STATE_DOING;
         const emailsList = row.intervenants?.map(
           (worker) => worker?.user?.email
         );
@@ -388,7 +392,9 @@ const ProjectTasks = ({ openAddTask }) => {
         }
 
         if (
-          (isUserEligibleToEdit || isUserAnIntervenant) && isTaksGoing && isProjectEditable
+          (isUserEligibleToEdit || isUserAnIntervenant) &&
+          isTaksGoing &&
+          isProjectEditable
         ) {
           renderActions.push(
             <GridActionsCellItem

@@ -52,6 +52,10 @@ export const login = catchAsync(async (req, res, next) => {
       config.jwt_secret,
       { expiresIn: "2d" }
     );
+    if (!user.firstLogin) {
+      user.firstLogin = true
+      await user.save()
+    }
 
     return res.status(200).json({
       message: "You have successfully logged in",

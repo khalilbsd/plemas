@@ -13,6 +13,7 @@ import ProjectLots from "../models/project/ProjectLot.model.js";
 import Task from "../models/tasks/tasks.model.js";
 import Request from "../models/requests/requests.model.js";
 import InterventionHour from "../models/tasks/interventionHours.model.js";
+import ThirdPartyProvider from "../models/third_party/ThirdPartyProviders.model.js";
 const force = config.force_db_sync === "true";
 const db_sync = config.alter_db_sync === "true";
 
@@ -96,6 +97,8 @@ User.hasMany(Request,{foreignKey:"creatorID",as:"requestCreator"})
 Request.belongsTo(User,{foreignKey:"creatorID",as:"requestCreator"}
 )
 
+ThirdPartyProvider.hasMany(User,{foreignKey:'userThirdPartyProvider'})
+User.belongsTo(ThirdPartyProvider,{foreignKey:'userThirdPartyProvider'})
 
 
 database.sync({ force: force, alter: db_sync }).then(() => {

@@ -17,9 +17,9 @@ import {
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
-} from "../../../constants/roles";
-import Loading from "../loading/Loading";
-import { addUserFormStyles } from "./style";
+} from "../../../../constants/roles";
+import Loading from "../../loading/Loading";
+import { addUserFormStyles } from "../style";
 const style = {
   position: "absolute",
   top: "50%",

@@ -40,6 +40,12 @@ const User = database.define(
       defaultValue:false,
       allowNull:false
     },
+    firstLogin:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
+      allowNull:false
+    },
+
 
   },
   { timestamps: true }

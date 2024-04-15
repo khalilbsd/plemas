@@ -2,7 +2,8 @@
 // export const EMPLOYEE_ROLE= 'employee';
 // export const CLIENT_ROLE= 'client';
 export const SUPERUSER_ROLE='superuser'
-
+export const STATUS_SUCCESS= "success"
+export const STATUS_FAILED= "failed"
 export const INTERVENANT_ROLE='intervenant '
 export const PROJECT_MANAGER_ROLE='Chef_projet'
 export const CLIENT_ROLE='client'

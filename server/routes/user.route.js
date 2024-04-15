@@ -1,5 +1,5 @@
 import express from 'express'
-import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage,authenticateUserWithToken,banUser, getPotentielProjectManager,changeUserRole, unBanUser, getPotentielIntervenants } from '../controllers/users/user.controller.js'
+import { addUser, getAll, getUserInfo,updateProfile, updateProfileImage,authenticateUserWithToken,banUser, getPotentielProjectManager,changeUserRole, unBanUser, getPotentielIntervenants, updateUser } from '../controllers/users/user.controller.js'
 import { checkUserRole, isUserAuthenticated } from '../middleware/auth.js'
 // import uploader from '../middleware/imageUploader.js'
 import createMulterMiddleware from '../middleware/uploader.js'
@@ -14,6 +14,7 @@ router
 .get('/list',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),getAll)
 .post('/user_info',isUserAuthenticated,getUserInfo)
 .post('/add',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),addUser)
+.patch('/change/:email',isUserAuthenticated,checkUserRole([SUPERUSER_ROLE]),updateUser)
 .patch('/profile/change',isUserAuthenticated,profileImageUploader,updateProfile)
 .patch('/profile/image/change',isUserAuthenticated,profileImageUploader,updateProfileImage)
 .get('/confirmation/auth/1.0/token=:token',authenticateUserWithToken)

@@ -63,6 +63,14 @@ export const userApi = api.injectEndpoints({
         data:data
       })
     }),
+    updateUser:builder.mutation({
+      query:({email,data})=>({
+        url:`/users/change/${email}`,
+        method: 'PATCH',
+        data:data
+      })
+    }),
+
   })
 });
 
@@ -75,5 +83,6 @@ export const {
   useVerifyTokenConfirmationMutation,
   useBanUserMutation,
   useUnBanUserMutation,
-  useChangeRoleMutation
+  useChangeRoleMutation,
+  useUpdateUserMutation
 } = userApi;

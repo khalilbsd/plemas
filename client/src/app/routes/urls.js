@@ -9,7 +9,7 @@ import {
   PROJECT_MANAGER_ROLE,
   SUPERUSER_ROLE,
 } from "../../constants/roles";
-import ManagingUsers from "../Components/managing/ManagingUsers";
+import ManagingUsers from "../Components/managing/users/ManagingUsers.jsx";
 
 //icons
 import ResetPasswordNotAuthForm from "../Components/reset_password/ResetPasswordNotAuthForm";

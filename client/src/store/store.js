@@ -6,6 +6,7 @@ import manageReducer from './reducers/manage.reducer'
 import projectReducer from './reducers/project.reducer'
 import taskReducer from './reducers/task.reducer'
 import sideBarReducer from './reducers/sidebar.reducer'
+import thirdPartyProviderReducer from './reducers/thirdPartyProviders.reducer'
 export const store = configureStore({
     reducer:{
         [api.reducerPath]:api.reducer,
@@ -14,7 +15,8 @@ export const store = configureStore({
         manage:manageReducer,
         project:projectReducer,
         task:taskReducer,
-        sidebar:sideBarReducer
+        sidebar:sideBarReducer,
+        thirdPartyProviders:thirdPartyProviderReducer
     },
     // middleware:(getDefaultMiddleware) => getDefaultMiddleware(),
     middleware: (getDefaultMiddleware) =>

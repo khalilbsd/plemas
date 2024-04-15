@@ -11,7 +11,8 @@
     "migrate-data": "node ./scripts/syncDB.js",
     "migrate-data-v2": "node ./scripts/syncDBFromJSON.js --prod",
     "migrate-data-v2.dev": "node  ./scripts/syncDBFromJSON.js --dev",
-    "migrate-data-test": "node ./scripts/syncDB.test.js"
+    "migrate-data-test": "node ./scripts/syncDB.test.js",
+    "createSuperUser": " node ./scripts/createSuperUser.js"
   },
   "repository": {
     "type": "git",

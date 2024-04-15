@@ -11,6 +11,7 @@ import {
   CLIENT_ROLE,
   INTERVENANT_ROLE,
   PROJECT_MANAGER_ROLE,
+  STATUS_SUCCESS,
   SUPERUSER_ROLE,
 } from "../../constants/constants.js";
 import { UserProfile } from "../../db/relations.js";
@@ -28,6 +29,9 @@ import {
   serializeUser,
 } from "./lib.js";
 import { messages } from "../../i18n/messages.js";
+import ThirdPartyProvider from "../../models/third_party/ThirdPartyProviders.model.js";
+import { providersList } from "../../services/thirdPartyProviders/thirdParty.service.js";
+import { changeUserDate } from "../../services/users/user.service.js";
 
 /*
 admin api to list all the users
@@ -56,10 +60,15 @@ export const getAll = catchAsync(async (req, res, next) => {
           "hireDate",
         ],
       },
+      {
+        model: ThirdPartyProvider,
+        attributes: ["name"],
+      },
     ],
   });
   // console.log(users);
   const simplifiedUsers = users.map((user) => {
+    // console.log(user.toJSON())
     const {
       id,
       email,
@@ -69,7 +78,9 @@ export const getAll = catchAsync(async (req, res, next) => {
       updatedAt,
       isBanned,
       active,
+      third_party_provider: userThirdPartyProvider,
     } = user.toJSON();
+
     const userProfile = user.UserProfile ? user.UserProfile.toJSON() : null;
     const { name, lastName, poste, phone, address, hireDate } =
       userProfile || "";
@@ -88,6 +99,7 @@ export const getAll = catchAsync(async (req, res, next) => {
       phone,
       address,
       hireDate,
+      provider: userThirdPartyProvider ? userThirdPartyProvider.name : "-",
     };
   });
 
@@ -185,9 +197,7 @@ export const addUser = catchAsync(async (req, res, next) => {
 
   if (!data || !data.account) {
     logger.error("there is no data in the request: ADMIN REQUESTED");
-    return res
-      .status(500)
-      .json({ message: messages.something_went_wrong});
+    return res.status(500).json({ message: messages.something_went_wrong });
   }
 
   const newUser = data.account;
@@ -494,5 +504,19 @@ export const unBanUser = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     state: "success",
     message: `l'utilisateur ${email} a été débanni`,
+  });
+});
+
+export const updateUser = catchAsync(async (req, res, next) => {
+  const email = req.params.email;
+  if (!email) return next(new MissingParameter(messages.email_is_missing));
+  const user = await getUserByEmail(email);
+  if (!user) return next(new ElementNotFound(messages.user_not_found_1));
+  const updatedUser = await changeUserDate(req.body, user);
+  if (!updatedUser) return next(new AppError(messages.no_changes_made, 304));
+  return res.status(200).json({
+    status: STATUS_SUCCESS,
+    user: updatedUser,
+    message: messages.user_account_updated,
   });
 });
