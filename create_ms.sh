@@ -41,57 +41,7 @@ fi
 mkdir "ms_$1"
 cd "ms_$1"
 
-
-
-# List of directories to create
-declare -a arr=("controllers"
-"services"
-"models"
-"routes"
-"constants"
-"db"
-"errors"
-"i18n"
-"mails"
-"middleware"
-"uploads"
-"utils"
-"log"
-".encrypt"
-)
-
-# Create directories for each microservice
-for i in "${arr[@]}"
-do
-   mkdir "$i"
-done
-
-# Create dummy route files
-touch routes/example.route.js
-touch routes/testExample.route.js
-
-# Copy basic files from server directory
-cp ../server/Dockerfile ./
-cp ../server/errors/*  ./errors
-cp ../server/middleware/*  ./middleware
-cp ../server/Utils/*  ./utils
-cp ../server/log/*  ./log
-cp ../server/i18n/*  ./i18n
-cp ../server/mails/config.js  ./mails/config.js
-cp ../server/environment.config.js ./
-cp ../server/.env ./
-cp ../server/.env.dev ./
-cp ../server/*encypt/* ./*encypt
-# Copy database and index files from templates directory
-cp ../templates/db/*  ./db
-cp ../templates/index.js ./
-
-# Copy other files from templates directory
-cp ../templates/constants/* ./
-cp ../templates/package.json ./
-
-# Create a basic index.js file
-touch index.js
+cp -R ../ms_template/* ./
 
 echo "Default files created for the service $1"
 
@@ -113,14 +63,15 @@ fi
 
 
 # Get the last port number used
-last_port=$(awk '/ports:/ {split($2, a, ":"); print a[1]}' "$docker_file" | sort -nr | head -n1)
-echo "last port $last_port inside the $docker_file"
-# Initialize port number
-if [ -z "$last_port" ]; then
-    port=8000
-else
-    port=$((last_port + 1))
-fi
+port=$2
+# last_port=$(awk '/ports:/ {split($2, a, ":"); print a[1]}' "$docker_file" | sort -nr | head -n1)
+# echo "last port $last_port inside the $docker_file"
+# # Initialize port number
+# if [ -z "$last_port" ]; then
+#     port=8000
+# else
+#     port=$((last_port + 1))
+# fi
 echo "last port 2 $port"
 
 # Add the new service declaration to docker-compose.yml
@@ -131,7 +82,8 @@ cat >> "$docker_file" <<EOL
       context: ./$service_name/.
       dockerfile: Dockerfile
     container_name: $service_name
-    ports: $port:5000
+    ports:
+      - $port:5000
     command: npm run start:dev
     restart: always
     depends_on:

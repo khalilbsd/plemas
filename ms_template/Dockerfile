@@ -1,5 +1,7 @@
 FROM node:18
-WORKDIR /plemas/service
+
+WORKDIR /pleams/service
+
 # Copy only package.json and package-lock.json
 COPY package*.json .
 COPY . .

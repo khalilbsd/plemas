@@ -1,18 +1,15 @@
 // db.js
-import mongoose from "mongoose";
+import mongoose, { Connection, ConnectOptions } from "mongoose";
 import { config } from "../environment.config.js";
 import logger from "../log/config.js";
 
 // Create a single instance of Mongoose
-let dbInstance;
+let dbInstance:Connection;
 function createConnection() {
   const mongoURI = `mongodb://${config.db_user}:${config.db_password}@${config.db_host}:${config.db_port}`;
-  const connectionOptions = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  };
 
-  dbInstance = mongoose.createConnection(mongoURI, connectionOptions);
+
+  dbInstance = mongoose.createConnection(mongoURI);
 
   dbInstance.on("connected", () => {
     console.log("Connected to MongoDB in");
@@ -29,3 +26,5 @@ export default function getDb() {
   }
   return dbInstance;
 }
+
+// export default getDb

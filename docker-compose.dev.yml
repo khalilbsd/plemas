@@ -28,7 +28,8 @@ services:
       context: ./ms_authn/.
       dockerfile: Dockerfile
     container_name: ms_authn
-    ports: 8000:5000
+    ports:
+      - 8000:5000
     command: npm run start:dev
     restart: always
     depends_on:
@@ -42,5 +43,28 @@ services:
     volumes:
       - ./ms_authn:/plemas/service
       - ./files:/plemas/service/uploads
+
+
+  ms_projects:
+    build:
+      context: ./ms_projects/.
+      dockerfile: Dockerfile
+    container_name: ms_projects
+    ports:
+      - 8001:5000
+    command: npm run start:dev
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+        DB_MONGODB_HOST: mongodb
+        DB_MONGODB_PORT: 27017
+        DB_USERNAME: its
+        DB_PASSWORD: itsedx
+        DB_MONGODB_NAME: plemas
+    volumes:
+      - ./ms_projects:/plemas/service
+      - ./files:/plemas/service/uploads
+
 
 
