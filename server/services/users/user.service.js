@@ -18,3 +18,13 @@ export const changeUserDate = async (userData, user) => {
     return null;
   }
 };
+
+
+
+export const createUser = async()=>{
+  try {
+
+  } catch (error) {
+
+  }
+}

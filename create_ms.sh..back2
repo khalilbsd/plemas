@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Check if a directory name is provided as an argument
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <project_name>"
+    exit 1
+fi
+
+Create a directory with the project name
+ if [ -d "ms_$1" ]; then
+        echo "Directory 'Ms_$1' already exists. Aborting."
+        exit 1
+    fi
+mkdir "ms_$1"
+cd "ms_$1"
+
+
+declare -a arr=("controllers"
+"services"
+"models"
+"routes"
+"constants"
+"db"
+"errors"
+"i18n"
+"mails"
+"middleware"
+"uploads"
+"utils"
+"log"
+)
+
+# creating dummy files
+
+# Create directories for each microservice
+for i in "${arr[@]}"
+do
+
+   mkdir "$i"
+done
+touch routes/example.route.js
+touch routes/testExample.route.js
+
+cp ../server/Dockerfile
+# Copy basic files
+
+cp ../server/errors/*  ./errors
+cp ../server/middleware/*  ./middleware
+cp ../server/Utils/*  ./utils
+cp ../server/log/*  ./log
+cp ../server/environment.config.js ./
+cp ../server/environment.config.js ./
+cp ../server/.env ./
+cp ../server/.env.dev ./
+
+echo "structure created succussfully"
+
+echo "copying database and index files"
+cp ../templates/db/*  ./db
+cp ../templates/index.js ./index.js
+
+echo "copying other files from templates"
+cp ../templates/constants/* ./constants
+cp ../templates/package.json ./
+
+
+# Create a basic index.js file in each microservice directory
+
+echo "created default files for the service $1"
+
+# pwd
+echo "installing the default package for the service: $1"
+
+npm i
+
+echo "Node.js microservices template created successfully in directory $1"
+
+# Prompt the user to enter the name of the new microservice
+read -p "Enter the name of the new microservice: " new_service_name
+
+# Replace the placeholder 'ms_authn' in the docker-compose.dev.yml file with the user-provided microservice name
+sed -i "s/ms_authn/$new_service_name/g" ../docker-compose.dev.yml
+
+# Replace the placeholder 'PORT' in the docker-compose.dev.y
+
+
+ml file with the user-provided port number
+read -p "Enter the port number for the new microservice: " new_port_number
+sed -i "s/PORT/$new_port_number/g" ../docker-compose.dev.yml
+
+echo "New microservice '$new_service_name' added to docker-compose.dev.yml with port $new_port_number"

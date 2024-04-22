@@ -4,10 +4,10 @@ combined.log
 /server/log/*.log
 *.log
 /server/tracking/tracking.txt
-
+mongodb
 /server/scripts/i2s_midgard.json
-server/tracking/tracking.txt
-server/uploads/files/*
+*tracking.txt*
+*uploads*
 server/uploads/images/*
 server/tracking/*
 

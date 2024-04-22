@@ -1,0 +1,20 @@
+ms_service_name:
+    build:
+     context: ./ms_service_name/.
+     dockerfile: Dockerfile
+    container_name: ms_service_name
+    ports:
+      - PORT:5000
+    command: npm run start:dev
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+        # DB_MONGODB_URI: mongodb://mongodb:27017/plemas_db
+        DB_MONGODB_HOST: mongodb
+        DB_MONGODB_PORT: 27017
+        DB_USERNAME: its
+        DB_PASSWORD: itsedx
+        DB_MONGODB_NAME: plemas
+    volumes:
+      - ./ms_service_name:/plemas/ms_service_name

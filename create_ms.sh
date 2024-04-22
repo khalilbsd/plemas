@@ -7,14 +7,14 @@ if [ $# -eq 0 ]; then
 fi
 
 # Create a directory with the project name
- if [ -d "MS_$1" ]; then
-        echo "Directory 'Ms_$1' already exists. Aborting."
-        exit 1
-    fi
-mkdir "MS_$1"
-cd "MS_$1"
+if [ -d "ms_$1" ]; then
+    echo "Directory 'ms_$1' already exists. Aborting."
+    exit 1
+fi
+mkdir "ms_$1"
+cd "ms_$1"
 
-
+# List of directories to create
 declare -a arr=("controllers"
 "services"
 "models"
@@ -27,138 +27,90 @@ declare -a arr=("controllers"
 "middleware"
 "uploads"
 "utils"
+"log"
+".encrypt"
 )
 
 # Create directories for each microservice
 for i in "${arr[@]}"
 do
-
    mkdir "$i"
 done
-# Copy basic files
-cp ../server/db/*  ./db
+
+# Create dummy route files
+touch routes/example.route.js
+touch routes/testExample.route.js
+
+# Copy basic files from server directory
+cp ../server/Dockerfile ./
 cp ../server/errors/*  ./errors
 cp ../server/middleware/*  ./middleware
 cp ../server/Utils/*  ./utils
+cp ../server/log/*  ./log
+cp ../server/i18n/*  ./i18n
+cp ../server/mails/config.js  ./mails/config.js
+cp ../server/environment.config.js ./
+cp ../server/.env ./
+cp ../server/.env.dev ./
+cp ../server/.encypt/* ./.encypt
+# Copy database and index files from templates directory
+cp ../templates/db/*  ./db
+cp ../templates/index.js ./
 
+# Copy other files from templates directory
+cp ../templates/constants/* ./
+cp ../templates/package.json ./
 
-echo "structure created succussfully"
+# Create a basic index.js file
+touch index.js
 
-# Create a basic package.json file in each microservice directory
-    cat <<EOF > "./package.json"
-{
-  "name": "MS_$1 server",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "MS_$1 folder",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js --prod",
-    "start:dev": "nodemon --config nodemon.json index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/khalilbsd/plemas.git.git"
-  },
-  "author": "IT Solution",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/khalilbsd/plemas.git/issues"
-  },
-  "homepage": "https://github.com/khalilbsd/plemas.git#readme",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "jsonwebtoken": "^9.0.2",
-    "moment": "^2.29.4",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.5",
-    "path": "^0.12.7",
-    "url": "^0.11.2",
-    "winston": "^3.10.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-google": "^0.14.0",
-    "nodemon": "^3.0.1",
-    "eslint-plugin-security": "^2.1.1"
+echo "Default files created for the service $1"
 
-  }
-}
-EOF
+# Install dependencies
+npm install
 
+echo "Dependencies installed for the service $1"
 
-# Create a basic index.js file in each microservice directory
-    cat <<EOF > "./index.js"
-import cors from "cors";
-import express from "express";
-import morgan from "morgan";
-import { config } from "./environment.config.js";
-import { globalErrorHandler } from "./Utils/errorHandler.js";
-import { handleError } from "./middleware/errors.js";
-import exampleRoutes from "./routes/example.route.js";
-import testRoutes from "./routes/testExample.route.js";
-import passport from "./controllers/auth/passport-config.js";
-import path from "path";
-import { fileURLToPath } from "url";
-const app = express();
-// dotenv.config();
-app.use(express.urlencoded({extended: true}));
-app.use(cors());
-app.use(morgan("dev"));
-app.use(handleError);
-app.use(express.json());
+# Generate docker-compose.yml
+cat > ../docker-compose.yml <<EOL
+version: '3.8'
 
-app.use(passport.initialize());
-//static routes
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadsDirectory = path.join(__dirname, "uploads");
-// Serve uploaded files as static assets
-app.use("/uploads", express.static(uploadsDirectory));
-// api routes
-app.use("/api/example", exampleRoutes);
-//testing routes
-app.use("/api/exmaple/test", testRoutes);
+services:
+EOL
 
-import "./db/relations.js";
+# Initialize port number
+port=8000
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,authorization,content-type"
-  );
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
-});
+# Loop through each microservice directory to add declarations to docker-compose.yml
+for service_dir in ../ms_*/; do
+    service_name=$(basename "$service_dir")
+    cat >> ../docker-compose.dev.yml <<EOL
+  $service_name:
+    build:
+      context: ./$service_name/.
+      dockerfile: Dockerfile
+    container_name: $service_name
+    ports:
+      - "$port:5000"
+    command: npm run start:dev
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+        DB_MONGODB_HOST: mongodb
+        DB_MONGODB_PORT: 27017
+        DB_USERNAME: its
+        DB_PASSWORD: itsedx
+        DB_MONGODB_NAME: plemas
+    volumes:
+      - ./$service_name:/plemas/service
 
-const PORT = config.port
-app.listen(PORT, () => console.log("server running on post : ",PORT));
-app.all("*", (req, res, next) => {
-  const err = new Error("can't find ",req.originalUrl);
-  err.status = "fail";
-  err.statusCode = 404;
-  next(err);
-});
-app.use(globalErrorHandler);
+EOL
 
-EOF
-echo "created default files for the service $1"
+    # Increment port number
+    ((port++))
+done
 
-# pwd
-echo "installing the default package for the service: $1"
-
-npm i
+echo "Docker Compose file updated successfully."
 
 echo "Node.js microservices template created successfully in directory $1"

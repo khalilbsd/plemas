@@ -1,132 +1,65 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Op } from "sequelize";
+// import { Op } from "sequelize";
 import {
   AppError,
   ElementNotFound,
   MalformedObjectId,
+  MissingParameter,
   UnAuthorized,
   UnknownError
-} from "../../Utils/appError.js";
-import { catchAsync } from "../../Utils/catchAsync.js";
-import { config } from "../../environment.config.js";
+} from "../../utils/appError.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { config } from "../../config/environment.config.js";
 import logger from "../../log/config.js";
 import { send } from "../../mails/config.js";
 
 import { messages } from "../../i18n/messages.js";
 import ResetPasswordToken from "../../models/users/ResetPasswordToken.model.js";
 import User from "../../models/users/User.model.js";
+
 import {
   createPasswordSetToken,
   encryptPassword,
   getUserByEmail
-} from "../users/lib.js";
+} from "../../services/users/user.service.js";
+import {
+  authenticate,
+  resetUserPassword
+} from "../../services/auth/auth.service.js";
 
 export const login = catchAsync(async (req, res, next) => {
   const user = await getUserByEmail(req.body.email);
   if (!user) {
-    return next(new ElementNotFound(messages["auth.login.message.non_valid_credentiels"]));
-  }
-  //maybe adding a blocking detecting algo
-
-  //to manage role redirection later for now static route
-  const redirectUrl = "/main";
-  if (!user.password)
     return next(
-      new UnknownError(
-       messages["inactive_account_refer_activation_email"]
-      )
+      new ElementNotFound(messages["auth.login.message.non_valid_credentiels"])
     );
-
-  const isPasswordMatch = bcrypt.compareSync(req.body.password, user.password);
-  if (user && isPasswordMatch) {
-    // generate new token
-    const token = jwt.sign(
-      {
-        email: user.email,
-        role: user.role,
-        isSuperUser: user.isSuperUser
-      },
-
-      config.jwt_secret,
-      { expiresIn: "2d" }
-    );
-    if (!user.firstLogin) {
-      user.firstLogin = true
-      await user.save()
-    }
-
-    return res.status(200).json({
-      message: "You have successfully logged in",
-      token: `Bearer ${token}`,
-      expiresIn: "2d",
-      redirectUrl: redirectUrl
-    });
-  } else {
+  }
+  const token = await authenticate(user, req.body.password, next);
+  if (!token)
     return res.status(401).json({
       message: messages["auth.login.message.non_valid_credentiels"],
       success: false
     });
-  }
+  return res.status(200).json({
+    message: "You have successfully logged in",
+    token: `Bearer ${token}`,
+    expiresIn: "2d"
+  });
 });
 
-export const setUserPassword = catchAsync(async (req, res, next) => {
+export const updateAccountPassword = catchAsync(async (req, res, next) => {
   if (!req.body) return next(new AppError(messages["500"], 500));
 
-  const { isReseted, user } = await resetUserPassword(req, res);
+  const user = await resetUserPassword(req.body, next);
 
-  if (!isReseted || !user) return next(new UnknownError(messages[500]));
+  if (!user) return next(new UnknownError(messages[500]));
 
-  user.token = null;
-  user.active = true;
-
-  user.save();
   return res.status(200).json({
     status: "success",
     message: messages["auth.set_user_password.success"]
   });
 });
-
-const resetUserPassword = async (req, res, userEmail = null) => {
-  try {
-    let response = {
-      isReseted: null,
-      user: null
-    };
-    const { password, confirmPassword } = req.body;
-    const email = req.body.email || userEmail;
-
-    const user = await User.findOne({
-      where: { email: email, isBanned: false }
-    });
-
-    if (!user) {
-      logger.error("user was not found ", email);
-      return response;
-    }
-
-    if (!email || !password || !confirmPassword) {
-      logger.error("one of the parameters is not found");
-      return response;
-    }
-    if (password !== confirmPassword) {
-      logger.error("password doesn't match ");
-      return response;
-    }
-
-    const encrypted = await encryptPassword(password);
-    user.password = encrypted;
-    // console.log("user password", encrypted);
-    // const
-    response.isReseted = true;
-    response.user = user;
-
-    return response;
-  } catch (error) {
-    logger.error(error);
-  }
-  // if (password )
-};
 
 /* @DESC
   function to reset password : this will only work if the user is authenticated otherwise refer to passwordResetWithToken function
@@ -139,54 +72,33 @@ export const passwordReset = catchAsync(async (req, res, next) => {
   if (password !== confirmPassword)
     return next(new AppError(messages["auth.password.non_match"], 500));
 
-  const { user, isReseted } = await resetUserPassword(req, res, req.user.email);
+  const user = await resetUserPassword(req.body, next, req.user.email);
 
-  if (!user || !isReseted)
-    return next(new UnknownError(messages["500"]));
+  if (!user) return next(new UnknownError(messages["500"]));
+  logger.info(`user ${req.user.email} changed his password successfully`);
 
-  user.save();
-  logger.info(`user ${req.user.email} changes his password successfully`);
-
-  return res
-    .status(200)
-    .json({ isChanged: true, message: messages["auth.password.changed.successfully"] });
+  return res.status(200).json({
+    isChanged: true,
+    message: messages["auth.password.changed.successfully"]
+  });
 });
 export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   const { password, confirmPassword, token } = req.body;
 
   // verify the token
-  const resetReq = await ResetPasswordToken.findOne({
-    where: { token },
-    include: [
-      {
-        model: User,
-        attributes: ["email", "id"]
-      }
-    ]
-  });
+  const resetReq = await ResetPasswordToken.findOne({ token: token }).populate(
+    "user"
+  );
+
   // console.log(resetReq.user.email);
   if (!resetReq)
-    return next(
-      new ElementNotFound(
-       messages["reset_password_page.not_noted"]
-      )
-    );
+    return next(new ElementNotFound(messages["reset_password_page.not_noted"]));
 
   if (resetReq.expired)
-    return next(
-      new UnAuthorized(
-       messages.request_already_fulfilled
-      )
-    );
+    return next(new UnAuthorized(messages.request_already_fulfilled));
 
   const currentTimeInSameTimezone = new Date().getTime();
-  console.log(
-    resetReq.expiresAt.getTime(),
-    "Date now",
-    currentTimeInSameTimezone,
-    " res =>",
-    resetReq.expiresAt.getTime() > currentTimeInSameTimezone
-  );
+
   if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone)
     return next(
       new UnAuthorized(
@@ -202,25 +114,22 @@ export const passwordResetWithToken = catchAsync(async (req, res, next) => {
   if (password !== confirmPassword)
     return next(new AppError(messages["auth.password.non_match"], 500));
 
-  const { user, isReseted } = await resetUserPassword(
-    req,
-    res,
-    resetReq.user.email
-  );
+  const user = await resetUserPassword(req.body, next, resetReq.user.email);
 
-  if (!user || !isReseted)
-    return next(new UnknownError(messages["500"]));
+  if (!user) return next(new UnknownError(messages["500"]));
 
-  resetReq.save();
+  await resetReq.save();
 
-  user.save();
+  await user.save();
   //deleting old request
-  await ResetPasswordToken.destroy({ where: { id: user.id } });
+  await ResetPasswordToken.deleteMany({ user: user._id });
+
   logger.info(`user ${user.email} changes his password successfully`);
 
-  return res
-    .status(200)
-    .json({ isChanged: true, message: messages["auth.password.changed.successfully"] });
+  return res.status(200).json({
+    isChanged: true,
+    message: messages["auth.password.changed.successfully"]
+  });
 });
 
 export const changeUserEmail = catchAsync(async (req, res, next) => {
@@ -232,9 +141,9 @@ export const changeUserEmail = catchAsync(async (req, res, next) => {
         401
       )
     );
-  const user = await User.findOne({ where: { email: oldEmail } });
+  const user = await getUserByEmail(oldEmail, false);
   if (!user) return next(new AppError(messages["user_not_found_1"], 400));
-  const isValid = await User.findOne({ where: { email: newEmail } });
+  const isValid = await User.findOne({ email: newEmail });
   if (isValid) return next(new AppError("email existant", 400));
   user.email = newEmail;
   const token = await createPasswordSetToken();
@@ -258,9 +167,7 @@ export const changeUserEmail = catchAsync(async (req, res, next) => {
       console.log(error);
     }
   }
-  return res
-    .status(200)
-    .json({ message: messages["email_sent"]});
+  return res.status(200).json({ message: messages["email_sent"] });
 });
 
 export const checkUserPassword = catchAsync(async (req, res, next) => {
@@ -279,29 +186,27 @@ export const checkUserPassword = catchAsync(async (req, res, next) => {
   // check if the current  password is true
   const isPasswordMatch = bcrypt.compareSync(currentPassword, user.password);
   if (!isPasswordMatch)
-    return res
-      .status(403)
-      .json({ matched: false, message:messages["current_password_does_not_match"] });
+    return res.status(403).json({
+      matched: false,
+      message: messages["current_password_does_not_match"]
+    });
 
   return res
     .status(200)
-    .json({ matched: true, message: messages["current_password_is_true"]});
+    .json({ matched: true, message: messages["current_password_is_true"] });
 });
 
 export const sendResetPasswordEmailToken = catchAsync(
   async (req, res, next) => {
     const { email } = req.body;
     const user = await getUserByEmail(email, false);
-
     if (!user) return next(new ElementNotFound(messages["email_not_found"]));
 
     //checking if the user has generated the maximum number of emails :
-    const { rows, count } = await ResetPasswordToken.findAndCountAll({
-      where: {
-        userID: user.id
-      }
-    });
-
+    const tokens = await ResetPasswordToken.find({
+      user: user._id
+    }).exec();
+    const count = tokens.length;
     if (count >= config.reset_password_request_limit) {
       logger.error(
         `user ${user.id} has exceeded the limit of password reset request: number of requests ${count}`
@@ -312,19 +217,19 @@ export const sendResetPasswordEmailToken = catchAsync(
     }
     //generating token
     const token = await createPasswordSetToken();
-    if (!token)
-      return next(new AppError(messages["error_generating_email"]));
+
+    if (!token) return next(new AppError(messages["error_generating_email"]));
     //saving user token
     const passwordResetToken = await ResetPasswordToken.create({
       token: token,
       expiresAt: Date.now() + 1 * config.reset_password_token_expires_in,
-      userID: user.id
+      user: user.id
     });
     if (!passwordResetToken)
       return next(new AppError(messages["error_generating_email"]));
     //expiring old tokens
     // console.log(rows);
-    rows?.forEach((oldToken) => {
+    tokens?.forEach((oldToken) => {
       oldToken.expired = true;
       oldToken.save();
     });
@@ -340,9 +245,7 @@ export const sendResetPasswordEmailToken = catchAsync(
       });
     } catch (error) {
       logger.error(error);
-      return next(
-        new AppError(messages["email_not_sent"], 500)
-      );
+      return next(new AppError(messages["email_not_sent"], 500));
     }
     return res.status(200).json({
       status: "success",
@@ -361,46 +264,31 @@ export const resetPasswordTokenVerify = catchAsync(async (req, res, next) => {
   if (!isValidToken)
     return next(new MalformedObjectId(messages["token_may_be_malformed"]));
 
-  const resetReq = await ResetPasswordToken.findOne({ where: { token } });
+  const resetReq = await ResetPasswordToken.findOne({ token });
 
   if (!resetReq)
-    return next(
-      new ElementNotFound(
-       messages["reset_password_page.not_noted"]
-      )
-    );
+    return next(new ElementNotFound(messages["reset_password_page.not_noted"]));
 
   if (resetReq.expired)
-    return next(
-      new UnAuthorized(
-       messages["request_already_fulfilled"]
-      )
-    );
+    return next(new UnAuthorized(messages["request_already_fulfilled"]));
 
   const currentTimeInSameTimezone = new Date().getTime();
 
   if (resetReq.expiresAt.getTime() < currentTimeInSameTimezone)
-    return next(
-      new UnAuthorized(
-     messages["expired_link"]
-      )
-    );
+    return next(new UnAuthorized(messages["expired_link"]));
 
   // resetReq.expired =true
 
   // expiring old tokens  before saving
-  const oldTokens = await ResetPasswordToken.findAll({
-    where: {
-      id: {
-        [Op.not]: resetReq.id
-      }
-    }
-  });
 
-  oldTokens?.forEach((old) => {
+  const oldTokens = await ResetPasswordToken.find()
+    .where("_id")
+    .ne(resetReq.id);
+
+  for (var old of oldTokens) {
     old.expired = true;
-    old.save();
-  });
+    await old.save();
+  }
 
   // resetReq.save()
 
