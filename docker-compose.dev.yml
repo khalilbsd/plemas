@@ -28,8 +28,7 @@ services:
       context: ./ms_authn/.
       dockerfile: Dockerfile
     container_name: ms_authn
-    ports:
-      - "8000:5000"
+    ports: 8000:5000
     command: npm run start:dev
     restart: always
     depends_on:
@@ -43,4 +42,5 @@ services:
     volumes:
       - ./ms_authn:/plemas/service
       - ./files:/plemas/service/uploads
+
 

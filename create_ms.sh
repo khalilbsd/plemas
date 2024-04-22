@@ -6,13 +6,42 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+
+
+
+# Check if PLEMAS_MODE environment variable is set
+if [ -z "$PLEMAS_MODE" ]; then
+    echo "Error: PLEMAS_MODE environment variable is not set."
+    exit 1
+fi
+
+# Store the value of PLEMAS_MODE environment variable in a variable
+PLEMAS_MODE_VAR=$PLEMAS_MODE
+# Use the variable later in the script
+echo "PLEMAS_MODE environment variable value:$PLEMAS_MODE_VAR"
+ docker_file="../docker-compose.$PLEMAS_MODE_VAR.yml"
+
+
+# Check if the ms_ service is declared in the docker-compose.yml file
+#  grep -q "ms_$1" "docker-compose.$PLEMAS_MODE_VAR.yml"
+
+if   grep -q "ms_$1" "docker-compose.$PLEMAS_MODE_VAR.yml"; then
+    echo "$service already running."
+    exit 1
+fi
+
 # Create a directory with the project name
 if [ -d "ms_$1" ]; then
     echo "Directory 'ms_$1' already exists. Aborting."
     exit 1
 fi
+
+
+
 mkdir "ms_$1"
 cd "ms_$1"
+
+
 
 # List of directories to create
 declare -a arr=("controllers"
@@ -52,7 +81,7 @@ cp ../server/mails/config.js  ./mails/config.js
 cp ../server/environment.config.js ./
 cp ../server/.env ./
 cp ../server/.env.dev ./
-cp ../server/.encypt/* ./.encypt
+cp ../server/*encypt/* ./*encypt
 # Copy database and index files from templates directory
 cp ../templates/db/*  ./db
 cp ../templates/index.js ./
@@ -67,31 +96,42 @@ touch index.js
 echo "Default files created for the service $1"
 
 # Install dependencies
-npm install
+# npm install
 
 echo "Dependencies installed for the service $1"
 
-# Generate docker-compose.yml
-cat > ../docker-compose.yml <<EOL
+# Check if docker-compose.yml exists
+if [ ! -f "$docker_file" ]; then
+    # Generate docker-compose.yml if it doesn't exist
+    cat > $docker_file <<EOL
+
 version: '3.8'
 
 services:
 EOL
+fi
 
+
+# Get the last port number used
+last_port=$(awk '/ports:/ {split($2, a, ":"); print a[1]}' "$docker_file" | sort -nr | head -n1)
+echo "last port $last_port inside the $docker_file"
 # Initialize port number
-port=8000
+if [ -z "$last_port" ]; then
+    port=8000
+else
+    port=$((last_port + 1))
+fi
+echo "last port 2 $port"
 
-# Loop through each microservice directory to add declarations to docker-compose.yml
-for service_dir in ../ms_*/; do
-    service_name=$(basename "$service_dir")
-    cat >> ../docker-compose.dev.yml <<EOL
+# Add the new service declaration to docker-compose.yml
+service_name=$(basename "ms_$1")
+cat >> "$docker_file" <<EOL
   $service_name:
     build:
       context: ./$service_name/.
       dockerfile: Dockerfile
     container_name: $service_name
-    ports:
-      - "$port:5000"
+    ports: $port:5000
     command: npm run start:dev
     restart: always
     depends_on:
@@ -104,13 +144,11 @@ for service_dir in ../ms_*/; do
         DB_MONGODB_NAME: plemas
     volumes:
       - ./$service_name:/plemas/service
+      - ./files:/plemas/service/uploads
+
 
 EOL
 
-    # Increment port number
-    ((port++))
-done
-
-echo "Docker Compose file updated successfully."
+echo "Service $service_name added to Docker Compose file."
 
 echo "Node.js microservices template created successfully in directory $1"
