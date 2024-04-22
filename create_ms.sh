@@ -96,7 +96,7 @@ touch index.js
 echo "Default files created for the service $1"
 
 # Install dependencies
-# npm install
+npm install
 
 echo "Dependencies installed for the service $1"
 
