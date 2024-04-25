@@ -1,0 +1,12 @@
+{
+  "ignore": [
+    "*.log"
+  ],
+  "watch": [
+    "*.ts"
+  ],
+  "ext": "ts",
+  "execMap": {
+    "ts": "ts-node"
+  }
+}

@@ -6,7 +6,7 @@ WORKDIR /plemas/service
 COPY package*.json .
 COPY . .
 # Install dependencies
-# RUN npm install
+RUN npm install
 # Copy the rest of the application
 EXPOSE 5000
 
