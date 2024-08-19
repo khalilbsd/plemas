@@ -43,10 +43,7 @@ services:
     volumes:
       - ./ms_authn:/plemas/service
       - ./files:/plemas/service/uploads
-
-
-
-  ms_projects:
+ms_projects:
     build:
       context: ./ms_projects/.
       dockerfile: Dockerfile
@@ -66,5 +63,3 @@ services:
     volumes:
       - ./ms_projects:/plemas/service
       - ./files:/plemas/service/src/uploads
-
-
