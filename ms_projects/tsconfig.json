@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+      "module": "ES2022",
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "target": "es6",
+      "strict": true,
+    //   "noImplicitAny": true,
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "outDir": "./dist",
+      "baseUrl": "./",
+      "paths": {
+          "*": [
+              "node_modules/*",
+              "src/*"
+          ]
+      },
+      "typeRoots": ["node_modules/@types","src/types"],
+      "types": ["express"]
+  },
+  "include": [
+      "src/**/*"
+  ]
+}

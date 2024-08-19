@@ -13,10 +13,10 @@
     "chronos": "concurrently \"npm run start.client\" \"npm run start.server\"",
     "dev.chronos": "concurrently \"npm run start.dev.client\" \"npm run start.dev.server\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate-data":"cd server && node ./scripts/syncDB.js",
-    "migrate-data-v2":"cd server && node ./scripts/syncDBFromJSON.js --prod",
-    "migrate-data-v2.dev":"cd server && node  ./scripts/syncDBFromJSON.js --dev",
-    "migrate-data-test":"cd server && node ./scripts/syncDB.test.js"
+    "migrate-data": "cd server && node ./scripts/syncDB.js",
+    "migrate-data-v2": "cd server && node ./scripts/syncDBFromJSON.js --prod",
+    "migrate-data-v2.dev": "cd server && node  ./scripts/syncDBFromJSON.js --dev",
+    "migrate-data-test": "cd server && node ./scripts/syncDB.test.js"
   },
   "repository": {
     "type": "git",
@@ -29,8 +29,10 @@
   },
   "homepage": "https://github.com/ITsolutionBadr/chronos#readme",
   "dependencies": {
+
     "concurrently": "^8.2.1",
     "react-svg": "^16.1.26"
+
   },
   "cspell": {
     "language": "en,fr",

@@ -1,79 +1,65 @@
-version: "2.4"
+version: "3.8"
 services:
-  kairos_client_web:
-    container_name: kairos_client_web_local
-    build:
-      context: ./client/.
-      dockerfile: Dockerfile.dev
-    volumes:
-     - ./client:/kairos/client
+  mongodb:
+    image: mongo:latest
     ports:
-      - "80:3000"
-    # command: npm i && npm run start:dev
-    command:  npm run start:dev
-    restart: always
-    depends_on:
-      mysql_db:
-        condition: service_healthy
-    networks:
-      default:
+      - '27017:27017'
+    volumes:
+      - ./mongodb/mongo_data:/data/db
+      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     environment:
-      REACT_APP_API_URL: http://midgard.org:5000/api
-      REACT_APP_SERVER_URL: http://midgard.org:5000
-      REACT_APP_DOMAIN: midgard.org
+      MONGO_INITDB_ROOT_USERNAME: its
+      MONGO_INITDB_ROOT_PASSWORD: itsedx
+  mongo-express:
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "27018:8081"
+    environment:
+        ME_CONFIG_MONGODB_ADMINUSERNAME: its
+        ME_CONFIG_MONGODB_ADMINPASSWORD: itsedx
+        ME_CONFIG_MONGODB_URL: mongodb://its:itsedx@mongodb:27017/
+        ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongodb
 
-  kairos_node_server:
-    container_name: kairos_node_server_local
+  ms_authn:
     build:
-      context: ./server/.
+      context: ./ms_authn/.
       dockerfile: Dockerfile
+    container_name: ms_authn
+    ports:
+      - 8000:5000
+    command: npm run start:dev
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+        DB_MONGODB_HOST: mongodb
+        DB_MONGODB_PORT: 27017
+        DB_USERNAME: its
+        DB_PASSWORD: itsedx
+        DB_MONGODB_NAME: plemas
     volumes:
-      - ./server:/kairos/server
-    depends_on:
-      mysql_db:
-        condition: service_healthy
+      - ./ms_authn:/plemas/service
+      - ./files:/plemas/service/uploads
+ms_projects:
+    build:
+      context: ./ms_projects/.
+      dockerfile: Dockerfile
+    container_name: ms_projects
     ports:
-      - "8080:5000"
-    command: "npm run start:dev"
+      - 8001:5000
+    command: npm run start:dev
     restart: always
-    environment:
-      DB_HOST: mysql_db
-      DB_PORT: 3306
-      DB_NAME: its
-      SERVER_URL: https://fancy-owl-hardy.ngrok-free.app
-    networks:
-      default:
-  mysql_db:
-    image: mysql:8.2.0
-    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --default-authentication-plugin=caching_sha2_password
-    restart: unless-stopped
-    container_name: kairos_mysql_local
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: "XKhNoUj4tfywChp"
-      MYSQL_DATABASE: chronos
-      MYSQL_USER: chronos
-      MYSQL_PASSWORD: scZKgG76ubQ
-    networks:
-      default:
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pXKhNoUj4tfywChp"]
-      # interval: 10s
-      # timeout: 30s
-      # retries: 5
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: kairos_mysql_phpmyadmin_local
-    links:
-      - mysql_db
-    environment:
-      PMA_HOST: mysql_db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-    restart: always
-    ports:
-      - 8081:80
     depends_on:
-      mysql_db:
-        condition: service_healthy
+      - mongodb
+    environment:
+        DB_MONGODB_HOST: mongodb
+        DB_MONGODB_PORT: 27017
+        DB_USERNAME: its
+        DB_PASSWORD: itsedx
+        DB_MONGODB_NAME: plemas
+    volumes:
+      - ./ms_projects:/plemas/service
+      - ./files:/plemas/service/src/uploads
