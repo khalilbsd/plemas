@@ -1,11 +1,14 @@
+import {EState} from "models/enum";
 import { Date, Types } from "mongoose";
+
+
 
 export type TProject = {
   code: string;
-  customId: string;
   name: string;
-  startDate: Date;
-  dueDate: Date;
+  customID: string;
+  startDate: String;
+  dueDate: String;
   priority: string;
   createdBy: Types.ObjectId;
   phases: Types.ObjectId[];
@@ -15,6 +18,7 @@ export type TProject = {
   };
   tasks: Types.ObjectId[];
   active: boolean;
+  state:EState
 };
 
 export interface IProject extends TProject, Document {}

@@ -2,6 +2,8 @@
 export type TPhase = {
   name: string;
   abbreviation: string;
+  description:String;
+  default:Boolean
 };
 
 // Define an interface named IPhase with the specified attributes

@@ -1,12 +1,15 @@
 // import passport from 'passport';
 import passport from "passport";
-import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
+import { ExtractJwt, Strategy as JwtStrategy, StrategyOptionsWithoutRequest, StrategyOptionsWithRequest } from "passport-jwt";
 import { config } from "../../environment.config";
 import { authenticateUser } from "../../middleware/auth";
 
-const options = {
+
+console.log(config.jwt_secret)
+
+const options:StrategyOptionsWithoutRequest = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: config.jwt_secret
+  secretOrKey: config.jwt_secret ?  config.jwt_secret :''
 };
 
 passport.use(new JwtStrategy(options, authenticateUser));
