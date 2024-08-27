@@ -9,6 +9,10 @@ const PhaseSchema = new Schema({
     description:{
       type: String,
       required: false
+    },
+    default:{
+      type:Boolean,
+      required:false
     }
   });
 

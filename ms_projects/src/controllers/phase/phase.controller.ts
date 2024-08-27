@@ -31,9 +31,6 @@ export const getAllPhases = catchAsync(async (req, res, next) => {
  */
 export const addPhase = catchAsync(async (req, res, next) => {
   //checking for validation
-  const isValidationCleared = validationResult(req);
-  if (!isValidationCleared.isEmpty())
-    return next(new ValidationError(messages.phase_malformed));
   const phase: IPhase = req.body;
   const createdPhase = await createPhase(phase);
   if (!createdPhase) return next(new AppError(messages[500]));

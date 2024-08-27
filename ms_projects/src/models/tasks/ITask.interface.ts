@@ -1,19 +1,5 @@
+import { EState } from "models/enum";
 import { Types, Date } from "mongoose";
-import {
-  STATE_ABANDONED,
-  STATE_BLOCKED,
-  STATE_DONE,
-  STATE_DOING,
-  STATE_TODO
-} from "../../constants/constants";
-
-export enum TaskState {
-  TODO = STATE_TODO,
-  DOING = STATE_DOING,
-  DONE = STATE_DONE,
-  ABANDONED = STATE_ABANDONED,
-  BLOCKED = STATE_BLOCKED
-}
 
 export type TTask = {
   name: String;
@@ -22,10 +8,10 @@ export type TTask = {
   blockedDate: Date;
   doneDate: Date;
   totalHours: Number;
-  state: TaskState;
+  state: EState;
   meta: Object;
   project: Types.ObjectId;
-  intervenants:Types.ObjectId
-    creator:Types.ObjectId
+  intervenants: Types.ObjectId;
+  creator: Types.ObjectId;
 };
 export interface ITask extends TTask, Document {}

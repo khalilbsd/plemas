@@ -1,7 +1,8 @@
 import { Model, Schema } from "mongoose";
 import { STATE_TODO } from "../../constants/constants";
 import getDb from "../../db/db_mongo";
-import { ITask, TaskState } from "./ITask.interface";
+import { ITask } from "./ITask.interface";
+import {EState} from "models/enum";
 
 const taskSchema = new Schema({
   name: {
@@ -20,9 +21,10 @@ const taskSchema = new Schema({
   doneDate: Date,
   totalHours: Number,
   state: {
-    type: TaskState,
+    type: String,
     required: true,
-    default: STATE_TODO
+    default: EState.TODO,
+    enum:Object.values(EState)
   },
   meta: {
     type: Object,

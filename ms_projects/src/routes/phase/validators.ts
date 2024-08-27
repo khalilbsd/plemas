@@ -5,3 +5,6 @@ export const validationName = () =>
 
 export const validationAbbreviation = () =>
   body("abbreviation").trim().escape().isLength({ max: 3 });
+
+export const validationDescription = () =>
+  body("description").trim().escape();
